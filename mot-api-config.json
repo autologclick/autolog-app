@@ -1,0 +1,12 @@
+{
+  "resourceId": "053cea08-09bc-40ec-8f7a-156f0677aff3",
+  "apiUrl": "https://data.gov.il/api/3/action/datastore_search",
+  "lastCheck": "2026-03-21T08:14:29.138Z",
+  "lastCheckStatus": "ok",
+  "lastCheckMessage": "API תקין. 4098212 רשומות זמינות. שדות: _id, mispar_rechev, tozeret_cd, sug_degem, tozeret_nm, degem_cd, degem_nm, ramat_gimur, ramat_eivzur_betihuty, kvutzat_zihum, shnat_yitzur, degem_manoa, mivchan_acharon_dt, tokef_dt, baalut, misgeret, tzeva_cd, tzeva_rechev, zmig_kidmi, zmig_ahori, sug_delek_nm, horaat_rishum, moed_aliya_lakvish, kinuy_mishari",
+  "alternativeResourceIds": [
+    "053cea08-09bc-40ec-8f7a-156f0677aff3",
+    "cd3acc5c-03c3-4c89-9c54-d40f93c0d790",
+    "851ecab1-0622-4dbe-a6c7-f950cf82abf9"
+  ]
+}

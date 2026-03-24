@@ -1,0 +1,241 @@
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import prisma from '@/lib/db';
+import {
+  requireAuth,
+  jsonResponse,
+  validationErrorResponse,
+  handleApiError,
+  AuthError,
+} from '@/lib/api-helpers';
+
+const updateVehicleSchema = z.object({
+  nickname: z.string().min(1).optional(),
+  manufacturer: z.string().optional(),
+  model: z.string().optional(),
+  year: z.union([z.number(), z.string()]).optional(),
+  licensePlate: z.string().optional(),
+  mileage: z.union([z.number(), z.string()]).optional(),
+  fuelType: z.string().optional(),
+  color: z.string().optional(),
+  testExpiryDate: z.string().optional(),
+  insuranceExpiry: z.string().optional(),
+  isPrimary: z.boolean().optional(),
+});
+
+function getDocStatus(expiryDate: Date | null): string {
+  if (!expiryDate) return 'valid';
+  const now = new Date();
+  const diffDays = Math.ceil(
+    (expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  if (diffDays < 0) return 'expired';
+  if (diffDays < 30) return 'expiring';
+  return 'valid';
+}
+
+// GET /api/vehicles/[id] - Get single vehicle with details
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const payload = requireAuth(req);
+    const { id } = params;
+
+    const vehicle = await prisma.vehicle.findUnique({
+      where: { id },
+      include: {
+        inspections: {
+          select: {
+            id: true,
+            inspectionType: true,
+            date: true,
+            status: true,
+            overallScore: true,
+            garage: { select: { id: true, name: true } },
+          },
+          orderBy: { date: 'desc' },
+          take: 10,
+        },
+        appointments: {
+          select: {
+            id: true,
+            serviceType: true,
+            date: true,
+            time: true,
+            status: true,
+            garage: { select: { id: true, name: true } },
+          },
+          orderBy: { date: 'asc' },
+          where: { date: { gte: new Date() } },
+          take: 10,
+        },
+        expenses: {
+          select: {
+            id: true,
+            category: true,
+            amount: true,
+            date: true,
+            description: true,
+          },
+          orderBy: { date: 'desc' },
+          take: 20,
+        },
+        _count: {
+          select: {
+            inspections: true,
+            appointments: true,
+            sosEvents: true,
+            expenses: true,
+          },
+        },
+      },
+    });
+
+    if (!vehicle) {
+      return jsonResponse({ error: 'רכב לא נמצא' }, 404);
+    }
+
+    // Verify ownership
+    if (vehicle.userId !== payload.userId) {
+      throw new AuthError('Forbidden', 403);
+    }
+
+    return jsonResponse({ vehicle });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
+// PUT /api/vehicles/[id] - Update vehicle
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const payload = requireAuth(req);
+    const { id } = params;
+    const body = await req.json();
+
+    // Validate input
+    const validation = updateVehicleSchema.safeParse(body);
+    if (!validation.success) {
+      return validationErrorResponse(validation.error);
+    }
+
+    // Verify ownership
+    const vehicle = await prisma.vehicle.findUnique({
+      where: { id },
+      select: { userId: true },
+    });
+
+    if (!vehicle) {
+      return jsonResponse({ error: 'רכב לא נמצא' }, 404);
+    }
+
+    if (vehicle.userId !== payload.userId) {
+      throw new AuthError('Forbidden', 403);
+    }
+
+    const updateData: any = {};
+    const d = validation.data;
+
+    if (d.nickname !== undefined) updateData.nickname = d.nickname;
+    if (d.manufacturer !== undefined) updateData.manufacturer = d.manufacturer;
+    if (d.model !== undefined) updateData.model = d.model;
+    if (d.year !== undefined) {
+      const y = typeof d.year === 'string' ? parseInt(d.year) : d.year;
+      if (!isNaN(y) && y > 1900) updateData.year = y;
+    }
+    if (d.mileage !== undefined) {
+      const m = typeof d.mileage === 'string' ? parseInt(d.mileage) : d.mileage;
+      if (!isNaN(m) && m >= 0) updateData.mileage = m;
+    }
+    if (d.fuelType !== undefined) updateData.fuelType = d.fuelType;
+    if (d.color !== undefined) updateData.color = d.color;
+
+    if (d.testExpiryDate !== undefined && d.testExpiryDate) {
+      const testDate = new Date(d.testExpiryDate);
+      if (!isNaN(testDate.getTime())) {
+        updateData.testExpiryDate = testDate;
+        updateData.testStatus = getDocStatus(testDate);
+      }
+    }
+
+    if (d.insuranceExpiry !== undefined && d.insuranceExpiry) {
+      const insDate = new Date(d.insuranceExpiry);
+      if (!isNaN(insDate.getTime())) {
+        updateData.insuranceExpiry = insDate;
+        updateData.insuranceStatus = getDocStatus(insDate);
+      }
+    }
+
+    if (validation.data.isPrimary !== undefined) {
+      if (validation.data.isPrimary) {
+        // Set all other vehicles to non-primary
+        await prisma.vehicle.updateMany({
+          where: { userId: payload.userId, id: { not: id } },
+          data: { isPrimary: false },
+        });
+      }
+      updateData.isPrimary = validation.data.isPrimary;
+    }
+
+    const updated = await prisma.vehicle.update({
+      where: { id },
+      data: updateData,
+      include: {
+        _count: {
+          select: {
+            inspections: true,
+            appointments: true,
+            sosEvents: true,
+            expenses: true,
+          },
+        },
+      },
+    });
+
+    return jsonResponse({
+      vehicle: updated,
+      message: 'הרכב עודכן בהצלחה',
+    });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
+// DELETE /api/vehicles/[id] - Delete/soft delete vehicle
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const payload = requireAuth(req);
+    const { id } = params;
+
+    // Verify ownership
+    const vehicle = await prisma.vehicle.findUnique({
+      where: { id },
+      select: { userId: true },
+    });
+
+    if (!vehicle) {
+      return jsonResponse({ error: 'רכב לא נמצא' }, 404);
+    }
+
+    if (vehicle.userId !== payload.userId) {
+      throw new AuthError('Forbidden', 403);
+    }
+
+    // Hard delete - cascade handled by Prisma
+    await prisma.vehicle.delete({
+      where: { id },
+    });
+
+    return jsonResponse({ message: 'הרכב נמחק בהצלחה' });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}

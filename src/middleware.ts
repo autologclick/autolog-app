@@ -1,0 +1,164 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+// Decode JWT payload without Node.js crypto (Edge Runtime compatible)
+function decodeJwtPayload(token: string): { userId: string; email: string; role: string; exp?: number } | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    if (!payload.userId || !payload.role) return null;
+    // Check expiration
+    if (payload.exp && payload.exp * 1000 < Date.now()) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+// Decode without expiration check (for refresh flow)
+function decodeJwtPayloadIgnoreExp(token: string): { userId: string; email: string; role: string; exp?: number } | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    if (!payload.userId || !payload.role) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+// Public routes that don't require auth
+const PUBLIC_ROUTES = [
+  '/',
+  '/auth',
+  '/api/auth', // Includes /api/auth/csrf-token, /api/auth/login, etc.
+  '/api/health',
+  '/api/benefits',
+  '/api/garages',
+  '/api/garage-applications',
+  '/garage-apply',
+  '/terms',
+  '/privacy',
+  '/warranty',
+  '/accessibility',
+  '/_next',
+  '/favicon',
+];
+
+function isPublicRoute(pathname: string): boolean {
+  return PUBLIC_ROUTES.some(route => pathname === route || pathname.startsWith(route + '/') || pathname.startsWith(route));
+}
+
+// Middleware to protect routes with role-based access control
+export async function middleware(req: NextRequest) {
+  const token = req.cookies.get('auth-token')?.value;
+  const refreshToken = req.cookies.get('refresh-token')?.value;
+  const { pathname } = req.nextUrl;
+
+  // Public routes - no auth required
+  if (isPublicRoute(pathname)) {
+    return NextResponse.next();
+  }
+
+  // Try to decode the access token
+  let payload = token ? decodeJwtPayload(token) : null;
+
+  // If access token is expired but refresh token exists, try to refresh
+  if (!payload && refreshToken) {
+    // Check if refresh token has valid structure (not expired)
+    const refreshPayload = decodeJwtPayloadIgnoreExp(refreshToken);
+    if (refreshPayload) {
+      try {
+        // Call the refresh endpoint internally
+        const refreshUrl = new URL('/api/auth/refresh', req.url);
+        const refreshRes = await fetch(refreshUrl.toString(), {
+          method: 'POST',
+          headers: {
+            'Cookie': `refresh-token=${refreshToken}`,
+          },
+        });
+
+        if (refreshRes.ok) {
+          // Extract new cookies from refresh response
+          const setCookieHeaders = refreshRes.headers.getSetCookie?.() || [];
+
+          // Create response that continues to the original destination
+          const response = NextResponse.next();
+
+          // Forward the new cookies
+          for (const cookie of setCookieHeaders) {
+            response.headers.append('Set-Cookie', cookie);
+          }
+
+          // Use the refresh payload for role checks below
+          payload = refreshPayload;
+
+          // Apply role-based checks and return
+          return applyRoleChecks(pathname, payload, req, response);
+        }
+      } catch {
+        // Refresh failed, fall through to unauthorized
+      }
+    }
+  }
+
+  // No valid token at all
+  if (!payload) {
+    if (pathname.startsWith('/api')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const loginUrl = new URL('/auth/login', req.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  return applyRoleChecks(pathname, payload, req);
+}
+
+function applyRoleChecks(
+  pathname: string,
+  payload: { role: string },
+  req: NextRequest,
+  response?: NextResponse
+): NextResponse {
+  const userRole = payload.role;
+  const res = response || NextResponse.next();
+
+  // Admin routes - require admin role
+  if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
+    if (userRole !== 'admin') {
+      if (pathname.startsWith('/api')) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+      return NextResponse.redirect(new URL('/auth/login', req.url));
+    }
+  }
+
+  // Garage owner routes - require garage_owner or admin role
+  if (pathname.startsWith('/garage') || pathname.startsWith('/api/garage')) {
+    if (userRole !== 'garage_owner' && userRole !== 'admin') {
+      if (pathname.startsWith('/api')) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+      return NextResponse.redirect(new URL('/auth/login', req.url));
+    }
+  }
+
+  // User routes - require user role (or higher)
+  if (pathname.startsWith('/user')) {
+    if (userRole !== 'user' && userRole !== 'admin') {
+      if (pathname.startsWith('/api')) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+      return NextResponse.redirect(new URL('/auth/login', req.url));
+    }
+  }
+
+  return res;
+}
+
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico).*)',
+  ],
+};

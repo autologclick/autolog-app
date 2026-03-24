@@ -1,0 +1,103 @@
+# ============================================================
+# Docker Ignore File
+# Reduces Docker build context and image size
+# ============================================================
+
+# Dependencies
+node_modules/
+npm-debug.log
+npm-err.log
+yarn-error.log
+pnpm-debug.log
+
+# Build artifacts
+.next/
+.turbo/
+out/
+dist/
+build/
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+README.md
+CHANGELOG.md
+DEPLOYMENT_CHECKLIST.md
+SECURITY_*.md
+PDF_*.md
+
+# Environment files (not needed in Docker - pass at runtime)
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.code-workspace
+
+# Testing
+coverage/
+.nyc_output/
+jest.config.js
+cypress/
+cypress.config.js
+e2e/
+
+# Development tools
+.prisma/
+prisma/seed.ts
+dev_backup.db
+dev_backup.db-journal
+
+# OS files
+Thumbs.db
+.AppleDouble
+.LSOverride
+*.pem
+*.key
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.circleci/
+.jenkins/
+Jenkinsfile
+
+# Docker files (not needed in image)
+Dockerfile
+.dockerignore
+docker-compose.yml
+docker-compose.*.yml
+
+# Misc
+.editorconfig
+.prettierrc
+.eslintrc.json
+postcss.config.js
+tailwind.config.js
+tsconfig.json
+next.config.js
+Makefile
+
+# Database backups and development files
+*.db-shm
+*.db-wal
+dev.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Node.js native modules (if using native builds)
+node_modules/.bin/

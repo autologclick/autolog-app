@@ -1,0 +1,84 @@
+# ============================================================
+# AutoLog Production Docker Compose Configuration
+# Next.js 14 application with SQLite database persistence
+# ============================================================
+
+version: '3.9'
+
+services:
+  autolog-app:
+    # Build from local Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # Container name for reference
+    container_name: autolog-app
+
+    # Port mapping: host:container
+    ports:
+      - "3000:3000"
+
+    # Environment variables
+    environment:
+      # Production configuration
+      NODE_ENV: production
+
+      # Next.js telemetry disabled for production
+      NEXT_TELEMETRY_DISABLED: "1"
+
+      # Locale configuration (Hebrew RTL)
+      LOCALE: "he_IL"
+
+      # SQLite database URL - persisted in volume
+      DATABASE_URL: "file:/app/data/production.db"
+
+      # Application hostname for Docker networking
+      HOSTNAME: "0.0.0.0"
+
+      # Add your production environment variables here
+      # NEXT_PUBLIC_API_URL: "https://your-api-url.com"
+      # JWT_SECRET: "your-secret-key"
+      # etc.
+
+    # Volume mounts for data persistence
+    volumes:
+      # SQLite database persistence
+      - ./data:/app/data
+
+    # Restart policy for automatic recovery
+    restart: unless-stopped
+
+    # Resource limits (adjust based on your needs)
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '1'
+          memory: 512M
+
+    # Health check configuration
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+
+    # Read-only root filesystem (optional, for enhanced security)
+    # read_only: true
+    # tmpfs:
+    #   - /tmp

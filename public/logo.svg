@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" fill="none">
+  <!-- Shield -->
+  <g transform="translate(10, 5) scale(0.9)">
+    <!-- Shield shape - left half (darker) -->
+    <path d="M50 2L10 18V52C10 72 28 88 50 98V2Z" fill="#1e3a5f"/>
+    <!-- Shield shape - right half (teal) -->
+    <path d="M50 2L90 18V52C90 72 72 88 50 98V2Z" fill="#0d7377"/>
+    <!-- Car silhouette -->
+    <g transform="translate(22, 30)">
+      <!-- Car body -->
+      <path d="M8 22C8 22 10 14 14 12C18 10 22 8 28 8C34 8 38 10 42 12C46 14 48 22 48 22" stroke="#0a2540" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- Car roof -->
+      <path d="M16 12C16 12 20 4 28 4C36 4 40 12 40 12" stroke="#0a2540" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- Windshield -->
+      <path d="M18 12L22 5.5H34L38 12" stroke="#0a2540" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <!-- Bottom line -->
+      <path d="M4 22H52" stroke="#0a2540" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- Wheels -->
+      <circle cx="16" cy="24" r="4" fill="#0a2540"/>
+      <circle cx="16" cy="24" r="2" fill="#1e3a5f"/>
+      <circle cx="40" cy="24" r="4" fill="#0a2540"/>
+      <circle cx="40" cy="24" r="2" fill="#1e3a5f"/>
+      <!-- Headlights -->
+      <rect x="4" y="17" width="5" height="3" rx="1" fill="#0a2540" opacity="0.7"/>
+      <rect x="47" y="17" width="5" height="3" rx="1" fill="#0a2540" opacity="0.7"/>
+    </g>
+  </g>
+  <!-- AutoLog text -->
+  <text x="115" y="62" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="48" fill="#0fbcce" letter-spacing="-1">
+    <tspan fill="#0fbcce">Auto</tspan><tspan fill="#0ea5a0">Log</tspan>
+  </text>
+</svg>
