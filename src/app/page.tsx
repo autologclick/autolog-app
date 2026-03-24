@@ -1,4 +1,4 @@
-'use client';
+h'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -909,15 +909,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      {/* ============ FLOATING WHATSAPP BUTTON ============ */}
-      <a
-        href="https://wa.me/972299999999"
-        className="fixed bottom-8 left-8 w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#1dbb56] transition-all duration-300 hover:scale-110 z-40"
-        title="צור קשר דרך WhatsApp"
-      >
-        <Phone size={24} />
-      </a>
 
       {/* Custom CSS for animations */}
       <style jsx global>{`
