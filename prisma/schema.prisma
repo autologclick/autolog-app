@@ -103,7 +103,8 @@ model Garage {
   city          String
   phone         String?
   email         String?
-  description   String?     rating        Float     @default(0)
+  description   String?
+  rating        Float     @default(0)
   reviewCount   Int       @default(0)
   services      String?   // JSON array of services
   workingHours  String?   // JSON object
@@ -171,7 +172,8 @@ model Inspection {
   workPerformed   String?   // JSON array of { item: string, action: 'fixed'|'replaced'|'adjusted'|'checked'|'cleaned', notes?: string, cost?: number }
 
   // Results
-  summary         String?     recommendations String?   // JSON array with { text, urgency, estimatedCost }
+  summary         String?
+  recommendations String?   // JSON array with { text, urgency, estimatedCost }
   notes           String?   // JSON: { undercarriage, engine, general }
   photos          String?   // JSON array of URLs (legacy)
   pdfReportUrl    String?
@@ -223,7 +225,8 @@ model Appointment {
   date        DateTime
   time        String
   status      String    @default("pending") // pending | confirmed | in_progress | completed | cancelled
-  notes       String?     completionNotes  String?   // Treatment summary written by garage when completing
+  notes       String?
+  completionNotes  String?   // Treatment summary written by garage when completing
   completedAt      DateTime? // When the appointment was marked as completed
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -289,8 +292,10 @@ model Expense {
   vehicle     Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   category    String    // fuel | maintenance | insurance | test | parking | fines | other
   amount      Float
-  description String?     date        DateTime
-  receiptUrl  String?     createdAt   DateTime  @default(now())
+  description String?
+  date        DateTime
+  receiptUrl  String?
+  createdAt   DateTime  @default(now())
 
   @@index([vehicleId])
   @@index([category])
@@ -307,7 +312,8 @@ model GarageReview {
   garage      Garage    @relation(fields: [garageId], references: [id], onDelete: Cascade)
   userName    String
   rating      Int       // 1-5
-  comment     String?     createdAt   DateTime  @default(now())
+  comment     String?
+  createdAt   DateTime  @default(now())
 
   @@index([garageId])
 }
@@ -322,7 +328,8 @@ model Document {
   vehicle     Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   type        String    // insurance_compulsory | insurance_comprehensive | insurance_third_party | license | registration | test_certificate | receipt | photo | other
   title       String
-  description String?     fileUrl     String?   // URL or base64 data
+  description String?
+  fileUrl     String?   // URL or base64 data
   fileName    String?
   fileType    String?   // image/jpeg, application/pdf, etc.
   expiryDate  DateTime?
@@ -345,7 +352,8 @@ model Notification {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   type        String    // test_expiry | insurance_expiry | appointment | sos | benefit | system
   title       String
-  message     String      isRead      Boolean   @default(false)
+  message     String
+  isRead      Boolean   @default(false)
   link        String?
   createdAt   DateTime  @default(now())
 
