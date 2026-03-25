@@ -42,20 +42,20 @@ export async function PUT(
     });
 
     if (!appointment) {
-      return errorResponse('התור לא נמצא', 404);
+      return errorResponse('××ª××¨ ×× × ××¦×', 404);
     }
 
     // Verify this garage belongs to the current user
     if (appointment.garage.ownerId !== payload.userId) {
-      return errorResponse('אין הרשאה', 403);
+      return errorResponse('××× ××¨×©××', 403);
     }
 
     // Can't update cancelled or already completed appointments
     if (appointment.status === 'cancelled') {
-      return errorResponse('לא ניתן לעדכן תור מבוטל', 400);
+      return errorResponse('×× × ××ª× ××¢××× ×ª××¨ ×××××', 400);
     }
     if (appointment.status === 'completed') {
-      return errorResponse('התור כבר הושלם', 400);
+      return errorResponse('××ª××¨ ×××¨ ×××©××', 400);
     }
 
     // Build update data
@@ -82,10 +82,10 @@ export async function PUT(
     // If completed, create a notification for the customer
     if (status === 'completed') {
       const serviceTypeHeb: Record<string, string> = {
-        inspection: 'בדיקה',
-        maintenance: 'טיפול',
-        repair: 'תיקון',
-        test_prep: 'הכנה לטסט',
+        inspection: '××××§×',
+        maintenance: '×××¤××',
+        repair: '×ª××§××',
+        test_prep: '××× × ×××¡×',
       };
       const serviceLabel = serviceTypeHeb[appointment.serviceType] || appointment.serviceType;
       const vehicleLabel = appointment.vehicle.nickname || `${appointment.vehicle.manufacturer} ${appointment.vehicle.model}`;
@@ -94,10 +94,10 @@ export async function PUT(
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: 'הטיפול הושלם בהצלחה!',
+          title: '××××¤×× ×××©×× ×××¦×××!',
           message: completionNotes
-            ? `${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}) הושלם ב${appointment.garage.name}. סיכום: ${completionNotes}`
-            : `${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}) הושלם בהצלחה ב${appointment.garage.name}.`,
+            ? `${serviceLabel} ××¨×× ${vehicleLabel} (${appointment.vehicle.licensePlate}) ×××©×× ×${appointment.garage.name}. ×¡××××: ${completionNotes}`
+            : `${serviceLabel} ××¨×× ${vehicleLabel} (${appointment.vehicle.licensePlate}) ×××©×× ×××¦××× ×${appointment.garage.name}.`,
           link: '/user/appointments',
         },
       });
@@ -109,8 +109,8 @@ export async function PUT(
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: 'התור אושר!',
-          message: `התור שלך ב${appointment.garage.name} אושר. נתראה בתאריך ${new Date(appointment.date).toLocaleDateString('he-IL')} בשעה ${appointment.time}.`,
+          title: '××ª××¨ ×××©×¨!',
+          message: `××ª××¨ ×©×× ×${appointment.garage.name} ×××©×¨. × ×ª×¨×× ××ª××¨×× ${new Date(appointment.date).toLocaleDateString('he-IL')} ××©×¢× ${appointment.time}.`,
           link: '/user/appointments',
         },
       });
@@ -122,8 +122,8 @@ export async function PUT(
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: 'התור בוטל',
-          message: `התור שלך ב${appointment.garage.name} בוטל. אנא צור קשר עם המוסך לפרטים נוספים.`,
+          title: '××ª××¨ ××××',
+          message: `××ª××¨ ×©×× ×${appointment.garage.name} ××××. ×× × ×¦××¨ ×§×©×¨ ×¢× ××××¡× ××¤×¨××× × ××¡×¤××.`,
           link: '/user/appointments',
         },
       });
@@ -135,23 +135,23 @@ export async function PUT(
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: 'הרכב נכנס לטיפול',
-          message: `הרכב שלך נכנס לטיפול ב${appointment.garage.name}.`,
+          title: '××¨×× × ×× ×¡ ××××¤××',
+          message: `××¨×× ×©×× × ×× ×¡ ××××¤×× ×${appointment.garage.name}.`,
           link: '/user/appointments',
         },
       });
     }
 
     const statusHeb: Record<string, string> = {
-      confirmed: 'מאושר',
-      in_progress: 'בטיפול',
-      completed: 'הושלם',
-      cancelled: 'מבוטל',
+      confirmed: '××××©×¨',
+      in_progress: '××××¤××',
+      completed: '×××©××',
+      cancelled: '×××××',
     };
 
     return jsonResponse({
       appointment: updated,
-      message: `התור עודכן ל${statusHeb[status] || status}`,
+      message: `××ª××¨ ×¢×××× ×${statusHeb[status] || status}`,
     });
   } catch (error) {
     return handleApiError(error);
@@ -177,11 +177,11 @@ export async function GET(
     });
 
     if (!appointment) {
-      return errorResponse('התור לא נמצא', 404);
+      return errorResponse('××ª××¨ ×× × ××¦×', 404);
     }
 
     if (appointment.garage.ownerId !== payload.userId) {
-      return errorResponse('אין הרשאה', 403);
+      return errorResponse('××× ××¨×©××', 403);
     }
 
     return jsonResponse({ appointment });
