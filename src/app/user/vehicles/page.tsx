@@ -80,7 +80,7 @@ function VehicleImage({ vehicleId, size = 'md', className = '' }: { vehicleId: s
   return (
     <img
       src={imgSrc}
-      alt="×ª××× ×ª ×¨××"
+      alt="תמונת רכב"
       className={`${sizeClasses[size]} rounded-xl object-cover flex-shrink-0 ${className}`}
       onError={() => setHasError(true)}
     />
@@ -98,10 +98,10 @@ function ImageUploadSection({ imagePreview, onImageSelect, onImageRemove, onCame
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">×ª××× ×ª ××¨××</label>
+      <label className="block text-sm font-medium text-gray-700">תמונת הרכב</label>
       {imagePreview ? (
         <div className="relative w-full h-40 rounded-xl overflow-hidden border border-gray-200">
-          <img src={imagePreview} alt="×ª×¦××× ××§××××" className="w-full h-full object-cover" />
+          <img src={imagePreview} alt="תצוגה מקדימה" className="w-full h-full object-cover" />
           <button
             type="button"
             onClick={onImageRemove}
@@ -118,7 +118,7 @@ function ImageUploadSection({ imagePreview, onImageSelect, onImageRemove, onCame
             className="flex-1 flex flex-col items-center gap-2 p-4 border-2 border-dashed border-teal-300 rounded-xl hover:bg-teal-50 transition text-teal-600"
           >
             <Camera size={24} />
-            <span className="text-xs font-medium">×¦×× ×ª××× ×</span>
+            <span className="text-xs font-medium">צלם תמונה</span>
           </button>
           <button
             type="button"
@@ -126,7 +126,7 @@ function ImageUploadSection({ imagePreview, onImageSelect, onImageRemove, onCame
             className="flex-1 flex flex-col items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-xl hover:bg-[#fef7ed]/50 transition text-gray-500"
           >
             <Upload size={24} />
-            <span className="text-xs font-medium">××¢×× ×××××¨××</span>
+            <span className="text-xs font-medium">העלה מהגלריה</span>
           </button>
           <input
             ref={fileInputRef}
@@ -204,10 +204,10 @@ export default function VehiclesPage() {
       if (res.ok && data.vehicles) {
         setVehicles(data.vehicles);
       } else {
-        setError(data.error || '×©×××× ×××¢×× ×ª ××¨××××');
+        setError(data.error || 'שגיאה בטעינת הרכבים');
       }
     } catch {
-      setError('×©××××ª ×××××¨. ×× × × ×¡× ×©××.');
+      setError('שגיאת חיבור. אנא נסה שוב.');
     }
     setLoading(false);
   };
@@ -216,7 +216,7 @@ export default function VehiclesPage() {
 
   const handleLookup = async () => {
     if (!formData.licensePlate || formData.licensePlate.length < 5) {
-      setLookupMessage('× × ××××× ××¡×¤×¨ ×¨××©×× ×ª×§××');
+      setLookupMessage('נא להזין מספר רישוי תקין');
       return;
     }
     setLookingUp(true);
@@ -236,12 +236,12 @@ export default function VehiclesPage() {
           testExpiryDate: v.testExpiryDate ? v.testExpiryDate.split('T')[0] : prev.testExpiryDate,
           nickname: prev.nickname || `${v.manufacturer} ${v.model}`.trim(),
         }));
-        setLookupMessage('×× ×ª×× ×× × ××¢× × ×××©×¨× ××ª××××¨×!');
+        setLookupMessage('הנתונים נטענו ממשרד התחבורה!');
       } else {
-        setLookupMessage(data.error || '×× × ××¦×× × ×ª×× ×× ××¨×× ××');
+        setLookupMessage(data.error || 'לא נמצאו נתונים לרכב זה');
       }
     } catch {
-      setLookupMessage('×©×××× ××××¤××© - × ×¡× ×©××');
+      setLookupMessage('שגיאה בחיפוש - נסה שוב');
     }
     setLookingUp(false);
   };
@@ -259,11 +259,11 @@ export default function VehiclesPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-      setError('× × ×××××¨ ×§×××¥ ×ª××× × ××××');
+      setError('נא לבחור קובץ תמונה בלבד');
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      setError('××ª××× × ××××× ××× (××§×¡×××× 5MB)');
+      setError('התמונה גדולה מדי (מקסימום 5MB)');
       return;
     }
     const reader = new FileReader();
@@ -342,7 +342,7 @@ export default function VehiclesPage() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || '×©×××× ××¢×××× ×¨××'); setSaving(false); return; }
+      if (!res.ok) { setError(data.error || 'שגיאה בעדכון רכב'); setSaving(false); return; }
       // Upload image if selected
       if (imageData) {
         await uploadImage(editVehicleId);
@@ -351,7 +351,7 @@ export default function VehiclesPage() {
       setEditVehicleId(null);
       resetForm();
       fetchVehicles();
-    } catch { setError('×©××××ª ×××××¨'); }
+    } catch { setError('שגיאת חיבור'); }
     setSaving(false);
   };
 
@@ -366,7 +366,7 @@ export default function VehiclesPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || '×©×××× ××××¡×¤×ª ×¨××');
+        setError(data.error || 'שגיאה בהוספת רכב');
         setSaving(false);
         return;
       }
@@ -378,7 +378,7 @@ export default function VehiclesPage() {
       resetForm();
       fetchVehicles();
     } catch {
-      setError('×©××××ª ×××××¨');
+      setError('שגיאת חיבור');
     }
     setSaving(false);
   };
@@ -408,10 +408,10 @@ export default function VehiclesPage() {
           <div className="w-10 h-10 bg-[#fef7ed] rounded-lg border-2 border-[#1e3a5f] flex items-center justify-center">
             <Car size={20} className="text-[#1e3a5f]" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">××¨×××× ×©××</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">הרכבים שלי</h1>
         </div>
         <Button icon={<Plus size={16} />} onClick={() => setShowAddModal(true)} className="w-full sm:w-auto">
-          ×××¡×£ ×¨××
+          הוסף רכב
         </Button>
       </div>
 
@@ -429,19 +429,19 @@ export default function VehiclesPage() {
             <div className="w-8 h-8 bg-teal-500/10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-teal-600" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">×ª××× ××ª AI ××¨××××</h2>
+            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לרכבים</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Test Status Card */}
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <AlertTriangleIcon size={14} className="text-amber-500" />
-                <span className="text-xs font-bold text-gray-700">×¡××××¡ ××¡×</span>
+                <span className="text-xs font-bold text-gray-700">סטטוס טסט</span>
               </div>
               <p className="text-xs text-gray-600">
                 {vehicles.filter(v => v.testStatus === 'expired' || v.testStatus === 'expiring').length === 0
-                  ? 'â ×× ××¨×××× ××ª××§×£'
-                  : `â ï¸ ${vehicles.filter(v => v.testStatus === 'expired' || v.testStatus === 'expiring').length} ×¨×××× ××¢×× ××¡×`}
+                  ? '✓ כל הרכבים בתוקף'
+                  : `⚠️ ${vehicles.filter(v => v.testStatus === 'expired' || v.testStatus === 'expiring').length} רכבים בעיה טסט`}
               </p>
             </div>
 
@@ -449,12 +449,12 @@ export default function VehiclesPage() {
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <Shield size={14} className="text-blue-500" />
-                <span className="text-xs font-bold text-gray-700">×¡××××¡ ×××××</span>
+                <span className="text-xs font-bold text-gray-700">סטטוס ביטוח</span>
               </div>
               <p className="text-xs text-gray-600">
                 {vehicles.filter(v => v.insuranceStatus === 'expired' || v.insuranceStatus === 'expiring').length === 0
-                  ? 'â ×× ×××××××× ××ª××§×£'
-                  : `â ï¸ ${vehicles.filter(v => v.insuranceStatus === 'expired' || v.insuranceStatus === 'expiring').length} ××××××× ××¢××`}
+                  ? '✓ כל הביטוחים בתוקף'
+                  : `⚠️ ${vehicles.filter(v => v.insuranceStatus === 'expired' || v.insuranceStatus === 'expiring').length} ביטוחים בעיה`}
               </p>
             </div>
 
@@ -462,10 +462,10 @@ export default function VehiclesPage() {
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={14} className="text-green-500" />
-                <span className="text-xs font-bold text-gray-700">×¡×××× ×¤×¢××××ª</span>
+                <span className="text-xs font-bold text-gray-700">סיכום פעילות</span>
               </div>
               <p className="text-xs text-gray-600">
-                ð {vehicles.reduce((sum, v) => sum + (v._count?.inspections || 0), 0)} ××××§××ª â¢ {vehicles.reduce((sum, v) => sum + (v._count?.expenses || 0), 0)} ×××¦×××ª
+                📊 {vehicles.reduce((sum, v) => sum + (v._count?.inspections || 0), 0)} בדיקות • {vehicles.reduce((sum, v) => sum + (v._count?.expenses || 0), 0)} הוצאות
               </p>
             </div>
           </div>
@@ -477,9 +477,9 @@ export default function VehiclesPage() {
           <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center mx-auto mb-4">
             <Car size={24} className="text-teal-600" />
           </div>
-          <h3 className="text-lg font-bold text-gray-600 mb-2">××× ×¨×××× ×¢××××</h3>
-          <p className="text-gray-400 mb-4">×××¡×£ ××ª ××¨×× ××¨××©×× ×©××!</p>
-          <Button icon={<Plus size={16} />} onClick={() => setShowAddModal(true)}>×××¡×£ ×¨××</Button>
+          <h3 className="text-lg font-bold text-gray-600 mb-2">אין רכבים עדיין</h3>
+          <p className="text-gray-400 mb-4">הוסף את הרכב הראשון שלך!</p>
+          <Button icon={<Plus size={16} />} onClick={() => setShowAddModal(true)}>הוסף רכב</Button>
         </Card>
       ) : vehicles.length > 0 ? (
         <div className="space-y-4">
@@ -491,10 +491,10 @@ export default function VehiclesPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <h3 className="text-lg font-bold text-[#1e3a5f]">{v.nickname}</h3>
-                    {v.isPrimary && <Badge variant="info">×¨××©×</Badge>}
+                    {v.isPrimary && <Badge variant="info">ראשי</Badge>}
                   </div>
                   <p className="text-sm text-gray-500">
-                    {v.manufacturer} {v.model} â¢ {v.year} â¢ {v.licensePlate}
+                    {v.manufacturer} {v.model} • {v.year} • {v.licensePlate}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -511,29 +511,29 @@ export default function VehiclesPage() {
                 <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
                   <Shield size={16} className="text-teal-600" />
                   <div>
-                    <div className="text-xs text-gray-500">××¡×</div>
+                    <div className="text-xs text-gray-500">טסט</div>
                     <StatusBadge status={v.testStatus} />
                   </div>
                 </div>
                 <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
                   <FileText size={16} className="text-blue-600" />
                   <div>
-                    <div className="text-xs text-gray-500">×××××</div>
+                    <div className="text-xs text-gray-500">ביטוח</div>
                     <StatusBadge status={v.insuranceStatus} />
                   </div>
                 </div>
                 <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
                   <Gauge size={16} className="text-[#1e3a5f]" />
                   <div>
-                    <div className="text-xs text-gray-500">×§&quot;×</div>
-                    <span className="text-sm font-bold">{v.mileage?.toLocaleString() || 'â'}</span>
+                    <div className="text-xs text-gray-500">ק&quot;מ</div>
+                    <span className="text-sm font-bold">{v.mileage?.toLocaleString() || '—'}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
                   <Fuel size={16} className="text-orange-500" />
                   <div>
-                    <div className="text-xs text-gray-500">×××§</div>
-                    <span className="text-sm font-bold">{v.fuelType || 'â'}</span>
+                    <div className="text-xs text-gray-500">דלק</div>
+                    <span className="text-sm font-bold">{v.fuelType || '—'}</span>
                   </div>
                 </div>
               </div>
@@ -542,15 +542,15 @@ export default function VehiclesPage() {
               {expandedVehicle === v.id && (
                 <div className="mt-4 pt-4 border-t border-gray-100 space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
-                    <div><span className="text-gray-500">×ª××§×£ ××¡×:</span> <span className="font-medium">{v.testExpiryDate ? new Date(v.testExpiryDate).toLocaleDateString('he-IL') : 'â'}</span></div>
-                    <div><span className="text-gray-500">×ª××§×£ ×××××:</span> <span className="font-medium">{v.insuranceExpiry ? new Date(v.insuranceExpiry).toLocaleDateString('he-IL') : 'â'}</span></div>
-                    <div><span className="text-gray-500">×¦××¢:</span> <span className="font-medium">{v.color || 'â'}</span></div>
-                    <div><span className="text-gray-500">××××§××ª:</span> <span className="font-medium">{v._count?.inspections || 0} ××××§××ª</span></div>
+                    <div><span className="text-gray-500">תוקף טסט:</span> <span className="font-medium">{v.testExpiryDate ? new Date(v.testExpiryDate).toLocaleDateString('he-IL') : '—'}</span></div>
+                    <div><span className="text-gray-500">תוקף ביטוח:</span> <span className="font-medium">{v.insuranceExpiry ? new Date(v.insuranceExpiry).toLocaleDateString('he-IL') : '—'}</span></div>
+                    <div><span className="text-gray-500">צבע:</span> <span className="font-medium">{v.color || '—'}</span></div>
+                    <div><span className="text-gray-500">בדיקות:</span> <span className="font-medium">{v._count?.inspections || 0} בדיקות</span></div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-2">
-                    <Button variant="outline" size="sm" icon={<Eye size={14} />} className="flex-1" onClick={() => router.push(`/user/vehicles/${v.id}`)}>×¦×¤× ××××××ª</Button>
-                    <Button variant="outline" size="sm" icon={<Calendar size={14} />} className="flex-1" onClick={() => router.push('/user/book-garage')}>×§××¢ ×ª××¨</Button>
+                    <Button variant="outline" size="sm" icon={<Eye size={14} />} className="flex-1" onClick={() => router.push(`/user/vehicles/${v.id}`)}>צפה בדוחות</Button>
+                    <Button variant="outline" size="sm" icon={<Calendar size={14} />} className="flex-1" onClick={() => router.push('/user/book-garage')}>קבע תור</Button>
                   </div>
                 </div>
               )}
@@ -560,7 +560,7 @@ export default function VehiclesPage() {
       ) : null}
 
       {/* Edit Vehicle Modal */}
-      <Modal isOpen={showEditModal} onClose={() => { setShowEditModal(false); setEditVehicleId(null); resetForm(); }} title="×¢×¨×××ª ×¨××" size="lg">
+      <Modal isOpen={showEditModal} onClose={() => { setShowEditModal(false); setEditVehicleId(null); resetForm(); }} title="עריכת רכב" size="lg">
         <div className="space-y-4">
           {/* License Scan */}
           <LicenseScanButton onScanResult={handleScanResult} />
@@ -574,61 +574,61 @@ export default function VehiclesPage() {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <Input label="××× ××" value={formData.nickname}
+            <Input label="כינוי" value={formData.nickname}
               onChange={e => setFormData({ ...formData, nickname: e.target.value })} />
-            <Input label="××¡×¤×¨ ×¨××©××" value={formData.licensePlate} disabled />
+            <Input label="מספר רישוי" value={formData.licensePlate} disabled />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-            <Input label="××¦×¨×" value={formData.manufacturer}
+            <Input label="יצרן" value={formData.manufacturer}
               onChange={e => setFormData({ ...formData, manufacturer: e.target.value })} />
-            <Input label="×××" value={formData.model}
+            <Input label="דגם" value={formData.model}
               onChange={e => setFormData({ ...formData, model: e.target.value })} />
-            <Input label="×©× ×ª ×××¦××¨" type="number" value={formData.year}
+            <Input label="שנת ייצור" type="number" value={formData.year}
               onChange={e => setFormData({ ...formData, year: e.target.value })} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <Input label="×ª××§×£ ××¡×" type="date" value={formData.testExpiryDate}
+            <Input label="תוקף טסט" type="date" value={formData.testExpiryDate}
               onChange={e => setFormData({ ...formData, testExpiryDate: e.target.value })} />
-            <Input label="×ª××§×£ ×××××" type="date" value={formData.insuranceExpiry}
+            <Input label="תוקף ביטוח" type="date" value={formData.insuranceExpiry}
               onChange={e => setFormData({ ...formData, insuranceExpiry: e.target.value })} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-            <Input label="×§×´×" type="number" value={formData.mileage}
+            <Input label="ק״מ" type="number" value={formData.mileage}
               onChange={e => setFormData({ ...formData, mileage: e.target.value })} />
-            <Input label="×¡×× ×××§" value={formData.fuelType}
+            <Input label="סוג דלק" value={formData.fuelType}
               onChange={e => setFormData({ ...formData, fuelType: e.target.value })} />
-            <Input label="×¦××¢" value={formData.color}
+            <Input label="צבע" value={formData.color}
               onChange={e => setFormData({ ...formData, color: e.target.value })} />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button variant="ghost" onClick={() => { setShowEditModal(false); resetForm(); }} className="w-full sm:w-auto">×××××</Button>
-            <Button loading={saving} onClick={handleEditVehicle} className="w-full sm:w-auto">×©×××¨ ×©×× ××××</Button>
+            <Button variant="ghost" onClick={() => { setShowEditModal(false); resetForm(); }} className="w-full sm:w-auto">ביטול</Button>
+            <Button loading={saving} onClick={handleEditVehicle} className="w-full sm:w-auto">שמור שינויים</Button>
           </div>
         </div>
       </Modal>
 
       {/* Add Vehicle Modal */}
-      <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)} title="×××¡×¤×ª ×¨×× ×××©" size="lg">
+      <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)} title="הוספת רכב חדש" size="lg">
         <div className="space-y-4">
           {/* MOT Lookup Section */}
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <Search size={16} className="text-blue-600" />
-              <h4 className="font-bold text-blue-800 text-sm">×××¤××© ××××××× ×××©×¨× ××ª××××¨×</h4>
+              <h4 className="font-bold text-blue-800 text-sm">חיפוש אוטומטי ממשרד התחבורה</h4>
             </div>
             <div className="flex gap-2">
               <div className="flex-1">
-                <Input placeholder="××× ×¡ ××¡×¤×¨ ×¨××©××..." value={formData.licensePlate}
+                <Input placeholder="הכנס מספר רישוי..." value={formData.licensePlate}
                   onChange={e => setFormData({ ...formData, licensePlate: e.target.value })} />
               </div>
               <Button variant="primary" size="md" loading={lookingUp} onClick={handleLookup}
                 icon={<Search size={16} />}>
-                ××¤×©
+                חפש
               </Button>
             </div>
             {lookupMessage && (
-              <p className={`text-sm mt-2 ${lookupMessage.includes('×× ×ª×× ×× × ××¢× ×') ? 'text-green-600' : 'text-amber-600'}`}>
+              <p className={`text-sm mt-2 ${lookupMessage.includes('הנתונים נטענו') ? 'text-green-600' : 'text-amber-600'}`}>
                 {lookupMessage}
               </p>
             )}
@@ -646,35 +646,35 @@ export default function VehiclesPage() {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <Input label="××× ××" placeholder="×××©×: ×¡×¤××¨××' ××× ×" value={formData.nickname}
+            <Input label="כינוי" placeholder="למשל: ספורטז' לבנה" value={formData.nickname}
               onChange={e => setFormData({ ...formData, nickname: e.target.value })} />
-            <Input label="××¡×¤×¨ ×¨××©××" placeholder="1234567" value={formData.licensePlate}
+            <Input label="מספר רישוי" placeholder="1234567" value={formData.licensePlate}
               onChange={e => setFormData({ ...formData, licensePlate: e.target.value })} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-            <Input label="××¦×¨×" placeholder="KIA" value={formData.manufacturer}
+            <Input label="יצרן" placeholder="KIA" value={formData.manufacturer}
               onChange={e => setFormData({ ...formData, manufacturer: e.target.value })} />
-            <Input label="×××" placeholder="SPORTAGE" value={formData.model}
+            <Input label="דגם" placeholder="SPORTAGE" value={formData.model}
               onChange={e => setFormData({ ...formData, model: e.target.value })} />
-            <Input label="×©× ×ª ×××¦××¨" placeholder="2020" type="number" value={formData.year}
+            <Input label="שנת ייצור" placeholder="2020" type="number" value={formData.year}
               onChange={e => setFormData({ ...formData, year: e.target.value })} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <Input label="×ª××§×£ ××¡×" type="date" value={formData.testExpiryDate}
+            <Input label="תוקף טסט" type="date" value={formData.testExpiryDate}
               onChange={e => setFormData({ ...formData, testExpiryDate: e.target.value })} />
-            <Input label="×ª××§×£ ×××××" type="date" value={formData.insuranceExpiry}
+            <Input label="תוקף ביטוח" type="date" value={formData.insuranceExpiry}
               onChange={e => setFormData({ ...formData, insuranceExpiry: e.target.value })} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <Input label="×§×´×" placeholder="45000" type="number" value={formData.mileage}
+            <Input label="ק״מ" placeholder="45000" type="number" value={formData.mileage}
               onChange={e => setFormData({ ...formData, mileage: e.target.value })} />
-            <Input label="×¡×× ×××§" placeholder="×× ××× / ×××× / ××©×××" value={formData.fuelType}
+            <Input label="סוג דלק" placeholder="בנזין / דיזל / חשמלי" value={formData.fuelType}
               onChange={e => setFormData({ ...formData, fuelType: e.target.value })} />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button variant="ghost" onClick={() => setShowAddModal(false)} className="w-full sm:w-auto">×××××</Button>
-            <Button icon={<Plus size={16} />} loading={saving} onClick={handleAddVehicle} className="w-full sm:w-auto">×××¡×£ ×¨××</Button>
+            <Button variant="ghost" onClick={() => setShowAddModal(false)} className="w-full sm:w-auto">ביטול</Button>
+            <Button icon={<Plus size={16} />} loading={saving} onClick={handleAddVehicle} className="w-full sm:w-auto">הוסף רכב</Button>
           </div>
         </div>
       </Modal>
