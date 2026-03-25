@@ -48,7 +48,7 @@ export function getAuthPayload(req: NextRequest): JwtPayload | null {
 export function requireAuth(req: NextRequest): JwtPayload {
   const payload = getAuthPayload(req);
   if (!payload) {
-    throw new AuthError('Unauthorized', 401);
+    throw new AuthError('פג תוקף ההתחברות. יש להתחבר מחדש.', 401);
   }
   return payload;
 }
@@ -56,7 +56,7 @@ export function requireAuth(req: NextRequest): JwtPayload {
 export function requireAdmin(req: NextRequest): JwtPayload {
   const payload = requireAuth(req);
   if (payload.role !== 'admin') {
-    throw new AuthError('Forbidden', 403);
+    throw new AuthError('אין לך הרשאה לבצע פעולה זו', 403);
   }
   return payload;
 }
@@ -64,7 +64,7 @@ export function requireAdmin(req: NextRequest): JwtPayload {
 export function requireGarageOwner(req: NextRequest): JwtPayload {
   const payload = requireAuth(req);
   if (payload.role !== 'garage_owner' && payload.role !== 'admin') {
-    throw new AuthError('Forbidden', 403);
+    throw new AuthError('אין לך הרשאה לבצע פעולה זו', 403);
   }
   return payload;
 }
@@ -80,7 +80,7 @@ export function requireOwnership(
 ): void {
   if (userIdFromToken !== resourceUserId) {
     throw new AuthError(
-      `You do not have permission to access this ${resourceType}`,
+      'אין לך הרשאה לגשת למשאב זה',
       403
     );
   }
