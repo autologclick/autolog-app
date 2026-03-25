@@ -30,11 +30,20 @@ export const metadata: Metadata = {
     siteName: 'AutoLog',
     title: 'AutoLog - ניהול רכבים חכם ויעיל',
     description: 'מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'AutoLog - Smart Vehicle Management',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'AutoLog - ניהול רכבים חכם',
     description: 'נהל את הרכב שלך בצורה חכמה - תזכורות, מסמכים, מוסכים ועוד',
+    images: ['/opengraph-image'],
   },
   robots: {
     index: true,
