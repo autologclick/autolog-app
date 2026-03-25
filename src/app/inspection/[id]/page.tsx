@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import {
   Shield, Car, Wrench, Droplets, Gauge, Lightbulb, Eye, PenLine,
-  Check, AlertTriangle, X, ChevronDown, ChevronUp, Share2, Download,
+  Check, AlertTriangle, X, ChevronDown, ChevronUp, Share2, Download, Lock,
   Phone, MapPin, Calendar, Clock, Camera, CircleDot, Settings,
   Wind, Zap, ArrowRight, FileText, Star, MessageCircle, Loader2
 } from 'lucide-react';
@@ -242,6 +242,301 @@ export default function InspectionReportPage() {
   const [error, setError] = useState('');
   const [aiAnalysis, setAiAnalysis] = useState<any>(null);
   const [aiLoading, setAiLoading] = useState(false);
+
+  // Signature gate state
+  const [signName, setSignName] = useState('');
+  const [signId, setSignId] = useState('');
+  const [signatureData, setSignatureData] = useState('');
+  const [signing, setSigning] = useState(false);
+  const [signError, setSignError] = useState('');
+  const signCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+
+  // Canvas drawing handlers
+  const initCanvas = useCallback(() => {
+    const canvas = signCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+  }, []);
+
+  const getPos = (e: React.TouchEvent | React.MouseEvent) => {
+    const canvas = signCanvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    if ('touches' in e) {
+      return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+    }
+    return { x: (e as React.MouseEvent).clientX - rect.left, y: (e as React.MouseEvent).clientY - rect.top };
+  };
+
+  const startDraw = (e: React.TouchEvent | React.MouseEvent) => {
+    e.preventDefault();
+    const canvas = signCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    setIsDrawing(true);
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  };
+
+  const drawMove = (e: React.TouchEvent | React.MouseEvent) => {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const canvas = signCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  };
+
+  const stopDraw = () => {
+    setIsDrawing(false);
+    const canvas = signCanvasRef.current;
+    if (canvas) {
+      setSignatureData(canvas.toDataURL('image/png'));
+    }
+  };
+
+  const clearSign = () => {
+    setSignatureData('');
+    initCanvas();
+  };
+
+  const handleSign = async () => {
+    setSignError('');
+    if (!signName || signName.length < 2) {
+      setSignError('נא להזין שם מלא');
+      return;
+    }
+    if (!signId || !/^\d{5,9}$/.test(signId)) {
+      setSignError('\u05E0\u05D0 \u05DC\u05D4\u05D6\u05D9\u05DF \u05DE\u05E1\u05E4\u05E8 \u05EA"\u05D6 \u05EA\u05E7\u05D9\u05DF (5-9 \u05E1\u05E4\u05E8\u05D5\u05EA)');
+      return;
+    }
+    if (!signatureData || signatureData.length < 100) {
+      setSignError('נא לחתום בשדה החתימה');
+      return;
+    }
+    setSigning(true);
+    try {
+      const res = await fetch(`/api/inspections/${params.id}/sign`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: signName,
+          customerIdNumber: signId,
+          customerSignature: signatureData,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setSignError(data.error || 'שגיאה בחתימה');
+        return;
+      }
+      // Reload inspection to show the full report
+      const freshRes = await fetch(`/api/inspections/${params.id}`);
+      if (freshRes.ok) {
+        const freshData = await freshRes.json();
+        setInspection(freshData.inspection);
+      }
+    } catch {
+      setSignError('שגיאה בחתימה, נסה שוב');
+    } finally {
+      setSigning(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchInspection = async () => {
+      try {
+        const res = await fetch(`/api/inspections/${params.id}`);
+        if (!res.ok) {
+          const data = await res.json();
+          setError(data.error || 'שגיאה בטעינת הבדיקה');
+          return;
+        }
+        const data = await res.json();
+        setInspection(data.inspection);
+      } catch {
+        setError('שגיאה בטעינת הבדיקה');
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (params.id) fetchInspection();
+  }, [params.id]);
+
+  // Fetch AI analysis when inspection loads
+  useEffect(() => {
+    if (!inspection) return;
+    setAiLoading(true);
+    fetch(`/api/ai/inspection-analysis?inspectionId=${inspection.id}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.analysis) setAiAnalysis(data.analysis);
+        setAiLoading(false);
+      })
+      .catch(() => setAiLoading(false));
+  }, [inspection?.id]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="animate-spin text-teal-600" size={40} />
+      </div>
+    );
+  }
+
+  if (error || !inspection) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <Shield size={48} className="text-gray-300" />
+        <p className="text-gray-500 text-lg">{error || 'הבדיקה לא נמצאה'}</p>
+        <Button variant="outline" onClick={() => router.back()}>חזור</Button>
+      </div>
+    );
+  }
+
+  // ====== SIGNATURE GATE ======
+  if (inspection.status === 'awaiting_signature') {
+    const gateScore = inspection.overallScore ?? 0;
+    const gateVehicle = inspection.vehicle;
+    const gateGarage = inspection.garage;
+    return (
+      <div className="space-y-4 pt-12 lg:pt-0 pb-20 max-w-lg mx-auto px-3" dir="rtl">
+        {/* Blurred preview header */}
+        <div className={`rounded-2xl bg-gradient-to-br ${scoreBg(gateScore)} text-white p-6 text-center`}>
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <LogoIcon className="h-6 w-6 text-white" />
+            <span className="text-white/80 text-sm">AutoLog</span>
+          </div>
+          <div className="text-5xl font-bold mb-2">{gateScore}</div>
+          <div className="text-white/80">ציון כללי</div>
+        </div>
+
+        {/* Vehicle info */}
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <Car size={20} className="text-teal-600" />
+            <div>
+              <div className="font-medium">{gateVehicle.nickname || `${gateVehicle.manufacturer || ''} ${gateVehicle.model}`.trim()}</div>
+              <div className="text-sm text-gray-500">{gateVehicle.licensePlate}</div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Garage info */}
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <Wrench size={20} className="text-teal-600" />
+            <div>
+              <div className="font-medium">{gateGarage.name}</div>
+              <div className="text-sm text-gray-500">{gateGarage.city}</div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Lock message */}
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+          <Lock size={32} className="mx-auto text-amber-500 mb-2" />
+          <h3 className="font-bold text-lg mb-1">הדוח ממתין לחתימתך</h3>
+          <p className="text-sm text-gray-600">יש למלא פרטים ולחתום כדי לצפות בדוח המלא</p>
+        </div>
+
+        {/* Signature form */}
+        <Card className="p-4 space-y-4">
+          <CardTitle className="text-lg">חתימה דיגיטלית</CardTitle>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">שם מלא</label>
+            <input
+              type="text"
+              value={signName}
+              onChange={(e) => setSignName(e.target.value)}
+              placeholder="הזן שם מלא"
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">{"\u05DE\u05E1\u05E4\u05E8 \u05EA\"\u05D6"}</label>
+            <input
+              type="text"
+              value={signId}
+              onChange={(e) => setSignId(e.target.value)}
+              placeholder="הזן מספר תעודת זהות"
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              inputMode="numeric"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">חתימה</label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
+              <canvas
+                ref={signCanvasRef}
+                width={350}
+                height={150}
+                className="w-full touch-none bg-white cursor-crosshair"
+                onMouseDown={startDraw}
+                onMouseMove={drawMove}
+                onMouseUp={stopDraw}
+                onMouseLeave={stopDraw}
+                onTouchStart={startDraw}
+                onTouchMove={drawMove}
+                onTouchEnd={stopDraw}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={clearSign}
+              className="text-sm text-gray-500 hover:text-gray-700"
+            >
+              נקה חתימה
+            </button>
+          </div>
+
+          {signError && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm text-center">
+              {signError}
+            </div>
+          )}
+
+          <Button
+            onClick={handleSign}
+            disabled={signing}
+            className="w-full"
+          >
+            {signing ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="animate-spin" size={18} />
+                שולח...
+              </span>
+            ) : (
+              <span className="flex items-center justify-center gap-2">
+                <PenLine size={18} />
+                חתום וצפה בדוח
+              </span>
+            )}
+          </Button>
+
+          <p className="text-xs text-gray-400 text-center">
+            בלחיצה על &quot;חתום וצפה בדוח&quot; אני מאשר/ת שהפרטים נכונים ומסכים/ה לתנאי השימוש
+          </p>
+        </Card>
+      </div>
+    );
+  }
   const score = inspection.overallScore ?? 0;
   const v = inspection.vehicle;
   const g = inspection.garage;
