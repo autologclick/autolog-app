@@ -17,9 +17,10 @@ export async function GET(req: NextRequest) {
     const { skip, limit } = getPaginationParams(req);
     const url = new URL(req.url);
     const status = url.searchParams.get('status');
+    const validStatuses = ['pending', 'confirmed', 'cancelled', 'completed', 'in_progress'];
 
     let where: any = { userId: payload.userId };
-    if (status && status !== 'all') {
+    if (status && status !== 'all' && validStatuses.includes(status)) {
       where.status = status;
     }
 
@@ -81,7 +82,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!garage || !garage.isActive) {
-      return errorResponse('מוסך לא נמצא או אינו פעיל', 404);
+      return errorResponse('×××¡× ×× × ××¦× ×× ××× × ×¤×¢××', 404);
     }
 
     // Verify vehicle exists and belongs to user
@@ -91,7 +92,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!vehicle || vehicle.userId !== payload.userId) {
-      return errorResponse('רכב לא נמצא', 404);
+      return errorResponse('×¨×× ×× × ××¦×', 404);
     }
 
     // Parse date
@@ -104,12 +105,12 @@ export async function POST(req: NextRequest) {
 
     // Validate date is valid
     if (isNaN(appointmentDate.getTime())) {
-      return errorResponse('תאריך לא תקין', 400);
+      return errorResponse('×ª××¨×× ×× ×ª×§××', 400);
     }
 
     // Check if appointment is in the future
     if (appointmentDate < new Date()) {
-      return errorResponse('לא ניתן להזמין תור בתאריך שעבר', 400);
+      return errorResponse('×× × ××ª× ×××××× ×ª××¨ ××ª××¨×× ×©×¢××¨', 400);
     }
 
     // Create appointment
@@ -167,10 +168,10 @@ export async function POST(req: NextRequest) {
         const timeLabel = time || appointmentDate.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
 
         const serviceTypeHeb: Record<string, string> = {
-          inspection: 'בדיקה',
-          maintenance: 'טיפול',
-          repair: 'תיקון',
-          test_prep: 'הכנה לטסט',
+          inspection: '××××§×',
+          maintenance: '×××¤××',
+          repair: '×ª××§××',
+          test_prep: '××× × ×××¡×',
         };
         const serviceLabel = serviceTypeHeb[serviceType] || serviceType;
 
@@ -178,8 +179,8 @@ export async function POST(req: NextRequest) {
           data: {
             userId: garageWithOwner.ownerId,
             type: 'appointment',
-            title: `תור חדש — ${user?.fullName || 'לקוח'}`,
-            message: `${user?.fullName || 'לקוח'} קבע תור ל${serviceLabel} עבור ${vehicleLabel} בתאריך ${dateLabel} בשעה ${timeLabel}`,
+            title: `×ª××¨ ×××© â ${user?.fullName || '××§××'}`,
+            message: `${user?.fullName || '××§××'} ×§××¢ ×ª××¨ ×${serviceLabel} ×¢×××¨ ${vehicleLabel} ××ª××¨×× ${dateLabel} ××©×¢× ${timeLabel}`,
             link: '/garage/appointments',
           },
         });
@@ -190,7 +191,7 @@ export async function POST(req: NextRequest) {
     }
 
     return jsonResponse(
-      { appointment, message: 'התור נקבע בהצלחה!' },
+      { appointment, message: '××ª××¨ × ×§××¢ ×××¦×××!' },
       201
     );
   } catch (error) {
