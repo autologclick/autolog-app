@@ -9,7 +9,7 @@ import VoiceInput from '@/components/ui/VoiceInput';
 import {
   Shield, Search, Check, AlertTriangle, X, Save, ArrowRight, ArrowLeft,
   Loader2, Camera, Video, Car, Wrench, Droplets, Gauge, Lightbulb,
-  CircleDot, Settings, Wind, Eye, PenLine, ScanLine, Plus, Keyboard, FileText, Info
+  CircleDot, Settings, Wind, Eye, PenLine, ScanLine, Plus, Keyboard, FileText, Info, Send
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -763,6 +763,24 @@ export default function NewInspectionPage() {
         console.error(err);
       }
     } finally { setLoading(false); }
+  };
+
+
+  // Send inspection link to customer for remote signature via WhatsApp
+  const handleSendForSignature = async () => {
+    if (!successId) return;
+    try {
+      // Update status to awaiting_signature
+      await fetch(`/api/inspections/${successId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'awaiting_signature' }),
+      });
+      // Open WhatsApp with inspection link
+      const url = `${window.location.origin}/inspection/${successId}`;
+      const text = `שלום, דוח הבדיקה שלך מוכן. אנא חתום לאישור קבלת הדוח:\n${url}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    } catch {}
   };
 
   const steps = [
@@ -1908,6 +1926,16 @@ export default function NewInspectionPage() {
               <div className="text-3xl font-bold text-teal-600">{overallScore}</div>
               <div className="text-sm text-teal-700">{scoreLabel}</div>
             </div>
+          )}
+          {/* Send for remote signature */}
+          {inspectionType === 'full' && !signatureData && (
+            <button
+              onClick={handleSendForSignature}
+              className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-medium transition mb-2"
+            >
+              <Send size={18} />
+              שלח ללקוח לחתימה בוואצאפ
+            </button>
           )}
           <div className="flex gap-2">
             <Button variant="outline" className="flex-1" onClick={() => { setSuccessModal(false); router.push('/garage/inspections'); }}>
