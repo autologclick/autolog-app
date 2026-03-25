@@ -12,12 +12,24 @@ import Logo from '@/components/ui/Logo';
 const SERVICE_OPTIONS = [
   { id: 'inspection', label: 'בדיקות רכב' },
   { id: 'maintenance', label: 'טיפולים שוטפים' },
-  { id: 'repair', label: 'תיקונים' },
+  { id: 'repair', label: 'תיקונים כלליים' },
   { id: 'test_prep', label: 'הכנה לטסט' },
-  { id: 'tires', label: 'צמיגים' },
+  { id: 'tires', label: 'צמיגים ואיזון' },
   { id: 'bodywork', label: 'פחחות וצבע' },
   { id: 'electrical', label: 'חשמל רכב' },
   { id: 'ac', label: 'מיזוג אוויר' },
+  { id: 'gearbox', label: 'גיר ותיבת הילוכים' },
+  { id: 'alignment', label: 'כיוון גלגלים' },
+  { id: 'brakes', label: 'בלמים' },
+  { id: 'suspension', label: 'מתלים והיגוי' },
+  { id: 'exhaust', label: 'מערכת פליטה' },
+  { id: 'diagnostics', label: 'אבחון ממוחשב' },
+  { id: 'battery', label: 'מצברים וסוללות' },
+  { id: 'oil_fluids', label: 'שמנים ונוזלים' },
+  { id: 'hybrid_ev', label: 'היברידי/חשמלי' },
+  { id: 'glass', label: 'שמשות וזגוגית' },
+  { id: 'locksmith', label: 'מנעולנות רכב' },
+  { id: 'towing', label: 'גרירה וחילוץ' },
 ];
 
 const CITIES = [
@@ -366,14 +378,15 @@ export default function GarageApplyPage() {
                   <Wrench size={14} className="inline ml-1" />
                   שירותים שהמוסך מציע
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 max-h-[280px] overflow-y-auto pr-1">
                   {SERVICE_OPTIONS.map(svc => (
                     <button
                       key={svc.id}
+                      type="button"
                       onClick={() => toggleService(svc.id)}
                       className={`px-3 py-2 rounded-xl text-xs font-medium border transition ${
                         selectedServices.includes(svc.id)
-                          ? 'bg-emerald-50 border-emerald-400 text-emerald-700'
+                          ? 'bg-emerald-50 border-emerald-400 text-emerald-700 shadow-sm'
                           : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
                       }`}
                     >
