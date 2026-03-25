@@ -321,6 +321,27 @@ export default function GarageInspectionsPage() {
 
                   {/* Actions */}
                   <div className="flex gap-1 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                    {(i.status === 'completed' || i.status === 'awaiting_signature') && (
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (i.status !== 'awaiting_signature') {
+                            await fetch(`/api/inspections/${i.id}`, {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ status: 'awaiting_signature' }),
+                            });
+                          }
+                          const signUrl = `${window.location.origin}/inspection/${i.id}`;
+                          const msg = encodeURIComponent(`שלום, דוח הבדיקה שלך מוכן לצפייה וחתימה:\n${signUrl}`);
+                          window.open(`https://wa.me/?text=${msg}`, '_blank');
+                        }}
+                        className="p-2 rounded-lg text-green-500 hover:text-green-700 hover:bg-green-50 transition"
+                        title="שלח לחתימה ב-WhatsApp"
+                      >
+                        <Send size={16} />
+                      </button>
+                    )}
                     <button
                       onClick={() => router.push(`/inspection/${i.id}`)}
                       className="p-2 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition"
