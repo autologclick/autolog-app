@@ -13,11 +13,11 @@ import { Toaster } from 'react-hot-toast';
 export const metadata: Metadata = {
   metadataBase: new URL('https://autolog.click'),
   title: {
-    default: 'AutoLog - × ×××× ×¨×××× ×××',
+    default: 'AutoLog - ניהול רכבים חכם',
     template: '%s | AutoLog',
   },
-  description: '××¢×¨××ª × ×××× ×¨×××× ××§×¦××¢××ª - ××××§××ª, ×××××, ××¡×, ×××¡×××, ×ª××××¨××ª ×××××ª ××¢××. ××¦××¨×¤× ×-2,500+ ××©×ª××©×× ×©×××¨ ×× ×××× ××ª ××¨×× ××¦××¨× ××××.',
-  keywords: ['× ×××× ×¨××××', '××¡×', '××××× ×¨××', '×××¡×', '××××§×ª ×¨××', 'AutoLog', '×ª××××¨××ª ×¨××', 'SOS ×××¨××'],
+  description: 'מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד. הצטרפו ל-2,500+ משתמשים שכבר מנהלים את הרכב בצורה חכמה.',
+  keywords: ['ניהול רכבים', 'טסט', 'ביטוח רכב', 'מוסך', 'בדיקת רכב', 'AutoLog', 'תזכורות רכב', 'SOS חירום'],
   authors: [{ name: 'AutoLog' }],
   creator: 'AutoLog',
   icons: { icon: [{ url: '/favicon-32.png', sizes: '32x32', type: 'image/png' }, { url: '/favicon-16.png', sizes: '16x16', type: 'image/png' }], apple: '/apple-touch-icon.png' },
@@ -37,8 +37,8 @@ export const metadata: Metadata = {
     locale: 'he_IL',
     url: 'https://autolog.click',
     siteName: 'AutoLog',
-    title: 'AutoLog - × ×××× ×¨×××× ××× ×××¢××',
-    description: '××¢×¨××ª × ×××× ×¨×××× ××§×¦××¢××ª - ××××§××ª, ×××××, ××¡×, ×××¡×××, ×ª××××¨××ª ×××××ª ××¢××',
+    title: 'AutoLog - ניהול רכבים חכם ויעיל',
+    description: 'מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד',
     images: [
       {
         url: '/opengraph-image',
@@ -50,8 +50,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AutoLog - × ×××× ×¨×××× ×××',
-    description: '× ×× ××ª ××¨×× ×©×× ××¦××¨× ×××× - ×ª××××¨××ª, ××¡××××, ×××¡××× ××¢××',
+    title: 'AutoLog - ניהול רכבים חכם',
+    description: 'נהל את הרכב שלך בצורה חכמה - תזכורות, מסמכים, מוסכים ועוד',
     images: ['/opengraph-image'],
   },
   robots: {
