@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button';
 import {
   Shield, Calendar, Star, Users, TrendingUp, Clock, FileText, Plus, Building2,
   Loader2, BarChart3, Phone, ChevronLeft, DollarSign, AlertCircle, CheckCircle2,
-  Wrench, User, AlertTriangle, Brain, Zap, Target, Activity
+  Wrench, User, AlertTriangle, Brain, Zap, Target, Activity, PenLine
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -23,6 +23,7 @@ interface DashboardData {
     totalInspections: number;
     revenueThisMonth: number;
     averageScore: number | null;
+    awaitingSignature: number;
   };
   todayAppointments: Array<{
     id: string; time: string; customer: string; phone: string;
@@ -35,14 +36,14 @@ interface DashboardData {
 }
 
 const inspectionTypeLabels: Record<string, string> = {
-  full: 'בדיקה מלאה',
-  rot: 'בדיקת רקב',
-  engine: 'בדיקת מנוע',
-  pre_test: 'הכנה לטסט',
-  periodic: 'טיפול תקופתי',
-  troubleshoot: 'אבחון תקלה',
-  tires: 'בדיקת צמיגים',
-  brakes: 'בדיקת בלמים',
+  full: '××××§× ××××',
+  rot: '××××§×ª ×¨×§×',
+  engine: '××××§×ª ×× ××¢',
+  pre_test: '××× × ×××¡×',
+  periodic: '×××¤×× ×ª×§××¤×ª×',
+  troubleshoot: '××××× ×ª×§××',
+  tires: '××××§×ª ×¦×××××',
+  brakes: '××××§×ª ×××××',
 };
 
 export default function GarageDashboard() {
@@ -59,7 +60,7 @@ export default function GarageDashboard() {
         const d = await res.json();
 
         if (!res.ok) {
-          setError(d.error || 'לא ניתן לטעון את הדשבורד');
+          setError(d.error || '×× × ××ª× ×××¢×× ××ª ×××©×××¨×');
           setLoading(false);
           return;
         }
@@ -67,11 +68,11 @@ export default function GarageDashboard() {
         if (d && d.garage) {
           setData(d);
         } else {
-          setError('נתונים לא שלמים מהשרת');
+          setError('× ×ª×× ×× ×× ×©×××× ×××©×¨×ª');
         }
         setLoading(false);
       } catch (err) {
-        setError('שגיאה בטעינת הדשבורד');
+        setError('×©×××× ×××¢×× ×ª ×××©×××¨×');
         setLoading(false);
       }
     };
@@ -98,16 +99,16 @@ export default function GarageDashboard() {
         <div className="inline-flex items-center justify-center w-16 h-16 bg-red-50 rounded-full mb-4">
           <AlertTriangle size={32} className="text-red-600" />
         </div>
-        <p className="text-gray-700 font-semibold mb-2 text-lg">{error || 'לא ניתן לטעון את הדשבורד'}</p>
+        <p className="text-gray-700 font-semibold mb-2 text-lg">{error || '×× × ××ª× ×××¢×× ××ª ×××©×××¨×'}</p>
         <p className="text-gray-500 text-sm mb-6">
-          {error?.includes('מחובר') ? 'יתכן שאינך מחובר כבעל מוסך' : 'אנא נסה שוב מאוחר יותר'}
+          {error?.includes('×××××¨') ? '××ª×× ×©××× × ×××××¨ ×××¢× ×××¡×' : '×× × × ×¡× ×©×× ×××××¨ ×××ª×¨'}
         </p>
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
           <Button variant="outline" onClick={() => window.location.reload()}>
-            נסה שוב
+            × ×¡× ×©××
           </Button>
           <Button onClick={() => router.push('/auth/login')}>
-            התחבר מחדש
+            ××ª×××¨ ××××©
           </Button>
         </div>
       </div>
@@ -127,14 +128,14 @@ export default function GarageDashboard() {
                 <Building2 size={24} className="text-[#1e3a5f]" />
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold" style={{color: '#1e3a5f'}}>{garage?.name || 'מוסך'}</h1>
-                <p className="text-sm text-gray-600">{garage?.city} • <span style={{color: '#0d9488'}} className="font-medium">{{ active: 'פעיל', inactive: 'לא פעיל', pending: 'ממתין', suspended: 'מושעה' }[garage?.status || ''] || garage?.status}</span></p>
+                <h1 className="text-2xl sm:text-3xl font-bold" style={{color: '#1e3a5f'}}>{garage?.name || '×××¡×'}</h1>
+                <p className="text-sm text-gray-600">{garage?.city} â¢ <span style={{color: '#0d9488'}} className="font-medium">{{ active: '×¤×¢××', inactive: '×× ×¤×¢××', pending: '×××ª××', suspended: '×××©×¢×' }[garage?.status || ''] || garage?.status}</span></p>
               </div>
             </div>
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button icon={<Plus size={16} />} onClick={() => router.push('/garage/new-inspection')} className="flex-1 sm:flex-none" style={{backgroundColor: '#0d9488'}}>
-              בדיקה חדשה
+              ××××§× ×××©×
             </Button>
           </div>
         </div>
@@ -147,10 +148,10 @@ export default function GarageDashboard() {
             </div>
             <div className="flex-1 min-w-0 text-right">
               <h3 className="font-semibold text-[#1e3a5f] text-sm sm:text-base">
-                {stats.pendingAppointments} תורים ממתינים לאישור
+                {stats.pendingAppointments} ×ª××¨×× ×××ª×× ×× ××××©××¨
               </h3>
               <p className="text-gray-600 text-xs sm:text-sm mt-1">
-                בדוק ואשר תורים חדשים שדורשים אישור
+                ××××§ ×××©×¨ ×ª××¨×× ×××©×× ×©×××¨×©×× ×××©××¨
               </p>
             </div>
             <button
@@ -158,14 +159,39 @@ export default function GarageDashboard() {
               className="text-white rounded-lg px-4 py-2 text-xs sm:text-sm font-medium flex-shrink-0 transition whitespace-nowrap hover:shadow-md"
               style={{backgroundColor: '#0d9488'}}
             >
-              אשר תורים
+              ××©×¨ ×ª××¨××
+            </button>
+          </div>
+        )}
+
+
+
+        {/* Awaiting Signature Banner */}
+        {stats.awaitingSignature > 0 && (
+          <div className="bg-white border-r-4 border-r-amber-500 rounded-xl p-4 flex items-start gap-3 shadow-sm hover:shadow-md transition">
+            <div className="rounded-lg p-2 flex-shrink-0 bg-amber-50">
+              <PenLine size={20} className="text-amber-600" />
+            </div>
+            <div className="flex-1 min-w-0 text-right">
+              <h3 className="font-semibold text-[#1e3a5f] text-sm sm:text-base">
+                {stats.awaitingSignature} {stats.awaitingSignature === 1 ? 'בדיקה ממתינה' : 'בדיקות ממתינות'} לחתימת לקוח
+              </h3>
+              <p className="text-gray-600 text-xs sm:text-sm mt-1">
+                הלקוחות קיבלו התראה וצריכים לחתום כדי לצפות בדוח
+              </p>
+            </div>
+            <button
+              onClick={() => router.push('/garage/inspections')}
+              className="bg-amber-500 text-white rounded-lg px-4 py-2 text-xs sm:text-sm font-medium flex-shrink-0 transition whitespace-nowrap hover:bg-amber-600 hover:shadow-md"
+            >
+              צפה בבדיקות
             </button>
           </div>
         )}
 
         {/* Summary Cards - 4 Quick Stats in Hebrew */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* תורים היום - Today's Appointments */}
+          {/* ×ª××¨×× ×××× - Today's Appointments */}
           <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition border border-gray-100">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 rounded-lg" style={{backgroundColor: '#f0fdfa'}}>
@@ -173,10 +199,10 @@ export default function GarageDashboard() {
               </div>
             </div>
             <div className="text-3xl font-bold" style={{color: '#1e3a5f'}}>{todayAppointments.length}</div>
-            <p className="text-gray-600 text-sm mt-2">תורים היום</p>
+            <p className="text-gray-600 text-sm mt-2">×ª××¨×× ××××</p>
           </div>
 
-          {/* בדיקות החודש - This Month's Inspections */}
+          {/* ××××§××ª ×××××© - This Month's Inspections */}
           <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition border border-gray-100">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 rounded-lg" style={{backgroundColor: '#f0fdfa'}}>
@@ -191,10 +217,10 @@ export default function GarageDashboard() {
                 </span>
               )}
             </div>
-            <p className="text-gray-600 text-sm mt-2">בדיקות החודש</p>
+            <p className="text-gray-600 text-sm mt-2">××××§××ª ×××××©</p>
           </div>
 
-          {/* לקוחות פעילים - Active Customers */}
+          {/* ××§××××ª ×¤×¢×××× - Active Customers */}
           <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition border border-gray-100">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 rounded-lg" style={{backgroundColor: '#f0fdfa'}}>
@@ -202,18 +228,18 @@ export default function GarageDashboard() {
               </div>
             </div>
             <div className="text-3xl font-bold" style={{color: '#1e3a5f'}}>{stats.totalReviews}</div>
-            <p className="text-gray-600 text-sm mt-2">לקוחות פעילים</p>
+            <p className="text-gray-600 text-sm mt-2">××§××××ª ×¤×¢××××</p>
           </div>
 
-          {/* ביקורות - Reviews */}
+          {/* ×××§××¨××ª - Reviews */}
           <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition border border-gray-100">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 rounded-lg" style={{backgroundColor: '#f0fdfa'}}>
                 <Star size={20} style={{color: '#0d9488'}} />
               </div>
             </div>
-            <div className="text-3xl font-bold" style={{color: '#1e3a5f'}}>{stats.averageRating !== null ? stats.averageRating : '—'}</div>
-            <p className="text-gray-600 text-sm mt-2">ביקורות</p>
+            <div className="text-3xl font-bold" style={{color: '#1e3a5f'}}>{stats.averageRating !== null ? stats.averageRating : 'â'}</div>
+            <p className="text-gray-600 text-sm mt-2">×××§××¨××ª</p>
           </div>
         </div>
 
@@ -223,25 +249,25 @@ export default function GarageDashboard() {
             <div className="w-8 h-8 bg-[#0d9488] bg-opacity-10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-[#0d9488]" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI למוסך</h2>
+            <h2 className="text-lg font-bold text-[#1e3a5f]">×ª××× ××ª AI ××××¡×</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {/* Trend Insight */}
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={14} className={stats.trend >= 0 ? 'text-green-600' : 'text-red-500'} />
-                <span className="text-xs font-bold text-gray-700">מגמת בדיקות</span>
+                <span className="text-xs font-bold text-gray-700">××××ª ××××§××ª</span>
               </div>
               <p className="text-xs text-gray-600">
                 {stats.trend > 10
-                  ? `📈 עלייה משמעותית של ${stats.trend}% בבדיקות החודש. המומנטום חיובי — שקלו להוסיף שעות פעילות.`
+                  ? `ð ×¢×××× ××©××¢××ª××ª ×©× ${stats.trend}% ×××××§××ª ×××××©. ××××× ××× ××××× â ×©×§×× ××××¡××£ ×©×¢××ª ×¤×¢××××ª.`
                   : stats.trend > 0
-                  ? `📊 עלייה קלה של ${stats.trend}% בבדיקות. שמרו על הקצב הנוכחי.`
+                  ? `ð ×¢×××× ×§×× ×©× ${stats.trend}% ×××××§××ª. ×©××¨× ×¢× ××§×¦× ×× ××××.`
                   : stats.trend < -10
-                  ? `📉 ירידה של ${Math.abs(stats.trend)}% בבדיקות. מומלץ לשלוח תזכורות ללקוחות קיימים.`
+                  ? `ð ××¨××× ×©× ${Math.abs(stats.trend)}% ×××××§××ª. ×××××¥ ××©××× ×ª××××¨××ª ×××§××××ª ×§×××××.`
                   : stats.inspectionsThisMonth === 0
-                  ? '🔍 אין בדיקות החודש. שלחו הודעות ללקוחות לגבי טסט שנתי קרוב.'
-                  : '📊 פעילות יציבה. ניתן לחזק קשרי לקוחות לצמיחה עתידית.'}
+                  ? 'ð ××× ××××§××ª ×××××©. ×©××× ××××¢××ª ×××§××××ª ×××× ××¡× ×©× ×ª× ×§×¨××.'
+                  : 'ð ×¤×¢××××ª ××¦×××. × ××ª× ××××§ ×§×©×¨× ××§××××ª ××¦×××× ×¢×ª××××ª.'}
               </p>
             </div>
 
@@ -249,16 +275,16 @@ export default function GarageDashboard() {
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <Calendar size={14} className="text-blue-600" />
-                <span className="text-xs font-bold text-gray-700">עומס תורים</span>
+                <span className="text-xs font-bold text-gray-700">×¢×××¡ ×ª××¨××</span>
               </div>
               <p className="text-xs text-gray-600">
                 {todayAppointments.length >= 5
-                  ? `⚡ יום עמוס! ${todayAppointments.length} תורים להיום. ודאו שצוות המוסך מוכן.`
+                  ? `â¡ ××× ×¢×××¡! ${todayAppointments.length} ×ª××¨×× ×××××. ×××× ×©×¦×××ª ××××¡× ××××.`
                   : todayAppointments.length >= 2
-                  ? `📅 ${todayAppointments.length} תורים להיום — יום פעיל. יש מקום לתור אחד נוסף.`
+                  ? `ð ${todayAppointments.length} ×ª××¨×× ××××× â ××× ×¤×¢××. ××© ××§×× ××ª××¨ ××× × ××¡×£.`
                   : todayAppointments.length === 1
-                  ? '📅 תור אחד להיום. ניתן לקבל לקוחות ללא תור.'
-                  : '🕐 אין תורים להיום. הזדמנות טובה לטיפול בפניות חדשות ושיווק.'}
+                  ? 'ð ×ª××¨ ××× ×××××. × ××ª× ××§×× ××§××××ª ××× ×ª××¨.'
+                  : 'ð ××× ×ª××¨×× ×××××. ××××× ××ª ×××× ××××¤×× ××¤× ×××ª ×××©××ª ××©××××§.'}
               </p>
             </div>
 
@@ -266,18 +292,18 @@ export default function GarageDashboard() {
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <Star size={14} className="text-amber-500" />
-                <span className="text-xs font-bold text-gray-700">דירוג ואיכות</span>
+                <span className="text-xs font-bold text-gray-700">×××¨×× ××××××ª</span>
               </div>
               <p className="text-xs text-gray-600">
                 {stats.averageRating !== null && stats.averageRating >= 4.5
-                  ? `⭐ דירוג מצוין (${stats.averageRating})! לקוחות מרוצים מאוד. שקלו לבקש ביקורות נוספות.`
+                  ? `â­ ×××¨×× ××¦××× (${stats.averageRating})! ××§××××ª ××¨××¦×× ××××. ×©×§×× ×××§×© ×××§××¨××ª × ××¡×¤××ª.`
                   : stats.averageRating !== null && stats.averageRating >= 3.5
-                  ? `⭐ דירוג טוב (${stats.averageRating}). בדקו ביקורות אחרונות לזיהוי נקודות לשיפור.`
+                  ? `â­ ×××¨×× ××× (${stats.averageRating}). ×××§× ×××§××¨××ª ×××¨×× ××ª ×××××× × ×§××××ª ××©××¤××¨.`
                   : stats.averageRating !== null && stats.averageRating > 0
-                  ? `⚠️ דירוג ${stats.averageRating} — יש מקום לשיפור. מומלץ לקרוא ביקורות ולפעול לשיפור השירות.`
+                  ? `â ï¸ ×××¨×× ${stats.averageRating} â ××© ××§×× ××©××¤××¨. ×××××¥ ××§×¨×× ×××§××¨××ª ×××¤×¢×× ××©××¤××¨ ××©××¨××ª.`
                   : stats.averageScore !== null && stats.averageScore > 0
-                  ? `🔧 ציון בדיקה ממוצע: ${stats.averageScore}. שמרו על רמת בדיקה גבוהה לבניית אמון.`
-                  : '📋 אין מספיק נתונים לדירוג. עודדו לקוחות להשאיר ביקורת.'}
+                  ? `ð§ ×¦××× ××××§× ××××¦×¢: ${stats.averageScore}. ×©××¨× ×¢× ×¨××ª ××××§× ××××× ××× ×××ª ××××.`
+                  : 'ð ××× ××¡×¤××§ × ×ª×× ×× ××××¨××. ×¢×××× ××§××××ª ×××©×××¨ ×××§××¨×ª.'}
               </p>
             </div>
           </div>
@@ -287,11 +313,11 @@ export default function GarageDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center justify-between mb-6">
             <button onClick={() => router.push('/garage/appointments')} className="text-sm font-semibold flex items-center gap-1 transition hover:opacity-70" style={{color: '#0d9488'}}>
-              כל התורים <ChevronLeft size={14} />
+              ×× ××ª××¨×× <ChevronLeft size={14} />
             </button>
             <div className="flex items-center gap-2" style={{color: '#1e3a5f'}}>
               <Calendar size={18} />
-              <h2 className="font-bold">תורים להיום</h2>
+              <h2 className="font-bold">×ª××¨×× ×××××</h2>
             </div>
           </div>
           <div className="space-y-3">
@@ -302,7 +328,7 @@ export default function GarageDashboard() {
                 </div>
                 <div className="flex-1 min-w-0 text-right">
                   <div className="font-semibold text-[#1e3a5f] text-sm sm:text-base">{a.customer}</div>
-                  <div className="text-xs sm:text-sm text-gray-600 mt-1">{a.time} • {a.vehicle}</div>
+                  <div className="text-xs sm:text-sm text-gray-600 mt-1">{a.time} â¢ {a.vehicle}</div>
                   <div className="text-xs text-gray-500 mt-1">{a.service}</div>
                 </div>
                 <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
@@ -317,8 +343,8 @@ export default function GarageDashboard() {
             )) : (
               <div className="text-center py-12">
                 <Calendar size={40} className="mx-auto mb-3 text-gray-200" />
-                <p className="text-gray-500 font-medium">אין תורים להיום</p>
-                <p className="text-gray-400 text-sm mt-1">מקום פנוי לתורים חדשים</p>
+                <p className="text-gray-500 font-medium">××× ×ª××¨×× ×××××</p>
+                <p className="text-gray-400 text-sm mt-1">××§×× ×¤× ×× ××ª××¨×× ×××©××</p>
               </div>
             )}
           </div>
@@ -328,11 +354,11 @@ export default function GarageDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center justify-between mb-6">
             <button onClick={() => router.push('/garage/inspections')} className="text-sm font-semibold flex items-center gap-1 transition hover:opacity-70" style={{color: '#0d9488'}}>
-              כל הבדיקות <ChevronLeft size={14} />
+              ×× ×××××§××ª <ChevronLeft size={14} />
             </button>
             <div className="flex items-center gap-2" style={{color: '#1e3a5f'}}>
               <Shield size={18} />
-              <h2 className="font-bold">5 בדיקות אחרונות</h2>
+              <h2 className="font-bold">5 ××××§××ª ×××¨×× ××ª</h2>
             </div>
           </div>
           {recentInspections.length > 0 ? (
@@ -349,12 +375,12 @@ export default function GarageDashboard() {
                           i.score >= 60 ? 'bg-amber-100 text-amber-700' :
                           'bg-red-100 text-red-700'
                         }`}>{i.score}</span>
-                      ) : <span className="text-gray-300 text-lg">—</span>}
+                      ) : <span className="text-gray-300 text-lg">â</span>}
                       <StatusBadge status={i.status} />
                     </div>
                     <div className="text-right min-w-0">
                       <div className="font-medium text-xs truncate text-[#1e3a5f]">{i.vehicle}</div>
-                      <div className="text-[10px] text-gray-500">{i.date} • {inspectionTypeLabels[i.type] || i.type}</div>
+                      <div className="text-[10px] text-gray-500">{i.date} â¢ {inspectionTypeLabels[i.type] || i.type}</div>
                     </div>
                   </div>
                 ))}
@@ -364,12 +390,12 @@ export default function GarageDashboard() {
                 <table className="w-full text-xs sm:text-sm">
                   <thead>
                     <tr className="border-b-2" style={{borderBottomColor: '#e5e7eb'}}>
-                      <th className="text-right py-3 px-3 font-semibold text-gray-600 text-xs">ציון</th>
-                      <th className="text-right py-3 px-3 font-semibold text-gray-600 text-xs">רכב</th>
-                      <th className="text-right py-3 px-3 font-semibold text-gray-600 text-xs">לקוח</th>
-                      <th className="text-right py-3 px-3 font-semibold text-gray-600 text-xs">סוג</th>
-                      <th className="text-right py-3 px-3 font-semibold text-gray-600 text-xs">תאריך</th>
-                      <th className="text-right py-3 px-3 font-semibold text-gray-600 text-xs">סטטוס</th>
+                      <th className="text-right py-3 px-3 font-semibold text-gray-600 text-xs">×¦×××</th>
+                      <th className="text-right py-3 px-3 font-semibold text-gray-600 text-xs">×¨××</th>
+                      <th className="text-right py-3 px-3 font-semibold text-gray-600 text-xs">××§××</th>
+                      <th className="text-right py-3 px-3 font-semibold text-gray-600 text-xs">×¡××</th>
+                      <th className="text-right py-3 px-3 font-semibold text-gray-600 text-xs">×ª××¨××</th>
+                      <th className="text-right py-3 px-3 font-semibold text-gray-600 text-xs">×¡××××¡</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -385,7 +411,7 @@ export default function GarageDashboard() {
                               {i.score}
                             </span>
                           ) : (
-                            <span className="text-gray-300">—</span>
+                            <span className="text-gray-300">â</span>
                           )}
                         </td>
                         <td className="py-3 px-3 font-medium text-xs text-[#1e3a5f]">{i.vehicle}</td>
@@ -406,10 +432,10 @@ export default function GarageDashboard() {
           ) : (
             <div className="text-center py-12">
               <Shield size={40} className="mx-auto mb-3 text-gray-200" />
-              <p className="text-gray-500 font-medium">עדיין לא נעשו בדיקות</p>
+              <p className="text-gray-500 font-medium">×¢×××× ×× × ×¢×©× ××××§××ª</p>
               <button onClick={() => router.push('/garage/new-inspection')}
                 className="mt-4 px-4 py-2 rounded-lg text-white font-medium transition hover:shadow-md" style={{backgroundColor: '#0d9488'}}>
-                צור בדיקה ראשונה
+                ×¦××¨ ××××§× ×¨××©×× ×
               </button>
             </div>
           )}
@@ -417,51 +443,51 @@ export default function GarageDashboard() {
 
         {/* Quick Action Buttons */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pb-16 lg:pb-0">
-          {/* בדיקה חדשה - New Inspection */}
+          {/* ××××§× ×××©× - New Inspection */}
           <button onClick={() => router.push('/garage/new-inspection')}
             className="flex flex-col items-center gap-3 p-5 bg-white border border-gray-100 rounded-xl hover:shadow-lg hover:border-gray-200 transition text-center">
             <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{backgroundColor: '#f0fdfa'}}>
               <Wrench size={20} style={{color: '#0d9488'}} />
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-[#1e3a5f]">בדיקה חדשה</div>
-              <div className="text-xs text-gray-500 mt-0.5">צור דוח בדיקה</div>
+              <div className="text-sm font-semibold text-[#1e3a5f]">××××§× ×××©×</div>
+              <div className="text-xs text-gray-500 mt-0.5">×¦××¨ ××× ××××§×</div>
             </div>
           </button>
 
-          {/* צור תור - Create Appointment */}
+          {/* ×¦××¨ ×ª××¨ - Create Appointment */}
           <button onClick={() => router.push('/garage/appointments')}
             className="flex flex-col items-center gap-3 p-5 bg-white border border-gray-100 rounded-xl hover:shadow-lg hover:border-gray-200 transition text-center">
             <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{backgroundColor: '#f0fdfa'}}>
               <Calendar size={20} style={{color: '#0d9488'}} />
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-[#1e3a5f]">ניהול תורים</div>
-              <div className="text-xs text-gray-500 mt-0.5">אשר או עדכן</div>
+              <div className="text-sm font-semibold text-[#1e3a5f]">× ×××× ×ª××¨××</div>
+              <div className="text-xs text-gray-500 mt-0.5">××©×¨ ×× ×¢×××</div>
             </div>
           </button>
 
-          {/* ביקורות - Reviews */}
+          {/* ×××§××¨××ª - Reviews */}
           <button onClick={() => router.push('/garage/reviews')}
             className="flex flex-col items-center gap-3 p-5 bg-white border border-gray-100 rounded-xl hover:shadow-lg hover:border-gray-200 transition text-center">
             <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{backgroundColor: '#f0fdfa'}}>
               <Star size={20} style={{color: '#0d9488'}} />
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-[#1e3a5f]">ביקורות</div>
-              <div className="text-xs text-gray-500 mt-0.5">{stats.totalReviews} ביקורות</div>
+              <div className="text-sm font-semibold text-[#1e3a5f]">×××§××¨××ª</div>
+              <div className="text-xs text-gray-500 mt-0.5">{stats.totalReviews} ×××§××¨××ª</div>
             </div>
           </button>
 
-          {/* לקוחות - Customers */}
+          {/* ××§××××ª - Customers */}
           <button onClick={() => router.push('/garage/customers')}
             className="flex flex-col items-center gap-3 p-5 bg-white border border-gray-100 rounded-xl hover:shadow-lg hover:border-gray-200 transition text-center">
             <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{backgroundColor: '#f0fdfa'}}>
               <User size={20} style={{color: '#0d9488'}} />
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-[#1e3a5f]">לקוחות</div>
-              <div className="text-xs text-gray-500 mt-0.5">ניהול לקוחות</div>
+              <div className="text-sm font-semibold text-[#1e3a5f]">××§××××ª</div>
+              <div className="text-xs text-gray-500 mt-0.5">× ×××× ××§××××ª</div>
             </div>
           </button>
         </div>
