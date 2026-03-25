@@ -1,13 +1,68 @@
 'use client';
 
+import Link from 'next/link';
+
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   showText?: boolean;
   className?: string;
   dark?: boolean;
+  /** If true, logo is wrapped in a Link to homepage */
+  linkToHome?: boolean;
 }
 
-export default function Logo({ size = 'md', showText = true, className = '', dark = false }: LogoProps) {
+function LogoSvg({ shieldSize }: { shieldSize: number }) {
+  return (
+    <svg
+      width={shieldSize}
+      height={shieldSize}
+      viewBox="0 0 200 230"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Shield - left half (dark navy) */}
+      <path
+        d="M100 8 C100 8, 18 40, 18 40 L18 120 C18 170, 55 200, 100 218 V8Z"
+        fill="#1a3a5c"
+      />
+      {/* Shield - right half (teal) */}
+      <path
+        d="M100 8 C100 8, 182 40, 182 40 L182 120 C182 170, 145 200, 100 218 V8Z"
+        fill="#2a9d9e"
+      />
+      {/* Car - front view */}
+      <g transform="translate(100, 125)">
+        {/* Car body - main shape */}
+        <path
+          d="M-52 10 L-48 -8 C-44 -18, -36 -22, -28 -24 L-22 -26 C-16 -44, -9 -50, 0 -50 C9 -50, 16 -44, 22 -26 L28 -24 C36 -22, 44 -18, 48 -8 L52 10 L52 20 C52 24, 50 26, 46 26 L-46 26 C-50 26, -52 24, -52 20 Z"
+          fill="white"
+        />
+        {/* Windshield */}
+        <path
+          d="M-20 -24 C-14 -42, -8 -46, 0 -46 C8 -46, 14 -42, 20 -24 L16 -22 C12 -36, 7 -40, 0 -40 C-7 -40, -12 -36, -16 -22 Z"
+          fill="#1a3a5c"
+          opacity="0.25"
+        />
+        {/* Left headlight */}
+        <rect x="-44" y="-8" width="16" height="10" rx="3" fill="white" opacity="0.85"/>
+        <rect x="-42" y="-6" width="12" height="6" rx="2" fill="#1a3a5c" opacity="0.15"/>
+        {/* Right headlight */}
+        <rect x="28" y="-8" width="16" height="10" rx="3" fill="white" opacity="0.85"/>
+        <rect x="30" y="-6" width="12" height="6" rx="2" fill="#2a9d9e" opacity="0.15"/>
+        {/* Grille */}
+        <rect x="-14" y="-6" width="28" height="12" rx="4" fill="#1a3a5c" opacity="0.12"/>
+        <line x1="-8" y1="-4" x2="-8" y2="4" stroke="white" strokeWidth="1" opacity="0.4"/>
+        <line x1="-3" y1="-4" x2="-3" y2="4" stroke="white" strokeWidth="1" opacity="0.4"/>
+        <line x1="2" y1="-4" x2="2" y2="4" stroke="white" strokeWidth="1" opacity="0.4"/>
+        <line x1="7" y1="-4" x2="7" y2="4" stroke="white" strokeWidth="1" opacity="0.4"/>
+        {/* Bumper */}
+        <path d="M-46 14 L46 14 L42 22 L-42 22 Z" fill="white" opacity="0.6"/>
+      </g>
+    </svg>
+  );
+}
+
+export default function Logo({ size = 'md', showText = true, className = '', dark = false, linkToHome = false }: LogoProps) {
   const sizes = {
     sm: { shield: 28, text: 'text-lg', gap: 'gap-1.5' },
     md: { shield: 40, text: 'text-xl', gap: 'gap-2' },
@@ -17,33 +72,9 @@ export default function Logo({ size = 'md', showText = true, className = '', dar
 
   const s = sizes[size];
 
-  return (
+  const content = (
     <div className={`flex items-center ${s.gap} ${className}`} dir="ltr">
-      <svg
-        width={s.shield}
-        height={s.shield}
-        viewBox="0 0 200 200"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d="M100 10L20 45V110C20 155 55 180 100 195V10Z" fill="#1a3a5c"/>
-        <path d="M100 10L180 45V110C180 155 145 180 100 195V10Z" fill="#2a9d9e"/>
-        <g transform="translate(100, 108)">
-          <path d="M-48 15 L-45 -5 C-43 -12 -35 -18 -25 -20 L-20 -22 C-15 -38 -8 -42 0 -42 C8 -42 15 -38 20 -22 L25 -20 C35 -18 43 -12 45 -5 L48 15 L48 22 C48 25 46 27 43 27 L-43 27 C-46 27 -48 25 -48 22 Z" fill="white"/>
-          <path d="M-18 -20 C-13 -35 -7 -38 0 -38 C7 -38 13 -35 18 -20 Z" fill="#1a3a5c" opacity="0.3"/>
-          <ellipse cx="-35" cy="-2" rx="8" ry="6" fill="white" opacity="0.9"/>
-          <ellipse cx="-35" cy="-2" rx="5" ry="4" fill="#1a3a5c" opacity="0.2"/>
-          <ellipse cx="35" cy="-2" rx="8" ry="6" fill="white" opacity="0.9"/>
-          <ellipse cx="35" cy="-2" rx="5" ry="4" fill="#2a9d9e" opacity="0.2"/>
-          <rect x="-12" y="-2" width="24" height="10" rx="3" fill="#1a3a5c" opacity="0.15"/>
-          <line x1="-8" y1="0" x2="-8" y2="6" stroke="white" strokeWidth="0.8" opacity="0.5"/>
-          <line x1="-3" y1="0" x2="-3" y2="6" stroke="white" strokeWidth="0.8" opacity="0.5"/>
-          <line x1="2" y1="0" x2="2" y2="6" stroke="white" strokeWidth="0.8" opacity="0.5"/>
-          <line x1="7" y1="0" x2="7" y2="6" stroke="white" strokeWidth="0.8" opacity="0.5"/>
-          <path d="M-42 15 L42 15 L38 22 L-38 22 Z" fill="white" opacity="0.7"/>
-        </g>
-      </svg>
-
+      <LogoSvg shieldSize={s.shield} />
       {showText && (
         <span className={`${s.text} font-extrabold tracking-tight`}>
           <span className={dark ? 'text-white' : 'text-[#0fbcce]'}>Auto</span>
@@ -52,35 +83,22 @@ export default function Logo({ size = 'md', showText = true, className = '', dar
       )}
     </div>
   );
+
+  if (linkToHome) {
+    return (
+      <Link href="/" className="hover:opacity-90 transition-opacity">
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }
 
 export function LogoIcon({ size = 40, className = '' }: { size?: number; className?: string }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 200 200"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-    >
-      <path d="M100 10L20 45V110C20 155 55 180 100 195V10Z" fill="#1a3a5c"/>
-      <path d="M100 10L180 45V110C180 155 145 180 100 195V10Z" fill="#2a9d9e"/>
-      <g transform="translate(100, 108)">
-        <path d="M-48 15 L-45 -5 C-43 -12 -35 -18 -25 -20 L-20 -22 C-15 -38 -8 -42 0 -42 C8 -42 15 -38 20 -22 L25 -20 C35 -18 43 -12 45 -5 L48 15 L48 22 C48 25 46 27 43 27 L-43 27 C-46 27 -48 25 -48 22 Z" fill="white"/>
-        <path d="M-18 -20 C-13 -35 -7 -38 0 -38 C7 -38 13 -35 18 -20 Z" fill="#1a3a5c" opacity="0.3"/>
-        <ellipse cx="-35" cy="-2" rx="8" ry="6" fill="white" opacity="0.9"/>
-        <ellipse cx="-35" cy="-2" rx="5" ry="4" fill="#1a3a5c" opacity="0.2"/>
-        <ellipse cx="35" cy="-2" rx="8" ry="6" fill="white" opacity="0.9"/>
-        <ellipse cx="35" cy="-2" rx="5" ry="4" fill="#2a9d9e" opacity="0.2"/>
-        <rect x="-12" y="-2" width="24" height="10" rx="3" fill="#1a3a5c" opacity="0.15"/>
-        <line x1="-8" y1="0" x2="-8" y2="6" stroke="white" strokeWidth="0.8" opacity="0.5"/>
-        <line x1="-3" y1="0" x2="-3" y2="6" stroke="white" strokeWidth="0.8" opacity="0.5"/>
-        <line x1="2" y1="0" x2="2" y2="6" stroke="white" strokeWidth="0.8" opacity="0.5"/>
-        <line x1="7" y1="0" x2="7" y2="6" stroke="white" strokeWidth="0.8" opacity="0.5"/>
-        <path d="M-42 15 L42 15 L38 22 L-38 22 Z" fill="white" opacity="0.7"/>
-      </g>
-    </svg>
+    <div className={className}>
+      <LogoSvg shieldSize={size} />
+    </div>
   );
 }
-
