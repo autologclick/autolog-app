@@ -26,16 +26,16 @@ interface BrakeSystem { frontDiscs: number; rearDiscs: number; frontPads: number
 interface Recommendation { text: string; urgency: string; estimatedCost: string; }
 
 const statusOptions = [
-  { value: 'ok', label: 'ÃÂªÃÂ§ÃÂÃÂ', color: 'bg-green-500', icon: Check },
-  { value: 'warning', label: 'ÃÂÃÂÃÂ¨ÃÂ© ÃÂªÃÂ©ÃÂÃÂÃÂª ÃÂÃÂ', color: 'bg-amber-500', icon: AlertTriangle },
-  { value: 'critical', label: 'ÃÂ§ÃÂ¨ÃÂÃÂÃÂ', color: 'bg-red-500', icon: X },
+  { value: 'ok', label: 'תקין', color: 'bg-green-500', icon: Check },
+  { value: 'warning', label: 'דורש תשומת לב', color: 'bg-amber-500', icon: AlertTriangle },
+  { value: 'critical', label: 'קריטי', color: 'bg-red-500', icon: X },
 ];
 
 const inspectionTypes = [
-  { value: 'full', label: 'ÃÂÃÂÃÂÃÂ§ÃÂª AutoLog' },
-  { value: 'pre_test', label: 'ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¡ÃÂ' },
-  { value: 'troubleshoot', label: 'ÃÂªÃÂÃÂ§ÃÂÃÂ/ÃÂÃÂÃÂÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ' },
-  { value: 'periodic', label: 'ÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ¤ÃÂªÃÂ' },
+  { value: 'full', label: 'בדיקת AutoLog' },
+  { value: 'pre_test', label: 'הכנה לטסט' },
+  { value: 'troubleshoot', label: 'תיקון/אבחון תקלה' },
+  { value: 'periodic', label: 'טיפול תקופתי' },
 ];
 
 // ====== Status Selector Component ======
@@ -67,8 +67,8 @@ function StatusSelect({ value, onChange, label }: { value: string; onChange: (v:
 
 // ====== Light Status Options (Binary: Pass/Fail) ======
 const lightStatusOptions = [
-  { value: 'ok', label: 'ÃÂªÃÂ§ÃÂÃÂ', color: 'bg-green-500', emoji: 'Ã¢ÂÂ' },
-  { value: 'not_ok', label: 'ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ', color: 'bg-red-500', emoji: 'Ã¢ÂÂ' },
+  { value: 'ok', label: 'תקין', color: 'bg-green-500', emoji: '✓' },
+  { value: 'not_ok', label: 'לא תקין', color: 'bg-red-500', emoji: '✕' },
 ];
 
 function LightStatusSelect({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
@@ -98,11 +98,11 @@ function LightStatusSelect({ value, onChange, label }: { value: string; onChange
 
 // ====== Tire Status Options ======
 const tireStatusOptions = [
-  { value: 'new', label: 'ÃÂÃÂÃÂ©', color: 'bg-blue-500' },
-  { value: 'ok', label: 'ÃÂªÃÂ§ÃÂÃÂ', color: 'bg-green-500' },
-  { value: 'worn', label: 'ÃÂ©ÃÂÃÂÃÂ§', color: 'bg-amber-500' },
-  { value: 'dry', label: 'ÃÂÃÂÃÂ©', color: 'bg-orange-500' },
-  { value: 'failed', label: 'ÃÂ¤ÃÂ¡ÃÂÃÂ', color: 'bg-red-500' },
+  { value: 'new', label: 'חדש', color: 'bg-blue-500' },
+  { value: 'ok', label: 'תקין', color: 'bg-green-500' },
+  { value: 'worn', label: 'שחוק', color: 'bg-amber-500' },
+  { value: 'dry', label: 'יבש', color: 'bg-orange-500' },
+  { value: 'failed', label: 'פסול', color: 'bg-red-500' },
 ];
 
 function TireStatusSelect({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
@@ -142,10 +142,10 @@ function TireStatusSelect({ value, onChange, label }: { value: string; onChange:
 
 // ====== Shock Absorber Status Options ======
 const shockStatusOptions = [
-  { value: 'ok', label: 'ÃÂªÃÂ§ÃÂÃÂ', color: 'bg-green-500' },
-  { value: 'sweating', label: 'ÃÂÃÂÃÂ¢ÃÂ', color: 'bg-amber-500' },
-  { value: 'leaking', label: 'ÃÂ ÃÂÃÂÃÂ', color: 'bg-orange-500' },
-  { value: 'replace', label: 'ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ', color: 'bg-red-500' },
+  { value: 'ok', label: 'תקין', color: 'bg-green-500' },
+  { value: 'sweating', label: 'הזעה', color: 'bg-amber-500' },
+  { value: 'leaking', label: 'נוזל', color: 'bg-orange-500' },
+  { value: 'replace', label: 'להחלפה', color: 'bg-red-500' },
 ];
 
 function ShockStatusSelect({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
@@ -175,10 +175,10 @@ function ShockStatusSelect({ value, onChange, label }: { value: string; onChange
 
 // ====== Fluid Status Options ======
 const fluidStatusOptions = [
-  { value: 'ok', label: 'ÃÂªÃÂ§ÃÂÃÂ', color: 'bg-green-500' },
-  { value: 'low', label: 'ÃÂÃÂ¡ÃÂ¨', color: 'bg-amber-500' },
-  { value: 'dirty', label: 'ÃÂÃÂÃÂÃÂÃÂÃÂ', color: 'bg-orange-500' },
-  { value: 'replace', label: 'ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ', color: 'bg-red-500' },
+  { value: 'ok', label: 'תקין', color: 'bg-green-500' },
+  { value: 'low', label: 'חסר', color: 'bg-amber-500' },
+  { value: 'dirty', label: 'מלוכלך', color: 'bg-orange-500' },
+  { value: 'replace', label: 'להחלפה', color: 'bg-red-500' },
 ];
 
 function FluidStatusSelect({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
@@ -293,7 +293,7 @@ export default function NewInspectionPage() {
 
   // Step 8: Summary, Recommendations, Signature
   const [summary, setSummary] = useState('');
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([{ text: '', urgency: 'ÃÂÃÂ©ÃÂÃÂÃÂ¢ÃÂÃÂª ÃÂÃÂ§ÃÂ¨ÃÂÃÂÃÂÃÂ', estimatedCost: '' }]);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([{ text: '', urgency: 'בשבועות הקרובים', estimatedCost: '' }]);
   const [notesUndercar, setNotesUndercar] = useState('');
   const [notesEngine, setNotesEngine] = useState('');
   const [customerName, setCustomerName] = useState('');
@@ -303,7 +303,7 @@ export default function NewInspectionPage() {
   const [vehiclePhoto, setVehiclePhoto] = useState('');
   const [invoicePhoto, setInvoicePhoto] = useState('');
 
-  // Pre-test checklist (ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¡ÃÂ) - each item has checked + notes
+  // Pre-test checklist (הכנה לטסט) - each item has checked + notes
   const [preTestChecklist, setPreTestChecklist] = useState<Record<string, boolean>>({
     tires: false, lights: false, brakes: false, mirrors: false, wipers: false,
     horn: false, seatbelts: false, exhaust: false, steering: false, suspension: false,
@@ -314,13 +314,13 @@ export default function NewInspectionPage() {
   const [preTestNotes, setPreTestNotes] = useState('');
   const [preTestWorkItems, setPreTestWorkItems] = useState<Array<{item: string; action: string; notes: string; cost: number | string}>>([]);
 
-  // Service form (ÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ¤ÃÂªÃÂ)
+  // Service form (טיפול תקופתי)
   const [serviceItems, setServiceItems] = useState<string[]>([]);
   const [serviceNotes, setServiceNotes] = useState('');
   const [serviceRecommendations, setServiceRecommendations] = useState('');
   const [servicePhotos, setServicePhotos] = useState<string[]>([]);
 
-  // Troubleshoot form (ÃÂªÃÂÃÂ§ÃÂÃÂ/ÃÂÃÂÃÂÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ)
+  // Troubleshoot form (תיקון/אבחון תקלה)
   const [troubleshootProblem, setTroubleshootProblem] = useState('');
   const [troubleshootDiagnosis, setTroubleshootDiagnosis] = useState('');
   const [troubleshootFix, setTroubleshootFix] = useState('');
@@ -467,10 +467,10 @@ export default function NewInspectionPage() {
         }
       } else {
         const err = await res.json().catch(() => ({}));
-        setLookupError(err.error || 'ÃÂ¨ÃÂÃÂ ÃÂÃÂ ÃÂ ÃÂÃÂ¦ÃÂ');
+        setLookupError(err.error || 'רכב לא נמצא');
       }
     } catch {
-      setLookupError('ÃÂ©ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ©. ÃÂ ÃÂ¡ÃÂ ÃÂ©ÃÂÃÂ.');
+      setLookupError('שגיאה בחיפוש. נסה שוב.');
     } finally {
       setLookupLoading(false);
     }
@@ -616,14 +616,14 @@ export default function NewInspectionPage() {
   // Build summary data for quick view
   const getSectionSummary = () => {
     const sections = [
-      { label: 'ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ', status: getMajorityStatus(Object.values(tires)) },
-      { label: 'ÃÂÃÂÃÂ¨ÃÂÃÂª', status: getMajorityStatus(Object.values(lights)) },
-      { label: 'ÃÂ¡ÃÂ¨ÃÂ ÃÂ§ÃÂÃÂÃÂ', status: getMajorityStatus(Object.values(frontAxleItems)) },
-      { label: 'ÃÂÃÂÃÂÃÂÃÂ', status: getMajorityStatus(Object.values(steeringItems)) },
-      { label: 'ÃÂÃÂÃÂÃÂÃÂÃÂ', status: getMajorityStatus(Object.values(shocksData)) },
-      { label: 'ÃÂÃÂ¨ÃÂÃÂ', status: bodyTags.length > 0 ? (bodyTags.some(t => t.includes('ÃÂªÃÂÃÂÃÂ ÃÂ') || t.includes('ÃÂÃÂ¢ÃÂÃÂ') || t.includes('ÃÂÃÂÃÂÃÂÃÂ')) ? 'critical' : 'warning') : 'ok' },
-      { label: 'ÃÂ ÃÂÃÂÃÂÃÂÃÂ', status: getMajorityStatus(Object.values(fluids)) },
-      { label: 'ÃÂÃÂÃÂÃÂ ÃÂÃÂª', status: getMajorityStatus(Object.values(windows)) },
+      { label: 'צמיגים', status: getMajorityStatus(Object.values(tires)) },
+      { label: 'אורות', status: getMajorityStatus(Object.values(lights)) },
+      { label: 'סרן קדמי', status: getMajorityStatus(Object.values(frontAxleItems)) },
+      { label: 'היגוי', status: getMajorityStatus(Object.values(steeringItems)) },
+      { label: 'בולמים', status: getMajorityStatus(Object.values(shocksData)) },
+      { label: 'מרכב', status: bodyTags.length > 0 ? (bodyTags.some(t => t.includes('תאונה') || t.includes('מעוך') || t.includes('חלודה')) ? 'critical' : 'warning') : 'ok' },
+      { label: 'נוזלים', status: getMajorityStatus(Object.values(fluids)) },
+      { label: 'חלונות', status: getMajorityStatus(Object.values(windows)) },
     ];
     return sections;
   };
@@ -642,7 +642,7 @@ export default function NewInspectionPage() {
     try {
       setLoading(true);
       setError('');
-      if (!selectedVehicleId && !isManualVehicleValid) { setError('ÃÂÃÂ© ÃÂÃÂÃÂÃÂÃÂ¨ ÃÂ¨ÃÂÃÂ ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¡ÃÂ¤ÃÂ¨ ÃÂ¨ÃÂÃÂ©ÃÂÃÂ'); return; }
+      if (!selectedVehicleId && !isManualVehicleValid) { setError('יש לבחור רכב או להזין מספר רישוי'); return; }
 
       // Base payload (common to all types)
       const basePayload: any = {
@@ -710,7 +710,7 @@ export default function NewInspectionPage() {
             notes: w.notes || undefined,
             cost: w.cost ? Number(w.cost) : undefined,
           })),
-          summary: `ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¡ÃÂ - ${passedCount}/${totalCount} ÃÂªÃÂ§ÃÂÃÂ${workCount > 0 ? ` | ${workCount} ÃÂ¢ÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂ¦ÃÂ¢ÃÂ` : ''}`,
+          summary: `הכנה לטסט - ${passedCount}/${totalCount} תקין${workCount > 0 ? ` | ${workCount} עבודות בוצעו` : ''}`,
           overallScore: Math.round((passedCount / totalCount) * 100),
         };
       } else if (inspectionType === 'periodic') {
@@ -722,7 +722,7 @@ export default function NewInspectionPage() {
           serviceNotes: serviceNotes || undefined,
           serviceRecommendations: serviceRecommendations || undefined,
           servicePhotos: servicePhotos.length > 0 ? servicePhotos : undefined,
-          summary: `ÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ¤ÃÂªÃÂ - ${serviceItems.length} ÃÂ¤ÃÂ¢ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂ¦ÃÂ¢ÃÂ`,
+          summary: `טיפול תקופתי - ${serviceItems.length} פעולות בוצעו`,
         };
       } else if (inspectionType === 'troubleshoot') {
         payload = {
@@ -736,7 +736,7 @@ export default function NewInspectionPage() {
             parts: troubleshootParts || undefined,
             notes: troubleshootNotes || undefined,
           },
-          summary: troubleshootProblem ? `ÃÂªÃÂÃÂ§ÃÂÃÂ/ÃÂÃÂÃÂÃÂÃÂ: ${troubleshootProblem.substring(0, 100)}` : 'ÃÂªÃÂÃÂ§ÃÂÃÂ/ÃÂÃÂÃÂÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ',
+          summary: troubleshootProblem ? `תיקון/אבחון: ${troubleshootProblem.substring(0, 100)}` : 'תיקון/אבחון תקלה',
         };
       } else {
         payload = basePayload;
@@ -750,7 +750,7 @@ export default function NewInspectionPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || 'ÃÂ©ÃÂÃÂÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂ¨ÃÂª ÃÂÃÂÃÂÃÂÃÂ§ÃÂ');
+        setError(data.error || 'שגיאה בשמירת הבדיקה');
         return;
       }
 
@@ -758,7 +758,7 @@ export default function NewInspectionPage() {
       setSuccessId(data.inspection.id);
       setSuccessModal(true);
     } catch (err) {
-      setError('ÃÂ©ÃÂÃÂÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂ¨ÃÂª ÃÂÃÂÃÂÃÂÃÂ§ÃÂ');
+      setError('שגיאה בשמירת הבדיקה');
       if (process.env.NODE_ENV === 'development') {
         console.error(err);
       }
@@ -766,18 +766,18 @@ export default function NewInspectionPage() {
   };
 
   const steps = [
-    { num: 1, label: 'ÃÂ¨ÃÂÃÂ', icon: Car },
-    { num: 2, label: 'ÃÂÃÂÃÂ¥', icon: Camera },
-    { num: 3, label: 'ÃÂ¤ÃÂ ÃÂÃÂ', icon: Eye },
-    { num: 4, label: 'ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂª', icon: Lightbulb },
-    { num: 5, label: 'ÃÂÃÂÃÂ ÃÂ', icon: Wrench },
-    { num: 6, label: 'ÃÂ ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¤ÃÂ ÃÂÃÂ', icon: Droplets },
-    { num: 7, label: 'ÃÂÃÂ ÃÂÃÂ¢ ÃÂÃÂÃÂÃÂÃÂÃÂ', icon: Settings },
-    { num: 8, label: 'ÃÂ¡ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂªÃÂÃÂÃÂ', icon: PenLine },
+    { num: 1, label: 'רכב', icon: Car },
+    { num: 2, label: 'חוץ', icon: Camera },
+    { num: 3, label: 'פנים', icon: Eye },
+    { num: 4, label: 'צמיגים ואורות', icon: Lightbulb },
+    { num: 5, label: 'מכני', icon: Wrench },
+    { num: 6, label: 'נוזלים ופנים', icon: Droplets },
+    { num: 7, label: 'מנוע ובלמים', icon: Settings },
+    { num: 8, label: 'סיכום וחתימה', icon: PenLine },
   ];
 
   const overallScore = calculateOverallScore();
-  const scoreLabel = overallScore >= 80 ? 'ÃÂªÃÂ§ÃÂÃÂ' : overallScore >= 50 ? 'ÃÂÃÂÃÂ¨ÃÂ© ÃÂªÃÂ©ÃÂÃÂÃÂª ÃÂÃÂ' : overallScore > 0 ? 'ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ' : '';
+  const scoreLabel = overallScore >= 80 ? 'תקין' : overallScore >= 50 ? 'דורש תשומת לב' : overallScore > 0 ? 'לא תקין' : '';
   const scoreColor = overallScore >= 80 ? 'text-green-600' : overallScore >= 50 ? 'text-amber-600' : 'text-red-600';
 
   return (
@@ -789,9 +789,9 @@ export default function NewInspectionPage() {
         </div>
         <div>
           <h1 className="text-lg sm:text-2xl font-bold text-[#1e3a5f]">
-            {step === 0 ? 'ÃÂ¤ÃÂ¢ÃÂÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ' : inspectionTypes.find(t => t.value === inspectionType)?.label || 'ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂÃÂÃÂ©ÃÂ'}
+            {step === 0 ? 'פעולה חדשה' : inspectionTypes.find(t => t.value === inspectionType)?.label || 'בדיקה חדשה'}
           </h1>
-          <p className="text-sm text-gray-500">ÃÂÃÂÃÂ¦ÃÂÃÂ¢ ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ</p>
+          <p className="text-sm text-gray-500">ביצוע בדיקה ומילוי ממצאים</p>
         </div>
       </div>
 
@@ -808,7 +808,7 @@ export default function NewInspectionPage() {
       {/* Score Bar - only for full inspection */}
       {inspectionType === 'full' && overallScore > 0 && step > 0 && (
         <div className="bg-slate-800 rounded-xl p-3 sm:p-4 text-center text-white">
-          <div className="text-xs sm:text-sm opacity-80">ÃÂ¦ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ</div>
+          <div className="text-xs sm:text-sm opacity-80">ציון כללי</div>
           <div className={`text-3xl sm:text-4xl font-bold ${overallScore >= 80 ? 'text-green-400' : overallScore >= 50 ? 'text-amber-400' : 'text-red-400'}`}>{overallScore}</div>
           <div className="text-xs sm:text-sm opacity-80">{scoreLabel}</div>
         </div>
@@ -841,7 +841,7 @@ export default function NewInspectionPage() {
       {/* ====== STEP 0: Choose Action Type ====== */}
       {step === 0 && (
         <Card>
-          <CardTitle icon={<Shield className="text-teal-600" />}>ÃÂÃÂÃÂ¨ ÃÂ¡ÃÂÃÂ ÃÂ¤ÃÂ¢ÃÂÃÂÃÂ</CardTitle>
+          <CardTitle icon={<Shield className="text-teal-600" />}>בחר סוג פעולה</CardTitle>
           <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-4">
             {inspectionTypes.map(t => (
               <button key={t.value} onClick={() => { setInspectionType(t.value); setStep(1); }}
@@ -861,24 +861,24 @@ export default function NewInspectionPage() {
       {step === 1 && (
         <>
           <Card>
-            <CardTitle icon={<Car className="text-teal-600" />}>ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ§ÃÂ</CardTitle>
+            <CardTitle icon={<Car className="text-teal-600" />}>פרטי רכב ובדיקה</CardTitle>
             <div className="space-y-4 mt-4">
 
               {/* Vehicle Mode Selector */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">ÃÂÃÂÃÂ¨ ÃÂ¨ÃÂÃÂ</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">בחר רכב</label>
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   <button onClick={() => setVehicleMode('select')}
                     className={`flex items-center justify-center gap-2 p-3 rounded-xl text-xs font-medium transition border-2 ${
                       vehicleMode === 'select' ? 'border-teal-600 bg-teal-50 text-teal-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
                     }`}>
-                    <Search size={14} /> ÃÂÃÂÃÂ¨ ÃÂÃÂ¨ÃÂ©ÃÂÃÂÃÂ
+                    <Search size={14} /> בחר מרשימה
                   </button>
                   <button onClick={() => setVehicleMode('manual')}
                     className={`flex items-center justify-center gap-2 p-3 rounded-xl text-xs font-medium transition border-2 ${
                       vehicleMode === 'manual' ? 'border-teal-600 bg-teal-50 text-teal-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
                     }`}>
-                    <Keyboard size={14} /> ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ ÃÂÃÂª
+                    <Keyboard size={14} /> הזנה ידנית
                   </button>
                 </div>
 
@@ -890,7 +890,7 @@ export default function NewInspectionPage() {
                     ) : vehicles.length > 0 ? (
                       <select value={selectedVehicleId} onChange={e => { setSelectedVehicleId(e.target.value); setManualPlate(''); }}
                         className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400">
-                        <option value="">-- ÃÂÃÂÃÂ¨ ÃÂ¨ÃÂÃÂ --</option>
+                        <option value="">-- בחר רכב --</option>
                         {vehicles.map(v => (
                           <option key={v.id} value={v.id}>
                             {v.nickname || `${v.manufacturer || ''} ${v.model || ''}`} ({v.licensePlate})
@@ -899,15 +899,15 @@ export default function NewInspectionPage() {
                       </select>
                     ) : (
                       <div className="text-center py-4 bg-gray-50 rounded-xl">
-                        <p className="text-sm text-gray-500 mb-2">ÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂ¨ÃÂ©ÃÂÃÂÃÂ</p>
+                        <p className="text-sm text-gray-500 mb-2">אין רכבים ברשימה</p>
                         <button onClick={() => setVehicleMode('manual')}
-                          className="text-teal-600 text-sm font-medium hover:underline">ÃÂÃÂÃÂ ÃÂÃÂ¡ÃÂ¤ÃÂ¨ ÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂª</button>
+                          className="text-teal-600 text-sm font-medium hover:underline">הזן מספר רכב ידנית</button>
                       </div>
                     )}
                     {vehicles.length > 0 && (
                       <button onClick={() => setVehicleMode('manual')}
                         className="text-sm text-teal-600 hover:underline mt-2 flex items-center gap-1">
-                        <Plus size={12} /> ÃÂ¨ÃÂÃÂ ÃÂÃÂ ÃÂÃÂ¨ÃÂ©ÃÂÃÂÃÂ? ÃÂÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂª
+                        <Plus size={12} /> רכב לא ברשימה? הזן ידנית
                       </button>
                     )}
                   </>
@@ -918,24 +918,24 @@ export default function NewInspectionPage() {
                   <div className="space-y-3 p-4 bg-blue-50/50 rounded-xl border border-blue-200">
                     {scanPreview && (
                       <div className="flex items-center gap-3 mb-2">
-                        <img src={scanPreview} alt="ÃÂ¡ÃÂ¨ÃÂÃÂ§ÃÂ" className="w-16 h-12 object-cover rounded-lg border" />
+                        <img src={scanPreview} alt="סריקה" className="w-16 h-12 object-cover rounded-lg border" />
                         <div className="flex-1">
                           {scanLoading ? (
                             <div className="flex items-center gap-2 text-sm text-teal-600">
-                              <Loader2 size={14} className="animate-spin" /> ÃÂÃÂÃÂÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂ¨ÃÂÃÂ...
+                              <Loader2 size={14} className="animate-spin" /> מזהה פרטי רכב...
                             </div>
                           ) : (
-                            <p className="text-xs text-green-600 font-medium">Ã¢ÂÂ ÃÂÃÂÃÂÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂÃÂ ÃÂÃÂÃÂªÃÂÃÂÃÂ ÃÂ</p>
+                            <p className="text-xs text-green-600 font-medium">✓ זוהו פרטים מהתמונה</p>
                           )}
                         </div>
                       </div>
                     )}
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">ÃÂÃÂ¡ÃÂ¤ÃÂ¨ ÃÂ¨ÃÂÃÂ©ÃÂÃÂ *</label>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">מספר רישוי *</label>
                       <div className="relative">
                         <input type="text" value={manualPlate}
                           onChange={e => { setManualPlate(e.target.value); setLookupDone(false); setLookupError(''); }}
-                          placeholder="ÃÂÃÂÃÂ©ÃÂ: 7198738"
+                          placeholder="למשל: 7198738"
                           className={`w-full rounded-xl border px-3 py-2.5 text-lg font-mono text-center tracking-widest focus:ring-2 focus:ring-teal-400 ${
                             lookupDone ? 'border-green-400 bg-green-50/50' : lookupError ? 'border-red-300' : 'border-gray-300'
                           }`}
@@ -946,7 +946,7 @@ export default function NewInspectionPage() {
                           ) : manualPlate.replace(/[-\s]/g, '').length >= 5 && !lookupDone ? (
                             <button type="button" onClick={() => lookupVehicle(manualPlate)}
                               className="flex items-center gap-1 px-2 py-1 bg-teal-600 text-white rounded-lg text-xs font-medium hover:bg-teal-700 transition">
-                              <Search size={12} /> ÃÂ©ÃÂÃÂÃÂ£
+                              <Search size={12} /> שלוף
                             </button>
                           ) : lookupDone ? (
                             <Check size={18} className="text-green-500" />
@@ -954,10 +954,10 @@ export default function NewInspectionPage() {
                         </div>
                       </div>
                       {lookupLoading && (
-                        <p className="text-xs text-teal-600 mt-1 text-center animate-pulse">ÃÂ©ÃÂÃÂÃÂ£ ÃÂ ÃÂªÃÂÃÂ ÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ¨ÃÂ ÃÂÃÂªÃÂÃÂÃÂÃÂ¨ÃÂ...</p>
+                        <p className="text-xs text-teal-600 mt-1 text-center animate-pulse">שולף נתונים ממשרד התחבורה...</p>
                       )}
                       {lookupDone && (
-                        <p className="text-xs text-green-600 mt-1 text-center font-medium">Ã¢ÂÂ ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂÃÂ¨ÃÂÃÂ ÃÂ ÃÂ©ÃÂÃÂ¤ÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ¨ÃÂ ÃÂÃÂªÃÂÃÂÃÂÃÂ¨ÃÂ</p>
+                        <p className="text-xs text-green-600 mt-1 text-center font-medium">✓ פרטי הרכב נשלפו בהצלחה ממשרד התחבורה</p>
                       )}
                       {lookupError && (
                         <p className="text-xs text-red-500 mt-1 text-center">{lookupError}</p>
@@ -965,36 +965,36 @@ export default function NewInspectionPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">ÃÂÃÂ¦ÃÂ¨ÃÂ</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">יצרן</label>
                         <input type="text" value={manualManufacturer} onChange={e => setManualManufacturer(e.target.value)}
-                          placeholder="ÃÂÃÂÃÂ©ÃÂ: KIA" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualManufacturer ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
+                          placeholder="למשל: KIA" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualManufacturer ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">ÃÂÃÂÃÂ</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">דגם</label>
                         <input type="text" value={manualModel} onChange={e => setManualModel(e.target.value)}
-                          placeholder="ÃÂÃÂÃÂ©ÃÂ: SPORTAGE" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualModel ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
+                          placeholder="למשל: SPORTAGE" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualModel ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">ÃÂ©ÃÂ ÃÂ</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">שנה</label>
                         <input type="text" value={manualYear} onChange={e => setManualYear(e.target.value)}
                           placeholder="2024" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualYear ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="ltr" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">ÃÂ¦ÃÂÃÂ¢</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">צבע</label>
                         <input type="text" value={manualColor} onChange={e => setManualColor(e.target.value)}
-                          placeholder="ÃÂÃÂÃÂ" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualColor ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
+                          placeholder="לבן" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualColor ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
                       </div>
                     </div>
                     <div className="flex gap-2">
                       <button onClick={() => { setVehicleMode('scan'); handleScanPhoto(); }}
                         className="flex items-center gap-1 px-3 py-2 bg-white rounded-lg border border-gray-300 text-xs text-gray-600 hover:bg-[#fef7ed]/50 transition">
-                        <Camera size={14} /> ÃÂ¦ÃÂÃÂ ÃÂ¨ÃÂÃÂ©ÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂ
+                        <Camera size={14} /> צלם רישיון רכב
                       </button>
                       <button onClick={() => { setVehicleMode('select'); setManualPlate(''); setScanPreview(''); }}
                         className="flex items-center gap-1 px-3 py-2 text-xs text-gray-500 hover:underline">
-                        ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂ¨ÃÂ©ÃÂÃÂÃÂ
+                        חזור לבחירה מרשימה
                       </button>
                     </div>
                   </div>
@@ -1006,16 +1006,16 @@ export default function NewInspectionPage() {
                     {scanLoading ? (
                       <>
                         <Loader2 size={32} className="animate-spin text-teal-600 mb-3" />
-                        <p className="text-sm text-gray-600">ÃÂÃÂÃÂÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂªÃÂÃÂÃÂ ÃÂ...</p>
-                        <p className="text-xs text-gray-400 mt-1">ÃÂ¢ÃÂÃÂÃÂÃÂ AI</p>
+                        <p className="text-sm text-gray-600">מזהה פרטי רכב מהתמונה...</p>
+                        <p className="text-xs text-gray-400 mt-1">עיבוד AI</p>
                       </>
                     ) : scanPreview ? (
                       <>
                         <img src={scanPreview} alt="scan" className="w-40 h-28 object-cover rounded-lg mb-3 border" />
-                        <p className="text-sm text-gray-600 mb-2">ÃÂÃÂ ÃÂÃÂÃÂÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂÃÂ. ÃÂÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂª:</p>
+                        <p className="text-sm text-gray-600 mb-2">לא זוהו פרטים. הזן ידנית:</p>
                         <button onClick={() => setVehicleMode('manual')}
                           className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition">
-                          ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ ÃÂÃÂª
+                          הזנה ידנית
                         </button>
                       </>
                     ) : (
@@ -1023,20 +1023,20 @@ export default function NewInspectionPage() {
                         <div className="w-16 h-16 bg-teal-100 rounded-2xl flex items-center justify-center mb-4">
                           <Camera size={28} className="text-teal-600" />
                         </div>
-                        <p className="text-sm font-medium text-gray-700 mb-1">ÃÂ¦ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂª ÃÂ¨ÃÂÃÂ©ÃÂÃÂ ÃÂÃÂ ÃÂ¨ÃÂÃÂ©ÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂ</p>
-                        <p className="text-xs text-gray-400 mb-4">ÃÂÃÂ¤ÃÂ¨ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ¦ÃÂ¢ÃÂÃÂª AI</p>
+                        <p className="text-sm font-medium text-gray-700 mb-1">צלם לוחית רישוי או רישיון רכב</p>
+                        <p className="text-xs text-gray-400 mb-4">הפרטים ימולאו אוטומטית באמצעות AI</p>
                         <div className="flex gap-3">
                           <button onClick={handleScanPhoto}
                             className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-medium hover:bg-teal-700 transition">
-                            <Camera size={16} /> ÃÂ¦ÃÂÃÂ ÃÂªÃÂÃÂÃÂ ÃÂ
+                            <Camera size={16} /> צלם תמונה
                           </button>
                           <button onClick={() => setVehicleMode('manual')}
                             className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-600 rounded-xl text-sm font-medium hover:bg-[#fef7ed]/50 transition">
-                            <Keyboard size={16} /> ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ ÃÂÃÂª
+                            <Keyboard size={16} /> הזנה ידנית
                           </button>
                         </div>
                         <button onClick={() => setVehicleMode('select')}
-                          className="text-xs text-gray-400 hover:underline mt-3">ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂ¨ÃÂ©ÃÂÃÂÃÂ</button>
+                          className="text-xs text-gray-400 hover:underline mt-3">חזור לבחירה מרשימה</button>
                       </>
                     )}
                   </div>
@@ -1044,16 +1044,16 @@ export default function NewInspectionPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Input label="ÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂ'" placeholder="140,000" value={mileage} onChange={e => setMileage(e.target.value)} />
-                <Input label="ÃÂ©ÃÂ ÃÂÃÂÃÂ ÃÂÃÂ§" placeholder="ÃÂ©ÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂ§" value={mechanicName} onChange={e => setMechanicName(e.target.value)} />
+                <Input label="קילומטראז'" placeholder="140,000" value={mileage} onChange={e => setMileage(e.target.value)} />
+                <Input label="שם מכניק" placeholder="שם המכניק" value={mechanicName} onChange={e => setMechanicName(e.target.value)} />
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <Input label="ÃÂÃÂ¡ÃÂ¤ÃÂ¨ ÃÂÃÂ ÃÂÃÂ¢" placeholder="Hw523h" value={engineNumber} onChange={e => setEngineNumber(e.target.value)} />
+                <Input label="מספר מנוע" placeholder="Hw523h" value={engineNumber} onChange={e => setEngineNumber(e.target.value)} />
                 <div className="flex items-end pb-1">
                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                     <input type="checkbox" checked={engineVerified} onChange={e => setEngineVerified(e.target.checked)}
                       className="w-4 h-4 text-teal-600 rounded" />
-                    <span>ÃÂÃÂÃÂÃÂª ÃÂ¢"ÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂ</span>
+                    <span>אומת ע"י מכונאי</span>
                   </label>
                 </div>
               </div>
@@ -1065,15 +1065,15 @@ export default function NewInspectionPage() {
       {/* ====== STEP 2: Exterior Photos ====== */}
       {inspectionType === 'full' && step === 2 && (
         <Card>
-          <CardTitle icon={<Camera className="text-teal-600" />}>ÃÂªÃÂÃÂÃÂ ÃÂÃÂª ÃÂÃÂÃÂ¥</CardTitle>
-          <p className="text-sm text-gray-500 mt-1 mb-4">ÃÂ¦ÃÂÃÂ ÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂ¦ÃÂÃÂÃÂÃÂ</p>
+          <CardTitle icon={<Camera className="text-teal-600" />}>תמונות חוץ</CardTitle>
+          <p className="text-sm text-gray-500 mt-1 mb-4">צלם את הרכב מכל הצדדים</p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { key: 'front', label: 'ÃÂÃÂÃÂÃÂª' },
-              { key: 'rear', label: 'ÃÂÃÂÃÂÃÂ¨ÃÂ' },
-              { key: 'right', label: 'ÃÂÃÂÃÂÃÂ' },
-              { key: 'left', label: 'ÃÂ©ÃÂÃÂÃÂ' },
-              { key: 'roof', label: 'ÃÂÃÂ' },
+              { key: 'front', label: 'חזית' },
+              { key: 'rear', label: 'אחורי' },
+              { key: 'right', label: 'ימין' },
+              { key: 'left', label: 'שמאל' },
+              { key: 'roof', label: 'גג' },
             ].map(({ key, label }) => (
               <button key={key} onClick={() => handlePhotoUpload('exterior', key)}
                 className="relative aspect-[4/3] bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 transition flex flex-col items-center justify-center overflow-hidden">
@@ -1092,13 +1092,13 @@ export default function NewInspectionPage() {
       {/* ====== STEP 3: Interior Photos ====== */}
       {inspectionType === 'full' && step === 3 && (
         <Card>
-          <CardTitle icon={<Eye className="text-teal-600" />}>ÃÂªÃÂÃÂÃÂ ÃÂÃÂª ÃÂ¤ÃÂ ÃÂÃÂ</CardTitle>
-          <p className="text-sm text-gray-500 mt-1 mb-4">ÃÂ¦ÃÂÃÂ ÃÂÃÂª ÃÂ¤ÃÂ ÃÂÃÂ ÃÂÃÂ¨ÃÂÃÂ</p>
+          <CardTitle icon={<Eye className="text-teal-600" />}>תמונות פנים</CardTitle>
+          <p className="text-sm text-gray-500 mt-1 mb-4">צלם את פנים הרכב</p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { key: 'frontSeats', label: 'ÃÂÃÂÃÂ©ÃÂÃÂÃÂ ÃÂ§ÃÂÃÂÃÂÃÂÃÂ' },
-              { key: 'rearSeats', label: 'ÃÂÃÂÃÂ©ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂ' },
-              { key: 'dashboard', label: 'ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ' },
+              { key: 'frontSeats', label: 'מושבים קדמיים' },
+              { key: 'rearSeats', label: 'מושבים אחוריים' },
+              { key: 'dashboard', label: 'לוח מחוונים' },
             ].map(({ key, label }) => (
               <button key={key} onClick={() => handlePhotoUpload('interior', key)}
                 className="relative aspect-[4/3] bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 transition flex flex-col items-center justify-center overflow-hidden">
@@ -1118,33 +1118,33 @@ export default function NewInspectionPage() {
       {inspectionType === 'full' && step === 4 && (
         <>
           <Card>
-            <CardTitle icon={<CircleDot className="text-teal-600" />}>ÃÂÃÂ¦ÃÂ ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ</CardTitle>
+            <CardTitle icon={<CircleDot className="text-teal-600" />}>מצב צמיגים</CardTitle>
             <div className="space-y-2 mt-3">
-              <TireStatusSelect label="ÃÂ§ÃÂÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ" value={tires.frontLeft} onChange={v => setTires(p => ({ ...p, frontLeft: v }))} />
-              <TireStatusSelect label="ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ" value={tires.frontRight} onChange={v => setTires(p => ({ ...p, frontRight: v }))} />
-              <TireStatusSelect label="ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂ©ÃÂÃÂÃÂ" value={tires.rearLeft} onChange={v => setTires(p => ({ ...p, rearLeft: v }))} />
-              <TireStatusSelect label="ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂÃÂÃÂ" value={tires.rearRight} onChange={v => setTires(p => ({ ...p, rearRight: v }))} />
-              <VoiceInput value={tiresNotes} onChange={setTiresNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ..." rows={2} />
+              <TireStatusSelect label="קדמי שמאל" value={tires.frontLeft} onChange={v => setTires(p => ({ ...p, frontLeft: v }))} />
+              <TireStatusSelect label="קדמי ימין" value={tires.frontRight} onChange={v => setTires(p => ({ ...p, frontRight: v }))} />
+              <TireStatusSelect label="אחורי שמאל" value={tires.rearLeft} onChange={v => setTires(p => ({ ...p, rearLeft: v }))} />
+              <TireStatusSelect label="אחורי ימין" value={tires.rearRight} onChange={v => setTires(p => ({ ...p, rearRight: v }))} />
+              <VoiceInput value={tiresNotes} onChange={setTiresNotes} placeholder="הערות צמיגים..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle icon={<Lightbulb className="text-teal-600" />}>ÃÂÃÂÃÂÃÂ§ÃÂª ÃÂÃÂÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ</CardTitle>
+            <CardTitle icon={<Lightbulb className="text-teal-600" />}>בדיקת אורות ומחוונים</CardTitle>
             <div className="space-y-2 mt-3">
               {[
-                { key: 'brakes', label: 'ÃÂÃÂÃÂÃÂÃÂ' },
-                { key: 'reverse', label: 'ÃÂÃÂÃÂ¨ ÃÂ¨ÃÂÃÂÃÂ¨ÃÂ¡' },
-                { key: 'fog', label: 'ÃÂ¢ÃÂ¨ÃÂ¤ÃÂ' },
-                { key: 'headlights', label: 'ÃÂÃÂÃÂ¨ ÃÂÃÂ¨ÃÂ' },
-                { key: 'frontSignal', label: 'ÃÂÃÂÃÂªÃÂÃÂª ÃÂ§ÃÂÃÂÃÂ' },
-                { key: 'rearSignal', label: 'ÃÂÃÂÃÂªÃÂÃÂª ÃÂÃÂÃÂÃÂ¨ÃÂ' },
-                { key: 'highBeam', label: 'ÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ' },
-                { key: 'plate', label: 'ÃÂÃÂÃÂÃÂÃÂª' },
+                { key: 'brakes', label: 'בלמים' },
+                { key: 'reverse', label: 'אור רוורס' },
+                { key: 'fog', label: 'ערפל' },
+                { key: 'headlights', label: 'אור דרך' },
+                { key: 'frontSignal', label: 'איתות קדמי' },
+                { key: 'rearSignal', label: 'איתות אחורי' },
+                { key: 'highBeam', label: 'אור גבוה' },
+                { key: 'plate', label: 'לוחית' },
               ].map(({ key, label }) => (
                 <LightStatusSelect key={key} label={label}
                   value={(lights as any)[key]}
                   onChange={v => setLights(p => ({ ...p, [key]: v }))} />
               ))}
-              <VoiceInput value={lightsNotes} onChange={setLightsNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂ¨ÃÂÃÂª..." rows={2} />
+              <VoiceInput value={lightsNotes} onChange={setLightsNotes} placeholder="הערות אורות..." rows={2} />
             </div>
           </Card>
         </>
@@ -1154,97 +1154,97 @@ export default function NewInspectionPage() {
       {inspectionType === 'full' && step === 5 && (
         <>
           <Card>
-            <CardTitle icon={<Settings className="text-teal-600" />}>ÃÂ¡ÃÂ¨ÃÂ ÃÂ§ÃÂÃÂÃÂ</CardTitle>
+            <CardTitle icon={<Settings className="text-teal-600" />}>סרן קדמי</CardTitle>
             <div className="space-y-2 mt-3">
               {[
-                { key: 'stabilizerBars', label: 'ÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ¦ÃÂ' },
-                { key: 'controlArms', label: 'ÃÂÃÂ¨ÃÂÃÂ¢ÃÂÃÂª' },
-                { key: 'bushings', label: 'ÃÂÃÂÃÂÃÂÃÂÃÂª' },
-                { key: 'wheelBearings', label: 'ÃÂÃÂÃÂ¡ÃÂÃÂ ÃÂÃÂÃÂÃÂ' },
+                { key: 'stabilizerBars', label: 'מוטות מייצב' },
+                { key: 'controlArms', label: 'זרועות' },
+                { key: 'bushings', label: 'גומיות' },
+                { key: 'wheelBearings', label: 'מיסבי גלגל' },
               ].map(({ key, label }) => (
                 <LightStatusSelect key={key} label={label}
                   value={frontAxleItems[key] || ''}
                   onChange={v => setFrontAxleItems(p => ({ ...p, [key]: v }))} />
               ))}
-              <VoiceInput value={frontAxleNotes} onChange={setFrontAxleNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ¡ÃÂ¨ÃÂ..." rows={2} />
+              <VoiceInput value={frontAxleNotes} onChange={setFrontAxleNotes} placeholder="הערות סרן..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle icon={<Gauge className="text-teal-600" />}>ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ</CardTitle>
+            <CardTitle icon={<Gauge className="text-teal-600" />}>מערכת היגוי</CardTitle>
             <div className="space-y-2 mt-3">
               {[
-                { key: 'steeringWheel', label: 'ÃÂÃÂÃÂ (ÃÂÃÂ©ÃÂÃÂ§)' },
-                { key: 'pump', label: 'ÃÂÃÂ©ÃÂÃÂÃÂª ÃÂÃÂÃÂ' },
-                { key: 'rack', label: 'ÃÂªÃÂÃÂÃÂª ÃÂÃÂÃÂ' },
-                { key: 'column', label: 'ÃÂ¢ÃÂÃÂÃÂ ÃÂÃÂÃÂ' },
-                { key: 'alignment', label: 'ÃÂÃÂÃÂÃÂÃÂ (ÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂ)' },
+                { key: 'steeringWheel', label: 'הגה (משחק)' },
+                { key: 'pump', label: 'משאבת הגה' },
+                { key: 'rack', label: 'תיבת הגה' },
+                { key: 'column', label: 'עמוד הגה' },
+                { key: 'alignment', label: 'כיוון (אלינמנט)' },
               ].map(({ key, label }) => (
                 <LightStatusSelect key={key} label={label}
                   value={steeringItems[key] || ''}
                   onChange={v => setSteeringItems(p => ({ ...p, [key]: v }))} />
               ))}
-              <VoiceInput value={steeringNotes} onChange={setSteeringNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ..." rows={2} />
+              <VoiceInput value={steeringNotes} onChange={setSteeringNotes} placeholder="הערות היגוי..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>ÃÂÃÂ¦ÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ</CardTitle>
+            <CardTitle>מצב בולמים</CardTitle>
             <div className="space-y-2 mt-3">
-              <ShockStatusSelect label="ÃÂ§ÃÂÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ" value={shocksData.frontLeft} onChange={v => setShocksData(p => ({ ...p, frontLeft: v }))} />
-              <ShockStatusSelect label="ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ" value={shocksData.frontRight} onChange={v => setShocksData(p => ({ ...p, frontRight: v }))} />
-              <ShockStatusSelect label="ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂ©ÃÂÃÂÃÂ" value={shocksData.rearLeft} onChange={v => setShocksData(p => ({ ...p, rearLeft: v }))} />
-              <ShockStatusSelect label="ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂÃÂÃÂ" value={shocksData.rearRight} onChange={v => setShocksData(p => ({ ...p, rearRight: v }))} />
-              <VoiceInput value={shocksNotes} onChange={setShocksNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂ..." rows={2} />
+              <ShockStatusSelect label="קדמי שמאל" value={shocksData.frontLeft} onChange={v => setShocksData(p => ({ ...p, frontLeft: v }))} />
+              <ShockStatusSelect label="קדמי ימין" value={shocksData.frontRight} onChange={v => setShocksData(p => ({ ...p, frontRight: v }))} />
+              <ShockStatusSelect label="אחורי שמאל" value={shocksData.rearLeft} onChange={v => setShocksData(p => ({ ...p, rearLeft: v }))} />
+              <ShockStatusSelect label="אחורי ימין" value={shocksData.rearRight} onChange={v => setShocksData(p => ({ ...p, rearRight: v }))} />
+              <VoiceInput value={shocksNotes} onChange={setShocksNotes} placeholder="הערות בולמים..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>ÃÂ©ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨ÃÂÃÂ</CardTitle>
+            <CardTitle>שילדה ומרכב</CardTitle>
             <div className="space-y-3 mt-3">
-              <p className="text-xs text-gray-500 text-right">ÃÂ¡ÃÂÃÂ ÃÂÃÂª ÃÂÃÂ ÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂ ÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ:</p>
+              <p className="text-xs text-gray-500 text-right">סמן את כל הממצאים הרלוונטיים:</p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  'ÃÂªÃÂ§ÃÂÃÂ - ÃÂÃÂÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ',
-                  'ÃÂªÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¤ÃÂ ÃÂÃÂ',
-                  'ÃÂªÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂÃÂÃÂ¨',
-                  'ÃÂªÃÂÃÂÃÂ ÃÂ ÃÂ¦ÃÂ ÃÂÃÂÃÂÃÂ',
-                  'ÃÂªÃÂÃÂÃÂ ÃÂ ÃÂ¦ÃÂ ÃÂ©ÃÂÃÂÃÂ',
-                  'ÃÂ¤ÃÂ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂªÃÂÃÂ§ÃÂ',
-                  'ÃÂ¤ÃÂ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ',
-                  'ÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂªÃÂÃÂ§ÃÂ',
-                  'ÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂ¢ÃÂÃÂ',
-                  'ÃÂªÃÂÃÂ§ÃÂÃÂ ÃÂ ÃÂ¤ÃÂ ÃÂÃÂ¦ÃÂÃÂ¢',
-                  'ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ ÃÂÃÂÃÂ§ÃÂ ÃÂÃÂ¨ÃÂÃÂ',
-                  'ÃÂÃÂ ÃÂ£ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ¤ÃÂª',
-                  'ÃÂÃÂ ÃÂ£ ÃÂ©ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ¤ÃÂª',
-                  'ÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ¤ÃÂª',
-                  'ÃÂÃÂÃÂ¡ÃÂ ÃÂÃÂ ÃÂÃÂ¢ ÃÂÃÂÃÂÃÂÃÂ£',
-                  'ÃÂªÃÂ ÃÂÃÂÃÂ¢ÃÂ ÃÂÃÂªÃÂÃÂ§ÃÂ',
-                  'ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂÃÂ',
-                  'ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂªÃÂÃÂªÃÂÃÂª',
-                  'ÃÂ¨ÃÂÃÂªÃÂÃÂÃÂÃÂ',
-                  'ÃÂ¤ÃÂÃÂÃÂ© ÃÂ§ÃÂÃÂÃÂ ÃÂ¤ÃÂÃÂÃÂ',
-                  'ÃÂ¤ÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂ¤ÃÂÃÂÃÂ',
-                  'ÃÂ¡ÃÂÃÂ§ ÃÂÃÂ©ÃÂÃÂ©ÃÂ',
-                  'ÃÂ©ÃÂÃÂÃÂ ÃÂ¢ÃÂ§ÃÂÃÂÃÂ',
+                  'תקין - ללא ממצאים',
+                  'תאונה מלפנים',
+                  'תאונה מאחור',
+                  'תאונה צד ימין',
+                  'תאונה צד שמאל',
+                  'פח קדמי מתוקן',
+                  'פח קדמי מעוך',
+                  'פח אחורי מתוקן',
+                  'פח אחורי מעוך',
+                  'תיקוני פח וצבע',
+                  'הוחלפו חלקי מרכב',
+                  'כנף ימין מוחלפת',
+                  'כנף שמאל מוחלפת',
+                  'דלת מוחלפת',
+                  'מכסה מנוע מוחלף',
+                  'תא מטען מתוקן',
+                  'חלודה בשילדה',
+                  'חלודה בתחתית',
+                  'ריתוכים',
+                  'פגוש קדמי פגום',
+                  'פגוש אחורי פגום',
+                  'סדק בשמשה',
+                  'שלדה עקומה',
                 ].map(tag => (
                   <button key={tag} onClick={() => setBodyTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
                       bodyTags.includes(tag)
-                        ? tag === 'ÃÂªÃÂ§ÃÂÃÂ - ÃÂÃÂÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ' ? 'bg-green-600 text-white' : 'bg-red-500 text-white'
+                        ? tag === 'תקין - ללא ממצאים' ? 'bg-green-600 text-white' : 'bg-red-500 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}>{tag}</button>
                 ))}
               </div>
-              <VoiceInput value={bodyNotes} onChange={setBodyNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ..." rows={2} />
+              <VoiceInput value={bodyNotes} onChange={setBodyNotes} placeholder="הערות מרכב..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>ÃÂÃÂ¦ÃÂÃÂ¨</CardTitle>
+            <CardTitle>מצבר</CardTitle>
             <div className="space-y-3 mt-3">
               <div className="grid grid-cols-3 gap-1.5">
                 {[
-                  { value: 'original', label: 'ÃÂÃÂ§ÃÂÃÂ¨ÃÂ' },
-                  { value: 'not_visible', label: 'ÃÂÃÂ ÃÂ ÃÂÃÂªÃÂ ÃÂÃÂ¨ÃÂÃÂÃÂª' },
-                  { value: 'replaced', label: 'ÃÂÃÂÃÂÃÂÃÂ£' },
+                  { value: 'original', label: 'מקורי' },
+                  { value: 'not_visible', label: 'לא ניתן לראות' },
+                  { value: 'replaced', label: 'הוחלף' },
                 ].map(opt => (
                   <button key={opt.value} onClick={() => setBatteryStatus(opt.value)}
                     className={`p-2.5 rounded-xl border-2 text-xs sm:text-sm font-medium text-center transition ${
@@ -1253,7 +1253,7 @@ export default function NewInspectionPage() {
                 ))}
               </div>
               <div>
-                <label className="block text-sm text-gray-600 text-right mb-1">ÃÂªÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂ¦ÃÂÃÂ¨</label>
+                <label className="block text-sm text-gray-600 text-right mb-1">תאריך מצבר</label>
                 <input type="date" value={batteryDate} onChange={e => setBatteryDate(e.target.value)}
                   className="w-full rounded-xl border border-gray-300 p-3 text-sm" dir="ltr" />
               </div>
@@ -1266,31 +1266,31 @@ export default function NewInspectionPage() {
       {inspectionType === 'full' && step === 6 && (
         <>
           <Card>
-            <CardTitle icon={<Droplets className="text-teal-600" />}>ÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂÃÂ¢</CardTitle>
+            <CardTitle icon={<Droplets className="text-teal-600" />}>נוזלי מנוע</CardTitle>
             <div className="space-y-2 mt-3">
-              <FluidStatusSelect label="ÃÂ ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ" value={fluids.brakeFluid} onChange={v => setFluids(p => ({ ...p, brakeFluid: v }))} />
-              <FluidStatusSelect label="ÃÂ©ÃÂÃÂ ÃÂÃÂ ÃÂÃÂ¢" value={fluids.engineOil} onChange={v => setFluids(p => ({ ...p, engineOil: v }))} />
-              <FluidStatusSelect label="ÃÂ ÃÂÃÂÃÂ ÃÂ§ÃÂÃÂ¨ÃÂÃÂ¨" value={fluids.coolant} onChange={v => setFluids(p => ({ ...p, coolant: v }))} />
-              <VoiceInput value={fluidsNotes} onChange={setFluidsNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ ÃÂÃÂÃÂÃÂÃÂ..." rows={2} />
+              <FluidStatusSelect label="נוזל בלמים" value={fluids.brakeFluid} onChange={v => setFluids(p => ({ ...p, brakeFluid: v }))} />
+              <FluidStatusSelect label="שמן מנוע" value={fluids.engineOil} onChange={v => setFluids(p => ({ ...p, engineOil: v }))} />
+              <FluidStatusSelect label="נוזל קירור" value={fluids.coolant} onChange={v => setFluids(p => ({ ...p, coolant: v }))} />
+              <VoiceInput value={fluidsNotes} onChange={setFluidsNotes} placeholder="הערות נוזלים..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle icon={<Wind className="text-teal-600" />}>ÃÂÃÂ¢ÃÂ¨ÃÂÃÂÃÂª ÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂÃÂª</CardTitle>
+            <CardTitle icon={<Wind className="text-teal-600" />}>מערכות פנימיות</CardTitle>
             <div className="space-y-2 mt-3">
-              <LightStatusSelect label="ÃÂÃÂÃÂÃÂ - ÃÂ§ÃÂÃÂ¨" value={interiorAcCold} onChange={setInteriorAcCold} />
-              <LightStatusSelect label="ÃÂÃÂÃÂÃÂ - ÃÂÃÂÃÂ" value={interiorAcHot} onChange={setInteriorAcHot} />
-              <LightStatusSelect label="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ©ÃÂÃÂ¢" value={interiorAudio} onChange={setInteriorAudio} />
-              <VoiceInput value={interiorNotes} onChange={setInteriorNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂ¢ÃÂ¨ÃÂÃÂÃÂª ÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂÃÂª..." rows={2} />
+              <LightStatusSelect label="מזגן - קור" value={interiorAcCold} onChange={setInteriorAcCold} />
+              <LightStatusSelect label="מזגן - חום" value={interiorAcHot} onChange={setInteriorAcHot} />
+              <LightStatusSelect label="מערכת שמע" value={interiorAudio} onChange={setInteriorAudio} />
+              <VoiceInput value={interiorNotes} onChange={setInteriorNotes} placeholder="הערות מערכות פנימיות..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>ÃÂÃÂÃÂÃÂ ÃÂÃÂª ÃÂÃÂ©ÃÂÃÂ</CardTitle>
+            <CardTitle>חלונות חשמל</CardTitle>
             <div className="space-y-2 mt-3">
-              <LightStatusSelect label="ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂ©ÃÂÃÂÃÂ" value={windows.rearLeft} onChange={v => setWindows(p => ({ ...p, rearLeft: v }))} />
-              <LightStatusSelect label="ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂÃÂÃÂ" value={windows.rearRight} onChange={v => setWindows(p => ({ ...p, rearRight: v }))} />
-              <LightStatusSelect label="ÃÂ§ÃÂÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ" value={windows.frontLeft} onChange={v => setWindows(p => ({ ...p, frontLeft: v }))} />
-              <LightStatusSelect label="ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ" value={windows.frontRight} onChange={v => setWindows(p => ({ ...p, frontRight: v }))} />
-              <VoiceInput value={windowsNotes} onChange={setWindowsNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂ ÃÂÃÂª..." rows={2} />
+              <LightStatusSelect label="אחורי שמאל" value={windows.rearLeft} onChange={v => setWindows(p => ({ ...p, rearLeft: v }))} />
+              <LightStatusSelect label="אחורי ימין" value={windows.rearRight} onChange={v => setWindows(p => ({ ...p, rearRight: v }))} />
+              <LightStatusSelect label="קדמי שמאל" value={windows.frontLeft} onChange={v => setWindows(p => ({ ...p, frontLeft: v }))} />
+              <LightStatusSelect label="קדמי ימין" value={windows.frontRight} onChange={v => setWindows(p => ({ ...p, frontRight: v }))} />
+              <VoiceInput value={windowsNotes} onChange={setWindowsNotes} placeholder="הערות חלונות..." rows={2} />
             </div>
           </Card>
         </>
@@ -1300,50 +1300,50 @@ export default function NewInspectionPage() {
       {inspectionType === 'full' && step === 7 && (
         <>
           <Card>
-            <CardTitle className="text-red-600">ÃÂÃÂ¢ÃÂÃÂÃÂª ÃÂÃÂ ÃÂÃÂ¢</CardTitle>
+            <CardTitle className="text-red-600">בעיות מנוע</CardTitle>
             <div className="space-y-3 mt-3">
               <div className="flex flex-wrap gap-2">
                 {[
-                  'ÃÂ¨ÃÂ¢ÃÂ© ÃÂ¨ÃÂ¦ÃÂÃÂ¢ÃÂÃÂª', 'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ©ÃÂÃÂ', 'ÃÂ¨ÃÂ¢ÃÂ© ÃÂÃÂ ÃÂÃÂ¢', 'ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂªÃÂ¨', 'ÃÂ¢ÃÂ©ÃÂ',
-                  'ÃÂ¨ÃÂ¢ÃÂÃÂÃÂÃÂª', 'ÃÂÃÂ¨ÃÂÃÂÃÂª ÃÂÃÂÃÂ', 'ÃÂ ÃÂÃÂ¨ÃÂÃÂª CHECK ENGINE', 'ÃÂÃÂ¢ÃÂÃÂÃÂª ÃÂÃÂªÃÂ ÃÂ¢ÃÂ',
-                  'ÃÂ¦ÃÂ¨ÃÂÃÂÃÂª ÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂÃÂ',
+                  'רעש רצועות', 'דליפת שמן', 'רעש מנוע', 'חימום יתר', 'עשן',
+                  'רעידות', 'ירידת כוח', 'נורית CHECK ENGINE', 'בעיית התנעה',
+                  'צריכת דלק גבוהה',
                 ].map(issue => (
                   <button key={issue} onClick={() => setEngineIssuesList(prev => prev.includes(issue) ? prev.filter(i => i !== issue) : [...prev, issue])}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
                       engineIssuesList.includes(issue) ? 'bg-red-500 text-white' : 'bg-red-50 text-red-600 border border-red-200'
-                    }`}>Ã¢ÂÂ {issue}</button>
+                    }`}>● {issue}</button>
                 ))}
               </div>
-              <VoiceInput value={engineNotes} onChange={setEngineNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂ ÃÂÃÂ¢..." rows={2} />
+              <VoiceInput value={engineNotes} onChange={setEngineNotes} placeholder="הערות מנוע..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle className="text-amber-600">ÃÂÃÂ¢ÃÂÃÂÃÂª ÃÂªÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ</CardTitle>
+            <CardTitle className="text-amber-600">בעיות תיבת הילוכים</CardTitle>
             <div className="space-y-3 mt-3">
               <div className="flex flex-wrap gap-2">
                 {[
-                  'ÃÂ¨ÃÂ¢ÃÂ© ÃÂÃÂÃÂ¢ÃÂÃÂ¨ÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ', 'ÃÂ§ÃÂÃÂ©ÃÂ ÃÂÃÂÃÂ¢ÃÂÃÂ¨ÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ', 'ÃÂÃÂÃÂÃÂÃÂ ÃÂ§ÃÂÃÂ¤ÃÂ¥',
-                  'ÃÂÃÂÃÂÃÂ§ÃÂª ÃÂÃÂ¦ÃÂÃÂ', 'ÃÂÃÂ¦ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ§', 'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ©ÃÂÃÂ ÃÂªÃÂÃÂÃÂ',
-                  'ÃÂ¨ÃÂ¢ÃÂ© ÃÂÃÂÃÂ¤ÃÂ¨ÃÂ ÃÂ¦ÃÂÃÂÃÂ', 'ÃÂ¨ÃÂ¢ÃÂÃÂÃÂÃÂª', 'ÃÂ ÃÂÃÂ¨ÃÂÃÂª ÃÂªÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
-                  'ÃÂÃÂ¦ÃÂ ÃÂÃÂÃÂ¨ÃÂÃÂ (Limp Mode)',
+                  'רעש בהעברת הילוכים', 'קושי בהעברת הילוכים', 'הילוך קופץ',
+                  'החלקת מצמד', 'מצמד שחוק', 'דליפת שמן תיבה',
+                  'רעש דיפרנציאל', 'רעידות', 'נורית תיבת הילוכים',
+                  'מצב חירום (Limp Mode)',
                 ].map(issue => (
                   <button key={issue} onClick={() => setGearboxIssuesList(prev => prev.includes(issue) ? prev.filter(i => i !== issue) : [...prev, issue])}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
                       gearboxIssuesList.includes(issue) ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-600 border border-amber-200'
-                    }`}>Ã¢ÂÂ {issue}</button>
+                    }`}>● {issue}</button>
                 ))}
               </div>
-              <VoiceInput value={gearboxNotes} onChange={setGearboxNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂªÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ..." rows={2} />
+              <VoiceInput value={gearboxNotes} onChange={setGearboxNotes} placeholder="הערות תיבת הילוכים..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ</CardTitle>
+            <CardTitle>מערכת בלימה</CardTitle>
             <div className="space-y-4 mt-3">
               {[
-                { key: 'frontDiscs', label: 'ÃÂ¦ÃÂÃÂÃÂÃÂª ÃÂ§ÃÂÃÂÃÂÃÂÃÂª' },
-                { key: 'rearDiscs', label: 'ÃÂ¦ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂª' },
-                { key: 'frontPads', label: 'ÃÂ¨ÃÂ¤ÃÂÃÂÃÂÃÂª ÃÂ§ÃÂÃÂÃÂÃÂÃÂª' },
-                { key: 'rearPads', label: 'ÃÂ¨ÃÂ¤ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂª' },
+                { key: 'frontDiscs', label: 'צלחות קדמיות' },
+                { key: 'rearDiscs', label: 'צלחות אחוריות' },
+                { key: 'frontPads', label: 'רפידות קדמיות' },
+                { key: 'rearPads', label: 'רפידות אחוריות' },
               ].map(({ key, label }) => (
                 <div key={key} className="space-y-1">
                   <div className="flex justify-between text-sm">
@@ -1357,11 +1357,11 @@ export default function NewInspectionPage() {
                     className="w-full accent-teal-600" />
                 </div>
               ))}
-              <VoiceInput value={brakeNotes} onChange={setBrakeNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ..." rows={2} />
+              <VoiceInput value={brakeNotes} onChange={setBrakeNotes} placeholder="הערות בלמים..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>ÃÂ¡ÃÂ¨ÃÂÃÂÃÂ / ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂªÃÂÃÂªÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ</CardTitle>
+            <CardTitle>סרטון / הערות תחתית הרכב</CardTitle>
             <div className="space-y-3 mt-3">
               {/* Upload buttons */}
               <div className="flex gap-2">
@@ -1381,7 +1381,7 @@ export default function NewInspectionPage() {
                   }}
                   className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition text-sm font-medium"
                 >
-                  <Video size={18} /> ÃÂ¦ÃÂÃÂ ÃÂ¡ÃÂ¨ÃÂÃÂÃÂ
+                  <Video size={18} /> צלם סרטון
                 </button>
                 <button
                   onClick={() => {
@@ -1402,7 +1402,7 @@ export default function NewInspectionPage() {
                   }}
                   className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-teal-300 bg-teal-50 text-teal-700 hover:bg-teal-100 transition text-sm font-medium"
                 >
-                  <Plus size={18} /> ÃÂÃÂ¢ÃÂÃÂ ÃÂ§ÃÂÃÂÃÂ¥
+                  <Plus size={18} /> העלה קובץ
                 </button>
               </div>
 
@@ -1430,7 +1430,7 @@ export default function NewInspectionPage() {
                 </div>
               )}
 
-              <VoiceInput value={undercarNotes} onChange={setUndercarNotes} placeholder="ÃÂªÃÂÃÂªÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ ÃÂ ÃÂ§ÃÂÃÂ, ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂÃÂÃÂª..." rows={3} />
+              <VoiceInput value={undercarNotes} onChange={setUndercarNotes} placeholder="תחתית הרכב נקיה, אין נזילות..." rows={3} />
             </div>
           </Card>
         </>
@@ -1441,7 +1441,7 @@ export default function NewInspectionPage() {
         <>
           {/* Quick Summary */}
           <Card>
-            <CardTitle>ÃÂ¡ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¨</CardTitle>
+            <CardTitle>סיכום מהיר</CardTitle>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
               {getSectionSummary().map(s => (
                 <div key={s.label} className={`p-2 rounded-lg text-center text-xs font-medium ${
@@ -1450,51 +1450,51 @@ export default function NewInspectionPage() {
                   s.status === 'critical' ? 'bg-red-50 text-red-700 border border-red-200' :
                   'bg-gray-50 text-gray-500'
                 }`}>
-                  {s.status === 'ok' ? 'Ã¢ÂÂ' : s.status === 'warning' ? '!' : s.status === 'critical' ? 'Ã¢ÂÂ' : 'Ã¢ÂÂ'} {s.label}
+                  {s.status === 'ok' ? '✓' : s.status === 'warning' ? '!' : s.status === 'critical' ? '✕' : '—'} {s.label}
                 </div>
               ))}
             </div>
           </Card>
 
           <Card>
-            <CardTitle>ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª</CardTitle>
+            <CardTitle>הערות</CardTitle>
             <div className="space-y-3 mt-3">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">ÃÂªÃÂÃÂªÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ</label>
-                <VoiceInput value={notesUndercar} onChange={setNotesUndercar} placeholder="ÃÂªÃÂÃÂªÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ..." rows={2} />
+                <label className="block text-xs text-gray-500 mb-1">תחתית הרכב</label>
+                <VoiceInput value={notesUndercar} onChange={setNotesUndercar} placeholder="תחתית הרכב..." rows={2} />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">ÃÂÃÂ ÃÂÃÂ¢</label>
-                <VoiceInput value={notesEngine} onChange={setNotesEngine} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂ ÃÂÃÂ¢..." rows={2} />
+                <label className="block text-xs text-gray-500 mb-1">מנוע</label>
+                <VoiceInput value={notesEngine} onChange={setNotesEngine} placeholder="הערות מנוע..." rows={2} />
               </div>
             </div>
           </Card>
 
           <Card>
-            <CardTitle>ÃÂÃÂÃÂÃÂ¦ÃÂÃÂª ÃÂÃÂªÃÂÃÂ§ÃÂÃÂ</CardTitle>
+            <CardTitle>המלצות לתיקון</CardTitle>
             <div className="space-y-3 mt-3">
               {recommendations.map((rec, idx) => (
                 <div key={idx} className="p-3 bg-yellow-50 rounded-xl space-y-2 border border-yellow-200">
                   <input type="text" value={rec.text} onChange={e => { const n = [...recommendations]; n[idx].text = e.target.value; setRecommendations(n); }}
-                    placeholder="ÃÂÃÂÃÂ©ÃÂ: ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ - ÃÂÃÂÃÂ¨ÃÂ© ÃÂÃÂÃÂÃÂ¤ÃÂ" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" dir="rtl" />
+                    placeholder="למשל: בלמים בלויים - דורש החלפה" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" dir="rtl" />
                   <div className="flex flex-wrap gap-2">
                     <select value={rec.urgency} onChange={e => { const n = [...recommendations]; n[idx].urgency = e.target.value; setRecommendations(n); }}
                       className="flex-1 min-w-[140px] rounded-lg border border-gray-300 px-2 py-1.5 text-xs">
-                      <option>ÃÂÃÂ©ÃÂÃÂÃÂ¢ÃÂÃÂª ÃÂÃÂ§ÃÂ¨ÃÂÃÂÃÂÃÂ</option>
-                      <option>ÃÂÃÂÃÂÃÂ£ - ÃÂÃÂÃÂÃÂÃÂ</option>
-                      <option>ÃÂªÃÂÃÂ ÃÂÃÂÃÂÃÂ©</option>
-                      <option>ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂÃÂÃÂ</option>
+                      <option>בשבועות הקרובים</option>
+                      <option>דחוף - מיידי</option>
+                      <option>תוך חודש</option>
+                      <option>במהלך הטיפול הבא</option>
                     </select>
                     <input type="text" value={rec.estimatedCost} onChange={e => { const n = [...recommendations]; n[idx].estimatedCost = e.target.value; setRecommendations(n); }}
-                      placeholder="ÃÂ¢ÃÂÃÂÃÂª: Ã¢ÂÂª800" className="w-24 sm:w-28 rounded-lg border border-gray-300 px-2 py-1.5 text-xs" dir="rtl" />
+                      placeholder="עלות: ₪800" className="w-24 sm:w-28 rounded-lg border border-gray-300 px-2 py-1.5 text-xs" dir="rtl" />
                     {recommendations.length > 1 && (
                       <button onClick={() => setRecommendations(recommendations.filter((_, i) => i !== idx))} className="text-red-500 px-2"><X size={14} /></button>
                     )}
                   </div>
                 </div>
               ))}
-              <button onClick={() => setRecommendations([...recommendations, { text: '', urgency: 'ÃÂÃÂ©ÃÂÃÂÃÂ¢ÃÂÃÂª ÃÂÃÂ§ÃÂ¨ÃÂÃÂÃÂÃÂ', estimatedCost: '' }])}
-                className="w-full p-2 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm hover:border-teal-400 transition">+ ÃÂÃÂÃÂ¡ÃÂ£ ÃÂÃÂÃÂÃÂ¦ÃÂ</button>
+              <button onClick={() => setRecommendations([...recommendations, { text: '', urgency: 'בשבועות הקרובים', estimatedCost: '' }])}
+                className="w-full p-2 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm hover:border-teal-400 transition">+ הוסף המלצה</button>
             </div>
           </Card>
 
@@ -1503,9 +1503,9 @@ export default function NewInspectionPage() {
             <div className="flex items-start gap-2.5">
               <AlertTriangle size={18} className="text-red-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs text-red-800 font-bold mb-1">ÃÂÃÂ¦ÃÂÃÂ¨ÃÂ ÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂª Ã¢ÂÂ ÃÂÃÂ© ÃÂÃÂÃÂ§ÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂ§ÃÂÃÂ:</p>
+                <p className="text-xs text-red-800 font-bold mb-1">הצהרה רגולטורית — יש להקריא ללקוח:</p>
                 <p className="text-xs text-red-700 leading-relaxed">
-                  &quot;ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂª ÃÂÃÂ¢ÃÂª ÃÂÃÂ§ÃÂ¦ÃÂÃÂ¢ÃÂÃÂª ÃÂ©ÃÂ ÃÂÃÂÃÂÃÂ¡ÃÂ ÃÂÃÂÃÂÃÂ. ÃÂÃÂÃÂ ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂª ÃÂÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂ©ÃÂÃÂ ÃÂÃÂÃÂ¨ÃÂ©ÃÂ ÃÂÃÂÃÂ¢ÃÂ ÃÂÃÂ©ÃÂ¨ÃÂ ÃÂÃÂªÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂªÃÂÃÂ§ÃÂ£ ÃÂÃÂ©ÃÂ¤ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ. ÃÂÃÂÃÂÃÂÃÂ¥ ÃÂÃÂÃÂ¦ÃÂ¢ ÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂÃÂÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂ©ÃÂÃÂ ÃÂÃÂÃÂ¨ÃÂ©ÃÂ, ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¤ÃÂ ÃÂ ÃÂ¨ÃÂÃÂÃÂ©ÃÂª ÃÂ¨ÃÂÃÂ.&quot;
+                  &quot;בדיקה זו מהווה חוות דעת מקצועית של המוסך בלבד. היא אינה מהווה בדיקת מכון רישוי מורשה מטעם משרד התחבורה ואין לה תוקף משפטי מחייב. מומלץ לבצע גם בדיקה במכון רישוי מורשה, במיוחד לפני רכישת רכב.&quot;
                 </p>
               </div>
             </div>
@@ -1513,12 +1513,12 @@ export default function NewInspectionPage() {
 
           {/* Customer Signature */}
           <Card>
-            <CardTitle icon={<PenLine className="text-teal-600" />}>ÃÂÃÂªÃÂÃÂÃÂª ÃÂÃÂ§ÃÂÃÂ</CardTitle>
-            <p className="text-sm text-gray-500 mt-1 mb-3">ÃÂÃÂ©ÃÂ¨ ÃÂ§ÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂªÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª</p>
+            <CardTitle icon={<PenLine className="text-teal-600" />}>חתימת לקוח</CardTitle>
+            <p className="text-sm text-gray-500 mt-1 mb-3">אשר קבלת הדוח בחתימה דיגיטלית</p>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <Input label="ÃÂ©ÃÂ ÃÂÃÂÃÂ" placeholder="ÃÂ©ÃÂ ÃÂÃÂÃÂ§ÃÂÃÂ" value={customerName} onChange={e => setCustomerName(e.target.value)} />
-                <Input label='ÃÂÃÂ¡ÃÂ¤ÃÂ¨ ÃÂª"ÃÂ' placeholder="012345678" value={customerIdNumber} onChange={e => setCustomerIdNumber(e.target.value)} />
+                <Input label="שם מלא" placeholder="שם הלקוח" value={customerName} onChange={e => setCustomerName(e.target.value)} />
+                <Input label='מספר ת"ז' placeholder="012345678" value={customerIdNumber} onChange={e => setCustomerIdNumber(e.target.value)} />
               </div>
               <div className="border-2 border-gray-200 rounded-xl overflow-hidden bg-white">
                 <canvas ref={canvasRef} className="touch-none cursor-crosshair block"
@@ -1526,7 +1526,7 @@ export default function NewInspectionPage() {
                   onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={stopDrawing} />
               </div>
               <div className="flex gap-2">
-                <button onClick={clearSignature} className="text-sm text-red-500 hover:underline">ÃÂ ÃÂ§ÃÂ ÃÂÃÂªÃÂÃÂÃÂ</button>
+                <button onClick={clearSignature} className="text-sm text-red-500 hover:underline">נקה חתימה</button>
               </div>
             </div>
           </Card>
@@ -1536,16 +1536,16 @@ export default function NewInspectionPage() {
       {/* ====== VEHICLE PHOTO + INVOICE (shared for non-full types) ====== */}
       {inspectionType !== 'full' && step === 2 && (
         <Card>
-          <CardTitle icon={<Camera className="text-teal-600" />}>ÃÂªÃÂÃÂÃÂ ÃÂÃÂª</CardTitle>
+          <CardTitle icon={<Camera className="text-teal-600" />}>תמונות</CardTitle>
           <div className="grid grid-cols-2 gap-3 mt-3">
             {/* Vehicle front photo */}
             <div>
-              <p className="text-xs text-gray-500 text-right mb-2">ÃÂªÃÂÃÂÃÂ ÃÂª ÃÂ¨ÃÂÃÂ ÃÂÃÂ§ÃÂÃÂÃÂÃÂ</p>
+              <p className="text-xs text-gray-500 text-right mb-2">תמונת רכב מקדימה</p>
               {vehiclePhoto ? (
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
-                  <img src={vehiclePhoto} alt="ÃÂ¨ÃÂÃÂ" className="w-full h-full object-cover" />
+                  <img src={vehiclePhoto} alt="רכב" className="w-full h-full object-cover" />
                   <button onClick={() => setVehiclePhoto('')}
-                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">Ã¢ÂÂ</button>
+                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">✕</button>
                 </div>
               ) : (
                 <button onClick={() => {
@@ -1561,18 +1561,18 @@ export default function NewInspectionPage() {
                   input.click();
                 }} className="aspect-[4/3] w-full rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-teal-400 transition">
                   <Car size={28} className="text-gray-400" />
-                  <span className="text-xs text-gray-400 mt-1">ÃÂ¦ÃÂÃÂ ÃÂ¨ÃÂÃÂ</span>
+                  <span className="text-xs text-gray-400 mt-1">צלם רכב</span>
                 </button>
               )}
             </div>
             {/* Invoice/receipt photo */}
             <div>
-              <p className="text-xs text-gray-500 text-right mb-2">ÃÂÃÂ©ÃÂÃÂÃÂ ÃÂÃÂª / ÃÂ§ÃÂÃÂÃÂ</p>
+              <p className="text-xs text-gray-500 text-right mb-2">חשבונית / קבלה</p>
               {invoicePhoto ? (
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
-                  <img src={invoicePhoto} alt="ÃÂÃÂ©ÃÂÃÂÃÂ ÃÂÃÂª" className="w-full h-full object-cover" />
+                  <img src={invoicePhoto} alt="חשבונית" className="w-full h-full object-cover" />
                   <button onClick={() => setInvoicePhoto('')}
-                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">Ã¢ÂÂ</button>
+                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">✕</button>
                 </div>
               ) : (
                 <button onClick={() => {
@@ -1588,7 +1588,7 @@ export default function NewInspectionPage() {
                   input.click();
                 }} className="aspect-[4/3] w-full rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-teal-400 transition">
                   <PenLine size={28} className="text-gray-400" />
-                  <span className="text-xs text-gray-400 mt-1">ÃÂ¦ÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂ ÃÂÃÂª</span>
+                  <span className="text-xs text-gray-400 mt-1">צלם חשבונית</span>
                 </button>
               )}
             </div>
@@ -1596,28 +1596,28 @@ export default function NewInspectionPage() {
         </Card>
       )}
 
-      {/* ====== PRE-TEST CHECKLIST (ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¡ÃÂ) ====== */}
+      {/* ====== PRE-TEST CHECKLIST (הכנה לטסט) ====== */}
       {inspectionType === 'pre_test' && step === 2 && (
         <Card>
-          <CardTitle icon={<Search className="text-blue-600" />}>ÃÂ¦'ÃÂ§ÃÂÃÂÃÂ¡ÃÂ ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¡ÃÂ</CardTitle>
-          <p className="text-xs text-gray-500 mt-1 mb-3 text-right">ÃÂ¡ÃÂÃÂ V ÃÂÃÂÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂ©ÃÂ ÃÂÃÂÃÂ§ ÃÂÃÂªÃÂ§ÃÂÃÂ. ÃÂÃÂÃÂ¥ ÃÂ¢ÃÂ ÃÂÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂÃÂ¡ÃÂ¤ÃÂª ÃÂÃÂ¢ÃÂ¨ÃÂ.</p>
+          <CardTitle icon={<Search className="text-blue-600" />}>צ'קליסט הכנה לטסט</CardTitle>
+          <p className="text-xs text-gray-500 mt-1 mb-3 text-right">סמן V לכל פריט שנבדק ותקין. לחץ על הפריט להוספת הערה.</p>
           <div className="space-y-2 mt-3">
             {[
-              { key: 'tires', label: 'ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ (ÃÂÃÂ¦ÃÂ + ÃÂÃÂÃÂ¥)' },
-              { key: 'lights', label: 'ÃÂÃÂÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ' },
-              { key: 'brakes', label: 'ÃÂÃÂÃÂÃÂÃÂ' },
-              { key: 'mirrors', label: 'ÃÂÃÂ¨ÃÂÃÂÃÂª' },
-              { key: 'wipers', label: 'ÃÂÃÂÃÂÃÂÃÂ + ÃÂ ÃÂÃÂÃÂ' },
-              { key: 'horn', label: 'ÃÂ¦ÃÂÃÂ¤ÃÂ¨' },
-              { key: 'seatbelts', label: 'ÃÂÃÂÃÂÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂª' },
-              { key: 'exhaust', label: 'ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ¤ÃÂÃÂÃÂÃÂ' },
-              { key: 'steering', label: 'ÃÂÃÂÃÂÃÂÃÂ (ÃÂÃÂ©ÃÂÃÂ§)' },
-              { key: 'suspension', label: 'ÃÂÃÂªÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ' },
-              { key: 'fluids', label: 'ÃÂ ÃÂÃÂÃÂÃÂÃÂ (ÃÂ©ÃÂÃÂ, ÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂÃÂ)' },
-              { key: 'battery', label: 'ÃÂÃÂ¦ÃÂÃÂ¨' },
-              { key: 'handbrake', label: 'ÃÂÃÂÃÂ ÃÂÃÂ' },
-              { key: 'speedometer', label: 'ÃÂÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂª' },
-              { key: 'windows', label: 'ÃÂÃÂÃÂÃÂ ÃÂÃÂª ÃÂÃÂ©ÃÂÃÂ©ÃÂÃÂª' },
+              { key: 'tires', label: 'צמיגים (מצב + לחץ)' },
+              { key: 'lights', label: 'אורות ומחוונים' },
+              { key: 'brakes', label: 'בלמים' },
+              { key: 'mirrors', label: 'מראות' },
+              { key: 'wipers', label: 'מגבים + נוזל' },
+              { key: 'horn', label: 'צופר' },
+              { key: 'seatbelts', label: 'חגורות בטיחות' },
+              { key: 'exhaust', label: 'מערכת פליטה' },
+              { key: 'steering', label: 'היגוי (משחק)' },
+              { key: 'suspension', label: 'מתלים ובולמים' },
+              { key: 'fluids', label: 'נוזלים (שמן, מים, בלמים)' },
+              { key: 'battery', label: 'מצבר' },
+              { key: 'handbrake', label: 'בלם יד' },
+              { key: 'speedometer', label: 'מד מהירות' },
+              { key: 'windows', label: 'חלונות ושמשות' },
             ].map(item => (
               <div key={item.key} className="rounded-xl border border-gray-200 overflow-hidden transition-all">
                 <div className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 transition">
@@ -1636,7 +1636,7 @@ export default function NewInspectionPage() {
                         preTestItemNotes[item.key] ? 'bg-blue-100 text-blue-600' :
                         'bg-gray-200 text-gray-400 hover:bg-gray-300 hover:text-gray-600'
                       }`}
-                      title="ÃÂÃÂÃÂ¡ÃÂ£ ÃÂÃÂ¢ÃÂ¨ÃÂ"
+                      title="הוסף הערה"
                     >
                       <FileText size={14} />
                     </button>
@@ -1657,7 +1657,7 @@ export default function NewInspectionPage() {
                     <VoiceInput
                       value={preTestItemNotes[item.key] || ''}
                       onChange={(val) => setPreTestItemNotes(prev => ({ ...prev, [item.key]: val }))}
-                      placeholder={`ÃÂÃÂ¢ÃÂ¨ÃÂ ÃÂ${item.label}...`}
+                      placeholder={`הערה ל${item.label}...`}
                       rows={2}
                     />
                   </div>
@@ -1666,33 +1666,33 @@ export default function NewInspectionPage() {
             ))}
           </div>
           <div className="mt-4">
-            <p className="text-xs font-medium text-gray-600 mb-1 text-right">ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂª</p>
-            <VoiceInput value={preTestNotes} onChange={setPreTestNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ ÃÂÃÂ¡ÃÂ¤ÃÂÃÂª..." rows={3} />
+            <p className="text-xs font-medium text-gray-600 mb-1 text-right">הערות כלליות</p>
+            <VoiceInput value={preTestNotes} onChange={setPreTestNotes} placeholder="הערות נוספות..." rows={3} />
           </div>
 
           {/* Work performed section */}
           <div className="mt-6 pt-4 border-t border-gray-200">
-            <h3 className="text-sm font-bold text-gray-800 text-right mb-2">ÃÂ¢ÃÂÃÂÃÂÃÂÃÂª ÃÂ©ÃÂÃÂÃÂ¦ÃÂ¢ÃÂ</h3>
-            <p className="text-xs text-gray-500 mb-3 text-right">ÃÂ¤ÃÂ¨ÃÂ ÃÂÃÂ ÃÂªÃÂÃÂ§ÃÂ, ÃÂÃÂÃÂÃÂÃÂ£ ÃÂÃÂ ÃÂÃÂÃÂÃÂ</p>
+            <h3 className="text-sm font-bold text-gray-800 text-right mb-2">עבודות שבוצעו</h3>
+            <p className="text-xs text-gray-500 mb-3 text-right">פרט מה תוקן, הוחלף או כוון</p>
 
             {preTestWorkItems.map((work, idx) => (
               <div key={idx} className="bg-white border border-gray-200 rounded-lg p-3 mb-2">
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <button onClick={() => setPreTestWorkItems(prev => prev.filter((_, i) => i !== idx))}
-                    className="text-red-400 hover:text-red-600 text-xs">Ã¢ÂÂ</button>
+                    className="text-red-400 hover:text-red-600 text-xs">✕</button>
                   <input value={work.item} onChange={e => {
                     const updated = [...preTestWorkItems];
                     updated[idx].item = e.target.value;
                     setPreTestWorkItems(updated);
-                  }} placeholder="ÃÂ©ÃÂ ÃÂÃÂ¤ÃÂ¨ÃÂÃÂ / ÃÂ¢ÃÂÃÂÃÂÃÂ" className="flex-1 text-sm border-b border-gray-200 pb-1 text-right focus:outline-none focus:border-teal-400" dir="rtl" />
+                  }} placeholder="שם הפריט / עבודה" className="flex-1 text-sm border-b border-gray-200 pb-1 text-right focus:outline-none focus:border-teal-400" dir="rtl" />
                 </div>
                 <div className="flex gap-1 flex-wrap mb-2 justify-end">
                   {[
-                    { value: 'replaced', label: 'ÃÂÃÂÃÂÃÂÃÂ£' },
-                    { value: 'fixed', label: 'ÃÂªÃÂÃÂ§ÃÂ' },
-                    { value: 'adjusted', label: 'ÃÂÃÂÃÂÃÂ' },
-                    { value: 'cleaned', label: 'ÃÂ ÃÂÃÂ§ÃÂ' },
-                    { value: 'checked', label: 'ÃÂ ÃÂÃÂÃÂ§' },
+                    { value: 'replaced', label: 'הוחלף' },
+                    { value: 'fixed', label: 'תוקן' },
+                    { value: 'adjusted', label: 'כוון' },
+                    { value: 'cleaned', label: 'נוקה' },
+                    { value: 'checked', label: 'נבדק' },
                   ].map(opt => (
                     <button key={opt.value} onClick={() => {
                       const updated = [...preTestWorkItems];
@@ -1708,29 +1708,29 @@ export default function NewInspectionPage() {
                     const updated = [...preTestWorkItems];
                     updated[idx].cost = e.target.value;
                     setPreTestWorkItems(updated);
-                  }} placeholder="ÃÂ¢ÃÂÃÂÃÂª Ã¢ÂÂª" type="number" className="w-20 text-xs border border-gray-200 rounded px-2 py-1 text-center" />
+                  }} placeholder="עלות ₪" type="number" className="w-20 text-xs border border-gray-200 rounded px-2 py-1 text-center" />
                   <input value={work.notes} onChange={e => {
                     const updated = [...preTestWorkItems];
                     updated[idx].notes = e.target.value;
                     setPreTestWorkItems(updated);
-                  }} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª" className="flex-1 text-xs border border-gray-200 rounded px-2 py-1 text-right" dir="rtl" />
+                  }} placeholder="הערות" className="flex-1 text-xs border border-gray-200 rounded px-2 py-1 text-right" dir="rtl" />
                 </div>
               </div>
             ))}
 
             <button onClick={() => setPreTestWorkItems(prev => [...prev, { item: '', action: 'replaced', notes: '', cost: '' }])}
               className="w-full py-2 mt-1 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-teal-400 hover:text-teal-600 transition">
-              + ÃÂÃÂÃÂ¡ÃÂ£ ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂ¢ÃÂÃÂÃÂÃÂ
+              + הוסף פריט עבודה
             </button>
 
             {/* Quick-add common pre-test work items */}
             <div className="mt-3">
-              <p className="text-xs text-gray-400 text-right mb-2">ÃÂ¤ÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂ ÃÂ¤ÃÂÃÂ¦ÃÂÃÂ:</p>
+              <p className="text-xs text-gray-400 text-right mb-2">פריטים נפוצים:</p>
               <div className="flex flex-wrap gap-1 justify-end">
                 {[
-                  'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ ÃÂÃÂ¨ÃÂ', 'ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨ÃÂÃÂª', 'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂÃÂÃÂ', 'ÃÂÃÂÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂÃÂÃÂ',
-                  'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¦ÃÂÃÂÃÂ', 'ÃÂ ÃÂÃÂ¤ÃÂÃÂ ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ', 'ÃÂªÃÂÃÂ§ÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂ', 'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ',
-                  'ÃÂªÃÂÃÂ§ÃÂÃÂ ÃÂ¤ÃÂÃÂÃÂÃÂ', 'ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¨ÃÂÃÂÃÂª', 'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂÃÂ¨ÃÂ', 'ÃÂªÃÂÃÂ§ÃÂÃÂ ÃÂ¦ÃÂÃÂ¤ÃÂ¨',
+                  'החלפת נורה', 'כיוון אורות', 'החלפת מגבים', 'מילוי נוזלים',
+                  'החלפת צמיג', 'ניפוח צמיגים', 'תיקון בלם יד', 'החלפת נוזל בלמים',
+                  'תיקון פליטה', 'כיוון מראות', 'החלפת חגורה', 'תיקון צופר',
                 ].map(item => (
                   <button key={item} onClick={() => {
                     if (!preTestWorkItems.find(w => w.item === item)) {
@@ -1746,34 +1746,34 @@ export default function NewInspectionPage() {
         </Card>
       )}
 
-      {/* ====== PERIODIC SERVICE (ÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ¤ÃÂªÃÂ) ====== */}
+      {/* ====== PERIODIC SERVICE (טיפול תקופתי) ====== */}
       {inspectionType === 'periodic' && step === 2 && (
         <>
           <Card>
-            <CardTitle icon={<Settings className="text-teal-600" />}>ÃÂ¤ÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂ¤ÃÂÃÂ</CardTitle>
-            <p className="text-xs text-gray-500 mt-1 mb-3 text-right">ÃÂ¡ÃÂÃÂ ÃÂÃÂª ÃÂÃÂ ÃÂÃÂ¤ÃÂ¢ÃÂÃÂÃÂÃÂª ÃÂ©ÃÂÃÂÃÂ¦ÃÂ¢ÃÂ ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ</p>
+            <CardTitle icon={<Settings className="text-teal-600" />}>פירוט טיפול</CardTitle>
+            <p className="text-xs text-gray-500 mt-1 mb-3 text-right">סמן את כל הפעולות שבוצעו בטיפול</p>
             <div className="flex flex-wrap gap-2 mt-3">
               {[
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ©ÃÂÃÂ ÃÂÃÂ ÃÂÃÂ¢',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¤ÃÂÃÂÃÂÃÂ¨ ÃÂ©ÃÂÃÂ',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¤ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂÃÂ¨',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¤ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂ§',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¤ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ ÃÂÃÂÃÂ ÃÂ§ÃÂÃÂ¨ÃÂÃÂ¨',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¨ÃÂ¦ÃÂÃÂ¢ÃÂÃÂª',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂ¦ÃÂª',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ',
-                'ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ',
-                'ÃÂÃÂÃÂÃÂÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂ',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂÃÂÃÂ ÃÂ§ÃÂÃÂÃÂÃÂÃÂ',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂ',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂ¡ÃÂ§ÃÂÃÂ',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂ¦ÃÂÃÂ¨',
-                'ÃÂ©ÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂ ÃÂÃÂ¢',
-                'ÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂÃÂÃÂÃÂ',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂ',
-                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ¦ÃÂ',
+                'החלפת שמן מנוע',
+                'החלפת פילטר שמן',
+                'החלפת פילטר אוויר',
+                'החלפת פילטר דלק',
+                'החלפת פילטר מזגן',
+                'החלפת נוזל בלמים',
+                'החלפת נוזל קירור',
+                'החלפת רצועות',
+                'החלפת מצת',
+                'החלפת צמיגים',
+                'איזון גלגלים',
+                'כיוון פרונט',
+                'החלפת בלמים קדמיים',
+                'החלפת בלמים אחוריים',
+                'החלפת דיסקים',
+                'החלפת מצבר',
+                'שטיפת מנוע',
+                'טיפול מזגן',
+                'החלפת בולמים',
+                'החלפת מוטות מייצב',
               ].map(item => (
                 <button key={item} onClick={() => setServiceItems(prev =>
                   prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]
@@ -1784,22 +1784,22 @@ export default function NewInspectionPage() {
             </div>
           </Card>
           <Card>
-            <CardTitle>ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂ¤ÃÂÃÂ</CardTitle>
-            <VoiceInput value={serviceNotes} onChange={setServiceNotes} placeholder="ÃÂ¤ÃÂÃÂ¨ÃÂÃÂ ÃÂ ÃÂÃÂ¡ÃÂ£ ÃÂ¢ÃÂ ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ..." rows={3} />
+            <CardTitle>הערות טיפול</CardTitle>
+            <VoiceInput value={serviceNotes} onChange={setServiceNotes} placeholder="פירוט נוסף על הטיפול..." rows={3} />
           </Card>
           <Card>
-            <CardTitle>ÃÂÃÂÃÂÃÂ¦ÃÂÃÂª ÃÂÃÂÃÂ©ÃÂ</CardTitle>
-            <VoiceInput value={serviceRecommendations} onChange={setServiceRecommendations} placeholder="ÃÂÃÂÃÂÃÂ¦ÃÂÃÂª ÃÂÃÂÃÂÃÂ¤ÃÂÃÂÃÂÃÂ ÃÂ¢ÃÂªÃÂÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂ¦ÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ£ ÃÂÃÂ§ÃÂ¨ÃÂÃÂ..." rows={3} />
+            <CardTitle>המלצות המשך</CardTitle>
+            <VoiceInput value={serviceRecommendations} onChange={setServiceRecommendations} placeholder="המלצות לטיפולים עתידיים, חלקים שצריך להחליף בקרוב..." rows={3} />
           </Card>
           <Card>
-            <CardTitle icon={<Camera className="text-teal-600" />}>ÃÂªÃÂÃÂÃÂ ÃÂÃÂª ÃÂÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ</CardTitle>
-            <p className="text-xs text-gray-500 mt-1 mb-3 text-right">ÃÂ¦ÃÂÃÂ ÃÂÃÂª ÃÂÃÂÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ ÃÂÃÂªÃÂÃÂ¢ÃÂÃÂ</p>
+            <CardTitle icon={<Camera className="text-teal-600" />}>תמונות חלקים שהוחלפו</CardTitle>
+            <p className="text-xs text-gray-500 mt-1 mb-3 text-right">צלם את החלקים שהוחלפו לתיעוד</p>
             <div className="grid grid-cols-3 gap-2 mt-2">
               {servicePhotos.map((photo, idx) => (
                 <div key={idx} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-                  <img src={photo} alt={`ÃÂÃÂÃÂ§ ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={photo} alt={`חלק ${idx + 1}`} className="w-full h-full object-cover" />
                   <button onClick={() => setServicePhotos(prev => prev.filter((_, i) => i !== idx))}
-                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">Ã¢ÂÂ</button>
+                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">✕</button>
                 </div>
               ))}
               <button onClick={() => {
@@ -1815,35 +1815,35 @@ export default function NewInspectionPage() {
                 input.click();
               }} className="aspect-square rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-teal-400 transition">
                 <Camera size={24} className="text-gray-400" />
-                <span className="text-xs text-gray-400 mt-1">ÃÂÃÂÃÂ¡ÃÂ£ ÃÂªÃÂÃÂÃÂ ÃÂ</span>
+                <span className="text-xs text-gray-400 mt-1">הוסף תמונה</span>
               </button>
             </div>
           </Card>
         </>
       )}
 
-      {/* ====== TROUBLESHOOT (ÃÂªÃÂÃÂ§ÃÂÃÂ/ÃÂÃÂÃÂÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ) ====== */}
+      {/* ====== TROUBLESHOOT (תיקון/אבחון תקלה) ====== */}
       {inspectionType === 'troubleshoot' && step === 2 && (
         <>
           <Card>
-            <CardTitle icon={<Wrench className="text-orange-600" />}>ÃÂªÃÂÃÂÃÂÃÂ¨ ÃÂÃÂªÃÂ§ÃÂÃÂ</CardTitle>
-            <VoiceInput value={troubleshootProblem} onChange={setTroubleshootProblem} placeholder="ÃÂªÃÂÃÂ¨ ÃÂÃÂª ÃÂÃÂªÃÂ§ÃÂÃÂ ÃÂÃÂ¤ÃÂ ÃÂ©ÃÂÃÂÃÂÃÂÃÂ ÃÂ¢ÃÂ ÃÂÃÂÃÂ ÃÂÃÂÃÂ§ÃÂÃÂ..." rows={3} />
+            <CardTitle icon={<Wrench className="text-orange-600" />}>תיאור התקלה</CardTitle>
+            <VoiceInput value={troubleshootProblem} onChange={setTroubleshootProblem} placeholder="תאר את התקלה כפי שדווחה על ידי הלקוח..." rows={3} />
           </Card>
           <Card>
-            <CardTitle>ÃÂÃÂÃÂÃÂÃÂ</CardTitle>
-            <VoiceInput value={troubleshootDiagnosis} onChange={setTroubleshootDiagnosis} placeholder="ÃÂÃÂÃÂ¦ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ - ÃÂÃÂ ÃÂ ÃÂÃÂ¦ÃÂ..." rows={3} />
+            <CardTitle>אבחון</CardTitle>
+            <VoiceInput value={troubleshootDiagnosis} onChange={setTroubleshootDiagnosis} placeholder="ממצאי האבחון - מה נמצא..." rows={3} />
           </Card>
           <Card>
-            <CardTitle>ÃÂªÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ¦ÃÂ¢</CardTitle>
-            <VoiceInput value={troubleshootFix} onChange={setTroubleshootFix} placeholder="ÃÂ¤ÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂªÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ¦ÃÂ¢..." rows={3} />
+            <CardTitle>תיקון שבוצע</CardTitle>
+            <VoiceInput value={troubleshootFix} onChange={setTroubleshootFix} placeholder="פירוט התיקון שבוצע..." rows={3} />
           </Card>
           <Card>
-            <CardTitle>ÃÂÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ</CardTitle>
-            <VoiceInput value={troubleshootParts} onChange={setTroubleshootParts} placeholder="ÃÂ¨ÃÂ©ÃÂÃÂÃÂª ÃÂÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ..." rows={2} />
+            <CardTitle>חלקים שהוחלפו</CardTitle>
+            <VoiceInput value={troubleshootParts} onChange={setTroubleshootParts} placeholder="רשימת חלקים שהוחלפו..." rows={2} />
           </Card>
           <Card>
-            <CardTitle>ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ ÃÂÃÂ¡ÃÂ¤ÃÂÃÂª</CardTitle>
-            <VoiceInput value={troubleshootNotes} onChange={setTroubleshootNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ ÃÂÃÂ¡ÃÂ¤ÃÂÃÂª, ÃÂÃÂÃÂÃÂ¦ÃÂÃÂª ÃÂÃÂÃÂ§ÃÂÃÂ..." rows={2} />
+            <CardTitle>הערות נוספות</CardTitle>
+            <VoiceInput value={troubleshootNotes} onChange={setTroubleshootNotes} placeholder="הערות נוספות, המלצות ללקוח..." rows={2} />
           </Card>
         </>
       )}
@@ -1853,31 +1853,31 @@ export default function NewInspectionPage() {
         <div className="flex gap-2 sticky bottom-20 lg:bottom-4 px-1 z-30">
           {step > 1 && (
             <Button variant="outline" className="flex-1" icon={<ArrowRight size={16} />}
-              onClick={() => setStep((step - 1) as Step)}>ÃÂÃÂÃÂÃÂ¨</Button>
+              onClick={() => setStep((step - 1) as Step)}>חזור</Button>
           )}
           {step === 1 && (
             <Button variant="outline" className="flex-1" icon={<ArrowRight size={16} />}
-              onClick={() => setStep(0 as Step)}>ÃÂ©ÃÂ ÃÂ ÃÂ¡ÃÂÃÂ ÃÂ¤ÃÂ¢ÃÂÃÂÃÂ</Button>
+              onClick={() => setStep(0 as Step)}>שנה סוג פעולה</Button>
           )}
           {/* Full inspection: continue through 8 steps */}
           {inspectionType === 'full' && step < 8 && (
             <Button className="flex-1" icon={<ArrowLeft size={16} />}
               onClick={() => setStep((step + 1) as Step)}
-              disabled={step === 1 && !selectedVehicleId && !isManualVehicleValid}>ÃÂÃÂÃÂ</Button>
+              disabled={step === 1 && !selectedVehicleId && !isManualVehicleValid}>הבא</Button>
           )}
           {inspectionType === 'full' && step === 8 && (
             <Button className="flex-1 bg-teal-600 hover:bg-teal-700" icon={<Save size={16} />}
-              loading={loading} onClick={handleSubmit}>ÃÂ©ÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂ</Button>
+              loading={loading} onClick={handleSubmit}>שלח בדיקה</Button>
           )}
-          {/* Non-full types: step 1 Ã¢ÂÂ step 2 (form), step 2 Ã¢ÂÂ submit */}
+          {/* Non-full types: step 1 → step 2 (form), step 2 → submit */}
           {inspectionType !== 'full' && step === 1 && (
             <Button className="flex-1" icon={<ArrowLeft size={16} />}
               onClick={() => setStep(2 as Step)}
-              disabled={!selectedVehicleId && !isManualVehicleValid}>ÃÂÃÂÃÂ</Button>
+              disabled={!selectedVehicleId && !isManualVehicleValid}>הבא</Button>
           )}
           {inspectionType !== 'full' && step === 2 && (
             <Button className="flex-1 bg-teal-600 hover:bg-teal-700" icon={<Save size={16} />}
-              loading={loading} onClick={handleSubmit}>ÃÂ©ÃÂÃÂÃÂ¨</Button>
+              loading={loading} onClick={handleSubmit}>שמור</Button>
           )}
           {/* Cancel button */}
           <Button variant="outline" className="px-3 text-red-500 border-red-200 hover:bg-red-50" icon={<X size={16} />}
@@ -1886,23 +1886,23 @@ export default function NewInspectionPage() {
       )}
 
       {/* Cancel Confirmation Modal */}
-      <Modal isOpen={showCancelModal} onClose={() => setShowCancelModal(false)} title="ÃÂÃÂ¦ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ¡?">
+      <Modal isOpen={showCancelModal} onClose={() => setShowCancelModal(false)} title="לצאת מהטופס?">
         <div className="text-center space-y-4">
-          <p className="text-gray-600">ÃÂÃÂÃÂÃÂÃÂ¢ ÃÂ©ÃÂÃÂÃÂ ÃÂª ÃÂÃÂ ÃÂÃÂÃÂ©ÃÂÃÂ¨. ÃÂÃÂÃÂ ÃÂÃÂªÃÂ ÃÂÃÂÃÂÃÂ ÃÂ©ÃÂÃÂ¨ÃÂ¦ÃÂÃÂ ÃÂ ÃÂÃÂ¦ÃÂÃÂª?</p>
+          <p className="text-gray-600">המידע שהזנת לא יישמר. האם אתה בטוח שברצונך לצאת?</p>
           <div className="flex gap-2">
-            <Button variant="outline" className="flex-1" onClick={() => setShowCancelModal(false)}>ÃÂÃÂÃÂ©ÃÂ ÃÂÃÂÃÂÃÂ</Button>
-            <Button className="flex-1 bg-red-500 hover:bg-red-600" onClick={() => router.push('/garage')}>ÃÂ¦ÃÂ ÃÂÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂ¨</Button>
+            <Button variant="outline" className="flex-1" onClick={() => setShowCancelModal(false)}>המשך למלא</Button>
+            <Button className="flex-1 bg-red-500 hover:bg-red-600" onClick={() => router.push('/garage')}>צא בלי לשמור</Button>
           </div>
         </div>
       </Modal>
 
       {/* Success Modal */}
-      <Modal isOpen={successModal} onClose={() => {}} title={inspectionType === 'full' ? 'ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂ ÃÂÃÂ¦ÃÂ¨ÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ!' : 'ÃÂ ÃÂ©ÃÂÃÂ¨ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ!'}>
+      <Modal isOpen={successModal} onClose={() => {}} title={inspectionType === 'full' ? 'בדיקה נוצרה בהצלחה!' : 'נשמר בהצלחה!'}>
         <div className="text-center space-y-4">
           <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto">
             <Check size={32} className="text-green-600" />
           </div>
-          <p className="text-gray-600">{inspectionTypes.find(t => t.value === inspectionType)?.label} ÃÂ ÃÂ©ÃÂÃÂ¨ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ</p>
+          <p className="text-gray-600">{inspectionTypes.find(t => t.value === inspectionType)?.label} נשמר בהצלחה</p>
           {inspectionType === 'full' && overallScore > 0 && (
             <div className="bg-teal-50 p-4 rounded-xl">
               <div className="text-3xl font-bold text-teal-600">{overallScore}</div>
@@ -1911,10 +1911,10 @@ export default function NewInspectionPage() {
           )}
           <div className="flex gap-2">
             <Button variant="outline" className="flex-1" onClick={() => { setSuccessModal(false); router.push('/garage/inspections'); }}>
-              ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂª
+              חזור לבדיקות
             </Button>
             <Button className="flex-1" onClick={() => { setSuccessModal(false); router.push(`/inspection/${successId}`); }}>
-              ÃÂ¦ÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂ
+              צפה בדוח
             </Button>
           </div>
         </div>
