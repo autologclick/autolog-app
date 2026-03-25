@@ -8,7 +8,7 @@ import Input from '@/components/ui/Input';
 import {
   Shield, Search, Plus, Eye, Download, Loader2,
   Car, ClipboardCheck, Wrench, Settings, FileText, AlertTriangle, ChevronDown, BarChart3,
-  Brain, TrendingUp, Target, Activity, PenLine
+  Brain, TrendingUp, Target, Activity, Send, PenLine
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -243,7 +243,7 @@ export default function GarageInspectionsPage() {
               <p className="text-xs text-gray-600">
                 {(() => {
                   const completed = inspections.filter(i => i.status === 'completed').length;
-                  const pending = inspections.filter(i => i.status === 'pending' || i.status === 'in_progress').length;
+                  const pending = inspections.filter(i => i.status === 'pending' || i.status === 'in_progress' || i.status === 'awaiting_signature').length;
                   if (pending > 0) return `â³ ${pending} ××××§××ª ××ª××××. ${completed} ×××©×××. ×¡×××× ××××§××ª ×¤×ª××××ª ××©××¤××¨ ××× × ×××¤××.`;
                   return `â ×× ${completed} ×××××§××ª ×××©×××. ×××¦××¢×× ××¦××× ××!`;
                 })()}
@@ -327,6 +327,20 @@ export default function GarageInspectionsPage() {
                     >
                       <Eye size={16} />
                     </button>
+                    {i.status === 'awaiting_signature' && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const url = `${window.location.origin}/inspection/${i.id}`;
+                          const msg = `שלום, דוח הבדיקה שלך מוכן. אנא חתום לאישור קבלת הדוח:\n${url}`;
+                          window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+                        }}
+                        className="p-2 rounded-lg text-green-500 hover:text-green-700 hover:bg-green-50 transition"
+                        title="שלח לחתימה בוואצאפ"
+                      >
+                        <Send size={16} />
+                      </button>
+                    )}
                     <button
                       onClick={(e) => handleDownload(i.id, e)}
                       className="p-2 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition"
