@@ -18,13 +18,13 @@ export async function GET(req: NextRequest) {
     const csrfToken = generateCsrfToken();
 
     // Store the token
-    storeCsrfToken(sessionId, csrfToken);
+    storeCsrfToken(sessionId!, csrfToken);
 
     const response = jsonResponse({ csrfToken });
 
     // Set session ID cookie if not already set
     if (!req.cookies.get('session-id')?.value) {
-      response.cookies.set('session-id', sessionId, {
+      response.cookies.set('session-id', sessionId!, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -36,6 +36,6 @@ export async function GET(req: NextRequest) {
     return response;
   } catch (error) {
     console.error('CSRF token generation error:', error);
-    return errorResponse('שגיאה בהנפקת טוקן אבטחה', 500);
+    return errorResponse('×©×××× ××× ×¤×§×ª ×××§× ×××××', 500);
   }
 }
