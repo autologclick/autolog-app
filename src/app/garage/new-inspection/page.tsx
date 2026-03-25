@@ -9,7 +9,7 @@ import VoiceInput from '@/components/ui/VoiceInput';
 import {
   Shield, Search, Check, AlertTriangle, X, Save, ArrowRight, ArrowLeft,
   Loader2, Camera, Video, Car, Wrench, Droplets, Gauge, Lightbulb,
-  CircleDot, Settings, Wind, Eye, PenLine, ScanLine, Plus, Keyboard, FileText
+  CircleDot, Settings, Wind, Eye, PenLine, ScanLine, Plus, Keyboard, FileText, Info
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -797,6 +797,16 @@ export default function NewInspectionPage() {
         </div>
       </div>
 
+      {/* Regulatory Disclaimer Banner */}
+      {inspectionType === 'full' && step > 0 && (
+        <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 flex items-start gap-2.5">
+          <Info size={18} className="text-amber-600 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-800 leading-relaxed">
+            <strong>\u05EA\u05D6\u05DB\u05D5\u05E8\u05EA:</strong> \u05D1\u05D3\u05D9\u05E7\u05D4 \u05D6\u05D5 \u05DE\u05D4\u05D5\u05D5\u05D4 \u05D7\u05D5\u05D5\u05EA \u05D3\u05E2\u05EA \u05DE\u05E7\u05E6\u05D5\u05E2\u05D9\u05EA \u05D1\u05DC\u05D1\u05D3 \u05D5\u05D0\u05D9\u05E0\u05D4 \u05DE\u05D4\u05D5\u05D5\u05D4 \u05D1\u05D3\u05D9\u05E7\u05EA \u05DE\u05DB\u05D5\u05DF \u05E8\u05D9\u05E9\u05D5\u05D9 \u05DE\u05D5\u05E8\u05E9\u05D4. \u05D0\u05D9\u05DF \u05DC\u05D4 \u05EA\u05D5\u05E7\u05E3 \u05DE\u05E9\u05E4\u05D8\u05D9 \u05DE\u05D7\u05D9\u05D9\u05D1 \u05D5\u05D4\u05D9\u05D0 \u05D0\u05D9\u05E0\u05D4 \u05DE\u05D7\u05DC\u05D9\u05E4\u05D4 \u05D1\u05D3\u05D9\u05E7\u05D4 \u05D4\u05E0\u05D3\u05E8\u05E9\u05EA \u05E2\u05DC \u05E4\u05D9 \u05D7\u05D5\u05E7. \u05D9\u05E9 \u05DC\u05D4\u05D1\u05D4\u05D9\u05E8 \u05D6\u05D0\u05EA \u05DC\u05DC\u05E7\u05D5\u05D7.
+          </p>
+        </div>
+      )}
+
       {/* Score Bar - only for full inspection */}
       {inspectionType === 'full' && overallScore > 0 && step > 0 && (
         <div className="bg-slate-800 rounded-xl p-3 sm:p-4 text-center text-white">
@@ -1489,6 +1499,19 @@ export default function NewInspectionPage() {
                 className="w-full p-2 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm hover:border-teal-400 transition">+ הוסף המלצה</button>
             </div>
           </Card>
+
+          {/* Regulatory Acknowledgment */}
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+            <div className="flex items-start gap-2.5">
+              <AlertTriangle size={18} className="text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs text-red-800 font-bold mb-1">הצהרה רגולטורית — יש להקריא ללקוח:</p>
+                <p className="text-xs text-red-700 leading-relaxed">
+                  &quot;בדיקה זו מהווה חוות דעת מקצועית של המוסך בלבד. היא אינה מהווה בדיקת מכון רישוי מורשה מטעם משרד התחבורה ואין לה תוקף משפטי מחייב. מומלץ לבצע גם בדיקה במכון רישוי מורשה, במיוחד לפני רכישת רכב.&quot;
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* Customer Signature */}
           <Card>
