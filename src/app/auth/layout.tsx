@@ -1,6 +1,16 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'התחברות',
+  description: 'התחברו לחשבון AutoLog שלכם - ניהול רכבים חכם עם תזכורות, מסמכים, מוסכים ועוד.',
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function AuthLayout({
   children,
