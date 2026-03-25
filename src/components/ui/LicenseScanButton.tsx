@@ -182,19 +182,53 @@ export default function LicenseScanButton({ onScanResult }: LicenseScanButtonPro
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
+  // Resize image for mobile OCR - large phone photos crash Tesseract
+  const resizeImageForOCR = (file: File, maxWidth = 1600): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        // If image is small enough, just return the object URL
+        if (img.width <= maxWidth && img.height <= maxWidth) {
+          const newUrl = URL.createObjectURL(file);
+          resolve(newUrl);
+          return;
+        }
+        // Resize using canvas
+        const canvas = document.createElement('canvas');
+        const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+        canvas.width = Math.round(img.width * ratio);
+        canvas.height = Math.round(img.height * ratio);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('Canvas not supported')); return; }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => {
+          if (!blob) { reject(new Error('Failed to resize')); return; }
+          resolve(URL.createObjectURL(blob));
+        }, 'image/jpeg', 0.85);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load image')); };
+      img.src = url;
+    });
+  };
+
   const processImage = async (file: File) => {
     setScanning(true);
     setScanStatus('loading');
-    setStatusMessage('טוען מנוע סריקה...');
+    setStatusMessage('מכין תמונה לסריקה...');
 
+    let imageUrl = '';
     try {
+      // Resize image first to prevent memory issues on mobile
+      imageUrl = await resizeImageForOCR(file);
+
+      setStatusMessage('טוען מנוע סריקה...');
+
       // Dynamically import Tesseract.js
       const Tesseract = await import('tesseract.js');
 
       setStatusMessage('סורק את המסמך...');
-
-      // Create image URL
-      const imageUrl = URL.createObjectURL(file);
 
       // Run OCR with Hebrew + English
       const result = await Tesseract.recognize(imageUrl, 'heb+eng', {
@@ -240,8 +274,16 @@ export default function LicenseScanButton({ onScanResult }: LicenseScanButtonPro
 
     } catch (err) {
       console.error('OCR Error:', err);
+      if (imageUrl) URL.revokeObjectURL(imageUrl);
       setScanStatus('error');
-      setStatusMessage('שגיאה בסריקה. נסה שוב.');
+      const errMsg = err instanceof Error ? err.message : '';
+      if (errMsg.includes('memory') || errMsg.includes('allocation')) {
+        setStatusMessage('התמונה גדולה מדי. נסה לצלם מקרוב יותר או לבחור תמונה קטנה יותר.');
+      } else if (errMsg.includes('network') || errMsg.includes('fetch') || errMsg.includes('load')) {
+        setStatusMessage('שגיאת רשת. ודא שיש חיבור אינטרנט ונסה שוב.');
+      } else {
+        setStatusMessage('שגיאה בסריקה. נסה לצלם את הרישיון שוב עם תאורה טובה.');
+      }
     }
 
     setScanning(false);
