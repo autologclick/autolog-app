@@ -53,12 +53,8 @@ export async function GET(req: NextRequest) {
         take: 10,
       }),
       // Pending garage applications
-      prisma.garageApplication ? prisma.garageApplication.findMany({
-        where: { status: 'pending' },
-        select: { id: true, garageName: true, ownerName: true, createdAt: true },
-        orderBy: { createdAt: 'desc' },
-        take: 10,
-      }).catch(() => []) : Promise.resolve([]),
+      // GarageApplication model not yet implemented
+      Promise.resolve([]),
       // Recent completed inspections (last 24h)
       prisma.inspection.findMany({
         where: {
@@ -88,17 +84,17 @@ export async function GET(req: NextRequest) {
     const alerts: any[] = [];
 
     // SOS alerts - highest priority
-    activeSosEvents.forEach(sos => {
+    activeSosEvents.forEach((sos: any) => {
       const typeMap: Record<string, string> = {
-        accident: 'תאונה', breakdown: 'תקלה מכנית', flat_tire: 'צמיג תקוע',
-        fuel: 'דלק נגמר', electrical: 'בעיה חשמלית', locked_out: 'נעילה ברכב', other: 'אחר',
+        accident: '×ª××× ×', breakdown: '×ª×§×× ××× ××ª', flat_tire: '×¦××× ×ª×§××¢',
+        fuel: '×××§ × ×××¨', electrical: '××¢×× ××©××××ª', locked_out: '× ×¢××× ××¨××', other: '×××¨',
       };
       alerts.push({
         id: `sos-${sos.id}`,
         type: 'sos',
         priority: 'high',
-        title: `אירוע SOS - ${typeMap[sos.eventType] || sos.eventType}`,
-        message: `${sos.user?.fullName || 'משתמש'} דיווח${sos.location ? ` ב${sos.location}` : ''}`,
+        title: `×××¨××¢ SOS - ${typeMap[sos.eventType] || sos.eventType}`,
+        message: `${sos.user?.fullName || '××©×ª××©'} ×××××${sos.location ? ` ×${sos.location}` : ''}`,
         time: sos.createdAt.toISOString(),
         read: false,
         link: '/admin/sos',
@@ -111,8 +107,8 @@ export async function GET(req: NextRequest) {
         id: `test-expiry-batch`,
         type: 'expiry',
         priority: expiringTestVehicles.length >= 5 ? 'high' : 'medium',
-        title: `טסט עומד לפוג - ${expiringTestVehicles.length} רכבים`,
-        message: `${expiringTestVehicles.length} רכבים עם טסט שפג תוקף בשבוע הקרוב`,
+        title: `××¡× ×¢××× ××¤×× - ${expiringTestVehicles.length} ×¨××××`,
+        message: `${expiringTestVehicles.length} ×¨×××× ×¢× ××¡× ×©×¤× ×ª××§×£ ××©×××¢ ××§×¨××`,
         time: now.toISOString(),
         read: false,
         link: '/admin/documents',
@@ -125,8 +121,8 @@ export async function GET(req: NextRequest) {
         id: `insurance-expiry-batch`,
         type: 'expiry',
         priority: expiringInsuranceVehicles.length >= 5 ? 'high' : 'medium',
-        title: `ביטוח עומד לפוג - ${expiringInsuranceVehicles.length} רכבים`,
-        message: `${expiringInsuranceVehicles.length} רכבים עם ביטוח שפג תוקף בשבוע הקרוב`,
+        title: `××××× ×¢××× ××¤×× - ${expiringInsuranceVehicles.length} ×¨××××`,
+        message: `${expiringInsuranceVehicles.length} ×¨×××× ×¢× ××××× ×©×¤× ×ª××§×£ ××©×××¢ ××§×¨××`,
         time: now.toISOString(),
         read: false,
         link: '/admin/documents',
@@ -139,8 +135,8 @@ export async function GET(req: NextRequest) {
         id: `app-${app.id}`,
         type: 'application',
         priority: 'medium',
-        title: `בקשת הצטרפות חדשה - ${app.garageName}`,
-        message: `${app.ownerName} הגיש בקשה לצירוף מוסך`,
+        title: `××§×©×ª ××¦××¨×¤××ª ×××©× - ${app.garageName}`,
+        message: `${app.ownerName} ××××© ××§×©× ××¦××¨××£ ×××¡×`,
         time: app.createdAt.toISOString(),
         read: false,
         link: '/admin/applications',
@@ -148,13 +144,13 @@ export async function GET(req: NextRequest) {
     });
 
     // Recent inspections
-    recentInspections.forEach(insp => {
+    recentInspections.forEach((insp: any) => {
       alerts.push({
         id: `insp-${insp.id}`,
         type: 'inspection',
         priority: 'low',
-        title: `בדיקה הושלמה`,
-        message: `${insp.garage?.name || 'מוסך'} סיים בדיקה ל-${insp.vehicle?.manufacturer} ${insp.vehicle?.model} (${insp.vehicle?.licensePlate})`,
+        title: `××××§× ×××©×××`,
+        message: `${insp.garage?.name || '×××¡×'} ×¡××× ××××§× ×-${insp.vehicle?.manufacturer} ${insp.vehicle?.model} (${insp.vehicle?.licensePlate})`,
         time: insp.date.toISOString(),
         read: true,
         link: `/admin/inspections/${insp.id}`,
@@ -162,14 +158,14 @@ export async function GET(req: NextRequest) {
     });
 
     // New users
-    recentUsers.forEach(user => {
-      const roleMap: Record<string, string> = { user: 'משתמש', admin: 'מנהל', garage_owner: 'בעל מוסך' };
+    recentUsers.forEach((user: any) => {
+      const roleMap: Record<string, string> = { user: '××©×ª××©', admin: '×× ××', garage_owner: '××¢× ×××¡×' };
       alerts.push({
         id: `user-${user.id}`,
         type: 'user',
         priority: 'low',
-        title: `${roleMap[user.role] || 'משתמש'} חדש נרשם`,
-        message: `${user.fullName} נרשם/ה למערכת`,
+        title: `${roleMap[user.role] || '××©×ª××©'} ×××© × ×¨×©×`,
+        message: `${user.fullName} × ×¨×©×/× ×××¢×¨××ª`,
         time: user.createdAt.toISOString(),
         read: true,
         link: '/admin/users',
@@ -182,8 +178,8 @@ export async function GET(req: NextRequest) {
         id: `pending-appt-batch`,
         type: 'appointment',
         priority: 'medium',
-        title: `${pendingAppointments.length} תורים ממתינים לאישור`,
-        message: `ישנם ${pendingAppointments.length} תורים שעדיין לא אושרו`,
+        title: `${pendingAppointments.length} ×ª××¨×× ×××ª×× ×× ××××©××¨`,
+        message: `××©× × ${pendingAppointments.length} ×ª××¨×× ×©×¢×××× ×× ×××©×¨×`,
         time: now.toISOString(),
         read: false,
         link: '/admin/appointments',
