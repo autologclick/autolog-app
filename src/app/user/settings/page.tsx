@@ -56,7 +56,7 @@ export default function SettingsPage() {
     Promise.all([
       fetch('/api/auth/me').then(r => r.json()).catch(() => ({})),
       fetch('/api/vehicles').then(r => r.json()).catch(() => ({ vehicles: [] })),
-    ]).then(([userData, vData]) => {
+    ]).then(([userData, vData]: [any, any]) => {
       if (userData.user) {
         setProfile({
           fullName: userData.user.fullName || '',
@@ -81,15 +81,15 @@ export default function SettingsPage() {
         body: JSON.stringify(profile),
       });
       if (res.ok) {
-        setSaveMessage('הפרטים נשמרו בהצלחה!');
+        setSaveMessage('××¤×¨××× × ×©××¨× ×××¦×××!');
         setSaveSuccess(true);
         setTimeout(() => setSaveMessage(''), 3000);
       } else {
         const data = await res.json();
-        setSaveMessage(data.error || 'שגיאה בשמירה');
+        setSaveMessage(data.error || '×©×××× ××©×××¨×');
       }
     } catch {
-      setSaveMessage('שגיאת חיבור');
+      setSaveMessage('×©××××ª ×××××¨');
     }
     setSaving(false);
   };
@@ -99,15 +99,15 @@ export default function SettingsPage() {
     setPasswordSuccess(false);
 
     if (!passwordData.currentPassword || !passwordData.newPassword) {
-      setPasswordError('יש למלא את כל השדות');
+      setPasswordError('××© ×××× ××ª ×× ××©×××ª');
       return;
     }
     if (passwordData.newPassword.length < 6) {
-      setPasswordError('סיסמה חדשה חייבת להכיל לפחות 6 תווים');
+      setPasswordError('×¡××¡×× ×××©× ×××××ª ××××× ××¤×××ª 6 ×ª××××');
       return;
     }
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setPasswordError('הסיסמאות לא תואמות');
+      setPasswordError('××¡××¡××××ª ×× ×ª×××××ª');
       return;
     }
 
@@ -130,10 +130,10 @@ export default function SettingsPage() {
         }, 2000);
       } else {
         const data = await res.json();
-        setPasswordError(data.error || 'שגיאה בשינוי סיסמה');
+        setPasswordError(data.error || '×©×××× ××©×× ×× ×¡××¡××');
       }
     } catch {
-      setPasswordError('שגיאת חיבור');
+      setPasswordError('×©××××ª ×××××¨');
     }
     setChangingPassword(false);
   };
@@ -168,8 +168,8 @@ export default function SettingsPage() {
           <Settings size={22} className="text-[#1e3a5f]" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-[#1e3a5f]">הגדרות</h1>
-          <p className="text-sm text-gray-500">ניהול חשבון ופרטים אישיים</p>
+          <h1 className="text-xl font-bold text-[#1e3a5f]">××××¨××ª</h1>
+          <p className="text-sm text-gray-500">× ×××× ××©××× ××¤×¨××× ×××©×××</p>
         </div>
       </div>
 
@@ -180,12 +180,12 @@ export default function SettingsPage() {
             {profile.fullName.charAt(0) || '?'}
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-bold">{profile.fullName || 'משתמש'}</h2>
+            <h2 className="text-lg font-bold">{profile.fullName || '××©×ª××©'}</h2>
             <p className="text-teal-100 text-sm">{profile.email}</p>
             <div className="flex items-center gap-3 mt-1 text-teal-100 text-xs">
               <span className="flex items-center gap-1">
                 <Car size={12} />
-                {vehicleCount} רכבים
+                {vehicleCount} ×¨××××
               </span>
               {profile.phone && (
                 <span>{profile.phone}</span>
@@ -197,17 +197,17 @@ export default function SettingsPage() {
 
       {/* Profile Details */}
       <Card>
-        <CardTitle icon={<User className="text-teal-600" />}>פרטים אישיים</CardTitle>
+        <CardTitle icon={<User className="text-teal-600" />}>×¤×¨××× ×××©×××</CardTitle>
         <div className="space-y-4 mt-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
-              label="שם מלא"
-              placeholder="הכנס שם מלא"
+              label="×©× ×××"
+              placeholder="××× ×¡ ×©× ×××"
               value={profile.fullName}
               onChange={e => setProfile({ ...profile, fullName: e.target.value })}
             />
             <Input
-              label="טלפון"
+              label="×××¤××"
               placeholder="050-000-0000"
               value={profile.phone}
               onChange={e => setProfile({ ...profile, phone: e.target.value })}
@@ -215,15 +215,15 @@ export default function SettingsPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
-              label="אימייל"
+              label="××××××"
               placeholder="example@email.com"
               value={profile.email}
               type="email"
               onChange={e => setProfile({ ...profile, email: e.target.value })}
             />
             <Input
-              label="מספר רישיון"
-              placeholder="מספר רישיון נהיגה"
+              label="××¡×¤×¨ ×¨××©×××"
+              placeholder="××¡×¤×¨ ×¨××©××× × ××××"
               value={profile.licenseNumber}
               onChange={e => setProfile({ ...profile, licenseNumber: e.target.value })}
             />
@@ -239,22 +239,22 @@ export default function SettingsPage() {
           )}
 
           <Button icon={<Save size={16} />} loading={saving} onClick={handleSave}>
-            שמור שינויים
+            ×©×××¨ ×©×× ××××
           </Button>
         </div>
       </Card>
 
       {/* Notifications */}
       <Card>
-        <CardTitle icon={<Bell className="text-amber-500" />}>העדפות התראות</CardTitle>
+        <CardTitle icon={<Bell className="text-amber-500" />}>××¢××¤××ª ××ª×¨×××ª</CardTitle>
         <div className="space-y-2 mt-4">
           {[
-            { key: 'testReminder' as const, label: 'תזכורת טסט', desc: 'התראה 30 יום לפני פקיעת הטסט', icon: ClipboardList },
-            { key: 'insuranceReminder' as const, label: 'תזכורת ביטוח', desc: 'התראה 30 יום לפני פקיעת הביטוח', icon: Shield },
-            { key: 'inspectionUpdate' as const, label: 'עדכוני בדיקה', desc: 'עדכון כשדוח בדיקה מוכן', icon: Search },
-            { key: 'appointmentReminder' as const, label: 'תזכורת תורים', desc: 'תזכורת יום לפני תור מוסך', icon: Calendar },
-            { key: 'sosAlerts' as const, label: 'התראות חירום', desc: 'עדכונים על אירועי חירום', icon: AlertTriangle },
-            { key: 'benefitAlerts' as const, label: 'הטבות חדשות', desc: 'התראה על הטבות חדשות במועדון', icon: Gift },
+            { key: 'testReminder' as const, label: '×ª××××¨×ª ××¡×', desc: '××ª×¨×× 30 ××× ××¤× × ×¤×§××¢×ª ×××¡×', icon: ClipboardList },
+            { key: 'insuranceReminder' as const, label: '×ª××××¨×ª ×××××', desc: '××ª×¨×× 30 ××× ××¤× × ×¤×§××¢×ª ××××××', icon: Shield },
+            { key: 'inspectionUpdate' as const, label: '×¢×××× × ××××§×', desc: '×¢×××× ××©××× ××××§× ××××', icon: Search },
+            { key: 'appointmentReminder' as const, label: '×ª××××¨×ª ×ª××¨××', desc: '×ª××××¨×ª ××× ××¤× × ×ª××¨ ×××¡×', icon: Calendar },
+            { key: 'sosAlerts' as const, label: '××ª×¨×××ª ×××¨××', desc: '×¢×××× ×× ×¢× ×××¨××¢× ×××¨××', icon: AlertTriangle },
+            { key: 'benefitAlerts' as const, label: '×××××ª ×××©××ª', desc: '××ª×¨×× ×¢× ×××××ª ×××©××ª ××××¢×××', icon: Gift },
           ].map(item => (
             <label
               key={item.key}
@@ -284,12 +284,12 @@ export default function SettingsPage() {
 
       {/* Security */}
       <Card>
-        <CardTitle icon={<Shield className="text-red-500" />}>אבטחה</CardTitle>
+        <CardTitle icon={<Shield className="text-red-500" />}>×××××</CardTitle>
         <div className="space-y-4 mt-4">
           <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
             <div>
-              <p className="font-medium text-sm text-gray-800">סיסמה</p>
-              <p className="text-xs text-gray-500">שנה את סיסמת החשבון שלך</p>
+              <p className="font-medium text-sm text-gray-800">×¡××¡××</p>
+              <p className="text-xs text-gray-500">×©× × ××ª ×¡××¡××ª ×××©××× ×©××</p>
             </div>
             <Button
               variant="outline"
@@ -297,14 +297,14 @@ export default function SettingsPage() {
               icon={<Key size={14} />}
               onClick={() => setShowPasswordModal(true)}
             >
-              שנה סיסמה
+              ×©× × ×¡××¡××
             </Button>
           </div>
 
           <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
             <div>
-              <p className="font-medium text-sm text-gray-800">מזהה חשבון</p>
-              <p className="text-xs text-gray-500">מזהה ייחודי לצורך תמיכה</p>
+              <p className="font-medium text-sm text-gray-800">×××× ××©×××</p>
+              <p className="text-xs text-gray-500">×××× ×××××× ××¦××¨× ×ª××××</p>
             </div>
             <code className="text-xs bg-gray-200 px-2 py-1 rounded font-mono text-gray-600">
               {profile.email.split('@')[0]}
@@ -321,7 +321,7 @@ export default function SettingsPage() {
         loading={loggingOut}
         onClick={handleLogout}
       >
-        התנתקות
+        ××ª× ×ª×§××ª
       </Button>
 
       {/* Change Password Modal */}
@@ -333,7 +333,7 @@ export default function SettingsPage() {
           setPasswordSuccess(false);
           setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         }}
-        title="שינוי סיסמה"
+        title="×©×× ×× ×¡××¡××"
         size="md"
       >
         {passwordSuccess ? (
@@ -341,17 +341,17 @@ export default function SettingsPage() {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 size={32} className="text-green-600" />
             </div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">הסיסמה שונתה בהצלחה!</h3>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">××¡××¡×× ×©×× ×ª× ×××¦×××!</h3>
           </div>
         ) : (
           <div className="space-y-4">
             <div className="relative">
               <Input
-                label="סיסמה נוכחית"
+                label="×¡××¡×× × ×××××ª"
                 type={showCurrent ? 'text' : 'password'}
                 value={passwordData.currentPassword}
                 onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                placeholder="הכנס סיסמה נוכחית"
+                placeholder="××× ×¡ ×¡××¡×× × ×××××ª"
               />
               <button
                 type="button"
@@ -364,11 +364,11 @@ export default function SettingsPage() {
 
             <div className="relative">
               <Input
-                label="סיסמה חדשה"
+                label="×¡××¡×× ×××©×"
                 type={showNew ? 'text' : 'password'}
                 value={passwordData.newPassword}
                 onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                placeholder="לפחות 6 תווים"
+                placeholder="××¤×××ª 6 ×ª××××"
               />
               <button
                 type="button"
@@ -380,11 +380,11 @@ export default function SettingsPage() {
             </div>
 
             <Input
-              label="אימות סיסמה חדשה"
+              label="×××××ª ×¡××¡×× ×××©×"
               type="password"
               value={passwordData.confirmPassword}
               onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-              placeholder="הכנס שוב את הסיסמה החדשה"
+              placeholder="××× ×¡ ×©×× ××ª ××¡××¡×× ××××©×"
             />
 
             {passwordData.newPassword && (
@@ -404,9 +404,9 @@ export default function SettingsPage() {
                   ))}
                 </div>
                 <p className="text-xs text-gray-500">
-                  {passwordData.newPassword.length < 6 ? 'חלשה מדי' :
-                   passwordData.newPassword.length < 8 ? 'בינונית' :
-                   passwordData.newPassword.length < 12 ? 'טובה' : 'חזקה'}
+                  {passwordData.newPassword.length < 6 ? '×××©× ×××' :
+                   passwordData.newPassword.length < 8 ? '××× ×× ××ª' :
+                   passwordData.newPassword.length < 12 ? '××××' : '×××§×'}
                 </p>
               </div>
             )}
@@ -420,14 +420,14 @@ export default function SettingsPage() {
 
             <div className="flex gap-3 pt-2">
               <Button onClick={handlePasswordChange} loading={changingPassword} className="flex-1">
-                שנה סיסמה
+                ×©× × ×¡××¡××
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => setShowPasswordModal(false)}
                 className="flex-1"
               >
-                ביטול
+                ×××××
               </Button>
             </div>
           </div>
