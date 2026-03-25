@@ -17,6 +17,7 @@ export async function ensureGarageApplicationTable() {
         address TEXT,
         description TEXT,
         services TEXT,
+    languages TEXT,
         "yearsExperience" INTEGER DEFAULT 0,
         "employeeCount" INTEGER DEFAULT 1,
         "licenseNumber" TEXT,
@@ -59,6 +60,7 @@ export interface GarageApplicationRow {
   address: string | null;
   description: string | null;
   services: string | null;
+  languages: string | null;
   yearsExperience: number;
   employeeCount: number;
   licenseNumber: string | null;
@@ -80,6 +82,7 @@ export async function createApplication(data: {
   address?: string;
   description?: string;
   services?: string;
+  languages?: string;
   yearsExperience?: number;
   employeeCount?: number;
   licenseNumber?: string;
@@ -88,8 +91,8 @@ export async function createApplication(data: {
   await ensureGarageApplicationTable();
   const id = generateId();
   await prisma.$executeRawUnsafe(
-    `INSERT INTO "GarageApplication" (id, "garageName", "ownerName", email, phone, city, address, description, services, "yearsExperience", "employeeCount", "licenseNumber", images, status)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'pending')`,
+    `INSERT INTO "GarageApplication" (id, "garageName", "ownerName", email, phone, city, address, description, services, "yearsExperience", "employeeCount", "licenseNumber", images, "languages", status)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 'pending')`,
     id,
     data.garageName,
     data.ownerName,
@@ -102,7 +105,8 @@ export async function createApplication(data: {
     data.yearsExperience || 0,
     data.employeeCount || 1,
     data.licenseNumber || null,
-    data.images || null
+    data.images || null,
+      data.languages || null
   );
   return id;
 }
