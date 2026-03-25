@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/cn';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Home, Car, FileCheck, MapPin, Calendar, Star, Bell, AlertTriangle, Settings,
@@ -189,12 +190,12 @@ export default function Sidebar({ portal, userName = 'משתמש' }: SidebarProp
       {/* Logo & User Profile */}
       <div className="relative p-4 border-b border-white/10 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className={cn(
+          <Link href="/" className={cn(
             'flex-shrink-0 w-10 h-10 rounded-xl overflow-hidden transition-all duration-300',
             'hover:scale-105'
           )}>
             <LogoIcon size={40} />
-          </div>
+          </Link>
           {!collapsed && (
             <div className="min-w-0 flex-1">
               <h1 className="text-sm font-bold text-white truncate">{portalLabel}</h1>
