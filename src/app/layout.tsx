@@ -1,15 +1,23 @@
 import type { Metadata, Viewport } from 'next';
+import { Heebo } from 'next/font/google';
+
+const heebo = Heebo({
+  subsets: ['hebrew', 'latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+  variable: '--font-heebo',
+});
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://autolog.click'),
   title: {
-    default: 'AutoLog - ניהול רכבים חכם',
+    default: 'AutoLog - × ×××× ×¨×××× ×××',
     template: '%s | AutoLog',
   },
-  description: 'מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד. הצטרפו ל-2,500+ משתמשים שכבר מנהלים את הרכב בצורה חכמה.',
-  keywords: ['ניהול רכבים', 'טסט', 'ביטוח רכב', 'מוסך', 'בדיקת רכב', 'AutoLog', 'תזכורות רכב', 'SOS חירום'],
+  description: '××¢×¨××ª × ×××× ×¨×××× ××§×¦××¢××ª - ××××§××ª, ×××××, ××¡×, ×××¡×××, ×ª××××¨××ª ×××××ª ××¢××. ××¦××¨×¤× ×-2,500+ ××©×ª××©×× ×©×××¨ ×× ×××× ××ª ××¨×× ××¦××¨× ××××.',
+  keywords: ['× ×××× ×¨××××', '××¡×', '××××× ×¨××', '×××¡×', '××××§×ª ×¨××', 'AutoLog', '×ª××××¨××ª ×¨××', 'SOS ×××¨××'],
   authors: [{ name: 'AutoLog' }],
   creator: 'AutoLog',
   icons: { icon: [{ url: '/favicon-32.png', sizes: '32x32', type: 'image/png' }, { url: '/favicon-16.png', sizes: '16x16', type: 'image/png' }], apple: '/apple-touch-icon.png' },
@@ -29,8 +37,8 @@ export const metadata: Metadata = {
     locale: 'he_IL',
     url: 'https://autolog.click',
     siteName: 'AutoLog',
-    title: 'AutoLog - ניהול רכבים חכם ויעיל',
-    description: 'מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד',
+    title: 'AutoLog - × ×××× ×¨×××× ××× ×××¢××',
+    description: '××¢×¨××ª × ×××× ×¨×××× ××§×¦××¢××ª - ××××§××ª, ×××××, ××¡×, ×××¡×××, ×ª××××¨××ª ×××××ª ××¢××',
     images: [
       {
         url: '/opengraph-image',
@@ -42,8 +50,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AutoLog - ניהול רכבים חכם',
-    description: 'נהל את הרכב שלך בצורה חכמה - תזכורות, מסמכים, מוסכים ועוד',
+    title: 'AutoLog - × ×××× ×¨×××× ×××',
+    description: '× ×× ××ª ××¨×× ×©×× ××¦××¨× ×××× - ×ª××××¨××ª, ××¡××××, ×××¡××× ××¢××',
     images: ['/opengraph-image'],
   },
   robots: {
@@ -58,15 +66,13 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   themeColor: '#1e3a5f',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl">
-      <body className="bg-[#fef7ed] text-gray-800 min-h-screen">
+      <body className={`${heebo.className} bg-[#fef7ed] text-gray-800 min-h-screen`}>
         {children}
         <Toaster
           position="top-center"
