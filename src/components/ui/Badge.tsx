@@ -33,17 +33,17 @@ export default function Badge({ children, variant = 'default', size = 'sm', clas
 // Document status badge helper
 export function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { variant: BadgeProps['variant']; label: string }> = {
-    valid: { variant: 'success', label: '×ª×§××' },
-    expiring: { variant: 'warning', label: '×¢××× ××¤××' },
-    expired: { variant: 'danger', label: '×¤× ×ª××§×£' },
-    pending: { variant: 'info', label: '×××ª××' },
-    in_progress: { variant: 'warning', label: '××××¦××¢' },
-    completed: { variant: 'success', label: '×××©××' },
-    cancelled: { variant: 'default', label: '××××' },
-    open: { variant: 'danger', label: '×¤×ª××' },
-    assigned: { variant: 'info', label: '×××§×¦×' },
-    resolved: { variant: 'success', label: '×××¤×' },
-    confirmed: { variant: 'success', label: '××××©×¨' },
+    valid: { variant: 'success', label: 'תקין' },
+    expiring: { variant: 'warning', label: 'עומד לפוג' },
+    expired: { variant: 'danger', label: 'פג תוקף' },
+    pending: { variant: 'info', label: 'ממתין' },
+    in_progress: { variant: 'warning', label: 'בביצוע' },
+    completed: { variant: 'success', label: 'הושלם' },
+    cancelled: { variant: 'default', label: 'בוטל' },
+    open: { variant: 'danger', label: 'פתוח' },
+    assigned: { variant: 'info', label: 'הוקצה' },
+    resolved: { variant: 'success', label: 'טופל' },
+    confirmed: { variant: 'success', label: 'מאושר' },
   };
 
   const config = map[status] || { variant: 'default' as const, label: status };
