@@ -36,7 +36,7 @@ export default function NotFound() {
         {/* Additional Info */}
         <div className="mt-12 pt-8 border-t border-gray-200">
           <p className="text-sm text-gray-500">
-            אם הבעיה מתמשכת, אנא <Link href="/contact" className="text-teal-600 hover:text-teal-700 font-semibold">צור קשר</Link>
+            אם הבעיה מתמשכת, אנא <a href="mailto:info@autolog.click" className="text-teal-600 hover:text-teal-700 font-semibold">צור קשר</a>
           </p>
         </div>
       </div>
