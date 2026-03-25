@@ -132,6 +132,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
     const fetchVehicle = async () => {
       try {
         const res = await fetch(`/api/vehicles/${id}`);
+        if (res.status === 401) { window.location.href = '/auth/login'; return; }
         const data = await res.json();
 
         if (!res.ok) {
