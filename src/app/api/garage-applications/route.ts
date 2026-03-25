@@ -3,8 +3,6 @@ import { z } from 'zod';
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { sanitizeInput } from '@/lib/security';
 import { createApplication, checkDuplicateEmail } from '@/lib/garage-applications-db';
-import fs from 'fs';
-import path from 'path';
 
 const applicationSchema = z.object({
   garageName: z.string().min(2, 'שם המוסך חייב להכיל לפחות 2 תווים').max(100),
@@ -21,27 +19,6 @@ const applicationSchema = z.object({
   images: z.array(z.string()).max(6).optional(),
 });
 
-function saveApplicationImages(appId: string, images: string[]): string[] {
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'applications', appId);
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-  const urls: string[] = [];
-  for (let i = 0; i < images.length; i++) {
-    const img = images[i];
-    if (!img.startsWith('data:image/')) continue;
-    const matches = img.match(/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/);
-    if (!matches) continue;
-    const ext = matches[1] === 'jpg' ? 'jpeg' : matches[1];
-    const buffer = Buffer.from(matches[2], 'base64');
-    if (buffer.length > 5 * 1024 * 1024) continue;
-    const filename = `img_${i}.${ext}`;
-    fs.writeFileSync(path.join(uploadDir, filename), buffer);
-    urls.push(`/uploads/applications/${appId}/${filename}`);
-  }
-  return urls;
-}
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -54,8 +31,7 @@ export async function POST(req: NextRequest) {
 
     const data = parsed.data;
 
-    // Sanitize inputs
-    const sanitized = {
+    const sanitized: Record<string, any> = {
       garageName: sanitizeInput(data.garageName),
       ownerName: sanitizeInput(data.ownerName),
       email: data.email.toLowerCase().trim(),
@@ -69,18 +45,19 @@ export async function POST(req: NextRequest) {
       licenseNumber: data.licenseNumber ? sanitizeInput(data.licenseNumber) : undefined,
     };
 
-    // Check for duplicate pending/approved applications
     const isDuplicate = await checkDuplicateEmail(sanitized.email);
     if (isDuplicate) {
       return errorResponse('כבר קיימת בקשה עם כתובת אימייל זו. אנו נחזור אליך בהקדם.', 409);
     }
 
-    // Save images if provided
     if (data.images && data.images.length > 0) {
-      const appId = `app_${Date.now()}`;
-      const imageUrls = saveApplicationImages(appId, data.images);
-      if (imageUrls.length > 0) {
-        (sanitized as any).images = JSON.stringify(imageUrls);
+      const validImages = data.images.filter(img => {
+        if (!img.startsWith('data:image/')) return false;
+        const sizeEstimate = (img.length * 3) / 4;
+        return sizeEstimate < 2 * 1024 * 1024;
+      });
+      if (validImages.length > 0) {
+        sanitized.images = JSON.stringify(validImages);
       }
     }
 
