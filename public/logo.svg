@@ -1,28 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" fill="none">
   <!-- Shield -->
-  <g transform="translate(10, 5) scale(0.9)">
-    <!-- Shield shape - left half (darker) -->
-    <path d="M50 2L10 18V52C10 72 28 88 50 98V2Z" fill="#1e3a5f"/>
-    <!-- Shield shape - right half (teal) -->
-    <path d="M50 2L90 18V52C90 72 72 88 50 98V2Z" fill="#0d7377"/>
-    <!-- Car silhouette -->
-    <g transform="translate(22, 30)">
-      <!-- Car body -->
-      <path d="M8 22C8 22 10 14 14 12C18 10 22 8 28 8C34 8 38 10 42 12C46 14 48 22 48 22" stroke="#0a2540" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <!-- Car roof -->
-      <path d="M16 12C16 12 20 4 28 4C36 4 40 12 40 12" stroke="#0a2540" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <!-- Windshield -->
-      <path d="M18 12L22 5.5H34L38 12" stroke="#0a2540" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-      <!-- Bottom line -->
-      <path d="M4 22H52" stroke="#0a2540" stroke-width="2.5" stroke-linecap="round"/>
-      <!-- Wheels -->
-      <circle cx="16" cy="24" r="4" fill="#0a2540"/>
-      <circle cx="16" cy="24" r="2" fill="#1e3a5f"/>
-      <circle cx="40" cy="24" r="4" fill="#0a2540"/>
-      <circle cx="40" cy="24" r="2" fill="#1e3a5f"/>
-      <!-- Headlights -->
-      <rect x="4" y="17" width="5" height="3" rx="1" fill="#0a2540" opacity="0.7"/>
-      <rect x="47" y="17" width="5" height="3" rx="1" fill="#0a2540" opacity="0.7"/>
+  <g transform="translate(5, 0) scale(0.5)">
+    <path d="M100 10L20 45V110C20 155 55 180 100 195V10Z" fill="#1a3a5c"/>
+    <path d="M100 10L180 45V110C180 155 145 180 100 195V10Z" fill="#2a9d9e"/>
+    <g transform="translate(100, 108)">
+      <path d="M-48 15 L-45 -5 C-43 -12 -35 -18 -25 -20 L-20 -22 C-15 -38 -8 -42 0 -42 C8 -42 15 -38 20 -22 L25 -20 C35 -18 43 -12 45 -5 L48 15 L48 22 C48 25 46 27 43 27 L-43 27 C-46 27 -48 25 -48 22 Z" fill="white"/>
+      <path d="M-18 -20 C-13 -35 -7 -38 0 -38 C7 -38 13 -35 18 -20 Z" fill="#1a3a5c" opacity="0.3"/>
+      <ellipse cx="-35" cy="-2" rx="8" ry="6" fill="white" opacity="0.9"/>
+      <ellipse cx="-35" cy="-2" rx="5" ry="4" fill="#1a3a5c" opacity="0.2"/>
+      <ellipse cx="35" cy="-2" rx="8" ry="6" fill="white" opacity="0.9"/>
+      <ellipse cx="35" cy="-2" rx="5" ry="4" fill="#2a9d9e" opacity="0.2"/>
+      <rect x="-12" y="-2" width="24" height="10" rx="3" fill="#1a3a5c" opacity="0.15"/>
+      <line x1="-8" y1="0" x2="-8" y2="6" stroke="white" stroke-width="0.8" opacity="0.5"/>
+      <line x1="-3" y1="0" x2="-3" y2="6" stroke="white" stroke-width="0.8" opacity="0.5"/>
+      <line x1="2" y1="0" x2="2" y2="6" stroke="white" stroke-width="0.8" opacity="0.5"/>
+      <line x1="7" y1="0" x2="7" y2="6" stroke="white" stroke-width="0.8" opacity="0.5"/>
+      <path d="M-42 15 L42 15 L38 22 L-38 22 Z" fill="white" opacity="0.7"/>
     </g>
   </g>
   <!-- AutoLog text -->
