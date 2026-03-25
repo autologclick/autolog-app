@@ -378,6 +378,7 @@ model GarageApplication {
   address         String?
   description     String?
   services        String?
+  languages        String?
   yearsExperience Int       @default(0)
   employeeCount   Int       @default(1)
   licenseNumber   String?
