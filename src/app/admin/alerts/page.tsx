@@ -37,11 +37,11 @@ export default function AdminAlertsPage() {
       setError('');
 
       const res = await fetch('/api/admin/alerts');
-      if (!res.ok) throw new Error('שגיאה בטעינת התראות');
+      if (!res.ok) throw new Error('×©×××× ×××¢×× ×ª ××ª×¨×××ª');
       const data = await res.json();
       setAlerts(data.alerts || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'שגיאה בטעינה');
+      setError(err instanceof Error ? err.message : '×©×××× ×××¢×× ×');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -53,7 +53,7 @@ export default function AdminAlertsPage() {
   }, []);
 
   const handleDismiss = (id: string) => {
-    setDismissedIds(prev => new Set([...prev, id]));
+    setDismissedIds(prev => new Set([...Array.from(prev), id]));
   };
 
   const handleMarkAllRead = () => {
@@ -83,7 +83,7 @@ export default function AdminAlertsPage() {
   };
 
   const getPriorityLabel = (priority: string) => {
-    const map: Record<string, string> = { high: 'דחוף', medium: 'בינוני', low: 'נמוך' };
+    const map: Record<string, string> = { high: '××××£', medium: '××× ×× ×', low: '× ×××' };
     return map[priority] || priority;
   };
 
@@ -103,10 +103,10 @@ export default function AdminAlertsPage() {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'הרגע';
-    if (diffMins < 60) return `לפני ${diffMins} דקות`;
-    if (diffHours < 24) return `לפני ${diffHours} שעות`;
-    if (diffDays < 7) return `לפני ${diffDays} ימים`;
+    if (diffMins < 1) return '××¨××¢';
+    if (diffMins < 60) return `××¤× × ${diffMins} ××§××ª`;
+    if (diffHours < 24) return `××¤× × ${diffHours} ×©×¢××ª`;
+    if (diffDays < 7) return `××¤× × ${diffDays} ××××`;
     return date.toLocaleDateString('he-IL');
   };
 
@@ -115,7 +115,7 @@ export default function AdminAlertsPage() {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <Loader2 className="animate-spin text-teal-600 mx-auto mb-3" size={32} />
-          <p className="text-gray-500 text-sm">טוען התראות...</p>
+          <p className="text-gray-500 text-sm">×××¢× ××ª×¨×××ª...</p>
         </div>
       </div>
     );
@@ -130,8 +130,8 @@ export default function AdminAlertsPage() {
             <Bell size={22} className="text-[#1e3a5f]" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">מרכז התראות</h1>
-            <p className="text-sm text-gray-500">{visibleAlerts.length} התראות פעילות</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">××¨×× ××ª×¨×××ª</h1>
+            <p className="text-sm text-gray-500">{visibleAlerts.length} ××ª×¨×××ª ×¤×¢××××ª</p>
           </div>
         </div>
         <div className="flex gap-2 items-center">
@@ -142,11 +142,11 @@ export default function AdminAlertsPage() {
             onClick={() => fetchAlerts(true)}
             disabled={refreshing}
           >
-            רענן
+            ×¨×¢× ×
           </Button>
           {unreadCount > 0 && (
             <Button variant="ghost" size="sm" onClick={handleMarkAllRead}>
-              סמן הכל כנקרא
+              ×¡×× ××× ×× ×§×¨×
             </Button>
           )}
         </div>
@@ -156,15 +156,15 @@ export default function AdminAlertsPage() {
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-red-50 rounded-xl p-3 text-center border border-red-100">
           <p className="text-2xl font-bold text-red-600">{highCount}</p>
-          <p className="text-xs text-red-500">דחופות</p>
+          <p className="text-xs text-red-500">××××¤××ª</p>
         </div>
         <div className="bg-teal-50 rounded-xl p-3 text-center border border-teal-100">
           <p className="text-2xl font-bold text-teal-600">{unreadCount}</p>
-          <p className="text-xs text-teal-500">לא נקראו</p>
+          <p className="text-xs text-teal-500">×× × ×§×¨××</p>
         </div>
         <div className="bg-gray-50 rounded-xl p-3 text-center border border-gray-200">
           <p className="text-2xl font-bold text-gray-600">{visibleAlerts.length}</p>
-          <p className="text-xs text-gray-500">סה״כ</p>
+          <p className="text-xs text-gray-500">×¡××´×</p>
         </div>
       </div>
 
@@ -172,16 +172,16 @@ export default function AdminAlertsPage() {
         <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
           <AlertTriangle className="text-red-600 flex-shrink-0" size={20} />
           <span className="text-red-700 text-sm">{error}</span>
-          <Button variant="ghost" size="sm" onClick={() => fetchAlerts()}>נסה שוב</Button>
+          <Button variant="ghost" size="sm" onClick={() => fetchAlerts()}>× ×¡× ×©××</Button>
         </div>
       )}
 
       {/* Filter tabs */}
       <div className="flex gap-2">
         {[
-          { key: 'all' as const, label: 'הכל', count: visibleAlerts.length },
-          { key: 'unread' as const, label: 'לא נקראו', count: unreadCount },
-          { key: 'high' as const, label: 'דחופות', count: highCount },
+          { key: 'all' as const, label: '×××', count: visibleAlerts.length },
+          { key: 'unread' as const, label: '×× × ×§×¨××', count: unreadCount },
+          { key: 'high' as const, label: '××××¤××ª', count: highCount },
         ].map(tab => (
           <button
             key={tab.key}
@@ -204,9 +204,9 @@ export default function AdminAlertsPage() {
             <Check size={32} className="text-green-500" />
           </div>
           <h3 className="text-lg font-bold text-gray-600 mb-2">
-            {filter === 'all' ? 'אין התראות פעילות' : filter === 'unread' ? 'אין התראות חדשות' : 'אין התראות דחופות'}
+            {filter === 'all' ? '××× ××ª×¨×××ª ×¤×¢××××ª' : filter === 'unread' ? '××× ××ª×¨×××ª ×××©××ª' : '××× ××ª×¨×××ª ××××¤××ª'}
           </h3>
-          <p className="text-gray-400 text-sm">הכל בסדר!</p>
+          <p className="text-gray-400 text-sm">××× ××¡××¨!</p>
         </Card>
       ) : (
         <div className="space-y-2">
@@ -249,7 +249,7 @@ export default function AdminAlertsPage() {
                     <span className="text-xs text-gray-400">{formatRelativeTime(alert.time)}</span>
                     {alert.link && (
                       <span className="text-xs text-teal-500 flex items-center gap-1 hover:text-teal-700">
-                        צפה <ChevronLeft size={12} />
+                        ×¦×¤× <ChevronLeft size={12} />
                       </span>
                     )}
                   </div>
