@@ -136,6 +136,8 @@ export default function GarageApplyPage() {
     }
     setError('');
     setStep(2);
+  };
+
   const toggleLanguage = (lang: string) => {
     setSelectedLanguages(prev =>
       prev.includes(lang) ? prev.filter(l => l !== lang) : [...prev, lang]
