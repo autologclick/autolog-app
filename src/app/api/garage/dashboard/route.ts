@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!garage) {
-      return jsonResponse({ error: 'מוסך לא נמצא' }, 404);
+      return jsonResponse({ error: '×××¡× ×× × ××¦×' }, 404);
     }
 
     const now = new Date();
@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
       totalInspections,
       inspectionsWithScoreThisMonth,
       inspectionsWithCostThisMonth,
+      awaitingSignatureCount,
     ] = await Promise.all([
       // Inspections this month
       prisma.inspection.count({
@@ -93,6 +94,10 @@ export async function GET(req: NextRequest) {
         where: { garageId: garage.id, date: { gte: startOfMonth }, cost: { not: null } },
         select: { cost: true },
       }),
+      // Inspections awaiting customer signature
+      prisma.inspection.count({
+        where: { garageId: garage.id, status: 'awaiting_signature' },
+      }),
     ]);
 
     // Calculate trend percentage
@@ -114,7 +119,7 @@ export async function GET(req: NextRequest) {
       garage: {
         name: garage.name,
         city: garage.city,
-        status: garage.isActive ? 'פעיל' : 'לא פעיל',
+        status: garage.isActive ? '×¤×¢××' : '×× ×¤×¢××',
       },
       stats: {
         inspectionsThisMonth,
@@ -126,6 +131,7 @@ export async function GET(req: NextRequest) {
         totalInspections,
         revenueThisMonth,
         averageScore,
+        awaitingSignature: awaitingSignatureCount,
       },
       todayAppointments: todayAppointments.map(a => ({
         id: a.id,
@@ -134,7 +140,7 @@ export async function GET(req: NextRequest) {
         phone: a.user.phone,
         vehicle: a.vehicle
           ? `${a.vehicle.nickname || a.vehicle.manufacturer + ' ' + a.vehicle.model} (${a.vehicle.licensePlate})`
-          : 'לא ידוע',
+          : '×× ××××¢',
         service: a.serviceType,
         status: a.status,
       })),
@@ -142,8 +148,8 @@ export async function GET(req: NextRequest) {
         id: i.id,
         vehicle: i.vehicle
           ? `${i.vehicle.nickname || i.vehicle.manufacturer + ' ' + i.vehicle.model} (${i.vehicle.licensePlate})`
-          : 'לא ידוע',
-        customer: (i.vehicle as any)?.user?.fullName || i.customerName || 'לא ידוע',
+          : '×× ××××¢',
+        customer: (i.vehicle as any)?.user?.fullName || i.customerName || '×× ××××¢',
         date: i.date.toISOString().split('T')[0],
         score: i.overallScore,
         status: i.status,
