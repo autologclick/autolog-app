@@ -104,7 +104,7 @@ export default function LoginPage() {
       <div className={`w-full max-w-md relative z-10 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
 
         {/* Header Logo Section */}
-        <div className="text-center mb-4 sm:mb-10 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <div className="text-center mb-3 sm:mb-10 animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <div className="flex justify-center mb-3 sm:mb-4">
             <Logo size="xl" className="transform hover:scale-105 transition-transform duration-300" />
           </div>
@@ -115,7 +115,7 @@ export default function LoginPage() {
         <div className="w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden animate-fade-in-scale" style={{ animationDelay: '0.2s' }}>
 
           {/* Card Header */}
-          <div className="bg-gradient-to-r from-slate-50 to-blue-50 px-4 sm:px-8 py-4 sm:py-6 border-b border-slate-200">
+          <div className="bg-gradient-to-r from-slate-50 to-blue-50 px-5 sm:px-8 py-4 sm:py-6 border-b border-slate-200">
             <h2 className="text-lg sm:text-xl font-bold text-slate-900">
               {isRegister ? 'הרשמה חדשה' : 'התחברות'}
             </h2>
@@ -125,7 +125,7 @@ export default function LoginPage() {
           </div>
 
           {/* Form Section */}
-          <div className="px-4 sm:px-8 py-6 sm:py-8">
+          <div className="px-5 sm:px-8 py-5 sm:py-8">
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Register Fields */}
               {isRegister && (
@@ -171,7 +171,7 @@ export default function LoginPage() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     required
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 disabled:bg-gray-50 disabled:text-gray-500 pe-10"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 disabled:bg-gray-50 disabled:text-gray-500 pe-10"
                   />
                   <button
                     type="button"
