@@ -31,28 +31,28 @@ const TYPE_CONFIG: Record<string, {
   badgeText: string;
   borderClass: string;
 }> = {
-  full: { label: '××××§× ××××', icon: Car, badgeBg: 'bg-teal-100', badgeText: 'text-teal-700', borderClass: 'border-r-teal-500' },
-  pre_test: { label: '××× × ×××¡×', icon: ClipboardCheck, badgeBg: 'bg-blue-100', badgeText: 'text-blue-700', borderClass: 'border-r-blue-500' },
-  periodic: { label: '×××¤×× ×ª×§××¤×ª×', icon: Settings, badgeBg: 'bg-teal-100', badgeText: 'text-teal-700', borderClass: 'border-r-teal-500' },
-  troubleshoot: { label: '×ª××§×× / ×××××', icon: Wrench, badgeBg: 'bg-orange-100', badgeText: 'text-orange-700', borderClass: 'border-r-orange-500' },
-  rot: { label: '××××§×ª ×¨×§×', icon: FileText, badgeBg: 'bg-amber-100', badgeText: 'text-amber-700', borderClass: 'border-r-amber-500' },
-  engine: { label: '××××§×ª ×× ××¢', icon: Settings, badgeBg: 'bg-red-100', badgeText: 'text-red-700', borderClass: 'border-r-red-500' },
-  tires: { label: '××××§×ª ×¦×××××', icon: Settings, badgeBg: 'bg-slate-100', badgeText: 'text-slate-700', borderClass: 'border-r-slate-500' },
-  brakes: { label: '××××§×ª ×××××', icon: AlertTriangle, badgeBg: 'bg-rose-100', badgeText: 'text-rose-700', borderClass: 'border-r-rose-500' },
+  full: { label: 'בדיקה מלאה', icon: Car, badgeBg: 'bg-teal-100', badgeText: 'text-teal-700', borderClass: 'border-r-teal-500' },
+  pre_test: { label: 'הכנה לטסט', icon: ClipboardCheck, badgeBg: 'bg-blue-100', badgeText: 'text-blue-700', borderClass: 'border-r-blue-500' },
+  periodic: { label: 'טיפול תקופתי', icon: Settings, badgeBg: 'bg-teal-100', badgeText: 'text-teal-700', borderClass: 'border-r-teal-500' },
+  troubleshoot: { label: 'תיקון / אבחון', icon: Wrench, badgeBg: 'bg-orange-100', badgeText: 'text-orange-700', borderClass: 'border-r-orange-500' },
+  rot: { label: 'בדיקת רקב', icon: FileText, badgeBg: 'bg-amber-100', badgeText: 'text-amber-700', borderClass: 'border-r-amber-500' },
+  engine: { label: 'בדיקת מנוע', icon: Settings, badgeBg: 'bg-red-100', badgeText: 'text-red-700', borderClass: 'border-r-red-500' },
+  tires: { label: 'בדיקת צמיגים', icon: Settings, badgeBg: 'bg-slate-100', badgeText: 'text-slate-700', borderClass: 'border-r-slate-500' },
+  brakes: { label: 'בדיקת בלמים', icon: AlertTriangle, badgeBg: 'bg-rose-100', badgeText: 'text-rose-700', borderClass: 'border-r-rose-500' },
 };
 
-const DEFAULT_TYPE = { label: '××××§×', icon: BarChart3, badgeBg: 'bg-gray-100', badgeText: 'text-gray-700', borderClass: 'border-r-gray-400' };
+const DEFAULT_TYPE = { label: 'בדיקה', icon: BarChart3, badgeBg: 'bg-gray-100', badgeText: 'text-gray-700', borderClass: 'border-r-gray-400' };
 
 function getTypeConfig(type: string) {
   return TYPE_CONFIG[type] || DEFAULT_TYPE;
 }
 
 const FILTER_TABS = [
-  { key: 'all', label: '×××', icon: BarChart3 },
-  { key: 'full', label: '××××§××ª ××§××¤××ª', icon: Car },
-  { key: 'pre_test', label: '××× × ×××¡×', icon: ClipboardCheck },
-  { key: 'periodic', label: '×××¤××××', icon: Settings },
-  { key: 'troubleshoot', label: '×ª××§×× ××', icon: Wrench },
+  { key: 'all', label: 'הכל', icon: BarChart3 },
+  { key: 'full', label: 'בדיקות מקיפות', icon: Car },
+  { key: 'pre_test', label: 'הכנה לטסט', icon: ClipboardCheck },
+  { key: 'periodic', label: 'טיפולים', icon: Settings },
+  { key: 'troubleshoot', label: 'תיקונים', icon: Wrench },
 ];
 
 export default function GarageInspectionsPage() {
@@ -113,12 +113,12 @@ export default function GarageInspectionsPage() {
             <Shield size={20} className="text-[#1e3a5f]" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">××××§××ª ××¤×¢××××ª</h1>
-            <p className="text-sm text-gray-500">{inspections.length} ×¨×©××××ª</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">בדיקות ופעולות</h1>
+            <p className="text-sm text-gray-500">{inspections.length} רשומות</p>
           </div>
         </div>
         <Button icon={<Plus size={16} />} onClick={() => router.push('/garage/new-inspection')} className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700">
-          ×¤×¢××× ×××©×
+          פעולה חדשה
         </Button>
       </div>
 
@@ -127,7 +127,7 @@ export default function GarageInspectionsPage() {
         <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
-          placeholder="××¤×© ××¤× ×¨××, ××× ××§ ×× ×¡××..."
+          placeholder="חפש לפי רכב, מכניק או סוג..."
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="w-full pl-3 pr-9 py-2.5 border border-gray-200 rounded-xl text-sm text-right focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
@@ -200,52 +200,52 @@ export default function GarageInspectionsPage() {
             <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-emerald-600" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">×ª××× ××ª AI ×××××§××ª</h2>
+            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לבדיקות</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={14} className="text-emerald-600" />
-                <span className="text-xs font-bold text-gray-700">×¡×× ××××§× ×××××</span>
+                <span className="text-xs font-bold text-gray-700">סוג בדיקה מוביל</span>
               </div>
               <p className="text-xs text-gray-600">
                 {(() => {
                   const topType = Object.entries(typeCounts).sort((a, b) => b[1] - a[1])[0];
-                  if (!topType) return 'ð ××× ××¡×¤××§ × ×ª×× ×× ×× ××ª××.';
+                  if (!topType) return '📋 אין מספיק נתונים לניתוח.';
                   const pct = Math.round((topType[1] / inspections.length) * 100);
-                  return `ð ${getTypeConfig(topType[0]).label} â ${pct}% ×××× ×××××§××ª (${topType[1]} ××ª×× ${inspections.length}). ${pct > 50 ? '×©×§×× ××××× ×©××¨××ª××.' : '××ª×¤××××ª ××××× ×ª.'}`;
+                  return `📊 ${getTypeConfig(topType[0]).label} — ${pct}% מכלל הבדיקות (${topType[1]} מתוך ${inspections.length}). ${pct > 50 ? 'שקלו גיוון שירותים.' : 'התפלגות מגוונת.'}`;
                 })()}
               </p>
             </div>
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <Target size={14} className="text-blue-600" />
-                <span className="text-xs font-bold text-gray-700">×¦××× ××××¦×¢</span>
+                <span className="text-xs font-bold text-gray-700">ציון ממוצע</span>
               </div>
               <p className="text-xs text-gray-600">
                 {(() => {
                   const scored = inspections.filter(i => i.overallScore !== null);
-                  if (scored.length === 0) return 'ð ××× ×¦××× ×× ×××× ×× ×¢××××.';
+                  if (scored.length === 0) return '🔍 אין ציונים זמינים עדיין.';
                   const avg = Math.round(scored.reduce((s, i) => s + (i.overallScore || 0), 0) / scored.length);
                   return avg >= 80
-                    ? `â­ ×¦××× ××××¦×¢ ${avg} â ×××××ª ××××§××ª ××¦××× ×ª! ×©××¨× ×¢× ××¨××.`
+                    ? `⭐ ציון ממוצע ${avg} — איכות בדיקות מצוינת! שמרו על הרמה.`
                     : avg >= 60
-                    ? `ð ×¦××× ××××¦×¢ ${avg} â ××© ××§×× ××©××¤××¨ ××××§ ××××××§××ª.`
-                    : `â ï¸ ×¦××× ××××¦×¢ ${avg} â ×××××¥ ×××××§ ××ª ×ª××××× ×××××§×.`;
+                    ? `📊 ציון ממוצע ${avg} — יש מקום לשיפור בחלק מהבדיקות.`
+                    : `⚠️ ציון ממוצע ${avg} — מומלץ לבדוק את תהליכי הבדיקה.`;
                 })()}
               </p>
             </div>
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <Activity size={14} className="text-amber-600" />
-                <span className="text-xs font-bold text-gray-700">×¡××××¡ ×¤×¢××××ª</span>
+                <span className="text-xs font-bold text-gray-700">סטטוס פעילות</span>
               </div>
               <p className="text-xs text-gray-600">
                 {(() => {
                   const completed = inspections.filter(i => i.status === 'completed').length;
                   const pending = inspections.filter(i => i.status === 'pending' || i.status === 'in_progress' || i.status === 'awaiting_signature').length;
-                  if (pending > 0) return `â³ ${pending} ××××§××ª ××ª××××. ${completed} ×××©×××. ×¡×××× ××××§××ª ×¤×ª××××ª ××©××¤××¨ ××× × ×××¤××.`;
-                  return `â ×× ${completed} ×××××§××ª ×××©×××. ×××¦××¢×× ××¦××× ××!`;
+                  if (pending > 0) return `⏳ ${pending} בדיקות בתהליך. ${completed} הושלמו. סיימו בדיקות פתוחות לשיפור זמני טיפול.`;
+                  return `✅ כל ${completed} הבדיקות הושלמו. ביצועים מצוינים!`;
                 })()}
               </p>
             </div>
@@ -263,10 +263,10 @@ export default function GarageInspectionsPage() {
             <Shield size={32} className="text-gray-300" />
           </div>
           <h3 className="text-lg font-bold text-gray-600 mb-2">
-            {inspections.length === 0 ? '××× ××××§××ª ×¢××××' : '××× ×ª××¦×××ª'}
+            {inspections.length === 0 ? 'אין בדיקות עדיין' : 'אין תוצאות'}
           </h3>
           <p className="text-gray-400 text-sm mb-4">
-            {inspections.length === 0 ? '×××¥ ×¢× "×¤×¢××× ×××©×" ×××ª×××' : '× ×¡× ××©× ××ª ××ª ××¡×× ××'}
+            {inspections.length === 0 ? 'לחץ על "פעולה חדשה" להתחיל' : 'נסה לשנות את הסינון'}
           </p>
         </Card>
       ) : (
@@ -292,7 +292,7 @@ export default function GarageInspectionsPage() {
                         i.overallScore >= 60 ? 'text-amber-600' : 'text-red-600'
                       }`}>{i.overallScore}</span>
                     ) : (
-                      <span className="text-gray-300 text-lg">â</span>
+                      <span className="text-gray-300 text-lg">—</span>
                     )}
                   </div>
 
@@ -308,11 +308,11 @@ export default function GarageInspectionsPage() {
                     <p className="font-bold text-sm text-gray-800 truncate">{i.vehicle.nickname}</p>
                     <div className="flex items-center gap-3 text-xs text-gray-500">
                       <span>{i.vehicle.licensePlate}</span>
-                      <span>â¢</span>
+                      <span>•</span>
                       <span>{new Date(i.date).toLocaleDateString('he-IL')}</span>
                       {i.mechanicName && (
                         <>
-                          <span className="hidden sm:inline">â¢</span>
+                          <span className="hidden sm:inline">•</span>
                           <span className="hidden sm:inline">{i.mechanicName}</span>
                         </>
                       )}
