@@ -18,21 +18,21 @@ const eventTypeIcons: Record<string, typeof AlertCircle> = {
 };
 
 const eventTypes = [
-  { id: 'accident', label: '×ª××× ×', icon: Flame, color: 'bg-red-100' },
-  { id: 'breakdown', label: '×ª×§×× ××× ××ª', icon: Wrench, color: 'bg-orange-100' },
-  { id: 'flat_tire', label: '×¦××× ×ª×§××¢', icon: CircleDot, color: 'bg-amber-100' },
-  { id: 'fuel', label: '×××§ × ×××¨', icon: Fuel, color: 'bg-yellow-100' },
-  { id: 'electrical', label: '× ×¢××× ××¨××', icon: Lock, color: 'bg-purple-100' },
-  { id: 'other', label: '×××¨', icon: HelpCircle, color: 'bg-gray-100' },
+  { id: 'accident', label: 'תאונה', icon: Flame, color: 'bg-red-100' },
+  { id: 'breakdown', label: 'תקלה מכנית', icon: Wrench, color: 'bg-orange-100' },
+  { id: 'flat_tire', label: 'צמיג תקוע', icon: CircleDot, color: 'bg-amber-100' },
+  { id: 'fuel', label: 'דלק נגמר', icon: Fuel, color: 'bg-yellow-100' },
+  { id: 'electrical', label: 'נעילה ברכב', icon: Lock, color: 'bg-purple-100' },
+  { id: 'other', label: 'אחר', icon: HelpCircle, color: 'bg-gray-100' },
 ];
 
 const eventTypeLabels: Record<string, string> = {
-  accident: '×ª××× ×', breakdown: '×ª×§×× ××× ××ª', flat_tire: '×¦××× ×ª×§××¢',
-  fuel: '×××§ × ×××¨', electrical: '× ×¢××× ××¨××', locked_out: '× ×¢××× ××¨××', other: '×××¨',
+  accident: 'תאונה', breakdown: 'תקלה מכנית', flat_tire: 'צמיג תקוע',
+  fuel: 'דלק נגמר', electrical: 'נעילה ברכב', locked_out: 'נעילה ברכב', other: 'אחר',
 };
 
 const priorityLabels: Record<string, string> = {
-  critical: '×§×¨×××', high: '××××', medium: '××× ×× ×', low: '× ×××',
+  critical: 'קריטי', high: 'גבוה', medium: 'בינוני', low: 'נמוך',
 };
 
 function translateEventType(type: string): string {
@@ -117,19 +117,19 @@ export default function SosPage() {
           setGeoLocating(false);
         },
         (error) => {
-          setSubmitMessage('×× × ××ª× ×××©×× ×××§××. ×× × ××× ××× ××ª.');
+          setSubmitMessage('לא ניתן להשיג מיקום. אנא הזן ידנית.');
           setGeoLocating(false);
         }
       );
     } else {
-      setSubmitMessage('×©××¨××ª× ×××§×× ×× ×××× ×× ×××¤××¤× ×©××.');
+      setSubmitMessage('שירותי מיקום לא זמינים בדפדפן שלך.');
       setGeoLocating(false);
     }
   };
 
   const handleSubmit = async () => {
     if (!selectedVehicleId) {
-      setSubmitMessage('×××¨ ×¨×× ×× ×');
+      setSubmitMessage('בחר רכב אנא');
       return;
     }
     setSubmitting(true);
@@ -148,7 +148,7 @@ export default function SosPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setSubmitMessage('×××××× × ×©×× ×××¦×××! × ××××¨ ×××× ×××§××.');
+        setSubmitMessage('הדיווח נשלח בהצלחה! נחזור אליך בהקדם.');
         setShowReportModal(false);
         setStep(0);
         setSelectedType(null);
@@ -161,20 +161,20 @@ export default function SosPage() {
         const evData = await evRes.json();
         if (evData.events) setEvents(evData.events);
       } else {
-        setSubmitMessage(data.error || '×©×××× ××©××××ª ××××××');
+        setSubmitMessage(data.error || 'שגיאה בשליחת הדיווח');
       }
     } catch {
-      setSubmitMessage('×©××××ª ×××××¨');
+      setSubmitMessage('שגיאת חיבור');
     }
     setSubmitting(false);
     setTimeout(() => setSubmitMessage(''), 5000);
   };
 
   const getEventIcon = (type: string) => {
-    if (type.includes('accident') || type.includes('×ª××× ×')) return Flame;
-    if (type.includes('flat') || type.includes('×¦×××')) return CircleDot;
-    if (type.includes('fuel') || type.includes('×××§')) return Fuel;
-    if (type.includes('electrical') || type.includes('× ×¢×××')) return Lock;
+    if (type.includes('accident') || type.includes('תאונה')) return Flame;
+    if (type.includes('flat') || type.includes('צמיג')) return CircleDot;
+    if (type.includes('fuel') || type.includes('דלק')) return Fuel;
+    if (type.includes('electrical') || type.includes('נעילה')) return Lock;
     return Wrench;
   };
 
@@ -190,16 +190,16 @@ export default function SosPage() {
       if (res.ok) {
         setEventNote('');
         setActiveEventId(null);
-        setSubmitMessage('××¢×¨× ×××¡×¤× ×××¦×××');
+        setSubmitMessage('הערה הוספה בהצלחה');
         // Refresh events
         const evRes = await fetch('/api/sos');
         const evData = await evRes.json();
         if (evData.events) setEvents(evData.events);
       } else {
-        setSubmitMessage('×©×××× ××××¡×¤×ª ××¢×¨×');
+        setSubmitMessage('שגיאה בהוספת הערה');
       }
     } catch {
-      setSubmitMessage('×©××××ª ×××××¨');
+      setSubmitMessage('שגיאת חיבור');
     } finally {
       setAddingNote(false);
       setTimeout(() => setSubmitMessage(''), 5000);
@@ -212,12 +212,12 @@ export default function SosPage() {
         <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
           <AlertTriangle size={20} className="text-red-600" />
         </div>
-        <h1 className="text-2xl font-bold text-[#1e3a5f]">SOS ×××¨××</h1>
+        <h1 className="text-2xl font-bold text-[#1e3a5f]">SOS חירום</h1>
       </div>
 
       {submitMessage && (
         <div className={`p-4 rounded-xl text-center font-medium ${
-          submitMessage.includes('××¦×××') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          submitMessage.includes('הצלחה') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
         }`}>
           {submitMessage}
         </div>
@@ -229,15 +229,15 @@ export default function SosPage() {
           <div className="w-20 h-20 bg-white/25 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse">
             <AlertTriangle size={48} className="text-white" />
           </div>
-          <h2 className="text-3xl font-bold mb-3 text-white">×¦×¨×× ×¢××¨× ××××¤×?</h2>
-          <p className="text-white/90 mb-6 text-lg">×××× ×¢× ×××¨××¢ ×× ×©×× ×× ×¢××¨× ××××××ª</p>
+          <h2 className="text-3xl font-bold mb-3 text-white">צריך עזרה דחופה?</h2>
+          <p className="text-white/90 mb-6 text-lg">דווח על אירוע ונשלח לך עזרה מיידית</p>
           <Button
             size="lg"
             className="bg-white text-red-600 hover:bg-red-50 font-bold text-xl px-12 py-3 w-full shadow-lg"
             icon={<AlertCircle size={24} />}
             onClick={() => { setShowReportModal(true); setStep(0); setSelectedType(null); }}
           >
-            ×××× ×¢× ×××¨××¢ ×××¨××
+            דווח על אירוע חירום
           </Button>
         </div>
       </Card>
@@ -246,27 +246,27 @@ export default function SosPage() {
       <div className="grid grid-cols-2 gap-3">
         <a href="tel:+97246840000" className="w-full">
           <Button variant="outline" size="lg" icon={<Phone size={18} />} className="py-4 w-full">
-            ×××× ××××§×: *6840
+            חייג למוקד: *6840
           </Button>
         </a>
         <Button variant="outline" size="lg" icon={<MapPin size={18} />} className="py-4" onClick={handleDetectLocation} disabled={geoLocating}>
-          {geoLocating ? '×××¤××© ×××§××...' : '××× ×××§××'}
+          {geoLocating ? 'חיפוש מיקום...' : 'זהה מיקום'}
         </Button>
       </div>
 
       {/* Active SOS Status Timeline */}
       {events.filter(e => e.status !== 'resolved').length > 0 && (
         <Card>
-          <CardTitle>×××¨××¢×× ×¤×¢××××</CardTitle>
+          <CardTitle>אירועים פעילים</CardTitle>
           <div className="space-y-4 mt-3">
             {events.filter(e => e.status !== 'resolved').map(event => {
               const statuses = ['open', 'assigned', 'in_progress', 'resolved'];
               const currentIndex = statuses.indexOf(event.status);
               const statusLabels: Record<string, string> = {
-                open: '×¤×ª××',
-                assigned: '×××§×¦×',
-                in_progress: '××××¤××',
-                resolved: '×¡×××¨',
+                open: 'פתוח',
+                assigned: 'הוקצה',
+                in_progress: 'בטיפול',
+                resolved: 'סגור',
               };
               const priorityColors: Record<string, string> = {
                 critical: 'text-red-600',
@@ -318,7 +318,7 @@ export default function SosPage() {
                   {activeEventId === event.id ? (
                     <div className="space-y-2 pt-2 border-t border-red-200">
                       <textarea
-                        placeholder="×××¡×£ ×¢×××× ×× ××¢×¨×..."
+                        placeholder="הוסף עדכון או הערה..."
                         value={eventNote}
                         onChange={(e) => setEventNote(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
@@ -330,7 +330,7 @@ export default function SosPage() {
                           variant="ghost"
                           onClick={() => { setActiveEventId(null); setEventNote(''); }}
                         >
-                          ×××××
+                          ביטול
                         </Button>
                         <Button
                           size="sm"
@@ -339,7 +339,7 @@ export default function SosPage() {
                           loading={addingNote}
                           onClick={handleAddNote}
                         >
-                          ×©×× ×¢××××
+                          שלח עדכון
                         </Button>
                       </div>
                     </div>
@@ -351,7 +351,7 @@ export default function SosPage() {
                       icon={<Plus size={12} />}
                       onClick={() => setActiveEventId(event.id)}
                     >
-                      ×××¡×£ ×¢××××
+                      הוסף עדכון
                     </Button>
                   )}
                 </div>
@@ -363,7 +363,7 @@ export default function SosPage() {
 
       {/* Past Events */}
       <Card>
-        <CardTitle icon={<Clock className="text-gray-500" />}>×××¡×××¨×××ª ×××¨××¢××</CardTitle>
+        <CardTitle icon={<Clock className="text-gray-500" />}>היסטוריית אירועים</CardTitle>
         {loading ? (
           <div className="flex justify-center py-8">
             <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
@@ -373,8 +373,8 @@ export default function SosPage() {
             <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center mx-auto mb-2">
               <CheckCircle2 size={20} className="text-green-600" />
             </div>
-            <p className="text-gray-400 font-medium">××× ×××¨××¢× SOS ×§×××××</p>
-            <p className="text-gray-300 text-sm">×××× ×©××× ××¡××¨!</p>
+            <p className="text-gray-400 font-medium">אין אירועי SOS קודמים</p>
+            <p className="text-gray-300 text-sm">בטוח שהכל בסדר!</p>
           </div>
         ) : (
           <div className="space-y-3 mt-3">
@@ -391,7 +391,7 @@ export default function SosPage() {
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm">{translateEventType(e.eventType)}</div>
                   <div className="text-xs text-gray-500 line-clamp-2">
-                    {e.location || '××× ×××§××'} â¢ {e.vehicle?.licensePlate || '××× ×¨××'} â¢ {new Date(e.createdAt).toLocaleDateString('he-IL')} {new Date(e.createdAt).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
+                    {e.location || 'ללא מיקום'} • {e.vehicle?.licensePlate || 'ללא רכב'} • {new Date(e.createdAt).toLocaleDateString('he-IL')} {new Date(e.createdAt).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-1 flex-shrink-0">
@@ -409,24 +409,24 @@ export default function SosPage() {
       </Card>
 
       {/* Report Modal */}
-      <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)} title="××××× ×××¨××¢ SOS" size="lg">
+      <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)} title="דיווח אירוע SOS" size="lg">
         {step === 0 && (
           <div className="space-y-5">
             <div>
-              <p className="text-gray-700 mb-3 text-sm font-bold">×××¨ ××ª ××¨××:</p>
+              <p className="text-gray-700 mb-3 text-sm font-bold">בחר את הרכב:</p>
               <select
                 value={selectedVehicleId || ''}
                 onChange={(e) => setSelectedVehicleId(e.target.value)}
                 className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg text-right focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-medium"
               >
-                <option value="">-- ×××¨ ×¨×× --</option>
+                <option value="">-- בחר רכב --</option>
                 {vehicles.map(v => (
                   <option key={v.id} value={v.id}>{v.nickname} ({v.licensePlate})</option>
                 ))}
               </select>
             </div>
             <div>
-              <p className="text-gray-700 mb-3 text-sm font-bold">×× ×§×¨×?</p>
+              <p className="text-gray-700 mb-3 text-sm font-bold">מה קרה?</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {eventTypes.map(t => (
                   <button
@@ -454,38 +454,38 @@ export default function SosPage() {
                 return <IconComponent size={16} className="text-blue-700 flex-shrink-0" />;
               })()}
               <p className="text-xs text-blue-700 font-medium">
-                ×¡×× ×××¨××¢: <span className="font-bold">{eventTypes.find(t => t.id === selectedType)?.label}</span>
+                סוג אירוע: <span className="font-bold">{eventTypes.find(t => t.id === selectedType)?.label}</span>
               </p>
             </div>
             <Input
-              label="×ª××××¨ ××××¨××¢ (×××¤×¦××× ××)"
-              placeholder="×¡×¤×¨ ×× ×§×¨× ××¤×¨×××..."
+              label="תיאור האירוע (אופציונלי)"
+              placeholder="ספר מה קרה בפרטים..."
               value={description}
               onChange={e => setDescription(e.target.value)}
             />
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-bold text-gray-700">×××§××</label>
+                <label className="text-sm font-bold text-gray-700">מיקום</label>
                 <Button size="sm" variant="outline" icon={<MapPin size={12} />} onClick={handleDetectLocation} loading={geoLocating}>
-                  ××× GPS
+                  זהה GPS
                 </Button>
               </div>
               <Input
-                placeholder="×¨×××, ×¢××¨ (×× ×××¡×£ ×GPS)"
+                placeholder="רחוב, עיר (או הוסף בGPS)"
                 icon={<MapPin size={14} />}
                 value={location}
                 onChange={e => setLocation(e.target.value)}
               />
             </div>
             <div className="flex gap-3 justify-end pt-4">
-              <Button variant="ghost" onClick={() => setStep(0)}>××××¨</Button>
+              <Button variant="ghost" onClick={() => setStep(0)}>חזור</Button>
               <Button
                 className="bg-red-600 hover:bg-red-700 text-white font-bold"
                 icon={<Send size={16} />}
                 loading={submitting}
                 onClick={handleSubmit}
               >
-                ×©×× ××××× ×××¨××
+                שלח דיווח חירום
               </Button>
             </div>
           </div>
