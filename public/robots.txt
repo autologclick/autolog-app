@@ -5,4 +5,4 @@ Disallow: /garage/
 Disallow: /api/
 Disallow: /auth/
 
-Sitemap: https://autolog.co.il/sitemap.xml
+Sitemap: https://autolog.click/sitemap.xmlh
