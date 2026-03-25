@@ -200,7 +200,7 @@ export default function Home() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-          <Logo size="md" dark={!isScrolled} />
+          <Logo size="md" dark={!isScrolled} linkToHome />
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-6">
