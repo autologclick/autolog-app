@@ -118,7 +118,7 @@ export default function Home() {
                 '@id': 'https://autolog.click/#organization',
                 name: 'AutoLog',
                 url: 'https://autolog.click',
-                logo: 'https://autolog.click/logo.png',
+                logo: 'https://autolog.click/logo.svg',
                 description: 'הפלטפורמה המובילה בישראל לניהול רכבים חכם',
                 sameAs: ['https://www.facebook.com/autolog', 'https://www.linkedin.com/company/autolog'],
                 contactPoint: {
