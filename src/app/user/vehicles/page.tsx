@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge, { StatusBadge } from '@/components/ui/Badge';
@@ -152,14 +152,48 @@ export default function VehiclesPage() {
   const [error, setError] = useState('');
   const [lookingUp, setLookingUp] = useState(false);
   const [lookupMessage, setLookupMessage] = useState('');
-  const [formData, setFormData] = useState({
-    nickname: '', licensePlate: '', manufacturer: '', model: '',
-    year: '', testExpiryDate: '', insuranceExpiry: '', mileage: '', fuelType: '', color: '',
+  const emptyForm = { nickname: '', licensePlate: '', manufacturer: '', model: '', year: '', testExpiryDate: '', insuranceExpiry: '', mileage: '', fuelType: '', color: '' };
+
+  // Restore draft from sessionStorage if exists
+  const [formData, setFormData] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const draft = sessionStorage.getItem('autolog_vehicle_draft');
+        if (draft) {
+          const parsed = JSON.parse(draft);
+          return { ...emptyForm, ...parsed };
+        }
+      } catch {}
+    }
+    return emptyForm;
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
-  const [imageVersion, setImageVersion] = useState(0); // for forcing re-render of vehicle images
+  const [imageVersion, setImageVersion] = useState(0);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-save form draft to sessionStorage
+  useEffect(() => {
+    const hasData = Object.values(formData).some(v => v !== '');
+    if (hasData) {
+      sessionStorage.setItem('autolog_vehicle_draft', JSON.stringify(formData));
+    }
+  }, [formData]);
+
+  // Re-open add modal if there was a saved draft
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const draft = sessionStorage.getItem('autolog_vehicle_draft');
+      if (draft) {
+        try {
+          const parsed = JSON.parse(draft);
+          if (Object.values(parsed).some((v) => v !== '')) {
+            setShowAddModal(true);
+          }
+        } catch {}
+      }
+    }
+  }, []);
 
   const fetchVehicles = async () => {
     try {
@@ -211,11 +245,12 @@ export default function VehiclesPage() {
   };
 
   const resetForm = () => {
-    setFormData({ nickname: '', licensePlate: '', manufacturer: '', model: '', year: '', testExpiryDate: '', insuranceExpiry: '', mileage: '', fuelType: '', color: '' });
+    setFormData(emptyForm);
     setError('');
     setLookupMessage('');
     setImagePreview(null);
     setImageData(null);
+    sessionStorage.removeItem('autolog_vehicle_draft');
   };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
