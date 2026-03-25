@@ -26,16 +26,16 @@ interface BrakeSystem { frontDiscs: number; rearDiscs: number; frontPads: number
 interface Recommendation { text: string; urgency: string; estimatedCost: string; }
 
 const statusOptions = [
-  { value: 'ok', label: 'תקין', color: 'bg-green-500', icon: Check },
-  { value: 'warning', label: 'דורש תשומת לב', color: 'bg-amber-500', icon: AlertTriangle },
-  { value: 'critical', label: 'קריטי', color: 'bg-red-500', icon: X },
+  { value: 'ok', label: '×ª×§××', color: 'bg-green-500', icon: Check },
+  { value: 'warning', label: '×××¨×© ×ª×©×××ª ××', color: 'bg-amber-500', icon: AlertTriangle },
+  { value: 'critical', label: '×§×¨×××', color: 'bg-red-500', icon: X },
 ];
 
 const inspectionTypes = [
-  { value: 'full', label: 'בדיקת AutoLog' },
-  { value: 'pre_test', label: 'הכנה לטסט' },
-  { value: 'troubleshoot', label: 'תיקון/אבחון תקלה' },
-  { value: 'periodic', label: 'טיפול תקופתי' },
+  { value: 'full', label: '××××§×ª AutoLog' },
+  { value: 'pre_test', label: '××× × ×××¡×' },
+  { value: 'troubleshoot', label: '×ª××§××/××××× ×ª×§××' },
+  { value: 'periodic', label: '×××¤×× ×ª×§××¤×ª×' },
 ];
 
 // ====== Status Selector Component ======
@@ -67,8 +67,8 @@ function StatusSelect({ value, onChange, label }: { value: string; onChange: (v:
 
 // ====== Light Status Options (Binary: Pass/Fail) ======
 const lightStatusOptions = [
-  { value: 'ok', label: 'תקין', color: 'bg-green-500', emoji: '✓' },
-  { value: 'not_ok', label: 'לא תקין', color: 'bg-red-500', emoji: '✕' },
+  { value: 'ok', label: '×ª×§××', color: 'bg-green-500', emoji: 'â' },
+  { value: 'not_ok', label: '×× ×ª×§××', color: 'bg-red-500', emoji: 'â' },
 ];
 
 function LightStatusSelect({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
@@ -98,11 +98,11 @@ function LightStatusSelect({ value, onChange, label }: { value: string; onChange
 
 // ====== Tire Status Options ======
 const tireStatusOptions = [
-  { value: 'new', label: 'חדש', color: 'bg-blue-500' },
-  { value: 'ok', label: 'תקין', color: 'bg-green-500' },
-  { value: 'worn', label: 'שחוק', color: 'bg-amber-500' },
-  { value: 'dry', label: 'יבש', color: 'bg-orange-500' },
-  { value: 'failed', label: 'פסול', color: 'bg-red-500' },
+  { value: 'new', label: '×××©', color: 'bg-blue-500' },
+  { value: 'ok', label: '×ª×§××', color: 'bg-green-500' },
+  { value: 'worn', label: '×©×××§', color: 'bg-amber-500' },
+  { value: 'dry', label: '×××©', color: 'bg-orange-500' },
+  { value: 'failed', label: '×¤×¡××', color: 'bg-red-500' },
 ];
 
 function TireStatusSelect({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
@@ -142,10 +142,10 @@ function TireStatusSelect({ value, onChange, label }: { value: string; onChange:
 
 // ====== Shock Absorber Status Options ======
 const shockStatusOptions = [
-  { value: 'ok', label: 'תקין', color: 'bg-green-500' },
-  { value: 'sweating', label: 'הזעה', color: 'bg-amber-500' },
-  { value: 'leaking', label: 'נוזל', color: 'bg-orange-500' },
-  { value: 'replace', label: 'להחלפה', color: 'bg-red-500' },
+  { value: 'ok', label: '×ª×§××', color: 'bg-green-500' },
+  { value: 'sweating', label: '×××¢×', color: 'bg-amber-500' },
+  { value: 'leaking', label: '× ×××', color: 'bg-orange-500' },
+  { value: 'replace', label: '×××××¤×', color: 'bg-red-500' },
 ];
 
 function ShockStatusSelect({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
@@ -175,10 +175,10 @@ function ShockStatusSelect({ value, onChange, label }: { value: string; onChange
 
 // ====== Fluid Status Options ======
 const fluidStatusOptions = [
-  { value: 'ok', label: 'תקין', color: 'bg-green-500' },
-  { value: 'low', label: 'חסר', color: 'bg-amber-500' },
-  { value: 'dirty', label: 'מלוכלך', color: 'bg-orange-500' },
-  { value: 'replace', label: 'להחלפה', color: 'bg-red-500' },
+  { value: 'ok', label: '×ª×§××', color: 'bg-green-500' },
+  { value: 'low', label: '××¡×¨', color: 'bg-amber-500' },
+  { value: 'dirty', label: '××××××', color: 'bg-orange-500' },
+  { value: 'replace', label: '×××××¤×', color: 'bg-red-500' },
 ];
 
 function FluidStatusSelect({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
@@ -293,7 +293,7 @@ export default function NewInspectionPage() {
 
   // Step 8: Summary, Recommendations, Signature
   const [summary, setSummary] = useState('');
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([{ text: '', urgency: 'בשבועות הקרובים', estimatedCost: '' }]);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([{ text: '', urgency: '××©×××¢××ª ××§×¨××××', estimatedCost: '' }]);
   const [notesUndercar, setNotesUndercar] = useState('');
   const [notesEngine, setNotesEngine] = useState('');
   const [customerName, setCustomerName] = useState('');
@@ -303,7 +303,7 @@ export default function NewInspectionPage() {
   const [vehiclePhoto, setVehiclePhoto] = useState('');
   const [invoicePhoto, setInvoicePhoto] = useState('');
 
-  // Pre-test checklist (הכנה לטסט) - each item has checked + notes
+  // Pre-test checklist (××× × ×××¡×) - each item has checked + notes
   const [preTestChecklist, setPreTestChecklist] = useState<Record<string, boolean>>({
     tires: false, lights: false, brakes: false, mirrors: false, wipers: false,
     horn: false, seatbelts: false, exhaust: false, steering: false, suspension: false,
@@ -314,13 +314,13 @@ export default function NewInspectionPage() {
   const [preTestNotes, setPreTestNotes] = useState('');
   const [preTestWorkItems, setPreTestWorkItems] = useState<Array<{item: string; action: string; notes: string; cost: number | string}>>([]);
 
-  // Service form (טיפול תקופתי)
+  // Service form (×××¤×× ×ª×§××¤×ª×)
   const [serviceItems, setServiceItems] = useState<string[]>([]);
   const [serviceNotes, setServiceNotes] = useState('');
   const [serviceRecommendations, setServiceRecommendations] = useState('');
   const [servicePhotos, setServicePhotos] = useState<string[]>([]);
 
-  // Troubleshoot form (תיקון/אבחון תקלה)
+  // Troubleshoot form (×ª××§××/××××× ×ª×§××)
   const [troubleshootProblem, setTroubleshootProblem] = useState('');
   const [troubleshootDiagnosis, setTroubleshootDiagnosis] = useState('');
   const [troubleshootFix, setTroubleshootFix] = useState('');
@@ -467,10 +467,10 @@ export default function NewInspectionPage() {
         }
       } else {
         const err = await res.json().catch(() => ({}));
-        setLookupError(err.error || 'רכב לא נמצא');
+        setLookupError(err.error || '×¨×× ×× × ××¦×');
       }
     } catch {
-      setLookupError('שגיאה בחיפוש. נסה שוב.');
+      setLookupError('×©×××× ××××¤××©. × ×¡× ×©××.');
     } finally {
       setLookupLoading(false);
     }
@@ -616,14 +616,14 @@ export default function NewInspectionPage() {
   // Build summary data for quick view
   const getSectionSummary = () => {
     const sections = [
-      { label: 'צמיגים', status: getMajorityStatus(Object.values(tires)) },
-      { label: 'אורות', status: getMajorityStatus(Object.values(lights)) },
-      { label: 'סרן קדמי', status: getMajorityStatus(Object.values(frontAxleItems)) },
-      { label: 'היגוי', status: getMajorityStatus(Object.values(steeringItems)) },
-      { label: 'בולמים', status: getMajorityStatus(Object.values(shocksData)) },
-      { label: 'מרכב', status: bodyTags.length > 0 ? (bodyTags.some(t => t.includes('תאונה') || t.includes('מעוך') || t.includes('חלודה')) ? 'critical' : 'warning') : 'ok' },
-      { label: 'נוזלים', status: getMajorityStatus(Object.values(fluids)) },
-      { label: 'חלונות', status: getMajorityStatus(Object.values(windows)) },
+      { label: '×¦×××××', status: getMajorityStatus(Object.values(tires)) },
+      { label: '×××¨××ª', status: getMajorityStatus(Object.values(lights)) },
+      { label: '×¡×¨× ×§×××', status: getMajorityStatus(Object.values(frontAxleItems)) },
+      { label: '×××××', status: getMajorityStatus(Object.values(steeringItems)) },
+      { label: '××××××', status: getMajorityStatus(Object.values(shocksData)) },
+      { label: '××¨××', status: bodyTags.length > 0 ? (bodyTags.some(t => t.includes('×ª××× ×') || t.includes('××¢××') || t.includes('×××××')) ? 'critical' : 'warning') : 'ok' },
+      { label: '× ×××××', status: getMajorityStatus(Object.values(fluids)) },
+      { label: '×××× ××ª', status: getMajorityStatus(Object.values(windows)) },
     ];
     return sections;
   };
@@ -642,7 +642,7 @@ export default function NewInspectionPage() {
     try {
       setLoading(true);
       setError('');
-      if (!selectedVehicleId && !isManualVehicleValid) { setError('יש לבחור רכב או להזין מספר רישוי'); return; }
+      if (!selectedVehicleId && !isManualVehicleValid) { setError('××© ×××××¨ ×¨×× ×× ××××× ××¡×¤×¨ ×¨××©××'); return; }
 
       // Base payload (common to all types)
       const basePayload: any = {
@@ -712,7 +712,7 @@ export default function NewInspectionPage() {
             notes: w.notes || undefined,
             cost: w.cost ? Number(w.cost) : undefined,
           })),
-          summary: `הכנה לטסט - ${passedCount}/${totalCount} תקין${workCount > 0 ? ` | ${workCount} עבודות בוצעו` : ''}`,
+          summary: `××× × ×××¡× - ${passedCount}/${totalCount} ×ª×§××${workCount > 0 ? ` | ${workCount} ×¢×××××ª ×××¦×¢×` : ''}`,
           overallScore: Math.round((passedCount / totalCount) * 100),
         };
       } else if (inspectionType === 'periodic') {
@@ -724,7 +724,7 @@ export default function NewInspectionPage() {
           serviceNotes: serviceNotes || undefined,
           serviceRecommendations: serviceRecommendations || undefined,
           servicePhotos: servicePhotos.length > 0 ? servicePhotos : undefined,
-          summary: `טיפול תקופתי - ${serviceItems.length} פעולות בוצעו`,
+          summary: `×××¤×× ×ª×§××¤×ª× - ${serviceItems.length} ×¤×¢××××ª ×××¦×¢×`,
         };
       } else if (inspectionType === 'troubleshoot') {
         payload = {
@@ -738,7 +738,7 @@ export default function NewInspectionPage() {
             parts: troubleshootParts || undefined,
             notes: troubleshootNotes || undefined,
           },
-          summary: troubleshootProblem ? `תיקון/אבחון: ${troubleshootProblem.substring(0, 100)}` : 'תיקון/אבחון תקלה',
+          summary: troubleshootProblem ? `×ª××§××/×××××: ${troubleshootProblem.substring(0, 100)}` : '×ª××§××/××××× ×ª×§××',
         };
       } else {
         payload = basePayload;
@@ -752,7 +752,7 @@ export default function NewInspectionPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || 'שגיאה בשמירת הבדיקה');
+        setError(data.error || '×©×××× ××©×××¨×ª ×××××§×');
         return;
       }
 
@@ -760,7 +760,7 @@ export default function NewInspectionPage() {
       setSuccessId(data.inspection.id);
       setSuccessModal(true);
     } catch (err) {
-      setError('שגיאה בשמירת הבדיקה');
+      setError('×©×××× ××©×××¨×ª ×××××§×');
       if (process.env.NODE_ENV === 'development') {
         console.error(err);
       }
@@ -768,18 +768,18 @@ export default function NewInspectionPage() {
   };
 
   const steps = [
-    { num: 1, label: 'רכב', icon: Car },
-    { num: 2, label: 'חוץ', icon: Camera },
-    { num: 3, label: 'פנים', icon: Eye },
-    { num: 4, label: 'צמיגים ואורות', icon: Lightbulb },
-    { num: 5, label: 'מכני', icon: Wrench },
-    { num: 6, label: 'נוזלים ופנים', icon: Droplets },
-    { num: 7, label: 'מנוע ובלמים', icon: Settings },
-    { num: 8, label: 'סיכום וחתימה', icon: PenLine },
+    { num: 1, label: '×¨××', icon: Car },
+    { num: 2, label: '×××¥', icon: Camera },
+    { num: 3, label: '×¤× ××', icon: Eye },
+    { num: 4, label: '×¦××××× ××××¨××ª', icon: Lightbulb },
+    { num: 5, label: '××× ×', icon: Wrench },
+    { num: 6, label: '× ××××× ××¤× ××', icon: Droplets },
+    { num: 7, label: '×× ××¢ ××××××', icon: Settings },
+    { num: 8, label: '×¡×××× ×××ª×××', icon: PenLine },
   ];
 
   const overallScore = calculateOverallScore();
-  const scoreLabel = overallScore >= 80 ? 'תקין' : overallScore >= 50 ? 'דורש תשומת לב' : overallScore > 0 ? 'לא תקין' : '';
+  const scoreLabel = overallScore >= 80 ? '×ª×§××' : overallScore >= 50 ? '×××¨×© ×ª×©×××ª ××' : overallScore > 0 ? '×× ×ª×§××' : '';
   const scoreColor = overallScore >= 80 ? 'text-green-600' : overallScore >= 50 ? 'text-amber-600' : 'text-red-600';
 
   return (
@@ -791,9 +791,9 @@ export default function NewInspectionPage() {
         </div>
         <div>
           <h1 className="text-lg sm:text-2xl font-bold text-[#1e3a5f]">
-            {step === 0 ? 'פעולה חדשה' : inspectionTypes.find(t => t.value === inspectionType)?.label || 'בדיקה חדשה'}
+            {step === 0 ? '×¤×¢××× ×××©×' : inspectionTypes.find(t => t.value === inspectionType)?.label || '××××§× ×××©×'}
           </h1>
-          <p className="text-sm text-gray-500">ביצוע בדיקה ומילוי ממצאים</p>
+          <p className="text-sm text-gray-500">×××¦××¢ ××××§× ×××××× ×××¦×××</p>
         </div>
       </div>
 
@@ -810,7 +810,7 @@ export default function NewInspectionPage() {
       {/* Score Bar - only for full inspection */}
       {inspectionType === 'full' && overallScore > 0 && step > 0 && (
         <div className="bg-slate-800 rounded-xl p-3 sm:p-4 text-center text-white">
-          <div className="text-xs sm:text-sm opacity-80">ציון כללי</div>
+          <div className="text-xs sm:text-sm opacity-80">×¦××× ××××</div>
           <div className={`text-3xl sm:text-4xl font-bold ${overallScore >= 80 ? 'text-green-400' : overallScore >= 50 ? 'text-amber-400' : 'text-red-400'}`}>{overallScore}</div>
           <div className="text-xs sm:text-sm opacity-80">{scoreLabel}</div>
         </div>
@@ -843,7 +843,7 @@ export default function NewInspectionPage() {
       {/* ====== STEP 0: Choose Action Type ====== */}
       {step === 0 && (
         <Card>
-          <CardTitle icon={<Shield className="text-teal-600" />}>בחר סוג פעולה</CardTitle>
+          <CardTitle icon={<Shield className="text-teal-600" />}>×××¨ ×¡×× ×¤×¢×××</CardTitle>
           <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-4">
             {inspectionTypes.map(t => (
               <button key={t.value} onClick={() => { setInspectionType(t.value); setStep(1); }}
@@ -863,24 +863,24 @@ export default function NewInspectionPage() {
       {step === 1 && (
         <>
           <Card>
-            <CardTitle icon={<Car className="text-teal-600" />}>פרטי רכב ובדיקה</CardTitle>
+            <CardTitle icon={<Car className="text-teal-600" />}>×¤×¨×× ×¨×× ×××××§×</CardTitle>
             <div className="space-y-4 mt-4">
 
               {/* Vehicle Mode Selector */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">בחר רכב</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">×××¨ ×¨××</label>
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   <button onClick={() => setVehicleMode('select')}
                     className={`flex items-center justify-center gap-2 p-3 rounded-xl text-xs font-medium transition border-2 ${
                       vehicleMode === 'select' ? 'border-teal-600 bg-teal-50 text-teal-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
                     }`}>
-                    <Search size={14} /> בחר מרשימה
+                    <Search size={14} /> ×××¨ ××¨×©×××
                   </button>
                   <button onClick={() => setVehicleMode('manual')}
                     className={`flex items-center justify-center gap-2 p-3 rounded-xl text-xs font-medium transition border-2 ${
                       vehicleMode === 'manual' ? 'border-teal-600 bg-teal-50 text-teal-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
                     }`}>
-                    <Keyboard size={14} /> הזנה ידנית
+                    <Keyboard size={14} /> ××× × ××× ××ª
                   </button>
                 </div>
 
@@ -892,7 +892,7 @@ export default function NewInspectionPage() {
                     ) : vehicles.length > 0 ? (
                       <select value={selectedVehicleId} onChange={e => { setSelectedVehicleId(e.target.value); setManualPlate(''); }}
                         className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400">
-                        <option value="">-- בחר רכב --</option>
+                        <option value="">-- ×××¨ ×¨×× --</option>
                         {vehicles.map(v => (
                           <option key={v.id} value={v.id}>
                             {v.nickname || `${v.manufacturer || ''} ${v.model || ''}`} ({v.licensePlate})
@@ -901,15 +901,15 @@ export default function NewInspectionPage() {
                       </select>
                     ) : (
                       <div className="text-center py-4 bg-gray-50 rounded-xl">
-                        <p className="text-sm text-gray-500 mb-2">אין רכבים ברשימה</p>
+                        <p className="text-sm text-gray-500 mb-2">××× ×¨×××× ××¨×©×××</p>
                         <button onClick={() => setVehicleMode('manual')}
-                          className="text-teal-600 text-sm font-medium hover:underline">הזן מספר רכב ידנית</button>
+                          className="text-teal-600 text-sm font-medium hover:underline">××× ××¡×¤×¨ ×¨×× ××× ××ª</button>
                       </div>
                     )}
                     {vehicles.length > 0 && (
                       <button onClick={() => setVehicleMode('manual')}
                         className="text-sm text-teal-600 hover:underline mt-2 flex items-center gap-1">
-                        <Plus size={12} /> רכב לא ברשימה? הזן ידנית
+                        <Plus size={12} /> ×¨×× ×× ××¨×©×××? ××× ××× ××ª
                       </button>
                     )}
                   </>
@@ -920,24 +920,24 @@ export default function NewInspectionPage() {
                   <div className="space-y-3 p-4 bg-blue-50/50 rounded-xl border border-blue-200">
                     {scanPreview && (
                       <div className="flex items-center gap-3 mb-2">
-                        <img src={scanPreview} alt="סריקה" className="w-16 h-12 object-cover rounded-lg border" />
+                        <img src={scanPreview} alt="×¡×¨××§×" className="w-16 h-12 object-cover rounded-lg border" />
                         <div className="flex-1">
                           {scanLoading ? (
                             <div className="flex items-center gap-2 text-sm text-teal-600">
-                              <Loader2 size={14} className="animate-spin" /> מזהה פרטי רכב...
+                              <Loader2 size={14} className="animate-spin" /> ×××× ×¤×¨×× ×¨××...
                             </div>
                           ) : (
-                            <p className="text-xs text-green-600 font-medium">✓ זוהו פרטים מהתמונה</p>
+                            <p className="text-xs text-green-600 font-medium">â ×××× ×¤×¨××× ×××ª××× ×</p>
                           )}
                         </div>
                       </div>
                     )}
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">מספר רישוי *</label>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">××¡×¤×¨ ×¨××©×× *</label>
                       <div className="relative">
                         <input type="text" value={manualPlate}
                           onChange={e => { setManualPlate(e.target.value); setLookupDone(false); setLookupError(''); }}
-                          placeholder="למשל: 7198738"
+                          placeholder="×××©×: 7198738"
                           className={`w-full rounded-xl border px-3 py-2.5 text-lg font-mono text-center tracking-widest focus:ring-2 focus:ring-teal-400 ${
                             lookupDone ? 'border-green-400 bg-green-50/50' : lookupError ? 'border-red-300' : 'border-gray-300'
                           }`}
@@ -948,7 +948,7 @@ export default function NewInspectionPage() {
                           ) : manualPlate.replace(/[-\s]/g, '').length >= 5 && !lookupDone ? (
                             <button type="button" onClick={() => lookupVehicle(manualPlate)}
                               className="flex items-center gap-1 px-2 py-1 bg-teal-600 text-white rounded-lg text-xs font-medium hover:bg-teal-700 transition">
-                              <Search size={12} /> שלוף
+                              <Search size={12} /> ×©×××£
                             </button>
                           ) : lookupDone ? (
                             <Check size={18} className="text-green-500" />
@@ -956,10 +956,10 @@ export default function NewInspectionPage() {
                         </div>
                       </div>
                       {lookupLoading && (
-                        <p className="text-xs text-teal-600 mt-1 text-center animate-pulse">שולף נתונים ממשרד התחבורה...</p>
+                        <p className="text-xs text-teal-600 mt-1 text-center animate-pulse">×©×××£ × ×ª×× ×× ×××©×¨× ××ª××××¨×...</p>
                       )}
                       {lookupDone && (
-                        <p className="text-xs text-green-600 mt-1 text-center font-medium">✓ פרטי הרכב נשלפו בהצלחה ממשרד התחבורה</p>
+                        <p className="text-xs text-green-600 mt-1 text-center font-medium">â ×¤×¨×× ××¨×× × ×©××¤× ×××¦××× ×××©×¨× ××ª××××¨×</p>
                       )}
                       {lookupError && (
                         <p className="text-xs text-red-500 mt-1 text-center">{lookupError}</p>
@@ -967,36 +967,36 @@ export default function NewInspectionPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">יצרן</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">××¦×¨×</label>
                         <input type="text" value={manualManufacturer} onChange={e => setManualManufacturer(e.target.value)}
-                          placeholder="למשל: KIA" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualManufacturer ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
+                          placeholder="×××©×: KIA" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualManufacturer ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">דגם</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">×××</label>
                         <input type="text" value={manualModel} onChange={e => setManualModel(e.target.value)}
-                          placeholder="למשל: SPORTAGE" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualModel ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
+                          placeholder="×××©×: SPORTAGE" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualModel ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">שנה</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">×©× ×</label>
                         <input type="text" value={manualYear} onChange={e => setManualYear(e.target.value)}
                           placeholder="2024" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualYear ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="ltr" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">צבע</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">×¦××¢</label>
                         <input type="text" value={manualColor} onChange={e => setManualColor(e.target.value)}
-                          placeholder="לבן" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualColor ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
+                          placeholder="×××" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualColor ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
                       </div>
                     </div>
                     <div className="flex gap-2">
                       <button onClick={() => { setVehicleMode('scan'); handleScanPhoto(); }}
                         className="flex items-center gap-1 px-3 py-2 bg-white rounded-lg border border-gray-300 text-xs text-gray-600 hover:bg-[#fef7ed]/50 transition">
-                        <Camera size={14} /> צלם רישיון רכב
+                        <Camera size={14} /> ×¦×× ×¨××©××× ×¨××
                       </button>
                       <button onClick={() => { setVehicleMode('select'); setManualPlate(''); setScanPreview(''); }}
                         className="flex items-center gap-1 px-3 py-2 text-xs text-gray-500 hover:underline">
-                        חזור לבחירה מרשימה
+                        ××××¨ ×××××¨× ××¨×©×××
                       </button>
                     </div>
                   </div>
@@ -1008,16 +1008,16 @@ export default function NewInspectionPage() {
                     {scanLoading ? (
                       <>
                         <Loader2 size={32} className="animate-spin text-teal-600 mb-3" />
-                        <p className="text-sm text-gray-600">מזהה פרטי רכב מהתמונה...</p>
-                        <p className="text-xs text-gray-400 mt-1">עיבוד AI</p>
+                        <p className="text-sm text-gray-600">×××× ×¤×¨×× ×¨×× ×××ª××× ×...</p>
+                        <p className="text-xs text-gray-400 mt-1">×¢×××× AI</p>
                       </>
                     ) : scanPreview ? (
                       <>
                         <img src={scanPreview} alt="scan" className="w-40 h-28 object-cover rounded-lg mb-3 border" />
-                        <p className="text-sm text-gray-600 mb-2">לא זוהו פרטים. הזן ידנית:</p>
+                        <p className="text-sm text-gray-600 mb-2">×× ×××× ×¤×¨×××. ××× ××× ××ª:</p>
                         <button onClick={() => setVehicleMode('manual')}
                           className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition">
-                          הזנה ידנית
+                          ××× × ××× ××ª
                         </button>
                       </>
                     ) : (
@@ -1025,20 +1025,20 @@ export default function NewInspectionPage() {
                         <div className="w-16 h-16 bg-teal-100 rounded-2xl flex items-center justify-center mb-4">
                           <Camera size={28} className="text-teal-600" />
                         </div>
-                        <p className="text-sm font-medium text-gray-700 mb-1">צלם לוחית רישוי או רישיון רכב</p>
-                        <p className="text-xs text-gray-400 mb-4">הפרטים ימולאו אוטומטית באמצעות AI</p>
+                        <p className="text-sm font-medium text-gray-700 mb-1">×¦×× ×××××ª ×¨××©×× ×× ×¨××©××× ×¨××</p>
+                        <p className="text-xs text-gray-400 mb-4">××¤×¨××× ×××××× ××××××××ª ××××¦×¢××ª AI</p>
                         <div className="flex gap-3">
                           <button onClick={handleScanPhoto}
                             className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-medium hover:bg-teal-700 transition">
-                            <Camera size={16} /> צלם תמונה
+                            <Camera size={16} /> ×¦×× ×ª××× ×
                           </button>
                           <button onClick={() => setVehicleMode('manual')}
                             className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-600 rounded-xl text-sm font-medium hover:bg-[#fef7ed]/50 transition">
-                            <Keyboard size={16} /> הזנה ידנית
+                            <Keyboard size={16} /> ××× × ××× ××ª
                           </button>
                         </div>
                         <button onClick={() => setVehicleMode('select')}
-                          className="text-xs text-gray-400 hover:underline mt-3">חזור לבחירה מרשימה</button>
+                          className="text-xs text-gray-400 hover:underline mt-3">××××¨ ×××××¨× ××¨×©×××</button>
                       </>
                     )}
                   </div>
@@ -1046,16 +1046,16 @@ export default function NewInspectionPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Input label="קילומטראז'" placeholder="140,000" value={mileage} onChange={e => setMileage(e.target.value)} />
-                <Input label="שם מכניק" placeholder="שם המכניק" value={mechanicName} onChange={e => setMechanicName(e.target.value)} />
+                <Input label="×§××××××¨××'" placeholder="140,000" value={mileage} onChange={e => setMileage(e.target.value)} />
+                <Input label="×©× ××× ××§" placeholder="×©× ×××× ××§" value={mechanicName} onChange={e => setMechanicName(e.target.value)} />
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <Input label="מספר מנוע" placeholder="Hw523h" value={engineNumber} onChange={e => setEngineNumber(e.target.value)} />
+                <Input label="××¡×¤×¨ ×× ××¢" placeholder="Hw523h" value={engineNumber} onChange={e => setEngineNumber(e.target.value)} />
                 <div className="flex items-end pb-1">
                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                     <input type="checkbox" checked={engineVerified} onChange={e => setEngineVerified(e.target.checked)}
                       className="w-4 h-4 text-teal-600 rounded" />
-                    <span>אומת ע"י מכונאי</span>
+                    <span>××××ª ×¢"× ×××× ××</span>
                   </label>
                 </div>
               </div>
@@ -1067,15 +1067,15 @@ export default function NewInspectionPage() {
       {/* ====== STEP 2: Exterior Photos ====== */}
       {inspectionType === 'full' && step === 2 && (
         <Card>
-          <CardTitle icon={<Camera className="text-teal-600" />}>תמונות חוץ</CardTitle>
-          <p className="text-sm text-gray-500 mt-1 mb-4">צלם את הרכב מכל הצדדים</p>
+          <CardTitle icon={<Camera className="text-teal-600" />}>×ª××× ××ª ×××¥</CardTitle>
+          <p className="text-sm text-gray-500 mt-1 mb-4">×¦×× ××ª ××¨×× ××× ××¦××××</p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { key: 'front', label: 'חזית' },
-              { key: 'rear', label: 'אחורי' },
-              { key: 'right', label: 'ימין' },
-              { key: 'left', label: 'שמאל' },
-              { key: 'roof', label: 'גג' },
+              { key: 'front', label: '××××ª' },
+              { key: 'rear', label: '××××¨×' },
+              { key: 'right', label: '××××' },
+              { key: 'left', label: '×©×××' },
+              { key: 'roof', label: '××' },
             ].map(({ key, label }) => (
               <button key={key} onClick={() => handlePhotoUpload('exterior', key)}
                 className="relative aspect-[4/3] bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 transition flex flex-col items-center justify-center overflow-hidden">
@@ -1094,13 +1094,13 @@ export default function NewInspectionPage() {
       {/* ====== STEP 3: Interior Photos ====== */}
       {inspectionType === 'full' && step === 3 && (
         <Card>
-          <CardTitle icon={<Eye className="text-teal-600" />}>תמונות פנים</CardTitle>
-          <p className="text-sm text-gray-500 mt-1 mb-4">צלם את פנים הרכב</p>
+          <CardTitle icon={<Eye className="text-teal-600" />}>×ª××× ××ª ×¤× ××</CardTitle>
+          <p className="text-sm text-gray-500 mt-1 mb-4">×¦×× ××ª ×¤× ×× ××¨××</p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { key: 'frontSeats', label: 'מושבים קדמיים' },
-              { key: 'rearSeats', label: 'מושבים אחוריים' },
-              { key: 'dashboard', label: 'לוח מחוונים' },
+              { key: 'frontSeats', label: '×××©××× ×§×××××' },
+              { key: 'rearSeats', label: '×××©××× ××××¨×××' },
+              { key: 'dashboard', label: '××× ××××× ××' },
             ].map(({ key, label }) => (
               <button key={key} onClick={() => handlePhotoUpload('interior', key)}
                 className="relative aspect-[4/3] bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 transition flex flex-col items-center justify-center overflow-hidden">
@@ -1120,33 +1120,33 @@ export default function NewInspectionPage() {
       {inspectionType === 'full' && step === 4 && (
         <>
           <Card>
-            <CardTitle icon={<CircleDot className="text-teal-600" />}>מצב צמיגים</CardTitle>
+            <CardTitle icon={<CircleDot className="text-teal-600" />}>××¦× ×¦×××××</CardTitle>
             <div className="space-y-2 mt-3">
-              <TireStatusSelect label="קדמי שמאל" value={tires.frontLeft} onChange={v => setTires(p => ({ ...p, frontLeft: v }))} />
-              <TireStatusSelect label="קדמי ימין" value={tires.frontRight} onChange={v => setTires(p => ({ ...p, frontRight: v }))} />
-              <TireStatusSelect label="אחורי שמאל" value={tires.rearLeft} onChange={v => setTires(p => ({ ...p, rearLeft: v }))} />
-              <TireStatusSelect label="אחורי ימין" value={tires.rearRight} onChange={v => setTires(p => ({ ...p, rearRight: v }))} />
-              <VoiceInput value={tiresNotes} onChange={setTiresNotes} placeholder="הערות צמיגים..." rows={2} />
+              <TireStatusSelect label="×§××× ×©×××" value={tires.frontLeft} onChange={v => setTires(p => ({ ...p, frontLeft: v }))} />
+              <TireStatusSelect label="×§××× ××××" value={tires.frontRight} onChange={v => setTires(p => ({ ...p, frontRight: v }))} />
+              <TireStatusSelect label="××××¨× ×©×××" value={tires.rearLeft} onChange={v => setTires(p => ({ ...p, rearLeft: v }))} />
+              <TireStatusSelect label="××××¨× ××××" value={tires.rearRight} onChange={v => setTires(p => ({ ...p, rearRight: v }))} />
+              <VoiceInput value={tiresNotes} onChange={setTiresNotes} placeholder="××¢×¨××ª ×¦×××××..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle icon={<Lightbulb className="text-teal-600" />}>בדיקת אורות ומחוונים</CardTitle>
+            <CardTitle icon={<Lightbulb className="text-teal-600" />}>××××§×ª ×××¨××ª ×××××× ××</CardTitle>
             <div className="space-y-2 mt-3">
               {[
-                { key: 'brakes', label: 'בלמים' },
-                { key: 'reverse', label: 'אור רוורס' },
-                { key: 'fog', label: 'ערפל' },
-                { key: 'headlights', label: 'אור דרך' },
-                { key: 'frontSignal', label: 'איתות קדמי' },
-                { key: 'rearSignal', label: 'איתות אחורי' },
-                { key: 'highBeam', label: 'אור גבוה' },
-                { key: 'plate', label: 'לוחית' },
+                { key: 'brakes', label: '×××××' },
+                { key: 'reverse', label: '×××¨ ×¨×××¨×¡' },
+                { key: 'fog', label: '×¢×¨×¤×' },
+                { key: 'headlights', label: '×××¨ ××¨×' },
+                { key: 'frontSignal', label: '×××ª××ª ×§×××' },
+                { key: 'rearSignal', label: '×××ª××ª ××××¨×' },
+                { key: 'highBeam', label: '×××¨ ××××' },
+                { key: 'plate', label: '×××××ª' },
               ].map(({ key, label }) => (
                 <LightStatusSelect key={key} label={label}
                   value={(lights as any)[key]}
                   onChange={v => setLights(p => ({ ...p, [key]: v }))} />
               ))}
-              <VoiceInput value={lightsNotes} onChange={setLightsNotes} placeholder="הערות אורות..." rows={2} />
+              <VoiceInput value={lightsNotes} onChange={setLightsNotes} placeholder="××¢×¨××ª ×××¨××ª..." rows={2} />
             </div>
           </Card>
         </>
@@ -1156,97 +1156,97 @@ export default function NewInspectionPage() {
       {inspectionType === 'full' && step === 5 && (
         <>
           <Card>
-            <CardTitle icon={<Settings className="text-teal-600" />}>סרן קדמי</CardTitle>
+            <CardTitle icon={<Settings className="text-teal-600" />}>×¡×¨× ×§×××</CardTitle>
             <div className="space-y-2 mt-3">
               {[
-                { key: 'stabilizerBars', label: 'מוטות מייצב' },
-                { key: 'controlArms', label: 'זרועות' },
-                { key: 'bushings', label: 'גומיות' },
-                { key: 'wheelBearings', label: 'מיסבי גלגל' },
+                { key: 'stabilizerBars', label: '×××××ª ××××¦×' },
+                { key: 'controlArms', label: '××¨××¢××ª' },
+                { key: 'bushings', label: '××××××ª' },
+                { key: 'wheelBearings', label: '×××¡×× ××××' },
               ].map(({ key, label }) => (
                 <LightStatusSelect key={key} label={label}
                   value={frontAxleItems[key] || ''}
                   onChange={v => setFrontAxleItems(p => ({ ...p, [key]: v }))} />
               ))}
-              <VoiceInput value={frontAxleNotes} onChange={setFrontAxleNotes} placeholder="הערות סרן..." rows={2} />
+              <VoiceInput value={frontAxleNotes} onChange={setFrontAxleNotes} placeholder="××¢×¨××ª ×¡×¨×..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle icon={<Gauge className="text-teal-600" />}>מערכת היגוי</CardTitle>
+            <CardTitle icon={<Gauge className="text-teal-600" />}>××¢×¨××ª ×××××</CardTitle>
             <div className="space-y-2 mt-3">
               {[
-                { key: 'steeringWheel', label: 'הגה (משחק)' },
-                { key: 'pump', label: 'משאבת הגה' },
-                { key: 'rack', label: 'תיבת הגה' },
-                { key: 'column', label: 'עמוד הגה' },
-                { key: 'alignment', label: 'כיוון (אלינמנט)' },
+                { key: 'steeringWheel', label: '××× (××©××§)' },
+                { key: 'pump', label: '××©×××ª ×××' },
+                { key: 'rack', label: '×ª×××ª ×××' },
+                { key: 'column', label: '×¢××× ×××' },
+                { key: 'alignment', label: '××××× (×××× ×× ×)' },
               ].map(({ key, label }) => (
                 <LightStatusSelect key={key} label={label}
                   value={steeringItems[key] || ''}
                   onChange={v => setSteeringItems(p => ({ ...p, [key]: v }))} />
               ))}
-              <VoiceInput value={steeringNotes} onChange={setSteeringNotes} placeholder="הערות היגוי..." rows={2} />
+              <VoiceInput value={steeringNotes} onChange={setSteeringNotes} placeholder="××¢×¨××ª ×××××..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>מצב בולמים</CardTitle>
+            <CardTitle>××¦× ××××××</CardTitle>
             <div className="space-y-2 mt-3">
-              <ShockStatusSelect label="קדמי שמאל" value={shocksData.frontLeft} onChange={v => setShocksData(p => ({ ...p, frontLeft: v }))} />
-              <ShockStatusSelect label="קדמי ימין" value={shocksData.frontRight} onChange={v => setShocksData(p => ({ ...p, frontRight: v }))} />
-              <ShockStatusSelect label="אחורי שמאל" value={shocksData.rearLeft} onChange={v => setShocksData(p => ({ ...p, rearLeft: v }))} />
-              <ShockStatusSelect label="אחורי ימין" value={shocksData.rearRight} onChange={v => setShocksData(p => ({ ...p, rearRight: v }))} />
-              <VoiceInput value={shocksNotes} onChange={setShocksNotes} placeholder="הערות בולמים..." rows={2} />
+              <ShockStatusSelect label="×§××× ×©×××" value={shocksData.frontLeft} onChange={v => setShocksData(p => ({ ...p, frontLeft: v }))} />
+              <ShockStatusSelect label="×§××× ××××" value={shocksData.frontRight} onChange={v => setShocksData(p => ({ ...p, frontRight: v }))} />
+              <ShockStatusSelect label="××××¨× ×©×××" value={shocksData.rearLeft} onChange={v => setShocksData(p => ({ ...p, rearLeft: v }))} />
+              <ShockStatusSelect label="××××¨× ××××" value={shocksData.rearRight} onChange={v => setShocksData(p => ({ ...p, rearRight: v }))} />
+              <VoiceInput value={shocksNotes} onChange={setShocksNotes} placeholder="××¢×¨××ª ××××××..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>שילדה ומרכב</CardTitle>
+            <CardTitle>×©×××× ×××¨××</CardTitle>
             <div className="space-y-3 mt-3">
-              <p className="text-xs text-gray-500 text-right">סמן את כל הממצאים הרלוונטיים:</p>
+              <p className="text-xs text-gray-500 text-right">×¡×× ××ª ×× ××××¦××× ××¨×××× ××××:</p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  'תקין - ללא ממצאים',
-                  'תאונה מלפנים',
-                  'תאונה מאחור',
-                  'תאונה צד ימין',
-                  'תאונה צד שמאל',
-                  'פח קדמי מתוקן',
-                  'פח קדמי מעוך',
-                  'פח אחורי מתוקן',
-                  'פח אחורי מעוך',
-                  'תיקוני פח וצבע',
-                  'הוחלפו חלקי מרכב',
-                  'כנף ימין מוחלפת',
-                  'כנף שמאל מוחלפת',
-                  'דלת מוחלפת',
-                  'מכסה מנוע מוחלף',
-                  'תא מטען מתוקן',
-                  'חלודה בשילדה',
-                  'חלודה בתחתית',
-                  'ריתוכים',
-                  'פגוש קדמי פגום',
-                  'פגוש אחורי פגום',
-                  'סדק בשמשה',
-                  'שלדה עקומה',
+                  '×ª×§×× - ××× ×××¦×××',
+                  '×ª××× × ×××¤× ××',
+                  '×ª××× × ×××××¨',
+                  '×ª××× × ×¦× ××××',
+                  '×ª××× × ×¦× ×©×××',
+                  '×¤× ×§××× ××ª××§×',
+                  '×¤× ×§××× ××¢××',
+                  '×¤× ××××¨× ××ª××§×',
+                  '×¤× ××××¨× ××¢××',
+                  '×ª××§×× × ×¤× ××¦××¢',
+                  '×××××¤× ×××§× ××¨××',
+                  '×× ×£ ×××× ×××××¤×ª',
+                  '×× ×£ ×©××× ×××××¤×ª',
+                  '×××ª ×××××¤×ª',
+                  '×××¡× ×× ××¢ ×××××£',
+                  '×ª× ×××¢× ××ª××§×',
+                  '××××× ××©××××',
+                  '××××× ××ª××ª××ª',
+                  '×¨××ª××××',
+                  '×¤×××© ×§××× ×¤×××',
+                  '×¤×××© ××××¨× ×¤×××',
+                  '×¡××§ ××©××©×',
+                  '×©××× ×¢×§×××',
                 ].map(tag => (
                   <button key={tag} onClick={() => setBodyTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
                       bodyTags.includes(tag)
-                        ? tag === 'תקין - ללא ממצאים' ? 'bg-green-600 text-white' : 'bg-red-500 text-white'
+                        ? tag === '×ª×§×× - ××× ×××¦×××' ? 'bg-green-600 text-white' : 'bg-red-500 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}>{tag}</button>
                 ))}
               </div>
-              <VoiceInput value={bodyNotes} onChange={setBodyNotes} placeholder="הערות מרכב..." rows={2} />
+              <VoiceInput value={bodyNotes} onChange={setBodyNotes} placeholder="××¢×¨××ª ××¨××..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>מצבר</CardTitle>
+            <CardTitle>××¦××¨</CardTitle>
             <div className="space-y-3 mt-3">
               <div className="grid grid-cols-3 gap-1.5">
                 {[
-                  { value: 'original', label: 'מקורי' },
-                  { value: 'not_visible', label: 'לא ניתן לראות' },
-                  { value: 'replaced', label: 'הוחלף' },
+                  { value: 'original', label: '××§××¨×' },
+                  { value: 'not_visible', label: '×× × ××ª× ××¨×××ª' },
+                  { value: 'replaced', label: '×××××£' },
                 ].map(opt => (
                   <button key={opt.value} onClick={() => setBatteryStatus(opt.value)}
                     className={`p-2.5 rounded-xl border-2 text-xs sm:text-sm font-medium text-center transition ${
@@ -1255,7 +1255,7 @@ export default function NewInspectionPage() {
                 ))}
               </div>
               <div>
-                <label className="block text-sm text-gray-600 text-right mb-1">תאריך מצבר</label>
+                <label className="block text-sm text-gray-600 text-right mb-1">×ª××¨×× ××¦××¨</label>
                 <input type="date" value={batteryDate} onChange={e => setBatteryDate(e.target.value)}
                   className="w-full rounded-xl border border-gray-300 p-3 text-sm" dir="ltr" />
               </div>
@@ -1268,31 +1268,31 @@ export default function NewInspectionPage() {
       {inspectionType === 'full' && step === 6 && (
         <>
           <Card>
-            <CardTitle icon={<Droplets className="text-teal-600" />}>נוזלי מנוע</CardTitle>
+            <CardTitle icon={<Droplets className="text-teal-600" />}>× ×××× ×× ××¢</CardTitle>
             <div className="space-y-2 mt-3">
-              <FluidStatusSelect label="נוזל בלמים" value={fluids.brakeFluid} onChange={v => setFluids(p => ({ ...p, brakeFluid: v }))} />
-              <FluidStatusSelect label="שמן מנוע" value={fluids.engineOil} onChange={v => setFluids(p => ({ ...p, engineOil: v }))} />
-              <FluidStatusSelect label="נוזל קירור" value={fluids.coolant} onChange={v => setFluids(p => ({ ...p, coolant: v }))} />
-              <VoiceInput value={fluidsNotes} onChange={setFluidsNotes} placeholder="הערות נוזלים..." rows={2} />
+              <FluidStatusSelect label="× ××× ×××××" value={fluids.brakeFluid} onChange={v => setFluids(p => ({ ...p, brakeFluid: v }))} />
+              <FluidStatusSelect label="×©×× ×× ××¢" value={fluids.engineOil} onChange={v => setFluids(p => ({ ...p, engineOil: v }))} />
+              <FluidStatusSelect label="× ××× ×§××¨××¨" value={fluids.coolant} onChange={v => setFluids(p => ({ ...p, coolant: v }))} />
+              <VoiceInput value={fluidsNotes} onChange={setFluidsNotes} placeholder="××¢×¨××ª × ×××××..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle icon={<Wind className="text-teal-600" />}>מערכות פנימיות</CardTitle>
+            <CardTitle icon={<Wind className="text-teal-600" />}>××¢×¨×××ª ×¤× ×××××ª</CardTitle>
             <div className="space-y-2 mt-3">
-              <LightStatusSelect label="מזגן - קור" value={interiorAcCold} onChange={setInteriorAcCold} />
-              <LightStatusSelect label="מזגן - חום" value={interiorAcHot} onChange={setInteriorAcHot} />
-              <LightStatusSelect label="מערכת שמע" value={interiorAudio} onChange={setInteriorAudio} />
-              <VoiceInput value={interiorNotes} onChange={setInteriorNotes} placeholder="הערות מערכות פנימיות..." rows={2} />
+              <LightStatusSelect label="×××× - ×§××¨" value={interiorAcCold} onChange={setInteriorAcCold} />
+              <LightStatusSelect label="×××× - ×××" value={interiorAcHot} onChange={setInteriorAcHot} />
+              <LightStatusSelect label="××¢×¨××ª ×©××¢" value={interiorAudio} onChange={setInteriorAudio} />
+              <VoiceInput value={interiorNotes} onChange={setInteriorNotes} placeholder="××¢×¨××ª ××¢×¨×××ª ×¤× ×××××ª..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>חלונות חשמל</CardTitle>
+            <CardTitle>×××× ××ª ××©××</CardTitle>
             <div className="space-y-2 mt-3">
-              <LightStatusSelect label="אחורי שמאל" value={windows.rearLeft} onChange={v => setWindows(p => ({ ...p, rearLeft: v }))} />
-              <LightStatusSelect label="אחורי ימין" value={windows.rearRight} onChange={v => setWindows(p => ({ ...p, rearRight: v }))} />
-              <LightStatusSelect label="קדמי שמאל" value={windows.frontLeft} onChange={v => setWindows(p => ({ ...p, frontLeft: v }))} />
-              <LightStatusSelect label="קדמי ימין" value={windows.frontRight} onChange={v => setWindows(p => ({ ...p, frontRight: v }))} />
-              <VoiceInput value={windowsNotes} onChange={setWindowsNotes} placeholder="הערות חלונות..." rows={2} />
+              <LightStatusSelect label="××××¨× ×©×××" value={windows.rearLeft} onChange={v => setWindows(p => ({ ...p, rearLeft: v }))} />
+              <LightStatusSelect label="××××¨× ××××" value={windows.rearRight} onChange={v => setWindows(p => ({ ...p, rearRight: v }))} />
+              <LightStatusSelect label="×§××× ×©×××" value={windows.frontLeft} onChange={v => setWindows(p => ({ ...p, frontLeft: v }))} />
+              <LightStatusSelect label="×§××× ××××" value={windows.frontRight} onChange={v => setWindows(p => ({ ...p, frontRight: v }))} />
+              <VoiceInput value={windowsNotes} onChange={setWindowsNotes} placeholder="××¢×¨××ª ×××× ××ª..." rows={2} />
             </div>
           </Card>
         </>
@@ -1302,50 +1302,50 @@ export default function NewInspectionPage() {
       {inspectionType === 'full' && step === 7 && (
         <>
           <Card>
-            <CardTitle className="text-red-600">בעיות מנוע</CardTitle>
+            <CardTitle className="text-red-600">××¢×××ª ×× ××¢</CardTitle>
             <div className="space-y-3 mt-3">
               <div className="flex flex-wrap gap-2">
                 {[
-                  'רעש רצועות', 'דליפת שמן', 'רעש מנוע', 'חימום יתר', 'עשן',
-                  'רעידות', 'ירידת כוח', 'נורית CHECK ENGINE', 'בעיית התנעה',
-                  'צריכת דלק גבוהה',
+                  '×¨×¢×© ×¨×¦××¢××ª', '××××¤×ª ×©××', '×¨×¢×© ×× ××¢', '××××× ××ª×¨', '×¢×©×',
+                  '×¨×¢××××ª', '××¨×××ª ×××', '× ××¨××ª CHECK ENGINE', '××¢×××ª ××ª× ×¢×',
+                  '×¦×¨×××ª ×××§ ×××××',
                 ].map(issue => (
                   <button key={issue} onClick={() => setEngineIssuesList(prev => prev.includes(issue) ? prev.filter(i => i !== issue) : [...prev, issue])}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
                       engineIssuesList.includes(issue) ? 'bg-red-500 text-white' : 'bg-red-50 text-red-600 border border-red-200'
-                    }`}>● {issue}</button>
+                    }`}>â {issue}</button>
                 ))}
               </div>
-              <VoiceInput value={engineNotes} onChange={setEngineNotes} placeholder="הערות מנוע..." rows={2} />
+              <VoiceInput value={engineNotes} onChange={setEngineNotes} placeholder="××¢×¨××ª ×× ××¢..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle className="text-amber-600">בעיות תיבת הילוכים</CardTitle>
+            <CardTitle className="text-amber-600">××¢×××ª ×ª×××ª ×××××××</CardTitle>
             <div className="space-y-3 mt-3">
               <div className="flex flex-wrap gap-2">
                 {[
-                  'רעש בהעברת הילוכים', 'קושי בהעברת הילוכים', 'הילוך קופץ',
-                  'החלקת מצמד', 'מצמד שחוק', 'דליפת שמן תיבה',
-                  'רעש דיפרנציאל', 'רעידות', 'נורית תיבת הילוכים',
-                  'מצב חירום (Limp Mode)',
+                  '×¨×¢×© ×××¢××¨×ª ×××××××', '×§××©× ×××¢××¨×ª ×××××××', '××××× ×§××¤×¥',
+                  '××××§×ª ××¦××', '××¦×× ×©×××§', '××××¤×ª ×©×× ×ª×××',
+                  '×¨×¢×© ×××¤×¨× ×¦×××', '×¨×¢××××ª', '× ××¨××ª ×ª×××ª ×××××××',
+                  '××¦× ×××¨×× (Limp Mode)',
                 ].map(issue => (
                   <button key={issue} onClick={() => setGearboxIssuesList(prev => prev.includes(issue) ? prev.filter(i => i !== issue) : [...prev, issue])}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
                       gearboxIssuesList.includes(issue) ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-600 border border-amber-200'
-                    }`}>● {issue}</button>
+                    }`}>â {issue}</button>
                 ))}
               </div>
-              <VoiceInput value={gearboxNotes} onChange={setGearboxNotes} placeholder="הערות תיבת הילוכים..." rows={2} />
+              <VoiceInput value={gearboxNotes} onChange={setGearboxNotes} placeholder="××¢×¨××ª ×ª×××ª ×××××××..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>מערכת בלימה</CardTitle>
+            <CardTitle>××¢×¨××ª ×××××</CardTitle>
             <div className="space-y-4 mt-3">
               {[
-                { key: 'frontDiscs', label: 'צלחות קדמיות' },
-                { key: 'rearDiscs', label: 'צלחות אחוריות' },
-                { key: 'frontPads', label: 'רפידות קדמיות' },
-                { key: 'rearPads', label: 'רפידות אחוריות' },
+                { key: 'frontDiscs', label: '×¦××××ª ×§×××××ª' },
+                { key: 'rearDiscs', label: '×¦××××ª ××××¨×××ª' },
+                { key: 'frontPads', label: '×¨×¤××××ª ×§×××××ª' },
+                { key: 'rearPads', label: '×¨×¤××××ª ××××¨×××ª' },
               ].map(({ key, label }) => (
                 <div key={key} className="space-y-1">
                   <div className="flex justify-between text-sm">
@@ -1359,11 +1359,11 @@ export default function NewInspectionPage() {
                     className="w-full accent-teal-600" />
                 </div>
               ))}
-              <VoiceInput value={brakeNotes} onChange={setBrakeNotes} placeholder="הערות בלמים..." rows={2} />
+              <VoiceInput value={brakeNotes} onChange={setBrakeNotes} placeholder="××¢×¨××ª ×××××..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>סרטון / הערות תחתית הרכב</CardTitle>
+            <CardTitle>×¡×¨××× / ××¢×¨××ª ×ª××ª××ª ××¨××</CardTitle>
             <div className="space-y-3 mt-3">
               {/* Upload buttons */}
               <div className="flex gap-2">
@@ -1383,7 +1383,7 @@ export default function NewInspectionPage() {
                   }}
                   className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition text-sm font-medium"
                 >
-                  <Video size={18} /> צלם סרטון
+                  <Video size={18} /> ×¦×× ×¡×¨×××
                 </button>
                 <button
                   onClick={() => {
@@ -1404,7 +1404,7 @@ export default function NewInspectionPage() {
                   }}
                   className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-teal-300 bg-teal-50 text-teal-700 hover:bg-teal-100 transition text-sm font-medium"
                 >
-                  <Plus size={18} /> העלה קובץ
+                  <Plus size={18} /> ××¢×× ×§×××¥
                 </button>
               </div>
 
@@ -1432,7 +1432,7 @@ export default function NewInspectionPage() {
                 </div>
               )}
 
-              <VoiceInput value={undercarNotes} onChange={setUndercarNotes} placeholder="תחתית הרכב נקיה, אין נזילות..." rows={3} />
+              <VoiceInput value={undercarNotes} onChange={setUndercarNotes} placeholder="×ª××ª××ª ××¨×× × ×§××, ××× × ×××××ª..." rows={3} />
             </div>
           </Card>
         </>
@@ -1443,7 +1443,7 @@ export default function NewInspectionPage() {
         <>
           {/* Quick Summary */}
           <Card>
-            <CardTitle>סיכום מהיר</CardTitle>
+            <CardTitle>×¡×××× ××××¨</CardTitle>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
               {getSectionSummary().map(s => (
                 <div key={s.label} className={`p-2 rounded-lg text-center text-xs font-medium ${
@@ -1452,51 +1452,51 @@ export default function NewInspectionPage() {
                   s.status === 'critical' ? 'bg-red-50 text-red-700 border border-red-200' :
                   'bg-gray-50 text-gray-500'
                 }`}>
-                  {s.status === 'ok' ? '✓' : s.status === 'warning' ? '!' : s.status === 'critical' ? '✕' : '—'} {s.label}
+                  {s.status === 'ok' ? 'â' : s.status === 'warning' ? '!' : s.status === 'critical' ? 'â' : 'â'} {s.label}
                 </div>
               ))}
             </div>
           </Card>
 
           <Card>
-            <CardTitle>הערות</CardTitle>
+            <CardTitle>××¢×¨××ª</CardTitle>
             <div className="space-y-3 mt-3">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">תחתית הרכב</label>
-                <VoiceInput value={notesUndercar} onChange={setNotesUndercar} placeholder="תחתית הרכב..." rows={2} />
+                <label className="block text-xs text-gray-500 mb-1">×ª××ª××ª ××¨××</label>
+                <VoiceInput value={notesUndercar} onChange={setNotesUndercar} placeholder="×ª××ª××ª ××¨××..." rows={2} />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">מנוע</label>
-                <VoiceInput value={notesEngine} onChange={setNotesEngine} placeholder="הערות מנוע..." rows={2} />
+                <label className="block text-xs text-gray-500 mb-1">×× ××¢</label>
+                <VoiceInput value={notesEngine} onChange={setNotesEngine} placeholder="××¢×¨××ª ×× ××¢..." rows={2} />
               </div>
             </div>
           </Card>
 
           <Card>
-            <CardTitle>המלצות לתיקון</CardTitle>
+            <CardTitle>××××¦××ª ××ª××§××</CardTitle>
             <div className="space-y-3 mt-3">
               {recommendations.map((rec, idx) => (
                 <div key={idx} className="p-3 bg-yellow-50 rounded-xl space-y-2 border border-yellow-200">
                   <input type="text" value={rec.text} onChange={e => { const n = [...recommendations]; n[idx].text = e.target.value; setRecommendations(n); }}
-                    placeholder="למשל: בלמים בלויים - דורש החלפה" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" dir="rtl" />
+                    placeholder="×××©×: ××××× ×××××× - ×××¨×© ××××¤×" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" dir="rtl" />
                   <div className="flex flex-wrap gap-2">
                     <select value={rec.urgency} onChange={e => { const n = [...recommendations]; n[idx].urgency = e.target.value; setRecommendations(n); }}
                       className="flex-1 min-w-[140px] rounded-lg border border-gray-300 px-2 py-1.5 text-xs">
-                      <option>בשבועות הקרובים</option>
-                      <option>דחוף - מיידי</option>
-                      <option>תוך חודש</option>
-                      <option>במהלך הטיפול הבא</option>
+                      <option>××©×××¢××ª ××§×¨××××</option>
+                      <option>××××£ - ×××××</option>
+                      <option>×ª×× ××××©</option>
+                      <option>××××× ××××¤×× ×××</option>
                     </select>
                     <input type="text" value={rec.estimatedCost} onChange={e => { const n = [...recommendations]; n[idx].estimatedCost = e.target.value; setRecommendations(n); }}
-                      placeholder="עלות: ₪800" className="w-24 sm:w-28 rounded-lg border border-gray-300 px-2 py-1.5 text-xs" dir="rtl" />
+                      placeholder="×¢×××ª: âª800" className="w-24 sm:w-28 rounded-lg border border-gray-300 px-2 py-1.5 text-xs" dir="rtl" />
                     {recommendations.length > 1 && (
                       <button onClick={() => setRecommendations(recommendations.filter((_, i) => i !== idx))} className="text-red-500 px-2"><X size={14} /></button>
                     )}
                   </div>
                 </div>
               ))}
-              <button onClick={() => setRecommendations([...recommendations, { text: '', urgency: 'בשבועות הקרובים', estimatedCost: '' }])}
-                className="w-full p-2 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm hover:border-teal-400 transition">+ הוסף המלצה</button>
+              <button onClick={() => setRecommendations([...recommendations, { text: '', urgency: '××©×××¢××ª ××§×¨××××', estimatedCost: '' }])}
+                className="w-full p-2 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm hover:border-teal-400 transition">+ ×××¡×£ ××××¦×</button>
             </div>
           </Card>
 
@@ -1505,9 +1505,9 @@ export default function NewInspectionPage() {
             <div className="flex items-start gap-2.5">
               <AlertTriangle size={18} className="text-red-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs text-red-800 font-bold mb-1">הצהרה רגולטורית — יש להקריא ללקוח:</p>
+                <p className="text-xs text-red-800 font-bold mb-1">××¦××¨× ×¨××××××¨××ª â ××© ×××§×¨×× ×××§××:</p>
                 <p className="text-xs text-red-700 leading-relaxed">
-                  &quot;בדיקה זו מהווה חוות דעת מקצועית של המוסך בלבד. היא אינה מהווה בדיקת מכון רישוי מורשה מטעם משרד התחבורה ואין לה תוקף משפטי מחייב. מומלץ לבצע גם בדיקה במכון רישוי מורשה, במיוחד לפני רכישת רכב.&quot;
+                  &quot;××××§× ×× ××××× ××××ª ××¢×ª ××§×¦××¢××ª ×©× ××××¡× ××××. ××× ××× × ××××× ××××§×ª ×××× ×¨××©×× ×××¨×©× ×××¢× ××©×¨× ××ª××××¨× ×××× ×× ×ª××§×£ ××©×¤×× ×××××. ×××××¥ ×××¦×¢ ×× ××××§× ××××× ×¨××©×× ×××¨×©×, ×××××× ××¤× × ×¨×××©×ª ×¨××.&quot;
                 </p>
               </div>
             </div>
@@ -1515,12 +1515,12 @@ export default function NewInspectionPage() {
 
           {/* Customer Signature */}
           <Card>
-            <CardTitle icon={<PenLine className="text-teal-600" />}>חתימת לקוח</CardTitle>
-            <p className="text-sm text-gray-500 mt-1 mb-3">אשר קבלת הדוח בחתימה דיגיטלית</p>
+            <CardTitle icon={<PenLine className="text-teal-600" />}>××ª×××ª ××§××</CardTitle>
+            <p className="text-sm text-gray-500 mt-1 mb-3">××©×¨ ×§×××ª ×××× ×××ª××× ××××××××ª</p>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <Input label="שם מלא" placeholder="שם הלקוח" value={customerName} onChange={e => setCustomerName(e.target.value)} />
-                <Input label='מספר ת"ז' placeholder="012345678" value={customerIdNumber} onChange={e => setCustomerIdNumber(e.target.value)} />
+                <Input label="×©× ×××" placeholder="×©× ×××§××" value={customerName} onChange={e => setCustomerName(e.target.value)} />
+                <Input label='××¡×¤×¨ ×ª"×' placeholder="012345678" value={customerIdNumber} onChange={e => setCustomerIdNumber(e.target.value)} />
               </div>
               <div className="border-2 border-gray-200 rounded-xl overflow-hidden bg-white">
                 <canvas ref={canvasRef} className="touch-none cursor-crosshair block"
@@ -1528,7 +1528,7 @@ export default function NewInspectionPage() {
                   onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={stopDrawing} />
               </div>
               <div className="flex gap-2">
-                <button onClick={clearSignature} className="text-sm text-red-500 hover:underline">נקה חתימה</button>
+                <button onClick={clearSignature} className="text-sm text-red-500 hover:underline">× ×§× ××ª×××</button>
               </div>
             </div>
           </Card>
@@ -1538,16 +1538,16 @@ export default function NewInspectionPage() {
       {/* ====== VEHICLE PHOTO + INVOICE (shared for non-full types) ====== */}
       {inspectionType !== 'full' && step === 2 && (
         <Card>
-          <CardTitle icon={<Camera className="text-teal-600" />}>תמונות</CardTitle>
+          <CardTitle icon={<Camera className="text-teal-600" />}>×ª××× ××ª</CardTitle>
           <div className="grid grid-cols-2 gap-3 mt-3">
             {/* Vehicle front photo */}
             <div>
-              <p className="text-xs text-gray-500 text-right mb-2">תמונת רכב מקדימה</p>
+              <p className="text-xs text-gray-500 text-right mb-2">×ª××× ×ª ×¨×× ××§××××</p>
               {vehiclePhoto ? (
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
-                  <img src={vehiclePhoto} alt="רכב" className="w-full h-full object-cover" />
+                  <img src={vehiclePhoto} alt="×¨××" className="w-full h-full object-cover" />
                   <button onClick={() => setVehiclePhoto('')}
-                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">✕</button>
+                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">â</button>
                 </div>
               ) : (
                 <button onClick={() => {
@@ -1563,18 +1563,18 @@ export default function NewInspectionPage() {
                   input.click();
                 }} className="aspect-[4/3] w-full rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-teal-400 transition">
                   <Car size={28} className="text-gray-400" />
-                  <span className="text-xs text-gray-400 mt-1">צלם רכב</span>
+                  <span className="text-xs text-gray-400 mt-1">×¦×× ×¨××</span>
                 </button>
               )}
             </div>
             {/* Invoice/receipt photo */}
             <div>
-              <p className="text-xs text-gray-500 text-right mb-2">חשבונית / קבלה</p>
+              <p className="text-xs text-gray-500 text-right mb-2">××©××× ××ª / ×§×××</p>
               {invoicePhoto ? (
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
-                  <img src={invoicePhoto} alt="חשבונית" className="w-full h-full object-cover" />
+                  <img src={invoicePhoto} alt="××©××× ××ª" className="w-full h-full object-cover" />
                   <button onClick={() => setInvoicePhoto('')}
-                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">✕</button>
+                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">â</button>
                 </div>
               ) : (
                 <button onClick={() => {
@@ -1590,7 +1590,7 @@ export default function NewInspectionPage() {
                   input.click();
                 }} className="aspect-[4/3] w-full rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-teal-400 transition">
                   <PenLine size={28} className="text-gray-400" />
-                  <span className="text-xs text-gray-400 mt-1">צלם חשבונית</span>
+                  <span className="text-xs text-gray-400 mt-1">×¦×× ××©××× ××ª</span>
                 </button>
               )}
             </div>
@@ -1598,28 +1598,28 @@ export default function NewInspectionPage() {
         </Card>
       )}
 
-      {/* ====== PRE-TEST CHECKLIST (הכנה לטסט) ====== */}
+      {/* ====== PRE-TEST CHECKLIST (××× × ×××¡×) ====== */}
       {inspectionType === 'pre_test' && step === 2 && (
         <Card>
-          <CardTitle icon={<Search className="text-blue-600" />}>צ'קליסט הכנה לטסט</CardTitle>
-          <p className="text-xs text-gray-500 mt-1 mb-3 text-right">סמן V לכל פריט שנבדק ותקין. לחץ על הפריט להוספת הערה.</p>
+          <CardTitle icon={<Search className="text-blue-600" />}>×¦'×§×××¡× ××× × ×××¡×</CardTitle>
+          <p className="text-xs text-gray-500 mt-1 mb-3 text-right">×¡×× V ××× ×¤×¨×× ×©× ×××§ ××ª×§××. ×××¥ ×¢× ××¤×¨×× ××××¡×¤×ª ××¢×¨×.</p>
           <div className="space-y-2 mt-3">
             {[
-              { key: 'tires', label: 'צמיגים (מצב + לחץ)' },
-              { key: 'lights', label: 'אורות ומחוונים' },
-              { key: 'brakes', label: 'בלמים' },
-              { key: 'mirrors', label: 'מראות' },
-              { key: 'wipers', label: 'מגבים + נוזל' },
-              { key: 'horn', label: 'צופר' },
-              { key: 'seatbelts', label: 'חגורות בטיחות' },
-              { key: 'exhaust', label: 'מערכת פליטה' },
-              { key: 'steering', label: 'היגוי (משחק)' },
-              { key: 'suspension', label: 'מתלים ובולמים' },
-              { key: 'fluids', label: 'נוזלים (שמן, מים, בלמים)' },
-              { key: 'battery', label: 'מצבר' },
-              { key: 'handbrake', label: 'בלם יד' },
-              { key: 'speedometer', label: 'מד מהירות' },
-              { key: 'windows', label: 'חלונות ושמשות' },
+              { key: 'tires', label: '×¦××××× (××¦× + ×××¥)' },
+              { key: 'lights', label: '×××¨××ª ×××××× ××' },
+              { key: 'brakes', label: '×××××' },
+              { key: 'mirrors', label: '××¨×××ª' },
+              { key: 'wipers', label: '××××× + × ×××' },
+              { key: 'horn', label: '×¦××¤×¨' },
+              { key: 'seatbelts', label: '××××¨××ª ××××××ª' },
+              { key: 'exhaust', label: '××¢×¨××ª ×¤××××' },
+              { key: 'steering', label: '××××× (××©××§)' },
+              { key: 'suspension', label: '××ª××× ×××××××' },
+              { key: 'fluids', label: '× ××××× (×©××, ×××, ×××××)' },
+              { key: 'battery', label: '××¦××¨' },
+              { key: 'handbrake', label: '××× ××' },
+              { key: 'speedometer', label: '×× ××××¨××ª' },
+              { key: 'windows', label: '×××× ××ª ××©××©××ª' },
             ].map(item => (
               <div key={item.key} className="rounded-xl border border-gray-200 overflow-hidden transition-all">
                 <div className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 transition">
@@ -1638,7 +1638,7 @@ export default function NewInspectionPage() {
                         preTestItemNotes[item.key] ? 'bg-blue-100 text-blue-600' :
                         'bg-gray-200 text-gray-400 hover:bg-gray-300 hover:text-gray-600'
                       }`}
-                      title="הוסף הערה"
+                      title="×××¡×£ ××¢×¨×"
                     >
                       <FileText size={14} />
                     </button>
@@ -1659,7 +1659,7 @@ export default function NewInspectionPage() {
                     <VoiceInput
                       value={preTestItemNotes[item.key] || ''}
                       onChange={(val) => setPreTestItemNotes(prev => ({ ...prev, [item.key]: val }))}
-                      placeholder={`הערה ל${item.label}...`}
+                      placeholder={`××¢×¨× ×${item.label}...`}
                       rows={2}
                     />
                   </div>
@@ -1668,33 +1668,33 @@ export default function NewInspectionPage() {
             ))}
           </div>
           <div className="mt-4">
-            <p className="text-xs font-medium text-gray-600 mb-1 text-right">הערות כלליות</p>
-            <VoiceInput value={preTestNotes} onChange={setPreTestNotes} placeholder="הערות נוספות..." rows={3} />
+            <p className="text-xs font-medium text-gray-600 mb-1 text-right">××¢×¨××ª ××××××ª</p>
+            <VoiceInput value={preTestNotes} onChange={setPreTestNotes} placeholder="××¢×¨××ª × ××¡×¤××ª..." rows={3} />
           </div>
 
           {/* Work performed section */}
           <div className="mt-6 pt-4 border-t border-gray-200">
-            <h3 className="text-sm font-bold text-gray-800 text-right mb-2">עבודות שבוצעו</h3>
-            <p className="text-xs text-gray-500 mb-3 text-right">פרט מה תוקן, הוחלף או כוון</p>
+            <h3 className="text-sm font-bold text-gray-800 text-right mb-2">×¢×××××ª ×©×××¦×¢×</h3>
+            <p className="text-xs text-gray-500 mb-3 text-right">×¤×¨× ×× ×ª××§×, ×××××£ ×× ××××</p>
 
             {preTestWorkItems.map((work, idx) => (
               <div key={idx} className="bg-white border border-gray-200 rounded-lg p-3 mb-2">
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <button onClick={() => setPreTestWorkItems(prev => prev.filter((_, i) => i !== idx))}
-                    className="text-red-400 hover:text-red-600 text-xs">✕</button>
+                    className="text-red-400 hover:text-red-600 text-xs">â</button>
                   <input value={work.item} onChange={e => {
                     const updated = [...preTestWorkItems];
                     updated[idx].item = e.target.value;
                     setPreTestWorkItems(updated);
-                  }} placeholder="שם הפריט / עבודה" className="flex-1 text-sm border-b border-gray-200 pb-1 text-right focus:outline-none focus:border-teal-400" dir="rtl" />
+                  }} placeholder="×©× ××¤×¨×× / ×¢××××" className="flex-1 text-sm border-b border-gray-200 pb-1 text-right focus:outline-none focus:border-teal-400" dir="rtl" />
                 </div>
                 <div className="flex gap-1 flex-wrap mb-2 justify-end">
                   {[
-                    { value: 'replaced', label: 'הוחלף' },
-                    { value: 'fixed', label: 'תוקן' },
-                    { value: 'adjusted', label: 'כוון' },
-                    { value: 'cleaned', label: 'נוקה' },
-                    { value: 'checked', label: 'נבדק' },
+                    { value: 'replaced', label: '×××××£' },
+                    { value: 'fixed', label: '×ª××§×' },
+                    { value: 'adjusted', label: '××××' },
+                    { value: 'cleaned', label: '× ××§×' },
+                    { value: 'checked', label: '× ×××§' },
                   ].map(opt => (
                     <button key={opt.value} onClick={() => {
                       const updated = [...preTestWorkItems];
@@ -1710,29 +1710,29 @@ export default function NewInspectionPage() {
                     const updated = [...preTestWorkItems];
                     updated[idx].cost = e.target.value;
                     setPreTestWorkItems(updated);
-                  }} placeholder="עלות ₪" type="number" className="w-20 text-xs border border-gray-200 rounded px-2 py-1 text-center" />
+                  }} placeholder="×¢×××ª âª" type="number" className="w-20 text-xs border border-gray-200 rounded px-2 py-1 text-center" />
                   <input value={work.notes} onChange={e => {
                     const updated = [...preTestWorkItems];
                     updated[idx].notes = e.target.value;
                     setPreTestWorkItems(updated);
-                  }} placeholder="הערות" className="flex-1 text-xs border border-gray-200 rounded px-2 py-1 text-right" dir="rtl" />
+                  }} placeholder="××¢×¨××ª" className="flex-1 text-xs border border-gray-200 rounded px-2 py-1 text-right" dir="rtl" />
                 </div>
               </div>
             ))}
 
             <button onClick={() => setPreTestWorkItems(prev => [...prev, { item: '', action: 'replaced', notes: '', cost: '' }])}
               className="w-full py-2 mt-1 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-teal-400 hover:text-teal-600 transition">
-              + הוסף פריט עבודה
+              + ×××¡×£ ×¤×¨×× ×¢××××
             </button>
 
             {/* Quick-add common pre-test work items */}
             <div className="mt-3">
-              <p className="text-xs text-gray-400 text-right mb-2">פריטים נפוצים:</p>
+              <p className="text-xs text-gray-400 text-right mb-2">×¤×¨×××× × ×¤××¦××:</p>
               <div className="flex flex-wrap gap-1 justify-end">
                 {[
-                  'החלפת נורה', 'כיוון אורות', 'החלפת מגבים', 'מילוי נוזלים',
-                  'החלפת צמיג', 'ניפוח צמיגים', 'תיקון בלם יד', 'החלפת נוזל בלמים',
-                  'תיקון פליטה', 'כיוון מראות', 'החלפת חגורה', 'תיקון צופר',
+                  '××××¤×ª × ××¨×', '××××× ×××¨××ª', '××××¤×ª ×××××', '××××× × ×××××',
+                  '××××¤×ª ×¦×××', '× ××¤×× ×¦×××××', '×ª××§×× ××× ××', '××××¤×ª × ××× ×××××',
+                  '×ª××§×× ×¤××××', '××××× ××¨×××ª', '××××¤×ª ××××¨×', '×ª××§×× ×¦××¤×¨',
                 ].map(item => (
                   <button key={item} onClick={() => {
                     if (!preTestWorkItems.find(w => w.item === item)) {
@@ -1748,34 +1748,34 @@ export default function NewInspectionPage() {
         </Card>
       )}
 
-      {/* ====== PERIODIC SERVICE (טיפול תקופתי) ====== */}
+      {/* ====== PERIODIC SERVICE (×××¤×× ×ª×§××¤×ª×) ====== */}
       {inspectionType === 'periodic' && step === 2 && (
         <>
           <Card>
-            <CardTitle icon={<Settings className="text-teal-600" />}>פירוט טיפול</CardTitle>
-            <p className="text-xs text-gray-500 mt-1 mb-3 text-right">סמן את כל הפעולות שבוצעו בטיפול</p>
+            <CardTitle icon={<Settings className="text-teal-600" />}>×¤××¨×× ×××¤××</CardTitle>
+            <p className="text-xs text-gray-500 mt-1 mb-3 text-right">×¡×× ××ª ×× ××¤×¢××××ª ×©×××¦×¢× ××××¤××</p>
             <div className="flex flex-wrap gap-2 mt-3">
               {[
-                'החלפת שמן מנוע',
-                'החלפת פילטר שמן',
-                'החלפת פילטר אוויר',
-                'החלפת פילטר דלק',
-                'החלפת פילטר מזגן',
-                'החלפת נוזל בלמים',
-                'החלפת נוזל קירור',
-                'החלפת רצועות',
-                'החלפת מצת',
-                'החלפת צמיגים',
-                'איזון גלגלים',
-                'כיוון פרונט',
-                'החלפת בלמים קדמיים',
-                'החלפת בלמים אחוריים',
-                'החלפת דיסקים',
-                'החלפת מצבר',
-                'שטיפת מנוע',
-                'טיפול מזגן',
-                'החלפת בולמים',
-                'החלפת מוטות מייצב',
+                '××××¤×ª ×©×× ×× ××¢',
+                '××××¤×ª ×¤××××¨ ×©××',
+                '××××¤×ª ×¤××××¨ ×××××¨',
+                '××××¤×ª ×¤××××¨ ×××§',
+                '××××¤×ª ×¤××××¨ ××××',
+                '××××¤×ª × ××× ×××××',
+                '××××¤×ª × ××× ×§××¨××¨',
+                '××××¤×ª ×¨×¦××¢××ª',
+                '××××¤×ª ××¦×ª',
+                '××××¤×ª ×¦×××××',
+                '××××× ××××××',
+                '××××× ×¤×¨×× ×',
+                '××××¤×ª ××××× ×§×××××',
+                '××××¤×ª ××××× ××××¨×××',
+                '××××¤×ª ×××¡×§××',
+                '××××¤×ª ××¦××¨',
+                '×©×××¤×ª ×× ××¢',
+                '×××¤×× ××××',
+                '××××¤×ª ××××××',
+                '××××¤×ª ×××××ª ××××¦×',
               ].map(item => (
                 <button key={item} onClick={() => setServiceItems(prev =>
                   prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]
@@ -1786,22 +1786,22 @@ export default function NewInspectionPage() {
             </div>
           </Card>
           <Card>
-            <CardTitle>הערות טיפול</CardTitle>
-            <VoiceInput value={serviceNotes} onChange={setServiceNotes} placeholder="פירוט נוסף על הטיפול..." rows={3} />
+            <CardTitle>××¢×¨××ª ×××¤××</CardTitle>
+            <VoiceInput value={serviceNotes} onChange={setServiceNotes} placeholder="×¤××¨×× × ××¡×£ ×¢× ××××¤××..." rows={3} />
           </Card>
           <Card>
-            <CardTitle>המלצות המשך</CardTitle>
-            <VoiceInput value={serviceRecommendations} onChange={setServiceRecommendations} placeholder="המלצות לטיפולים עתידיים, חלקים שצריך להחליף בקרוב..." rows={3} />
+            <CardTitle>××××¦××ª ×××©×</CardTitle>
+            <VoiceInput value={serviceRecommendations} onChange={setServiceRecommendations} placeholder="××××¦××ª ××××¤×××× ×¢×ª×××××, ×××§×× ×©×¦×¨×× ××××××£ ××§×¨××..." rows={3} />
           </Card>
           <Card>
-            <CardTitle icon={<Camera className="text-teal-600" />}>תמונות חלקים שהוחלפו</CardTitle>
-            <p className="text-xs text-gray-500 mt-1 mb-3 text-right">צלם את החלקים שהוחלפו לתיעוד</p>
+            <CardTitle icon={<Camera className="text-teal-600" />}>×ª××× ××ª ×××§×× ×©×××××¤×</CardTitle>
+            <p className="text-xs text-gray-500 mt-1 mb-3 text-right">×¦×× ××ª ××××§×× ×©×××××¤× ××ª××¢××</p>
             <div className="grid grid-cols-3 gap-2 mt-2">
               {servicePhotos.map((photo, idx) => (
                 <div key={idx} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-                  <img src={photo} alt={`חלק ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={photo} alt={`×××§ ${idx + 1}`} className="w-full h-full object-cover" />
                   <button onClick={() => setServicePhotos(prev => prev.filter((_, i) => i !== idx))}
-                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">✕</button>
+                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">â</button>
                 </div>
               ))}
               <button onClick={() => {
@@ -1817,69 +1817,69 @@ export default function NewInspectionPage() {
                 input.click();
               }} className="aspect-square rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-teal-400 transition">
                 <Camera size={24} className="text-gray-400" />
-                <span className="text-xs text-gray-400 mt-1">הוסף תמונה</span>
+                <span className="text-xs text-gray-400 mt-1">×××¡×£ ×ª××× ×</span>
               </button>
             </div>
           </Card>
         </>
       )}
 
-      {/* ====== TROUBLESHOOT (תיקון/אבחון תקלה) ====== */}
+      {/* ====== TROUBLESHOOT (×ª××§××/××××× ×ª×§××) ====== */}
       {inspectionType === 'troubleshoot' && step === 2 && (
         <>
           <Card>
-            <CardTitle icon={<Wrench className="text-orange-600" />}>תיאור התקלה</CardTitle>
-            <VoiceInput value={troubleshootProblem} onChange={setTroubleshootProblem} placeholder="תאר את התקלה כפי שדווחה על ידי הלקוח..." rows={3} />
+            <CardTitle icon={<Wrench className="text-orange-600" />}>×ª××××¨ ××ª×§××</CardTitle>
+            <VoiceInput value={troubleshootProblem} onChange={setTroubleshootProblem} placeholder="×ª××¨ ××ª ××ª×§×× ××¤× ×©××××× ×¢× ××× ×××§××..." rows={3} />
           </Card>
           <Card>
-            <CardTitle>אבחון</CardTitle>
-            <VoiceInput value={troubleshootDiagnosis} onChange={setTroubleshootDiagnosis} placeholder="ממצאי האבחון - מה נמצא..." rows={3} />
+            <CardTitle>×××××</CardTitle>
+            <VoiceInput value={troubleshootDiagnosis} onChange={setTroubleshootDiagnosis} placeholder="×××¦×× ×××××× - ×× × ××¦×..." rows={3} />
           </Card>
           <Card>
-            <CardTitle>תיקון שבוצע</CardTitle>
-            <VoiceInput value={troubleshootFix} onChange={setTroubleshootFix} placeholder="פירוט התיקון שבוצע..." rows={3} />
+            <CardTitle>×ª××§×× ×©×××¦×¢</CardTitle>
+            <VoiceInput value={troubleshootFix} onChange={setTroubleshootFix} placeholder="×¤××¨×× ××ª××§×× ×©×××¦×¢..." rows={3} />
           </Card>
           <Card>
-            <CardTitle>חלקים שהוחלפו</CardTitle>
-            <VoiceInput value={troubleshootParts} onChange={setTroubleshootParts} placeholder="רשימת חלקים שהוחלפו..." rows={2} />
+            <CardTitle>×××§×× ×©×××××¤×</CardTitle>
+            <VoiceInput value={troubleshootParts} onChange={setTroubleshootParts} placeholder="×¨×©×××ª ×××§×× ×©×××××¤×..." rows={2} />
           </Card>
           <Card>
-            <CardTitle>הערות נוספות</CardTitle>
-            <VoiceInput value={troubleshootNotes} onChange={setTroubleshootNotes} placeholder="הערות נוספות, המלצות ללקוח..." rows={2} />
+            <CardTitle>××¢×¨××ª × ××¡×¤××ª</CardTitle>
+            <VoiceInput value={troubleshootNotes} onChange={setTroubleshootNotes} placeholder="××¢×¨××ª × ××¡×¤××ª, ××××¦××ª ×××§××..." rows={2} />
           </Card>
         </>
       )}
 
       {/* Navigation */}
       {step > 0 && (
-        <div className="flex gap-2 sticky bottom-16 lg:bottom-4 px-1 z-30">
+        <div className="flex gap-2 sticky bottom-20 lg:bottom-4 px-1 z-30">
           {step > 1 && (
             <Button variant="outline" className="flex-1" icon={<ArrowRight size={16} />}
-              onClick={() => setStep((step - 1) as Step)}>חזור</Button>
+              onClick={() => setStep((step - 1) as Step)}>××××¨</Button>
           )}
           {step === 1 && (
             <Button variant="outline" className="flex-1" icon={<ArrowRight size={16} />}
-              onClick={() => setStep(0 as Step)}>שנה סוג פעולה</Button>
+              onClick={() => setStep(0 as Step)}>×©× × ×¡×× ×¤×¢×××</Button>
           )}
           {/* Full inspection: continue through 8 steps */}
           {inspectionType === 'full' && step < 8 && (
             <Button className="flex-1" icon={<ArrowLeft size={16} />}
               onClick={() => setStep((step + 1) as Step)}
-              disabled={step === 1 && !selectedVehicleId && !isManualVehicleValid}>הבא</Button>
+              disabled={step === 1 && !selectedVehicleId && !isManualVehicleValid}>×××</Button>
           )}
           {inspectionType === 'full' && step === 8 && (
             <Button className="flex-1 bg-teal-600 hover:bg-teal-700" icon={<Save size={16} />}
-              loading={loading} onClick={handleSubmit}>שלח בדיקה</Button>
+              loading={loading} onClick={handleSubmit}>×©×× ××××§×</Button>
           )}
-          {/* Non-full types: step 1 → step 2 (form), step 2 → submit */}
+          {/* Non-full types: step 1 â step 2 (form), step 2 â submit */}
           {inspectionType !== 'full' && step === 1 && (
             <Button className="flex-1" icon={<ArrowLeft size={16} />}
               onClick={() => setStep(2 as Step)}
-              disabled={!selectedVehicleId && !isManualVehicleValid}>הבא</Button>
+              disabled={!selectedVehicleId && !isManualVehicleValid}>×××</Button>
           )}
           {inspectionType !== 'full' && step === 2 && (
             <Button className="flex-1 bg-teal-600 hover:bg-teal-700" icon={<Save size={16} />}
-              loading={loading} onClick={handleSubmit}>שמור</Button>
+              loading={loading} onClick={handleSubmit}>×©×××¨</Button>
           )}
           {/* Cancel button */}
           <Button variant="outline" className="px-3 text-red-500 border-red-200 hover:bg-red-50" icon={<X size={16} />}
@@ -1888,23 +1888,23 @@ export default function NewInspectionPage() {
       )}
 
       {/* Cancel Confirmation Modal */}
-      <Modal isOpen={showCancelModal} onClose={() => setShowCancelModal(false)} title="לצאת מהטופס?">
+      <Modal isOpen={showCancelModal} onClose={() => setShowCancelModal(false)} title="××¦××ª ×××××¤×¡?">
         <div className="text-center space-y-4">
-          <p className="text-gray-600">המידע שהזנת לא יישמר. האם אתה בטוח שברצונך לצאת?</p>
+          <p className="text-gray-600">×××××¢ ×©××× ×ª ×× ×××©××¨. ××× ××ª× ×××× ×©××¨×¦×× × ××¦××ª?</p>
           <div className="flex gap-2">
-            <Button variant="outline" className="flex-1" onClick={() => setShowCancelModal(false)}>המשך למלא</Button>
-            <Button className="flex-1 bg-red-500 hover:bg-red-600" onClick={() => router.push('/garage')}>צא בלי לשמור</Button>
+            <Button variant="outline" className="flex-1" onClick={() => setShowCancelModal(false)}>×××©× ××××</Button>
+            <Button className="flex-1 bg-red-500 hover:bg-red-600" onClick={() => router.push('/garage')}>×¦× ××× ××©×××¨</Button>
           </div>
         </div>
       </Modal>
 
       {/* Success Modal */}
-      <Modal isOpen={successModal} onClose={() => {}} title={inspectionType === 'full' ? 'בדיקה נוצרה בהצלחה!' : 'נשמר בהצלחה!'}>
+      <Modal isOpen={successModal} onClose={() => {}} title={inspectionType === 'full' ? '××××§× × ××¦×¨× ×××¦×××!' : '× ×©××¨ ×××¦×××!'}>
         <div className="text-center space-y-4">
           <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto">
             <Check size={32} className="text-green-600" />
           </div>
-          <p className="text-gray-600">{inspectionTypes.find(t => t.value === inspectionType)?.label} נשמר בהצלחה</p>
+          <p className="text-gray-600">{inspectionTypes.find(t => t.value === inspectionType)?.label} × ×©××¨ ×××¦×××</p>
           {inspectionType === 'full' && overallScore > 0 && (
             <div className="bg-teal-50 p-4 rounded-xl">
               <div className="text-3xl font-bold text-teal-600">{overallScore}</div>
@@ -1913,10 +1913,10 @@ export default function NewInspectionPage() {
           )}
           <div className="flex gap-2">
             <Button variant="outline" className="flex-1" onClick={() => { setSuccessModal(false); router.push('/garage/inspections'); }}>
-              חזור לבדיקות
+              ××××¨ ×××××§××ª
             </Button>
             <Button className="flex-1" onClick={() => { setSuccessModal(false); router.push(`/inspection/${successId}`); }}>
-              צפה בדוח
+              ×¦×¤× ××××
             </Button>
           </div>
         </div>
