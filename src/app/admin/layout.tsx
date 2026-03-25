@@ -2,6 +2,8 @@
 
 import Sidebar from '@/components/shared/Sidebar';
 import NotificationBell from '@/components/shared/NotificationBell';
+import AuthInterceptor from '@/components/shared/AuthInterceptor';
+import ErrorBoundary from '@/components/shared/ErrorBoundary';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,7 +15,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <NotificationBell />
         </div>
         <div className="max-w-7xl mx-auto">
-          {children}
+          <AuthInterceptor />
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </div>
       </main>
     </div>
