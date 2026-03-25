@@ -132,7 +132,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 
     const updateSchema = z.object({
-      status: z.enum(['pending', 'in_progress', 'completed', 'cancelled']).optional(),
+      status: z.enum(['pending', 'in_progress', 'completed', 'cancelled', 'awaiting_signature']).optional(),
       overallScore: z.number().int().min(0).max(100).optional(),
       summary: z.string().optional(),
       mechanicName: z.string().optional(),
