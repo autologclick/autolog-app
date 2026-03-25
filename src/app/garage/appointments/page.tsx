@@ -33,10 +33,10 @@ interface Appointment {
 }
 
 const serviceTypeHeb: Record<string, string> = {
-  inspection: 'בדיקה',
-  maintenance: 'טיפול',
-  repair: 'תיקון',
-  test_prep: 'הכנה לטסט',
+  inspection: '××××§×',
+  maintenance: '×××¤××',
+  repair: '×ª××§××',
+  test_prep: '××× × ×××¡×',
 };
 
 export default function AppointmentsPage() {
@@ -75,7 +75,7 @@ export default function AppointmentsPage() {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error loading appointments:', err);
       }
-      setError('שגיאה בטעינת התורים');
+      setError('×©×××× ×××¢×× ×ª ××ª××¨××');
     } finally {
       setLoading(false);
     }
@@ -99,7 +99,7 @@ export default function AppointmentsPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'שגיאה בעדכון הסטטוס');
+        setError(data.error || '×©×××× ××¢×××× ××¡××××¡');
         return;
       }
 
@@ -108,10 +108,10 @@ export default function AppointmentsPage() {
         prev.map(a => a.id === appointmentId ? { ...a, status, completionNotes: notes || a.completionNotes } : a)
       );
 
-      setSuccess(data.message || 'הסטטוס עודכן בהצלחה');
+      setSuccess(data.message || '××¡××××¡ ×¢×××× ×××¦×××');
       setTimeout(() => setSuccess(''), 3000);
     } catch {
-      setError('שגיאת חיבור');
+      setError('×©××××ª ×××××¨');
     } finally {
       setUpdating(null);
     }
@@ -121,8 +121,10 @@ export default function AppointmentsPage() {
     updateStatus(appointment.id, 'confirmed');
   };
 
-  const handleStartWork = (appointment: Appointment) => {
-    updateStatus(appointment.id, 'in_progress');
+  const handleStartWork = async (appointment: Appointment) => {
+    await updateStatus(appointment.id, 'in_progress');
+    // Redirect to inspection form with appointment and vehicle context
+    router.push(`/garage/new-inspection?appointmentId=${appointment.id}&vehicleId=${appointment.vehicle?.licensePlate || ''}`);
   };
 
   const openCompleteModal = (appointment: Appointment) => {
@@ -186,7 +188,7 @@ export default function AppointmentsPage() {
           key="phone"
           href={`tel:${appointment.user.phone}`}
           className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition"
-          title="התקשר ללקוח"
+          title="××ª×§×©×¨ ×××§××"
         >
           <Phone size={14} className="text-gray-600" />
         </a>
@@ -200,10 +202,10 @@ export default function AppointmentsPage() {
           onClick={() => handleConfirm(appointment)}
           disabled={isUpdating}
           className="h-8 px-3 rounded-lg bg-emerald-100 flex items-center justify-center gap-1 hover:bg-emerald-200 transition disabled:opacity-50 text-xs font-medium text-emerald-700"
-          title="אשר תור"
+          title="××©×¨ ×ª××¨"
         >
           {isUpdating ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-          <span>אשר</span>
+          <span>××©×¨</span>
         </button>
       );
       buttons.push(
@@ -212,10 +214,10 @@ export default function AppointmentsPage() {
           onClick={() => openCancelModal(appointment)}
           disabled={isUpdating}
           className="h-8 px-3 rounded-lg bg-red-100 flex items-center justify-center gap-1 hover:bg-red-200 transition disabled:opacity-50 text-xs font-medium text-red-700"
-          title="דחה תור"
+          title="××× ×ª××¨"
         >
           <X size={14} />
-          <span>דחה</span>
+          <span>×××</span>
         </button>
       );
     }
@@ -227,10 +229,10 @@ export default function AppointmentsPage() {
           onClick={() => handleStartWork(appointment)}
           disabled={isUpdating}
           className="h-8 px-3 rounded-lg bg-blue-100 flex items-center justify-center gap-1 hover:bg-blue-200 transition disabled:opacity-50 text-xs font-medium text-blue-700"
-          title="התחל טיפול"
+          title="××ª×× ×××¤××"
         >
           {isUpdating ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
-          <span>התחל</span>
+          <span>××ª××</span>
         </button>
       );
       buttons.push(
@@ -239,7 +241,7 @@ export default function AppointmentsPage() {
           onClick={() => openCancelModal(appointment)}
           disabled={isUpdating}
           className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center hover:bg-red-200 transition disabled:opacity-50"
-          title="בטל תור"
+          title="××× ×ª××¨"
         >
           <X size={14} className="text-red-600" />
         </button>
@@ -253,10 +255,10 @@ export default function AppointmentsPage() {
           onClick={() => openCompleteModal(appointment)}
           disabled={isUpdating}
           className="h-8 px-3 rounded-lg bg-emerald-100 flex items-center justify-center gap-1 hover:bg-emerald-200 transition disabled:opacity-50 text-xs font-medium text-emerald-700"
-          title="סיים טיפול"
+          title="×¡××× ×××¤××"
         >
           {isUpdating ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-          <span>סיים טיפול</span>
+          <span>×¡××× ×××¤××</span>
         </button>
       );
     }
@@ -267,10 +269,10 @@ export default function AppointmentsPage() {
           key="inspection"
           onClick={() => router.push(`/garage/new-inspection?appointmentId=${appointment.id}`)}
           className="h-8 px-3 rounded-lg bg-teal-100 flex items-center justify-center gap-1 hover:bg-teal-200 transition text-xs font-medium text-teal-700"
-          title="צור דוח בדיקה"
+          title="×¦××¨ ××× ××××§×"
         >
           <Shield size={14} />
-          <span>צור בדיקה</span>
+          <span>×¦××¨ ××××§×</span>
         </button>
       );
     }
@@ -285,7 +287,7 @@ export default function AppointmentsPage() {
           <div className="w-10 h-10 bg-[#fef7ed] rounded-lg border-2 border-[#1e3a5f] flex items-center justify-center">
             <Calendar size={20} className="text-[#1e3a5f]" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1e3a5f]">ניהול תורים</h1>
+          <h1 className="text-2xl font-bold text-[#1e3a5f]">× ×××× ×ª××¨××</h1>
         </div>
         <Card className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
@@ -302,8 +304,8 @@ export default function AppointmentsPage() {
           <Calendar size={20} className="text-[#1e3a5f]" />
         </div>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">ניהול תורים</h1>
-          <p className="text-sm text-gray-500">צפייה ועדכון תורים</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">× ×××× ×ª××¨××</h1>
+          <p className="text-sm text-gray-500">×¦×¤××× ××¢×××× ×ª××¨××</p>
         </div>
       </div>
 
@@ -311,19 +313,19 @@ export default function AppointmentsPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="bg-white rounded-xl p-4 shadow-sm text-center">
           <div className="text-2xl font-bold text-emerald-600">{todayCount}</div>
-          <div className="text-xs text-gray-500 mt-1">היום</div>
+          <div className="text-xs text-gray-500 mt-1">××××</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm text-center">
           <div className="text-2xl font-bold text-amber-600">{pendingCount}</div>
-          <div className="text-xs text-gray-500 mt-1">ממתינים</div>
+          <div className="text-xs text-gray-500 mt-1">×××ª×× ××</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm text-center">
           <div className="text-2xl font-bold text-blue-600">{inProgressCount}</div>
-          <div className="text-xs text-gray-500 mt-1">בטיפול</div>
+          <div className="text-xs text-gray-500 mt-1">××××¤××</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm text-center">
           <div className="text-2xl font-bold text-gray-600">{completedCount}</div>
-          <div className="text-xs text-gray-500 mt-1">הושלמו</div>
+          <div className="text-xs text-gray-500 mt-1">×××©×××</div>
         </div>
       </div>
 
@@ -334,53 +336,53 @@ export default function AppointmentsPage() {
             <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-emerald-600" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לתורים</h2>
+            <h2 className="text-lg font-bold text-[#1e3a5f]">×ª××× ××ª AI ××ª××¨××</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <Clock size={14} className="text-amber-600" />
-                <span className="text-xs font-bold text-gray-700">תורים ממתינים</span>
+                <span className="text-xs font-bold text-gray-700">×ª××¨×× ×××ª×× ××</span>
               </div>
               <p className="text-xs text-gray-600">
                 {pendingCount > 3
-                  ? `⚠️ ${pendingCount} תורים ממתינים לאישור — מומלץ לאשר בהקדם כדי לא לאבד לקוחות.`
+                  ? `â ï¸ ${pendingCount} ×ª××¨×× ×××ª×× ×× ××××©××¨ â ×××××¥ ×××©×¨ ×××§×× ××× ×× ×××× ××§××××ª.`
                   : pendingCount > 0
-                  ? `📋 ${pendingCount} תורים ממתינים. אשרו אותם לשיפור חוויית הלקוח.`
-                  : '✅ כל התורים מאושרים — עבודה מצוינת!'}
+                  ? `ð ${pendingCount} ×ª××¨×× ×××ª×× ××. ××©×¨× ×××ª× ××©××¤××¨ ××××××ª ×××§××.`
+                  : 'â ×× ××ª××¨×× ××××©×¨×× â ×¢×××× ××¦××× ×ª!'}
               </p>
             </div>
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={14} className="text-emerald-600" />
-                <span className="text-xs font-bold text-gray-700">עומס יומי</span>
+                <span className="text-xs font-bold text-gray-700">×¢×××¡ ××××</span>
               </div>
               <p className="text-xs text-gray-600">
                 {todayCount >= 5
-                  ? `⚡ יום עמוס! ${todayCount} תורים להיום. ודאו שיש מספיק צוות.`
+                  ? `â¡ ××× ×¢×××¡! ${todayCount} ×ª××¨×× ×××××. ×××× ×©××© ××¡×¤××§ ×¦×××ª.`
                   : todayCount >= 2
-                  ? `📅 ${todayCount} תורים להיום — קצב פעילות טוב.`
+                  ? `ð ${todayCount} ×ª××¨×× ××××× â ×§×¦× ×¤×¢××××ª ×××.`
                   : todayCount === 1
-                  ? '📅 תור אחד להיום. יש מקום לתורים נוספים.'
-                  : '🕐 אין תורים להיום. הזדמנות לשיווק ופנייה ללקוחות.'}
+                  ? 'ð ×ª××¨ ××× ×××××. ××© ××§×× ××ª××¨×× × ××¡×¤××.'
+                  : 'ð ××× ×ª××¨×× ×××××. ××××× ××ª ××©××××§ ××¤× ××× ×××§××××ª.'}
               </p>
             </div>
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <Target size={14} className="text-blue-600" />
-                <span className="text-xs font-bold text-gray-700">יחס השלמה</span>
+                <span className="text-xs font-bold text-gray-700">×××¡ ××©×××</span>
               </div>
               <p className="text-xs text-gray-600">
                 {(() => {
                   const total = appointments.length;
                   const rate = total > 0 ? Math.round((completedCount / total) * 100) : 0;
                   return rate >= 80
-                    ? `⭐ יחס השלמה ${rate}% — ביצועים מעולים!`
+                    ? `â­ ×××¡ ××©××× ${rate}% â ×××¦××¢×× ××¢××××!`
                     : rate >= 50
-                    ? `📊 יחס השלמה ${rate}%. שאפו ל-80%+ לשיפור שביעות רצון.`
+                    ? `ð ×××¡ ××©××× ${rate}%. ×©××¤× ×-80%+ ××©××¤××¨ ×©×××¢××ª ×¨×¦××.`
                     : total > 0
-                    ? `📈 יחס השלמה ${rate}%. מומלץ לעקוב אחר תורים שלא הושלמו.`
-                    : '📋 אין מספיק נתונים לניתוח.';
+                    ? `ð ×××¡ ××©××× ${rate}%. ×××××¥ ××¢×§×× ×××¨ ×ª××¨×× ×©×× ×××©×××.`
+                    : 'ð ××× ××¡×¤××§ × ×ª×× ×× ×× ××ª××.';
                 })()}
               </p>
             </div>
@@ -405,12 +407,12 @@ export default function AppointmentsPage() {
       {/* Filter Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2">
         {[
-          { key: 'all', label: 'הכל' },
-          { key: 'pending', label: `ממתינים (${pendingCount})` },
-          { key: 'in_progress', label: `בטיפול (${inProgressCount})` },
-          { key: 'today', label: 'היום' },
-          { key: 'upcoming', label: 'קרובים' },
-          { key: 'completed', label: 'הושלמו' },
+          { key: 'all', label: '×××' },
+          { key: 'pending', label: `×××ª×× ×× (${pendingCount})` },
+          { key: 'in_progress', label: `××××¤×× (${inProgressCount})` },
+          { key: 'today', label: '××××' },
+          { key: 'upcoming', label: '×§×¨××××' },
+          { key: 'completed', label: '×××©×××' },
         ].map(f => (
           <button
             key={f.key}
@@ -430,7 +432,7 @@ export default function AppointmentsPage() {
       {filteredAppointments.length === 0 ? (
         <Card className="text-center py-12">
           <Calendar size={32} className="text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">אין תורים להצגה</p>
+          <p className="text-gray-500">××× ×ª××¨×× ×××¦××</p>
         </Card>
       ) : (
         <div className="space-y-3">
@@ -449,7 +451,7 @@ export default function AppointmentsPage() {
                     isToday ? 'bg-emerald-100' : 'bg-gray-100'
                   }`}>
                     <div className={`text-xs font-medium ${isToday ? 'text-emerald-600' : 'text-gray-500'}`}>
-                      {isToday ? 'היום' : apptDate.toLocaleDateString('he-IL', { day: 'numeric', month: 'short' })}
+                      {isToday ? '××××' : apptDate.toLocaleDateString('he-IL', { day: 'numeric', month: 'short' })}
                     </div>
                     <div className={`text-lg font-bold ${isToday ? 'text-emerald-700' : 'text-gray-700'}`}>
                       {a.time}
@@ -474,11 +476,11 @@ export default function AppointmentsPage() {
                       <span>{serviceTypeHeb[a.serviceType] || a.serviceType}</span>
                     </div>
                     {a.notes && (
-                      <div className="text-xs text-gray-400 mt-1 italic">הערות: {a.notes}</div>
+                      <div className="text-xs text-gray-400 mt-1 italic">××¢×¨××ª: {a.notes}</div>
                     )}
                     {a.status === 'completed' && a.completionNotes && (
                       <div className="mt-2 p-2 bg-emerald-50 rounded-lg text-xs text-emerald-700">
-                        <span className="font-medium">סיכום טיפול:</span> {a.completionNotes}
+                        <span className="font-medium">×¡×××× ×××¤××:</span> {a.completionNotes}
                       </div>
                     )}
                   </div>
@@ -498,7 +500,7 @@ export default function AppointmentsPage() {
       <Modal
         isOpen={showCompleteModal && !!completingAppointment}
         onClose={() => setShowCompleteModal(false)}
-        title="סיום טיפול ותיעוד"
+        title="×¡××× ×××¤×× ××ª××¢××"
         size="md"
       >
         {completingAppointment && (
@@ -506,15 +508,15 @@ export default function AppointmentsPage() {
             {/* Appointment Summary */}
             <div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-500">לקוח:</span>
+                <span className="text-gray-500">××§××:</span>
                 <span className="font-medium">{completingAppointment.user.fullName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">רכב:</span>
+                <span className="text-gray-500">×¨××:</span>
                 <span className="font-medium">{completingAppointment.vehicle.nickname} ({completingAppointment.vehicle.licensePlate})</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">שירות:</span>
+                <span className="text-gray-500">×©××¨××ª:</span>
                 <span className="font-medium">{serviceTypeHeb[completingAppointment.serviceType] || completingAppointment.serviceType}</span>
               </div>
             </div>
@@ -522,18 +524,18 @@ export default function AppointmentsPage() {
             {/* Completion Notes */}
             <div>
               <label className="block text-sm font-medium text-gray-700 text-right mb-2">
-                תיעוד הטיפול שבוצע
+                ×ª××¢×× ××××¤×× ×©×××¦×¢
               </label>
               <textarea
                 value={completionNotes}
                 onChange={(e) => setCompletionNotes(e.target.value)}
-                placeholder="תאר את הטיפול שבוצע, חלקים שהוחלפו, המלצות ללקוח..."
+                placeholder="×ª××¨ ××ª ××××¤×× ×©×××¦×¢, ×××§×× ×©×××××¤×, ××××¦××ª ×××§××..."
                 className="w-full p-3 border border-gray-300 rounded-xl text-right resize-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 rows={4}
                 dir="rtl"
               />
               <p className="text-xs text-gray-400 text-right mt-1">
-                התיעוד יישלח ללקוח ויופיע במערכת המעקב שלו
+                ××ª××¢×× ×××©×× ×××§×× ××××¤××¢ ×××¢×¨××ª ×××¢×§× ×©××
               </p>
             </div>
 
@@ -545,7 +547,7 @@ export default function AppointmentsPage() {
                   onClick={() => setShowCompleteModal(false)}
                   className="flex-1"
                 >
-                  ביטול
+                  ×××××
                 </Button>
                 <button
                   onClick={handleComplete}
@@ -557,7 +559,7 @@ export default function AppointmentsPage() {
                   ) : (
                     <CheckCircle2 size={16} />
                   )}
-                  סיים וידע את הלקוח
+                  ×¡××× ××××¢ ××ª ×××§××
                 </button>
               </div>
               <button
@@ -568,7 +570,7 @@ export default function AppointmentsPage() {
                 className="w-full bg-teal-600 text-white rounded-xl py-2.5 font-medium hover:bg-teal-700 transition flex items-center justify-center gap-2 text-sm"
               >
                 <Shield size={16} />
-                סיים + צור דוח בדיקה
+                ×¡××× + ×¦××¨ ××× ××××§×
               </button>
             </div>
           </div>
@@ -579,7 +581,7 @@ export default function AppointmentsPage() {
       <Modal
         isOpen={showCancelModal && !!cancellingAppointment}
         onClose={() => setShowCancelModal(false)}
-        title="ביטול תור"
+        title="××××× ×ª××¨"
         size="sm"
       >
         {cancellingAppointment && (
@@ -587,11 +589,11 @@ export default function AppointmentsPage() {
             <div className="flex gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
               <AlertCircle size={20} className="text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-amber-900">בטל את התור?</p>
+                <p className="font-medium text-amber-900">××× ××ª ××ª××¨?</p>
                 <p className="text-sm text-amber-700 mt-1">
-                  התור של {cancellingAppointment.user.fullName} בתאריך{' '}
-                  {new Date(cancellingAppointment.date).toLocaleDateString('he-IL')} בשעה{' '}
-                  {cancellingAppointment.time} יבוטל והלקוח יקבל הודעה.
+                  ××ª××¨ ×©× {cancellingAppointment.user.fullName} ××ª××¨××{' '}
+                  {new Date(cancellingAppointment.date).toLocaleDateString('he-IL')} ××©×¢×{' '}
+                  {cancellingAppointment.time} ××××× ××××§×× ××§×× ××××¢×.
                 </p>
               </div>
             </div>
@@ -601,7 +603,7 @@ export default function AppointmentsPage() {
                 onClick={() => setShowCancelModal(false)}
                 className="flex-1"
               >
-                חזור
+                ××××¨
               </Button>
               <Button
                 variant="danger"
@@ -609,7 +611,7 @@ export default function AppointmentsPage() {
                 loading={updating === cancellingAppointment.id}
                 className="flex-1"
               >
-                כן, בטל
+                ××, ×××
               </Button>
             </div>
           </div>
