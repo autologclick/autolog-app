@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken, JwtPayload } from './auth';
 import { createLogger } from './logger';
 import { ZodError } from 'zod';
+import { AUTH_ERRORS, VALIDATION_ERRORS } from './messages';
 
 const apiLogger = createLogger('api');
 
@@ -20,7 +21,7 @@ export function validationErrorResponse(error: ZodError) {
     details[path] = err.message;
   });
   return NextResponse.json(
-    { error: 'שגיאת אימות נתונים', details },
+    { error: VALIDATION_ERRORS.DATA_VALIDATION, details },
     { status: 400 }
   );
 }
@@ -48,7 +49,7 @@ export function getAuthPayload(req: NextRequest): JwtPayload | null {
 export function requireAuth(req: NextRequest): JwtPayload {
   const payload = getAuthPayload(req);
   if (!payload) {
-    throw new AuthError('פג תוקף ההתחברות. יש להתחבר מחדש.', 401);
+    throw new AuthError(AUTH_ERRORS.UNAUTHORIZED, 401);
   }
   return payload;
 }
@@ -56,7 +57,7 @@ export function requireAuth(req: NextRequest): JwtPayload {
 export function requireAdmin(req: NextRequest): JwtPayload {
   const payload = requireAuth(req);
   if (payload.role !== 'admin') {
-    throw new AuthError('אין לך הרשאה לבצע פעולה זו', 403);
+    throw new AuthError(AUTH_ERRORS.FORBIDDEN, 403);
   }
   return payload;
 }
@@ -64,7 +65,7 @@ export function requireAdmin(req: NextRequest): JwtPayload {
 export function requireGarageOwner(req: NextRequest): JwtPayload {
   const payload = requireAuth(req);
   if (payload.role !== 'garage_owner' && payload.role !== 'admin') {
-    throw new AuthError('אין לך הרשאה לבצע פעולה זו', 403);
+    throw new AuthError(AUTH_ERRORS.FORBIDDEN, 403);
   }
   return payload;
 }
@@ -80,7 +81,7 @@ export function requireOwnership(
 ): void {
   if (userIdFromToken !== resourceUserId) {
     throw new AuthError(
-      'אין לך הרשאה לגשת למשאב זה',
+      AUTH_ERRORS.FORBIDDEN_RESOURCE,
       403
     );
   }
