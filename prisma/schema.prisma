@@ -45,7 +45,7 @@ model Vehicle {
   id                String    @id @default(cuid())
   userId            String
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  nickname          String    // e.g. "ספורטז לבנה"
+  nickname          String    // e.g. "×¡×¤××¨×× ××× ×"
   manufacturer      String    // e.g. "KIA"
   model             String    // e.g. "SPORTAGE"
   year              Int
@@ -134,7 +134,7 @@ model Inspection {
   mechanicName    String?
   inspectionType  String    // full | rot | engine | tires | brakes | pre_test
   date            DateTime
-  status          String    @default("pending") // pending | in_progress | completed | cancelled
+  status          String    @default("pending") // pending | in_progress | awaiting_signature | completed | cancelled
   overallScore    Int?      // 0-100
 
   // Detailed scores (JSON)
@@ -183,6 +183,8 @@ model Inspection {
   customerIdNumber String?
   customerSignature String?  // base64 signature image
   signedAt        DateTime?
+  signatureIp     String?   // IP address at time of signature
+  signatureDevice String?   // User-Agent at time of signature
 
   // AI summary
   aiSummary       String?   // AI-generated smart summary
