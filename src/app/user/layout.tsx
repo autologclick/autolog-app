@@ -2,6 +2,8 @@
 
 import Sidebar from '@/components/shared/Sidebar';
 import NotificationBell from '@/components/shared/NotificationBell';
+import AuthInterceptor from '@/components/shared/AuthInterceptor';
+import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import { useState, useEffect } from 'react';
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
@@ -9,9 +11,15 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     fetch('/api/auth/me')
-      .then(r => r.json())
+      .then(r => {
+        if (r.status === 401) {
+          window.location.href = '/auth/login';
+          return null;
+        }
+        return r.json();
+      })
       .then(data => {
-        if (data.user?.fullName) setUserName(data.user.fullName);
+        if (data?.user?.fullName) setUserName(data.user.fullName);
       })
       .catch(() => {});
   }, []);
@@ -25,7 +33,10 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
           <NotificationBell />
         </div>
         <div className="max-w-6xl mx-auto">
-          {children}
+          <AuthInterceptor />
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </div>
       </main>
     </div>
