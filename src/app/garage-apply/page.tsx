@@ -32,6 +32,17 @@ const SERVICE_OPTIONS = [
   { id: 'towing', label: 'גרירה וחילוץ' },
 ];
 
+const LANGUAGE_OPTIONS = [
+  'עברית',
+  'אנגלית',
+  'רוסית',
+  'ערבית',
+  'אמהרית',
+  'צרפתית',
+  'ספרדית',
+  'רומנית',
+];
+
 const CITIES = [
   'תל אביב', 'ירושלים', 'חיפה', 'באר שבע', 'ראשון לציון',
   'פתח תקווה', 'אשדוד', 'נתניה', 'חולון', 'בני ברק',
@@ -45,6 +56,7 @@ export default function GarageApplyPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [imagePreviews, setImagePreviews] = useState<{ file: File; preview: string }[]>([]);
 
   const [form, setForm] = useState({
@@ -124,6 +136,10 @@ export default function GarageApplyPage() {
     }
     setError('');
     setStep(2);
+  const toggleLanguage = (lang: string) => {
+    setSelectedLanguages(prev =>
+      prev.includes(lang) ? prev.filter(l => l !== lang) : [...prev, lang]
+    );
   };
 
   const handleSubmit = async () => {
@@ -144,6 +160,7 @@ export default function GarageApplyPage() {
         body: JSON.stringify({
           ...form,
           services: selectedServices,
+          languages: selectedLanguages,
           yearsExperience: form.yearsExperience ? parseInt(form.yearsExperience) : 0,
           employeeCount: form.employeeCount ? parseInt(form.employeeCount) : 1,
           images: imageData,
@@ -397,6 +414,28 @@ export default function GarageApplyPage() {
               </div>
 
               <div>
+              <h3 className="text-lg font-bold text-[#1e3a5f] mb-3 flex items-center gap-2">
+                <span>🌐</span> שפות שהמוסך מדבר
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {LANGUAGE_OPTIONS.map((lang) => (
+                  <button
+                    key={lang}
+                    type="button"
+                    onClick={() => toggleLanguage(lang)}
+                    className={`px-3 py-2 rounded-full text-sm font-medium border-2 transition-all ${
+                      selectedLanguages.includes(lang)
+                        ? 'border-[#0d9488] bg-[#0d9488]/10 text-[#0d9488]'
+                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   <FileText size={14} className="inline ml-1" />
                   תיאור המוסך
