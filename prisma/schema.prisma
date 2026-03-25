@@ -362,3 +362,30 @@ model Notification {
   @@index([userId])
   @@index([isRead])
 }
+
+
+// ============================================================
+// GARAGE APPLICATIONS
+// ============================================================
+
+model GarageApplication {
+  id              String    @id @default(cuid())
+  garageName      String
+  ownerName       String
+  email           String
+  phone           String
+  city            String
+  address         String?
+  description     String?
+  services        String?
+  yearsExperience Int       @default(0)
+  employeeCount   Int       @default(1)
+  licenseNumber   String?
+  images          String?
+  status          String    @default("pending") // pending | approved | rejected
+  adminNotes      String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
