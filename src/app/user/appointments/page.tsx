@@ -41,10 +41,10 @@ interface Appointment {
 type FilterStatus = 'all' | 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
 
 const serviceTypeHeb: Record<string, string> = {
-  inspection: '××××§×',
-  maintenance: '×××¤××',
-  repair: '×ª××§××',
-  test_prep: '××× × ×××¡×',
+  inspection: 'בדיקה',
+  maintenance: 'טיפול',
+  repair: 'תיקון',
+  test_prep: 'הכנה לטסט',
 };
 
 const serviceTypeIcon: Record<string, typeof ClipboardCheck> = {
@@ -55,10 +55,10 @@ const serviceTypeIcon: Record<string, typeof ClipboardCheck> = {
 };
 
 const statusSteps = [
-  { key: 'pending', label: '×××ª×× ××××©××¨', icon: Clock },
-  { key: 'confirmed', label: '××××©×¨', icon: CheckCircle2 },
-  { key: 'in_progress', label: '××××¤××', icon: Play },
-  { key: 'completed', label: '×××©××', icon: Shield },
+  { key: 'pending', label: 'ממתין לאישור', icon: Clock },
+  { key: 'confirmed', label: 'מאושר', icon: CheckCircle2 },
+  { key: 'in_progress', label: 'בטיפול', icon: Play },
+  { key: 'completed', label: 'הושלם', icon: Shield },
 ];
 
 function StatusTimeline({ currentStatus }: { currentStatus: string }) {
@@ -66,7 +66,7 @@ function StatusTimeline({ currentStatus }: { currentStatus: string }) {
     return (
       <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl">
         <AlertCircle size={16} className="text-red-500" />
-        <span className="text-sm font-medium text-red-700">××ª××¨ ××××</span>
+        <span className="text-sm font-medium text-red-700">התור בוטל</span>
       </div>
     );
   }
@@ -134,7 +134,7 @@ export default function AppointmentsPage() {
         const data = await res.json();
 
         if (!res.ok) {
-          setError(data.error || '×©×××× ×××¢×× ×ª ××ª××¨××');
+          setError(data.error || 'שגיאה בטעינת התורים');
           setLoading(false);
           return;
         }
@@ -142,7 +142,7 @@ export default function AppointmentsPage() {
         setAppointments(data.appointments || []);
         setError('');
       } catch {
-        setError('×©××××ª ×××××¨');
+        setError('שגיאת חיבור');
       } finally {
         setLoading(false);
       }
@@ -165,7 +165,7 @@ export default function AppointmentsPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || '×©×××× ×××××× ××ª××¨');
+        setError(data.error || 'שגיאה בביטול התור');
         setCancelling(false);
         return;
       }
@@ -180,7 +180,7 @@ export default function AppointmentsPage() {
       setShowDetailModal(false);
       setSelectedAppointment(null);
     } catch {
-      setError('×©××××ª ×××××¨');
+      setError('שגיאת חיבור');
       setCancelling(false);
     }
   };
@@ -246,14 +246,14 @@ export default function AppointmentsPage() {
           <div className="w-10 h-10 bg-[#fef7ed] rounded-lg border-2 border-[#1e3a5f] flex items-center justify-center">
             <Calendar size={20} className="text-[#1e3a5f]" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">××ª××¨×× ×©××</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">התורים שלי</h1>
         </div>
         <Button
           icon={<Plus size={16} />}
           onClick={() => router.push('/user/book-garage')}
           className="w-full sm:w-auto"
         >
-          ×§××¢ ×ª××¨ ×××©
+          קבע תור חדש
         </Button>
       </div>
 
@@ -263,19 +263,19 @@ export default function AppointmentsPage() {
           {pendingCount > 0 && (
             <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 flex-shrink-0">
               <Clock size={16} className="text-amber-600" />
-              <span className="text-sm font-medium text-amber-800">{pendingCount} ×××ª×× ×× ××××©××¨</span>
+              <span className="text-sm font-medium text-amber-800">{pendingCount} ממתינים לאישור</span>
             </div>
           )}
           {confirmedCount > 0 && (
             <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 flex-shrink-0">
               <CheckCircle2 size={16} className="text-emerald-600" />
-              <span className="text-sm font-medium text-emerald-800">{confirmedCount} ××××©×¨××</span>
+              <span className="text-sm font-medium text-emerald-800">{confirmedCount} מאושרים</span>
             </div>
           )}
           {inProgressCount > 0 && (
             <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5 flex-shrink-0">
               <Play size={16} className="text-blue-600" />
-              <span className="text-sm font-medium text-blue-800">{inProgressCount} ××××¤×× ××¨××¢</span>
+              <span className="text-sm font-medium text-blue-800">{inProgressCount} בטיפול כרגע</span>
             </div>
           )}
         </div>
@@ -291,12 +291,12 @@ export default function AppointmentsPage() {
       {/* Filter Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2">
         {([
-          { key: 'all', label: '×××' },
-          { key: 'pending', label: '×××ª×× ××××©××¨' },
-          { key: 'confirmed', label: '××××©×¨' },
-          { key: 'in_progress', label: '××××¤××' },
-          { key: 'completed', label: '×××©××' },
-          { key: 'cancelled', label: '×××××' },
+          { key: 'all', label: 'הכל' },
+          { key: 'pending', label: 'ממתין לאישור' },
+          { key: 'confirmed', label: 'מאושר' },
+          { key: 'in_progress', label: 'בטיפול' },
+          { key: 'completed', label: 'הושלם' },
+          { key: 'cancelled', label: 'מבוטל' },
         ] as { key: FilterStatus; label: string }[]).map(f => (
           <button
             key={f.key}
@@ -319,21 +319,21 @@ export default function AppointmentsPage() {
             <div className="w-8 h-8 bg-teal-500/10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-teal-600" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">×ª××× ××ª AI ××ª××¨××</h2>
+            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לתורים</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Next Appointment */}
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <Target size={14} className="text-teal-600" />
-                <span className="text-xs font-bold text-gray-700">×ª××¨ ×××</span>
+                <span className="text-xs font-bold text-gray-700">תור הבא</span>
               </div>
               {nextAppt ? (
                 <p className="text-xs text-gray-600">
-                  ðï¸ {new Date(nextAppt.date).toLocaleDateString('he-IL')} ××©×¢× {nextAppt.time} ×{nextAppt.garage.name}
+                  🗓️ {new Date(nextAppt.date).toLocaleDateString('he-IL')} בשעה {nextAppt.time} ב{nextAppt.garage.name}
                 </p>
               ) : (
-                <p className="text-xs text-gray-600">××× ×ª××¨ ×§×¨××</p>
+                <p className="text-xs text-gray-600">אין תור קרוב</p>
               )}
             </div>
 
@@ -341,10 +341,10 @@ export default function AppointmentsPage() {
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={14} className="text-teal-600" />
-                <span className="text-xs font-bold text-gray-700">×¡××××¡ ×ª××¨××</span>
+                <span className="text-xs font-bold text-gray-700">סטטוס תורים</span>
               </div>
               <p className="text-xs text-gray-600">
-                ð {pendingCount} ×××ª×× ××, {confirmedCount} ××××©×¨××, {completedCount} ×××©×××
+                📊 {pendingCount} ממתינים, {confirmedCount} מאושרים, {completedCount} הושלמו
               </p>
             </div>
 
@@ -352,14 +352,14 @@ export default function AppointmentsPage() {
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <Target size={14} className="text-teal-600" />
-                <span className="text-xs font-bold text-gray-700">×××¡× ×××¢××£</span>
+                <span className="text-xs font-bold text-gray-700">מוסך מועדף</span>
               </div>
               {mostVisited ? (
                 <p className="text-xs text-gray-600">
-                  ð§ {mostVisited.name} ({mostVisited.count} ×ª××¨××)
+                  🔧 {mostVisited.name} ({mostVisited.count} תורים)
                 </p>
               ) : (
-                <p className="text-xs text-gray-600">××× ×××¡× ×××¢××£</p>
+                <p className="text-xs text-gray-600">אין מוסך מועדף</p>
               )}
             </div>
           </div>
@@ -372,17 +372,17 @@ export default function AppointmentsPage() {
           <div className="w-12 h-12 bg-[#fef7ed] rounded-xl flex items-center justify-center mx-auto mb-4">
             <Calendar size={24} className="text-[#1e3a5f]" />
           </div>
-          <h3 className="text-lg font-bold text-gray-600 mb-2">××× ×ª××¨××</h3>
+          <h3 className="text-lg font-bold text-gray-600 mb-2">אין תורים</h3>
           <p className="text-gray-400 mb-4">
             {filter === 'all'
-              ? '×¢×××× ×× ×§××¢×ª ×ª××¨××. ×§××¢ ×ª××¨ ××¢×ª!'
-              : `××× ×ª××¨×× ${filter === 'pending' ? '×××ª×× ×× ××××©××¨' : filter === 'confirmed' ? '××××©×¨××' : filter === 'in_progress' ? '××××¤××' : filter === 'completed' ? '×©×××©×××' : '×©×××××'}`}
+              ? 'עדיין לא קבעת תורים. קבע תור כעת!'
+              : `אין תורים ${filter === 'pending' ? 'ממתינים לאישור' : filter === 'confirmed' ? 'מאושרים' : filter === 'in_progress' ? 'בטיפול' : filter === 'completed' ? 'שהושלמו' : 'שבוטלו'}`}
           </p>
           <Button
             icon={<Plus size={16} />}
             onClick={() => router.push('/user/book-garage')}
           >
-            ×§××¢ ×ª××¨ ×××©
+            קבע תור חדש
           </Button>
         </Card>
       ) : (
@@ -429,7 +429,7 @@ export default function AppointmentsPage() {
                       <span className="bg-gray-100 px-2 py-0.5 rounded text-xs font-medium">
                         {appointment.vehicle.nickname}
                       </span>
-                      <span className="text-gray-400">â¢</span>
+                      <span className="text-gray-400">•</span>
                       <span className="text-xs">{appointment.vehicle.licensePlate}</span>
                     </div>
 
@@ -453,14 +453,14 @@ export default function AppointmentsPage() {
                     {isInProgress && (
                       <div className="mt-2 flex items-center gap-2 text-blue-700 bg-blue-50 rounded-lg px-3 py-1.5">
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                        <span className="text-xs font-medium">××¨×× ××××¤×× ××¨××¢</span>
+                        <span className="text-xs font-medium">הרכב בטיפול כרגע</span>
                       </div>
                     )}
 
                     {/* Notes if present */}
                     {appointment.notes && (
                       <p className="text-sm text-gray-500 mt-2 italic">
-                        ××¢×¨××ª: {appointment.notes}
+                        הערות: {appointment.notes}
                       </p>
                     )}
 
@@ -469,12 +469,12 @@ export default function AppointmentsPage() {
                       <div className="mt-3 p-3 bg-teal-50 border border-teal-200 rounded-xl">
                         <div className="flex items-center gap-1.5 mb-1">
                           <CheckCircle2 size={14} className="text-teal-600" />
-                          <span className="text-xs font-bold text-teal-700">×¡×××× ×××¤××</span>
+                          <span className="text-xs font-bold text-teal-700">סיכום טיפול</span>
                         </div>
                         <p className="text-sm text-teal-800">{appointment.completionNotes}</p>
                         {appointment.completedAt && (
                           <p className="text-xs text-teal-500 mt-1">
-                            ×××©××: {new Date(appointment.completedAt).toLocaleDateString('he-IL')}
+                            הושלם: {new Date(appointment.completedAt).toLocaleDateString('he-IL')}
                           </p>
                         )}
                       </div>
@@ -496,7 +496,7 @@ export default function AppointmentsPage() {
       <Modal
         isOpen={showDetailModal && !!selectedAppointment}
         onClose={() => setShowDetailModal(false)}
-        title="×¤×¨×× ××ª××¨"
+        title="פרטי התור"
         size="lg"
       >
         {selectedAppointment && (
@@ -507,15 +507,15 @@ export default function AppointmentsPage() {
             {/* Appointment Details */}
             <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 space-y-3 text-sm text-right">
               <div className="flex justify-between">
-                <span className="text-gray-600">×××¡×:</span>
+                <span className="text-gray-600">מוסך:</span>
                 <span className="font-medium">{selectedAppointment.garage.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">××ª×××ª:</span>
+                <span className="text-gray-600">כתובת:</span>
                 <span className="font-medium">{selectedAppointment.garage.address || selectedAppointment.garage.city}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">×××¤××:</span>
+                <span className="text-gray-600">טלפון:</span>
                 <a
                   href={`tel:${selectedAppointment.garage.phone}`}
                   className="font-medium text-teal-600 hover:underline flex items-center gap-1"
@@ -529,21 +529,21 @@ export default function AppointmentsPage() {
             {/* Service Details */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
               <div>
-                <span className="text-gray-500 block mb-1">×©××¨××ª</span>
+                <span className="text-gray-500 block mb-1">שירות</span>
                 <p className="font-medium">{getServiceLabel(selectedAppointment.serviceType)}</p>
               </div>
               <div>
-                <span className="text-gray-500 block mb-1">×ª××¨××</span>
+                <span className="text-gray-500 block mb-1">תאריך</span>
                 <p className="font-medium">
                   {new Date(selectedAppointment.date).toLocaleDateString('he-IL')}
                 </p>
               </div>
               <div>
-                <span className="text-gray-500 block mb-1">×©×¢×</span>
+                <span className="text-gray-500 block mb-1">שעה</span>
                 <p className="font-medium">{selectedAppointment.time}</p>
               </div>
               <div>
-                <span className="text-gray-500 block mb-1">×¨××</span>
+                <span className="text-gray-500 block mb-1">רכב</span>
                 <p className="font-medium">{selectedAppointment.vehicle.nickname} ({selectedAppointment.vehicle.licensePlate})</p>
               </div>
             </div>
@@ -551,7 +551,7 @@ export default function AppointmentsPage() {
             {/* Notes */}
             {selectedAppointment.notes && (
               <div>
-                <span className="text-gray-500 text-sm">××¢×¨××ª</span>
+                <span className="text-gray-500 text-sm">הערות</span>
                 <p className="text-sm mt-1">{selectedAppointment.notes}</p>
               </div>
             )}
@@ -561,9 +561,9 @@ export default function AppointmentsPage() {
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-1">
                   <Clock size={16} className="text-amber-600" />
-                  <span className="font-bold text-amber-800 text-sm">×××ª×× ××××©××¨ ××××¡×</span>
+                  <span className="font-bold text-amber-800 text-sm">ממתין לאישור המוסך</span>
                 </div>
-                <p className="text-xs text-amber-700">××××¡× ×××©×¨ ××ª ××ª××¨ ×©×× ××§×¨×× ××ª×§×× ××ª×¨××.</p>
+                <p className="text-xs text-amber-700">המוסך יאשר את התור שלך בקרוב ותקבל התראה.</p>
               </div>
             )}
 
@@ -572,9 +572,9 @@ export default function AppointmentsPage() {
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                  <span className="font-bold text-blue-800 text-sm">××¨×× ××××¤××</span>
+                  <span className="font-bold text-blue-800 text-sm">הרכב בטיפול</span>
                 </div>
-                <p className="text-xs text-blue-700">××××¡× ×××¤× ××¢×ª ××¨×× ×©××. ×ª×§×× ×¢×××× ××©××××¤×× ××¡×ª×××.</p>
+                <p className="text-xs text-blue-700">המוסך מטפל כעת ברכב שלך. תקבל עדכון כשהטיפול יסתיים.</p>
               </div>
             )}
 
@@ -583,12 +583,12 @@ export default function AppointmentsPage() {
               <div className="bg-teal-50 border border-teal-200 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <CheckCircle2 size={16} className="text-teal-600" />
-                  <span className="font-bold text-teal-800 text-sm">×¡×××× ××××¤×× ×©×××¦×¢</span>
+                  <span className="font-bold text-teal-800 text-sm">סיכום הטיפול שבוצע</span>
                 </div>
                 <p className="text-sm text-teal-700">{selectedAppointment.completionNotes}</p>
                 {selectedAppointment.completedAt && (
                   <p className="text-xs text-teal-500 mt-2">
-                    ×ª××¨×× ×¡×××: {new Date(selectedAppointment.completedAt).toLocaleDateString('he-IL')}
+                    תאריך סיום: {new Date(selectedAppointment.completedAt).toLocaleDateString('he-IL')}
                   </p>
                 )}
               </div>
@@ -601,7 +601,7 @@ export default function AppointmentsPage() {
                 onClick={() => setShowDetailModal(false)}
                 className="flex-1"
               >
-                ×¡×××¨
+                סגור
               </Button>
               {canCancel(selectedAppointment.status) && (
                 <Button
@@ -610,7 +610,7 @@ export default function AppointmentsPage() {
                   onClick={() => setShowCancelModal(true)}
                   className="flex-1"
                 >
-                  ××× ×ª××¨
+                  בטל תור
                 </Button>
               )}
             </div>
@@ -622,7 +622,7 @@ export default function AppointmentsPage() {
       <Modal
         isOpen={showCancelModal && !!selectedAppointment}
         onClose={() => setShowCancelModal(false)}
-        title="××××× ××ª××¨"
+        title="ביטול התור"
         size="sm"
       >
         {selectedAppointment && (
@@ -630,11 +630,11 @@ export default function AppointmentsPage() {
             <div className="flex gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
               <AlertCircle size={20} className="text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-amber-900">××× ××ª ××ª××¨?</p>
+                <p className="font-medium text-amber-900">בטל את התור?</p>
                 <p className="text-sm text-amber-700 mt-1">
-                  ××ª××¨ ×{selectedAppointment.garage.name} ××ª××¨××{' '}
-                  {new Date(selectedAppointment.date).toLocaleDateString('he-IL')} ××©×¢×{' '}
-                  {selectedAppointment.time} ×××××.
+                  התור ב{selectedAppointment.garage.name} בתאריך{' '}
+                  {new Date(selectedAppointment.date).toLocaleDateString('he-IL')} בשעה{' '}
+                  {selectedAppointment.time} יבוטל.
                 </p>
               </div>
             </div>
@@ -645,7 +645,7 @@ export default function AppointmentsPage() {
                 onClick={() => setShowCancelModal(false)}
                 className="w-full sm:w-auto"
               >
-                ×©×× ××
+                שוב לא
               </Button>
               <Button
                 variant="danger"
@@ -653,7 +653,7 @@ export default function AppointmentsPage() {
                 onClick={handleCancelAppointment}
                 className="w-full sm:w-auto"
               >
-                ××, ×××
+                כן, בטל
               </Button>
             </div>
           </div>
