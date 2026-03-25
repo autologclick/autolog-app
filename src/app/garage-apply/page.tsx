@@ -386,7 +386,7 @@ export default function GarageApplyPage() {
                       onClick={() => toggleService(svc.id)}
                       className={`px-3 py-2 rounded-xl text-xs font-medium border transition ${
                         selectedServices.includes(svc.id)
-                          ? 'bg-emerald-50 border-emerald-400 text-emerald-700 shadow-sm'
+                          ? 'bg-emerald-50 border-emerald-400 text-emerald-700'
                           : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
                       }`}
                     >
