@@ -12,9 +12,9 @@ import { useRouter } from 'next/navigation';
 
 const serviceTypeLabel = (t: string) => {
   const map: Record<string, string> = {
-    inspection: '××××§×', test_prep: '××× × ×××¡×', maintenance: '×××¤×× ×ª×§××¤×ª×',
-    repair: '×ª××§××', oil_change: '××××¤×ª ×©××', tires: '×¦×××××', brakes: '×××××',
-    diagnostics: '×××××', bodywork: '×¤××××ª', electrical: '××©××', ac: '×××××',
+    inspection: 'ÃÂÃÂÃÂÃÂ§ÃÂ', test_prep: 'ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¡ÃÂ', maintenance: 'ÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ¤ÃÂªÃÂ',
+    repair: 'ÃÂªÃÂÃÂ§ÃÂÃÂ', oil_change: 'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ©ÃÂÃÂ', tires: 'ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ', brakes: 'ÃÂÃÂÃÂÃÂÃÂ',
+    diagnostics: 'ÃÂÃÂÃÂÃÂÃÂ', bodywork: 'ÃÂ¤ÃÂÃÂÃÂÃÂª', electrical: 'ÃÂÃÂ©ÃÂÃÂ', ac: 'ÃÂÃÂÃÂÃÂÃÂ',
   };
   return map[t] || t;
 };
@@ -50,6 +50,7 @@ interface Notification {
   message: string;
   isRead: boolean;
   createdAt: string;
+  link?: string;
 }
 
 interface Appointment {
@@ -89,8 +90,8 @@ export default function UserDashboard() {
     const now = new Date();
     const daysUntil = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
-    if (daysUntil < 0) return { status: 'expired', daysUntil, label: '×¤× ×ª××§×£' };
-    if (daysUntil <= 30) return { status: 'expiring', daysUntil, label: '×¤××§×¢ ××§×¨××' };
+    if (daysUntil < 0) return { status: 'expired', daysUntil, label: 'ÃÂ¤ÃÂ ÃÂªÃÂÃÂ§ÃÂ£' };
+    if (daysUntil <= 30) return { status: 'expiring', daysUntil, label: 'ÃÂ¤ÃÂÃÂ§ÃÂ¢ ÃÂÃÂ§ÃÂ¨ÃÂÃÂ' };
     return null;
   };
 
@@ -175,7 +176,7 @@ export default function UserDashboard() {
   };
 
   const vehicle = vehicles[selectedVehicle];
-  const userName = user?.fullName?.split(' ')[0] || '××©×ª××©';
+  const userName = user?.fullName?.split(' ')[0] || 'ÃÂÃÂ©ÃÂªÃÂÃÂ©';
 
   if (loading) {
     return (
@@ -192,21 +193,21 @@ export default function UserDashboard() {
   const inspectionScore = vehicle?.overallScore ?? null;
 
   const mainActions = [
-    { label: '××ª××¨×× ×©××', icon: <Calendar size={28} strokeWidth={1.5} />, href: '/user/appointments' },
-    { label: '××××§×ª AutoLog', icon: <CheckCircle2 size={28} strokeWidth={1.5} />, href: '/user/book-garage' },
-    { label: '×××××ª ××××§×', icon: <FileBarChart size={28} strokeWidth={1.5} />, href: '/user/reports' },
-    { label: '××¨×××× ×©××', icon: <Car size={28} strokeWidth={1.5} />, href: '/user/vehicles' },
-    { label: '××¡××××', icon: <Shield size={28} strokeWidth={1.5} />, href: '/user/documents' },
-    { label: '×××¦×××ª', icon: <Receipt size={28} strokeWidth={1.5} />, href: '/user/expenses' },
-    { label: '×××¡×××¨××', icon: <Sparkles size={28} strokeWidth={1.5} />, href: '/user/history' },
-    { label: '×××¡×× ××¡××¨', icon: <MapPin size={28} strokeWidth={1.5} />, href: '/user/book-garage' },
+    { label: 'ÃÂÃÂªÃÂÃÂ¨ÃÂÃÂ ÃÂ©ÃÂÃÂ', icon: <Calendar size={28} strokeWidth={1.5} />, href: '/user/appointments' },
+    { label: 'ÃÂÃÂÃÂÃÂ§ÃÂª AutoLog', icon: <CheckCircle2 size={28} strokeWidth={1.5} />, href: '/user/book-garage' },
+    { label: 'ÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ§ÃÂ', icon: <FileBarChart size={28} strokeWidth={1.5} />, href: '/user/reports' },
+    { label: 'ÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂ©ÃÂÃÂ', icon: <Car size={28} strokeWidth={1.5} />, href: '/user/vehicles' },
+    { label: 'ÃÂÃÂ¡ÃÂÃÂÃÂÃÂ', icon: <Shield size={28} strokeWidth={1.5} />, href: '/user/documents' },
+    { label: 'ÃÂÃÂÃÂ¦ÃÂÃÂÃÂª', icon: <Receipt size={28} strokeWidth={1.5} />, href: '/user/expenses' },
+    { label: 'ÃÂÃÂÃÂ¡ÃÂÃÂÃÂ¨ÃÂÃÂ', icon: <Sparkles size={28} strokeWidth={1.5} />, href: '/user/history' },
+    { label: 'ÃÂÃÂÃÂ¡ÃÂÃÂ ÃÂÃÂ¡ÃÂÃÂ¨', icon: <MapPin size={28} strokeWidth={1.5} />, href: '/user/book-garage' },
   ];
 
   const moreActions = [
-    { label: '××××¨××ª', icon: <Settings size={28} strokeWidth={1.5} />, href: '/user/settings' },
-    { label: '××¨×× ×××××', icon: <Shield size={28} strokeWidth={1.5} />, href: '/user/security' },
-    { label: '×¦××¨ ×§×©×¨ / ×ª××××', icon: <MessageCircle size={28} strokeWidth={1.5} />, href: '/user/support' },
-    { label: '××ª× ×ª×§××ª', icon: <LogOut size={28} strokeWidth={1.5} />, href: '/auth/login', color: 'text-red-400' },
+    { label: 'ÃÂÃÂÃÂÃÂ¨ÃÂÃÂª', icon: <Settings size={28} strokeWidth={1.5} />, href: '/user/settings' },
+    { label: 'ÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ', icon: <Shield size={28} strokeWidth={1.5} />, href: '/user/security' },
+    { label: 'ÃÂ¦ÃÂÃÂ¨ ÃÂ§ÃÂ©ÃÂ¨ / ÃÂªÃÂÃÂÃÂÃÂ', icon: <MessageCircle size={28} strokeWidth={1.5} />, href: '/user/support' },
+    { label: 'ÃÂÃÂªÃÂ ÃÂªÃÂ§ÃÂÃÂª', icon: <LogOut size={28} strokeWidth={1.5} />, href: '/auth/login', color: 'text-red-400' },
   ];
 
   const handleLogout = async () => {
@@ -235,7 +236,7 @@ export default function UserDashboard() {
             )}
           </button>
           <div className="text-right">
-            <h1 className="text-xl sm:text-2xl font-bold text-white">×©××× {userName}, ×©×××× ××¨×××ª ×××ª×</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">ÃÂ©ÃÂÃÂÃÂ {userName}, ÃÂ©ÃÂÃÂÃÂÃÂ ÃÂÃÂ¨ÃÂÃÂÃÂª ÃÂÃÂÃÂªÃÂ</h1>
             <p className="text-white/60 text-sm mt-1">{dateStr}</p>
           </div>
         </div>
@@ -246,7 +247,7 @@ export default function UserDashboard() {
         <div className="bg-white rounded-2xl mx-3 sm:mx-0 p-5 mb-4 shadow-sm">
           {/* Vehicle Selector */}
           <div className="text-right mb-4">
-            <span className="text-sm font-medium text-gray-500">×××¨ ×¨××</span>
+            <span className="text-sm font-medium text-gray-500">ÃÂÃÂÃÂ¨ ÃÂ¨ÃÂÃÂ</span>
           </div>
           <div className="relative mb-5">
             <button
@@ -335,7 +336,7 @@ export default function UserDashboard() {
                       ) : (
                         <>
                           <Camera size={20} className="text-gray-400 group-hover:text-teal-500 transition" />
-                          <span className="text-[9px] font-medium text-gray-400 group-hover:text-teal-600 transition">×××¡×£ ×ª××× ×</span>
+                          <span className="text-[9px] font-medium text-gray-400 group-hover:text-teal-600 transition">ÃÂÃÂÃÂ¡ÃÂ£ ÃÂªÃÂÃÂÃÂ ÃÂ</span>
                         </>
                       )}
                     </div>
@@ -360,14 +361,14 @@ export default function UserDashboard() {
                   <span className={`text-sm font-bold ${
                     inspectionScore >= 80 ? 'text-teal-600' : inspectionScore >= 60 ? 'text-teal-500' : 'text-amber-600'
                   }`}>{inspectionScore}</span>
-                  <span className="text-xs text-gray-400">×¦××× ××××§×</span>
+                  <span className="text-xs text-gray-400">ÃÂ¦ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂ</span>
                 </button>
               ) : (
                 <button
                   onClick={() => router.push('/user/book-garage')}
                   className="w-full flex items-center justify-center gap-2 mb-4 px-4 py-2.5 bg-teal-50 rounded-xl hover:bg-teal-100 transition"
                 >
-                  <span className="text-sm text-teal-700 font-medium">×¢×××× ×× ×××¦×¢× ××××§× â ×§××¢ ×ª××¨</span>
+                  <span className="text-sm text-teal-700 font-medium">ÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂÃÂÃÂ¦ÃÂ¢ÃÂ ÃÂÃÂÃÂÃÂ§ÃÂ Ã¢ÂÂ ÃÂ§ÃÂÃÂ¢ ÃÂªÃÂÃÂ¨</span>
                   <Shield size={16} className="text-teal-600" />
                 </button>
               )}
@@ -376,7 +377,7 @@ export default function UserDashboard() {
               <div className="flex items-center justify-center gap-2">
                 <CheckCircle2 size={18} className={allDocsValid ? 'text-teal-500' : 'text-amber-500'} />
                 <span className={`text-sm font-medium ${allDocsValid ? 'text-teal-700' : 'text-amber-700'}`}>
-                  {allDocsValid ? '×× ×××¡×××× ×ª×§×× ××' : '××© ××¡×××× ×©×××¨×©×× ×××¤××'}
+                  {allDocsValid ? 'ÃÂÃÂ ÃÂÃÂÃÂ¡ÃÂÃÂÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ ÃÂÃÂ' : 'ÃÂÃÂ© ÃÂÃÂ¡ÃÂÃÂÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ¨ÃÂ©ÃÂÃÂ ÃÂÃÂÃÂ¤ÃÂÃÂ'}
                 </span>
               </div>
 
@@ -418,7 +419,7 @@ export default function UserDashboard() {
                                   ? 'text-red-800'
                                   : 'text-amber-800'
                               }`}>
-                                ××××× ×××× â {insuranceAlert.label}
+                                ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ Ã¢ÂÂ {insuranceAlert.label}
                               </div>
                               <div className={`text-xs mt-1 ${
                                 insuranceAlert.status === 'expired'
@@ -426,8 +427,8 @@ export default function UserDashboard() {
                                   : 'text-amber-700'
                               }`}>
                                 {insuranceAlert.status === 'expired'
-                                  ? `×¤× ××ª××¨×× ${new Date(vehicle.insuranceExpiry!).toLocaleDateString('he-IL')}`
-                                  : `×¤××§×¢ ××¢×× ${insuranceAlert.daysUntil} ×××× (${new Date(vehicle.insuranceExpiry!).toLocaleDateString('he-IL')})`}
+                                  ? `ÃÂ¤ÃÂ ÃÂÃÂªÃÂÃÂ¨ÃÂÃÂ ${new Date(vehicle.insuranceExpiry!).toLocaleDateString('he-IL')}`
+                                  : `ÃÂ¤ÃÂÃÂ§ÃÂ¢ ÃÂÃÂ¢ÃÂÃÂ ${insuranceAlert.daysUntil} ÃÂÃÂÃÂÃÂ (${new Date(vehicle.insuranceExpiry!).toLocaleDateString('he-IL')})`}
                               </div>
                             </div>
                           </div>
@@ -458,7 +459,7 @@ export default function UserDashboard() {
                                   ? 'text-red-800'
                                   : 'text-amber-800'
                               }`}>
-                                ××××§× ×ª×§× ××ª â {testAlert.label}
+                                ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂªÃÂ§ÃÂ ÃÂÃÂª Ã¢ÂÂ {testAlert.label}
                               </div>
                               <div className={`text-xs mt-1 ${
                                 testAlert.status === 'expired'
@@ -466,8 +467,8 @@ export default function UserDashboard() {
                                   : 'text-amber-700'
                               }`}>
                                 {testAlert.status === 'expired'
-                                  ? `×¤× ××ª××¨×× ${new Date(vehicle.testExpiryDate!).toLocaleDateString('he-IL')}`
-                                  : `×¤××§×¢ ××¢×× ${testAlert.daysUntil} ×××× (${new Date(vehicle.testExpiryDate!).toLocaleDateString('he-IL')})`}
+                                  ? `ÃÂ¤ÃÂ ÃÂÃÂªÃÂÃÂ¨ÃÂÃÂ ${new Date(vehicle.testExpiryDate!).toLocaleDateString('he-IL')}`
+                                  : `ÃÂ¤ÃÂÃÂ§ÃÂ¢ ÃÂÃÂ¢ÃÂÃÂ ${testAlert.daysUntil} ÃÂÃÂÃÂÃÂ (${new Date(vehicle.testExpiryDate!).toLocaleDateString('he-IL')})`}
                               </div>
                             </div>
                           </div>
@@ -478,7 +479,7 @@ export default function UserDashboard() {
                             onClick={() => router.push('/user/documents')}
                             className="w-full mt-3 bg-gradient-to-l from-teal-600 to-teal-700 text-white py-2.5 px-4 rounded-xl font-medium hover:from-teal-700 hover:to-teal-800 transition flex items-center justify-center gap-2"
                           >
-                            <span>×××© ××ª ×××¡××××</span>
+                            <span>ÃÂÃÂÃÂ© ÃÂÃÂª ÃÂÃÂÃÂ¡ÃÂÃÂÃÂÃÂ</span>
                             <ChevronLeft size={16} />
                           </button>
                         )}
@@ -495,13 +496,13 @@ export default function UserDashboard() {
           <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
             <Car size={32} className="text-gray-400" />
           </div>
-          <h3 className="font-bold text-[#1e3a5f] mb-2">×¢×××× ×× ×××¡×¤×ª ×¨××</h3>
-          <p className="text-gray-500 text-sm mb-4">×××¡×£ ××ª ××¨×× ××¨××©×× ×©××</p>
+          <h3 className="font-bold text-[#1e3a5f] mb-2">ÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂÃÂÃÂ¡ÃÂ¤ÃÂª ÃÂ¨ÃÂÃÂ</h3>
+          <p className="text-gray-500 text-sm mb-4">ÃÂÃÂÃÂ¡ÃÂ£ ÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂ¨ÃÂÃÂ©ÃÂÃÂ ÃÂ©ÃÂÃÂ</p>
           <button
             onClick={() => router.push('/user/vehicles')}
             className="bg-teal-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-teal-700 transition"
           >
-            ×××¡×£ ×¨×× ×¨××©××
+            ÃÂÃÂÃÂ¡ÃÂ£ ÃÂ¨ÃÂÃÂ ÃÂ¨ÃÂÃÂ©ÃÂÃÂ
           </button>
         </div>
       )}
@@ -515,11 +516,11 @@ export default function UserDashboard() {
                 onClick={() => setShowAiDetails(!showAiDetails)}
                 className="text-xs text-teal-600 hover:underline flex items-center gap-1"
               >
-                {showAiDetails ? '××¡×ª×¨' : '×¤×¨×××'}
+                {showAiDetails ? 'ÃÂÃÂ¡ÃÂªÃÂ¨' : 'ÃÂ¤ÃÂ¨ÃÂÃÂÃÂ'}
                 <ChevronDown size={14} className={`transition-transform ${showAiDetails ? 'rotate-180' : ''}`} />
               </button>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-[#1e3a5f]">× ××ª×× AI ××¨××</h3>
+                <h3 className="text-sm font-bold text-[#1e3a5f]">ÃÂ ÃÂÃÂªÃÂÃÂ AI ÃÂÃÂ¨ÃÂÃÂ</h3>
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-[#1e3a5f] flex items-center justify-center">
                   <Brain size={16} className="text-white" />
                 </div>
@@ -528,7 +529,7 @@ export default function UserDashboard() {
 
             {aiLoading ? (
               <div className="flex items-center justify-center py-6 gap-2">
-                <span className="text-sm text-gray-400">×× ×ª× ××ª ××¦× ××¨××...</span>
+                <span className="text-sm text-gray-400">ÃÂÃÂ ÃÂªÃÂ ÃÂÃÂª ÃÂÃÂ¦ÃÂ ÃÂÃÂ¨ÃÂÃÂ...</span>
                 <Loader2 size={18} className="animate-spin text-teal-500" />
               </div>
             ) : aiReport ? (
@@ -544,7 +545,7 @@ export default function UserDashboard() {
                     }`}>
                       {aiReport.statusLabel}
                     </div>
-                    <div className="text-xs text-gray-400 mt-0.5">××¦× ×××× ×©× ××¨××</div>
+                    <div className="text-xs text-gray-400 mt-0.5">ÃÂÃÂ¦ÃÂ ÃÂÃÂÃÂÃÂ ÃÂ©ÃÂ ÃÂÃÂ¨ÃÂÃÂ</div>
                   </div>
                   <div className="relative w-20 h-20">
                     <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 80 80">
@@ -607,7 +608,7 @@ export default function UserDashboard() {
                     {aiReport.predictions?.length > 0 && (
                       <div>
                         <div className="flex items-center gap-1.5 mb-2 justify-end">
-                          <h4 className="text-xs font-bold text-[#1e3a5f]">×ª×××××ª</h4>
+                          <h4 className="text-xs font-bold text-[#1e3a5f]">ÃÂªÃÂÃÂÃÂÃÂÃÂª</h4>
                           <Target size={14} className="text-teal-500" />
                         </div>
                         <div className="space-y-2">
@@ -619,8 +620,8 @@ export default function UserDashboard() {
                                   pred.confidence === 'medium' ? 'bg-amber-100 text-amber-700' :
                                   'bg-gray-100 text-gray-600'
                                 }`}>
-                                  {pred.confidence === 'high' ? '×¡×××¨××ª ×××××' :
-                                   pred.confidence === 'medium' ? '×¡×××¨××ª ××× ×× ××ª' : '×¡×××¨××ª × ××××'}
+                                  {pred.confidence === 'high' ? 'ÃÂ¡ÃÂÃÂÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ' :
+                                   pred.confidence === 'medium' ? 'ÃÂ¡ÃÂÃÂÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂ ÃÂÃÂ ÃÂÃÂª' : 'ÃÂ¡ÃÂÃÂÃÂ¨ÃÂÃÂª ÃÂ ÃÂÃÂÃÂÃÂ'}
                                 </span>
                                 <div className="text-xs font-bold text-[#1e3a5f]">{pred.title}</div>
                               </div>
@@ -639,7 +640,7 @@ export default function UserDashboard() {
                     {aiReport.savingsTips?.length > 0 && (
                       <div>
                         <div className="flex items-center gap-1.5 mb-2 justify-end">
-                          <h4 className="text-xs font-bold text-[#1e3a5f]">×××¤×× ××××¡×××</h4>
+                          <h4 className="text-xs font-bold text-[#1e3a5f]">ÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂÃÂÃÂÃÂ¡ÃÂÃÂÃÂ</h4>
                           <Lightbulb size={14} className="text-amber-500" />
                         </div>
                         <div className="space-y-2">
@@ -647,7 +648,7 @@ export default function UserDashboard() {
                             <div key={tip.id} className="bg-amber-50/50 rounded-lg p-3 text-right">
                               <div className="flex items-center justify-between">
                                 <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                                  ×××¡×××: {tip.potentialSaving}
+                                  ÃÂÃÂÃÂ¡ÃÂÃÂÃÂ: {tip.potentialSaving}
                                 </span>
                                 <div className="text-xs font-bold text-amber-800">{tip.title}</div>
                               </div>
@@ -662,7 +663,7 @@ export default function UserDashboard() {
                     {aiReport.nextActions?.length > 0 && (
                       <div>
                         <div className="flex items-center gap-1.5 mb-2 justify-end">
-                          <h4 className="text-xs font-bold text-[#1e3a5f]">×× ××¢×©××ª ×¢××©××</h4>
+                          <h4 className="text-xs font-bold text-[#1e3a5f]">ÃÂÃÂ ÃÂÃÂ¢ÃÂ©ÃÂÃÂª ÃÂ¢ÃÂÃÂ©ÃÂÃÂ</h4>
                           <Zap size={14} className="text-orange-500" />
                         </div>
                         <div className="space-y-2">
@@ -681,8 +682,8 @@ export default function UserDashboard() {
                                 action.urgency === 'soon' ? 'bg-amber-100 text-amber-700' :
                                 'bg-gray-100 text-gray-600'
                               }`}>
-                                {action.urgency === 'immediate' ? '××××£' :
-                                 action.urgency === 'soon' ? '××§×¨××' : '××ª××× ×'}
+                                {action.urgency === 'immediate' ? 'ÃÂÃÂÃÂÃÂ£' :
+                                 action.urgency === 'soon' ? 'ÃÂÃÂ§ÃÂ¨ÃÂÃÂ' : 'ÃÂÃÂªÃÂÃÂÃÂ ÃÂ'}
                               </div>
                             </div>
                           ))}
@@ -694,7 +695,7 @@ export default function UserDashboard() {
               </>
             ) : (
               <div className="text-center py-4">
-                <div className="text-sm text-gray-400">×× × ××ª× ×× ×ª× ××¨××¢</div>
+                <div className="text-sm text-gray-400">ÃÂÃÂ ÃÂ ÃÂÃÂªÃÂ ÃÂÃÂ ÃÂªÃÂ ÃÂÃÂ¨ÃÂÃÂ¢</div>
               </div>
             )}
           </div>
@@ -703,7 +704,7 @@ export default function UserDashboard() {
 
       {/* Main Actions Grid */}
       <div className="mx-3 sm:mx-0 mb-4">
-        <p className="text-sm text-gray-400 text-right mb-3 font-medium">×¤×¢××××ª ×¨××©×××ª</p>
+        <p className="text-sm text-gray-400 text-right mb-3 font-medium">ÃÂ¤ÃÂ¢ÃÂÃÂÃÂÃÂª ÃÂ¨ÃÂÃÂ©ÃÂÃÂÃÂª</p>
         <div className="grid grid-cols-2 gap-3">
           {mainActions.map((action) => (
             <button
@@ -724,9 +725,9 @@ export default function UserDashboard() {
       {appointments.length > 0 && (
         <div className="mx-3 sm:mx-0 mb-4">
           <div className="flex items-center justify-between mb-3">
-            <button onClick={() => router.push('/user/appointments')} className="text-xs text-teal-600 hover:underline">×××</button>
+            <button onClick={() => router.push('/user/appointments')} className="text-xs text-teal-600 hover:underline">ÃÂÃÂÃÂ</button>
             <p className="text-sm text-gray-400 font-medium flex items-center gap-1.5">
-              <Calendar size={14} /> ×ª××¨×× ×§×¨××××
+              <Calendar size={14} /> ÃÂªÃÂÃÂ¨ÃÂÃÂ ÃÂ§ÃÂ¨ÃÂÃÂÃÂÃÂ
             </p>
           </div>
           <div className="space-y-2">
@@ -735,10 +736,10 @@ export default function UserDashboard() {
                 className="w-full bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition flex items-center gap-3 text-right">
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium text-[#1e3a5f] truncate">
-                    {apt.garage?.name || '×××¡×'}
+                    {apt.garage?.name || 'ÃÂÃÂÃÂ¡ÃÂ'}
                   </div>
                   <div className="text-xs text-gray-400 mt-0.5">
-                    {serviceTypeLabel(apt.serviceType)} â¢ {apt.vehicle?.nickname || apt.vehicle?.licensePlate || ''}
+                    {serviceTypeLabel(apt.serviceType)} Ã¢ÂÂ¢ {apt.vehicle?.nickname || apt.vehicle?.licensePlate || ''}
                   </div>
                 </div>
                 <div className="text-left flex-shrink-0">
@@ -762,14 +763,14 @@ export default function UserDashboard() {
       {notifications.length > 0 && (
         <div className="mx-3 sm:mx-0 mb-4">
           <div className="flex items-center justify-between mb-3">
-            <button onClick={() => router.push('/user/notifications')} className="text-xs text-teal-600 hover:underline">×××</button>
+            <button onClick={() => router.push('/user/notifications')} className="text-xs text-teal-600 hover:underline">ÃÂÃÂÃÂ</button>
             <p className="text-sm text-gray-400 font-medium flex items-center gap-1.5">
-              <Bell size={14} /> ×¢×××× ×× ×××¨×× ××
+              <Bell size={14} /> ÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂ
             </p>
           </div>
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             {notifications.slice(0, 4).map((n, idx) => (
-              <button key={n.id} onClick={() => router.push('/user/notifications')}
+              <button key={n.id} onClick={() => router.push(n.link || '/user/notifications')}
                 className={`w-full p-3 flex items-start gap-3 text-right hover:bg-[#fef7ed]/50 transition ${
                   idx < notifications.length - 1 ? 'border-b border-gray-100' : ''
                 }`}>
@@ -793,13 +794,13 @@ export default function UserDashboard() {
 
       {/* More Section */}
       <div className="mx-3 sm:mx-0 mb-4">
-        <p className="text-sm text-gray-400 text-right mb-3 font-medium">×¢××</p>
+        <p className="text-sm text-gray-400 text-right mb-3 font-medium">ÃÂ¢ÃÂÃÂ</p>
         <div className="grid grid-cols-2 gap-3">
           {moreActions.map((action) => (
             <button
               key={action.label}
               onClick={() => {
-                if (action.label === '××ª× ×ª×§××ª') {
+                if (action.label === 'ÃÂÃÂªÃÂ ÃÂªÃÂ§ÃÂÃÂª') {
                   handleLogout();
                 } else {
                   router.push(action.href);
@@ -823,14 +824,14 @@ export default function UserDashboard() {
           className="w-full bg-gradient-to-l from-red-500 to-red-600 text-white rounded-2xl py-4 px-6 flex items-center justify-center gap-3 shadow-lg hover:from-red-600 hover:to-red-700 active:scale-[0.98] transition-all duration-200"
         >
           <AlertTriangle size={24} />
-          <span className="text-lg font-bold">SOS â ×××¨××</span>
+          <span className="text-lg font-bold">SOS Ã¢ÂÂ ÃÂÃÂÃÂ¨ÃÂÃÂ</span>
         </button>
       </div>
 
       {/* Privacy Note */}
       <div className="mx-3 sm:mx-0 mb-6 flex items-center justify-center gap-2 py-4">
         <Shield size={14} className="text-gray-300 flex-shrink-0" />
-        <p className="text-xs text-gray-400 text-center">×××××¢ ×©×× ×××¦×¤× ×××××××. ×¦××××× ×××¡×××× ××©××©×× ×× ×××× ×××©× ××××.</p>
+        <p className="text-xs text-gray-400 text-center">ÃÂÃÂÃÂÃÂÃÂ¢ ÃÂ©ÃÂÃÂ ÃÂÃÂÃÂ¦ÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ. ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¡ÃÂÃÂÃÂÃÂ ÃÂÃÂ©ÃÂÃÂ©ÃÂÃÂ ÃÂÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ ÃÂÃÂÃÂÃÂ.</p>
       </div>
     </div>
   );
