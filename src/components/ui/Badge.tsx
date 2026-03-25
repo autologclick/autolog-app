@@ -44,6 +44,7 @@ export function StatusBadge({ status }: { status: string }) {
     assigned: { variant: 'info', label: 'הוקצה' },
     resolved: { variant: 'success', label: 'טופל' },
     confirmed: { variant: 'success', label: 'מאושר' },
+    awaiting_signature: { variant: 'warning', label: 'ממתין לחתימה' },
   };
 
   const config = map[status] || { variant: 'default' as const, label: status };
