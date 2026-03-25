@@ -215,6 +215,7 @@ export default function NewInspectionPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successModal, setSuccessModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [successId, setSuccessId] = useState('');
 
   // Step 1: Vehicle & Type
@@ -1857,8 +1858,22 @@ export default function NewInspectionPage() {
             <Button className="flex-1 bg-teal-600 hover:bg-teal-700" icon={<Save size={16} />}
               loading={loading} onClick={handleSubmit}>שמור</Button>
           )}
+          {/* Cancel button */}
+          <Button variant="outline" className="px-3 text-red-500 border-red-200 hover:bg-red-50" icon={<X size={16} />}
+            onClick={() => setShowCancelModal(true)} />
         </div>
       )}
+
+      {/* Cancel Confirmation Modal */}
+      <Modal isOpen={showCancelModal} onClose={() => setShowCancelModal(false)} title="לצאת מהטופס?">
+        <div className="text-center space-y-4">
+          <p className="text-gray-600">המידע שהזנת לא יישמר. האם אתה בטוח שברצונך לצאת?</p>
+          <div className="flex gap-2">
+            <Button variant="outline" className="flex-1" onClick={() => setShowCancelModal(false)}>המשך למלא</Button>
+            <Button className="flex-1 bg-red-500 hover:bg-red-600" onClick={() => router.push('/garage')}>צא בלי לשמור</Button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Success Modal */}
       <Modal isOpen={successModal} onClose={() => {}} title={inspectionType === 'full' ? 'בדיקה נוצרה בהצלחה!' : 'נשמר בהצלחה!'}>
