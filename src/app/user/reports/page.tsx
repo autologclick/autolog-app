@@ -14,11 +14,11 @@ import {
 
 const categoryLabel = (c: string) => {
   const map: Record<string, string> = {
-    tires: '×¦×××××', lights: '×ª×××¨×', brakes: '×××××', engine: '×× ××¢',
-    steering: '×××××', suspension: '××ª×××', body: '××¨××', fluids: '× ×××××',
-    electrical: '××©××', interior: '×¤× ××', exterior: '×××¦×× ×', gearbox: '×ª×××ª ×××××××',
-    exhaust: '×¤××××', ac: '×××××', windows: '×××× ××ª', battery: '××¦××¨',
-    pre_test: '××× × ×××¡×', work_performed: '×¢×××××ª ×©×××¦×¢×',
+    tires: 'צמיגים', lights: 'תאורה', brakes: 'בלמים', engine: 'מנוע',
+    steering: 'היגוי', suspension: 'מתלים', body: 'מרכב', fluids: 'נוזלים',
+    electrical: 'חשמל', interior: 'פנים', exterior: 'חיצוני', gearbox: 'תיבת הילוכים',
+    exhaust: 'פליטה', ac: 'מיזוג', windows: 'חלונות', battery: 'מצבר',
+    pre_test: 'הכנה לטסט', work_performed: 'עבודות שבוצעו',
   };
   return map[c] || c;
 };
@@ -50,7 +50,7 @@ const INSPECTION_TYPE_CONFIG: Record<string, {
   badgeText: string;        // type badge text
 }> = {
   full: {
-    label: '××××§× ×××× (AutoLog)',
+    label: 'בדיקה מלאה (AutoLog)',
     icon: Car,
     colorClass: 'text-teal-600',
     bgClass: 'bg-teal-50',
@@ -60,7 +60,7 @@ const INSPECTION_TYPE_CONFIG: Record<string, {
     badgeText: 'text-teal-700',
   },
   pre_test: {
-    label: '××× × ×××¡×',
+    label: 'הכנה לטסט',
     icon: ClipboardCheck,
     colorClass: 'text-blue-600',
     bgClass: 'bg-blue-50',
@@ -70,7 +70,7 @@ const INSPECTION_TYPE_CONFIG: Record<string, {
     badgeText: 'text-blue-700',
   },
   periodic: {
-    label: '×××¤×× ×ª×§××¤×ª×',
+    label: 'טיפול תקופתי',
     icon: Settings,
     colorClass: 'text-purple-600',
     bgClass: 'bg-purple-50',
@@ -80,7 +80,7 @@ const INSPECTION_TYPE_CONFIG: Record<string, {
     badgeText: 'text-purple-700',
   },
   troubleshoot: {
-    label: '×ª××§×× / ××××× ×ª×§××',
+    label: 'תיקון / אבחון תקלה',
     icon: Wrench,
     colorClass: 'text-orange-600',
     bgClass: 'bg-orange-50',
@@ -90,7 +90,7 @@ const INSPECTION_TYPE_CONFIG: Record<string, {
     badgeText: 'text-orange-700',
   },
   rot: {
-    label: '××××§×ª ×¨×§×',
+    label: 'בדיקת רקב',
     icon: FileText,
     colorClass: 'text-amber-600',
     bgClass: 'bg-amber-50',
@@ -100,7 +100,7 @@ const INSPECTION_TYPE_CONFIG: Record<string, {
     badgeText: 'text-amber-700',
   },
   engine: {
-    label: '××××§×ª ×× ××¢',
+    label: 'בדיקת מנוע',
     icon: Settings,
     colorClass: 'text-red-600',
     bgClass: 'bg-red-50',
@@ -110,7 +110,7 @@ const INSPECTION_TYPE_CONFIG: Record<string, {
     badgeText: 'text-red-700',
   },
   tires: {
-    label: '××××§×ª ×¦×××××',
+    label: 'בדיקת צמיגים',
     icon: Settings,
     colorClass: 'text-slate-600',
     bgClass: 'bg-slate-50',
@@ -120,7 +120,7 @@ const INSPECTION_TYPE_CONFIG: Record<string, {
     badgeText: 'text-slate-700',
   },
   brakes: {
-    label: '××××§×ª ×××××',
+    label: 'בדיקת בלמים',
     icon: AlertTriangle,
     colorClass: 'text-rose-600',
     bgClass: 'bg-rose-50',
@@ -165,11 +165,11 @@ function ScoreCircle({ score, accentColor }: { score: number; accentColor: strin
 
 // ============ FILTER TABS ============
 const FILTER_TABS = [
-  { key: 'all', label: '×××', icon: BarChart3 },
-  { key: 'full', label: '××××§××ª ××§××¤××ª', icon: Car },
-  { key: 'pre_test', label: '××× × ×××¡×', icon: ClipboardCheck },
-  { key: 'periodic', label: '×××¤××××', icon: Settings },
-  { key: 'troubleshoot', label: '×ª××§×× ××', icon: Wrench },
+  { key: 'all', label: 'הכל', icon: BarChart3 },
+  { key: 'full', label: 'בדיקות מקיפות', icon: Car },
+  { key: 'pre_test', label: 'הכנה לטסט', icon: ClipboardCheck },
+  { key: 'periodic', label: 'טיפולים', icon: Settings },
+  { key: 'troubleshoot', label: 'תיקונים', icon: Wrench },
 ];
 
 export default function ReportsPage() {
@@ -221,8 +221,8 @@ export default function ReportsPage() {
             <FileText size={20} className="text-[#1e3a5f]" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">×××××ª ××¤×¢××××ª</h1>
-            <p className="text-sm text-gray-500">{reports.length} ×¨×©××××ª</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">דוחות ופעולות</h1>
+            <p className="text-sm text-gray-500">{reports.length} רשומות</p>
           </div>
         </div>
         {/* Search */}
@@ -230,7 +230,7 @@ export default function ReportsPage() {
           <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="×××¤××© ××¤× ×¨×× ×× ×××¡×..."
+            placeholder="חיפוש לפי רכב או מוסך..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="w-full sm:w-64 pl-3 pr-9 py-2.5 border border-gray-200 rounded-xl text-sm text-right focus:ring-2 focus:ring-teal-500 focus:border-transparent"
@@ -273,19 +273,19 @@ export default function ReportsPage() {
             <div className="w-8 h-8 bg-teal-500/10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-teal-600" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">×ª××× ××ª AI ××××××ª</h2>
+            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לדוחות</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Average Score */}
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={14} className="text-teal-500" />
-                <span className="text-xs font-bold text-gray-700">×¦××× ××××¦×¢</span>
+                <span className="text-xs font-bold text-gray-700">ציון ממוצע</span>
               </div>
               <p className="text-xs text-gray-600">
                 {(() => {
                   const avgScore = Math.round(reports.reduce((sum, r) => sum + (r.overallScore || 0), 0) / reports.length);
-                  const interpretation = avgScore >= 80 ? 'â ×××¦× ××× ××××' : avgScore >= 60 ? 'â ï¸ ×××¨×© ×ª×©×××ª ××' : 'ð´ ××© ××¢×××ª';
+                  const interpretation = avgScore >= 80 ? '✅ ממצב טוב מאוד' : avgScore >= 60 ? '⚠️ דורש תשומת לב' : '🔴 יש בעיות';
                   return `${avgScore}% ${interpretation}`;
                 })()}
               </p>
@@ -295,13 +295,13 @@ export default function ReportsPage() {
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <BarChart3 size={14} className="text-blue-500" />
-                <span className="text-xs font-bold text-gray-700">×¡×× ××××§× ×××××</span>
+                <span className="text-xs font-bold text-gray-700">סוג בדיקה מוביל</span>
               </div>
               <p className="text-xs text-gray-600">
                 {(() => {
                   const mostCommonType = Object.entries(typeCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'all';
                   const config = getConfig(mostCommonType);
-                  return `ð ${config.label}`;
+                  return `📊 ${config.label}`;
                 })()}
               </p>
             </div>
@@ -310,14 +310,14 @@ export default function ReportsPage() {
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <Target size={14} className="text-purple-500" />
-                <span className="text-xs font-bold text-gray-700">×¡××××¡ ××××</span>
+                <span className="text-xs font-bold text-gray-700">סטטוס כללי</span>
               </div>
               <p className="text-xs text-gray-600">
                 {(() => {
                   const completed = reports.filter(r => r.status === 'completed').length;
                   const percentage = Math.round((completed / reports.length) * 100);
-                  const emoji = percentage === 100 ? 'ð¯' : percentage >= 75 ? 'ð' : 'â³';
-                  return `${emoji} ${percentage}% ×××©×××`;
+                  const emoji = percentage === 100 ? '🎯' : percentage >= 75 ? '📈' : '⏳';
+                  return `${emoji} ${percentage}% הושלמו`;
                 })()}
               </p>
             </div>
@@ -332,10 +332,10 @@ export default function ReportsPage() {
             <FileText size={32} className="text-gray-300" />
           </div>
           <h3 className="text-lg font-bold text-gray-600 mb-2">
-            {reports.length === 0 ? '××× ×××××ª ××¤×¢××××ª' : '××× ×ª××¦×××ª'}
+            {reports.length === 0 ? 'אין דוחות ופעולות' : 'אין תוצאות'}
           </h3>
           <p className="text-gray-400 text-sm">
-            {reports.length === 0 ? '××××¨ ××××§×ª AutoLog ×× ×××¤××, ×××××¢ ×××¤××¢ ×××' : '× ×¡× ××©× ××ª ××ª ××¡×× ××'}
+            {reports.length === 0 ? 'לאחר בדיקת AutoLog או טיפול, המידע יופיע כאן' : 'נסה לשנות את הסינון'}
           </p>
         </Card>
       ) : (
@@ -382,7 +382,7 @@ export default function ReportsPage() {
 
                     {/* Vehicle + Garage */}
                     <div className="text-sm text-gray-700 font-medium truncate">
-                      {r.vehicle?.nickname || r.vehicle?.model} {r.vehicle?.licensePlate && `â¢ ${r.vehicle.licensePlate}`}
+                      {r.vehicle?.nickname || r.vehicle?.model} {r.vehicle?.licensePlate && `• ${r.vehicle.licensePlate}`}
                     </div>
                     <div className="flex items-center gap-3 text-xs text-gray-400 mt-0.5">
                       {r.garage?.name && <span>{r.garage.name}</span>}
@@ -394,7 +394,7 @@ export default function ReportsPage() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {recommendationCount > 0 && (
                       <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full font-semibold">
-                        {recommendationCount} ××××¦××ª
+                        {recommendationCount} המלצות
                       </span>
                     )}
                     <ChevronDown
@@ -437,7 +437,7 @@ export default function ReportsPage() {
                         {/* Problem items */}
                         {r.items.filter(i => i.status !== 'ok').length > 0 && (
                           <div className="space-y-2 mb-4">
-                            <p className="text-xs font-semibold text-gray-500">×××¦×××:</p>
+                            <p className="text-xs font-semibold text-gray-500">ממצאים:</p>
                             {r.items.filter(i => i.status !== 'ok').map((item, idx) => (
                               <div key={idx} className={`flex items-center gap-2 p-2.5 rounded-xl text-sm ${
                                 item.status === 'critical' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
@@ -456,12 +456,12 @@ export default function ReportsPage() {
                     <div className="flex gap-2">
                       <Link href={`/inspection/${r.id}`} className="flex-1">
                         <Button variant="outline" size="sm" icon={<Eye size={14} />} className="w-full">
-                          ×¦×¤× ××¤×¨×××
+                          צפה בפרטים
                         </Button>
                       </Link>
                       <Link href={`/inspection/${r.id}`} className="flex-1">
                         <Button variant="ghost" size="sm" icon={<Download size={14} />} className="w-full">
-                          ×××¨× PDF
+                          הורד PDF
                         </Button>
                       </Link>
                     </div>
