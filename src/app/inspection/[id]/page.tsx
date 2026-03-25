@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -99,20 +99,20 @@ const statusBg = (s: string) => {
 };
 
 const statusLabel = (s: string) => {
-  if (s === 'new') return 'חדש';
-  if (s === 'ok') return 'תקין';
-  if (s === 'not_ok') return 'לא תקין';
-  if (s === 'worn') return 'שחוק';
-  if (s === 'sweating') return 'הזעה';
-  if (s === 'warning') return 'דורש תשומת לב';
-  if (s === 'low') return 'חסר';
-  if (s === 'dirty') return 'מלוכלך';
-  if (s === 'leaking') return 'נוזל';
-  if (s === 'dry') return 'יבש';
-  if (s === 'replace') return 'להחלפה';
-  if (s === 'failed') return 'פסול';
-  if (s === 'critical') return 'קריטי';
-  return 'לא נבדק';
+  if (s === 'new') return '×××©';
+  if (s === 'ok') return '×ª×§××';
+  if (s === 'not_ok') return '×× ×ª×§××';
+  if (s === 'worn') return '×©×××§';
+  if (s === 'sweating') return '×××¢×';
+  if (s === 'warning') return '×××¨×© ×ª×©×××ª ××';
+  if (s === 'low') return '××¡×¨';
+  if (s === 'dirty') return '××××××';
+  if (s === 'leaking') return '× ×××';
+  if (s === 'dry') return '×××©';
+  if (s === 'replace') return '×××××¤×';
+  if (s === 'failed') return '×¤×¡××';
+  if (s === 'critical') return '×§×¨×××';
+  return '×× × ×××§';
 };
 
 const scoreColor = (score: number) => {
@@ -128,21 +128,21 @@ const scoreBg = (score: number) => {
 };
 
 const scoreLabel = (score: number) => {
-  if (score >= 80) return 'מצב תקין';
-  if (score >= 50) return 'דורש תשומת לב';
-  return 'לא תקין';
+  if (score >= 80) return '××¦× ×ª×§××';
+  if (score >= 50) return '×××¨×© ×ª×©×××ª ××';
+  return '×× ×ª×§××';
 };
 
 const inspectionTypeLabel = (t: string) => {
   const map: Record<string, string> = {
-    full: 'בדיקה מלאה (AutoLog)',
-    rot: 'בדיקת רקב',
-    engine: 'בדיקת מנוע',
-    pre_test: 'הכנה לטסט',
-    tires: 'בדיקת צמיגים',
-    brakes: 'בדיקת בלמים',
-    periodic: 'טיפול תקופתי',
-    troubleshoot: 'אבחון תקלה',
+    full: '××××§× ×××× (AutoLog)',
+    rot: '××××§×ª ×¨×§×',
+    engine: '××××§×ª ×× ××¢',
+    pre_test: '××× × ×××¡×',
+    tires: '××××§×ª ×¦×××××',
+    brakes: '××××§×ª ×××××',
+    periodic: '×××¤×× ×ª×§××¤×ª×',
+    troubleshoot: '××××× ×ª×§××',
   };
   return map[t] || t;
 };
@@ -226,7 +226,7 @@ function PhotoGrid({ photos, labels }: { photos: Record<string, string>; labels:
       </div>
       {selected && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setSelected(null)}>
-          <img src={selected} alt="תמונה מוגדלת" className="max-w-full max-h-[90vh] rounded-xl" />
+          <img src={selected} alt="×ª××× × ××××××ª" className="max-w-full max-h-[90vh] rounded-xl" />
         </div>
       )}
     </>
@@ -243,19 +243,101 @@ export default function InspectionReportPage() {
   const [aiAnalysis, setAiAnalysis] = useState<any>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
+  // Signature gate state
+  const [signName, setSignName] = useState('');
+  const [signId, setSignId] = useState('');
+  const [signatureData, setSignatureData] = useState('');
+  const [signing, setSigning] = useState(false);
+  const [signError, setSignError] = useState('');
+  const signCanvasRef = useRef<HTMLCanvasElement>(null);
+  const isDrawingRef = useRef(false);
+
+  // Canvas drawing handlers
+  const initCanvas = useCallback(() => {
+    const canvas = signCanvasRef.current;
+    if (!canvas) return;
+    canvas.width = canvas.offsetWidth;
+    canvas.height = 150;
+    const ctx = canvas.getContext('2d');
+    if (ctx) { ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 2; ctx.lineCap = 'round'; }
+  }, []);
+
+  useEffect(() => { initCanvas(); }, [initCanvas]);
+
+  const getPos = (e: React.MouseEvent | React.TouchEvent) => {
+    const canvas = signCanvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const touch = 'touches' in e ? e.touches[0] || e.changedTouches[0] : null;
+    return { x: (touch?.clientX || (e as React.MouseEvent).clientX) - rect.left, y: (touch?.clientY || (e as React.MouseEvent).clientY) - rect.top };
+  };
+
+  const startDraw = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    isDrawingRef.current = true;
+    const ctx = signCanvasRef.current?.getContext('2d');
+    if (!ctx) return;
+    const { x, y } = getPos(e);
+    ctx.beginPath(); ctx.moveTo(x, y);
+  };
+
+  const drawMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDrawingRef.current) return;
+    e.preventDefault();
+    const ctx = signCanvasRef.current?.getContext('2d');
+    if (!ctx) return;
+    const { x, y } = getPos(e);
+    ctx.lineTo(x, y); ctx.stroke();
+  };
+
+  const stopDraw = () => {
+    isDrawingRef.current = false;
+    const canvas = signCanvasRef.current;
+    if (canvas) setSignatureData(canvas.toDataURL('image/png'));
+  };
+
+  const clearSign = () => {
+    const canvas = signCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (ctx) { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    setSignatureData('');
+  };
+
+  const handleSign = async () => {
+    if (!signName.trim() || signName.trim().length < 2) { setSignError('יש למלא שם מלא (לפחות 2 תווים)'); return; }
+    if (!signId.trim() || !/^\d{5,9}$/.test(signId.trim())) { setSignError('יש למלא מספר ת\"ז תקין (5-9 ספרות)'); return; }
+    if (!signatureData || signatureData.length < 100) { setSignError('יש לחתום בשטח החתימה'); return; }
+    
+    setSigning(true); setSignError('');
+    try {
+      const res = await fetch(`/api/inspections/${params.id}/sign`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customerName: signName.trim(), customerIdNumber: signId.trim(), customerSignature: signatureData }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setSignError(data.error || 'שגיאה בחתימה'); return; }
+      // Reload the inspection to show full report
+      const reload = await fetch(`/api/inspections/${params.id}`);
+      if (reload.ok) { const d = await reload.json(); setInspection(d.inspection); }
+    } catch { setSignError('שגיאת חיבור'); }
+    finally { setSigning(false); }
+  };
+
   useEffect(() => {
     const fetchInspection = async () => {
       try {
         const res = await fetch(`/api/inspections/${params.id}`);
         if (!res.ok) {
           const data = await res.json();
-          setError(data.error || 'שגיאה בטעינת הבדיקה');
+          setError(data.error || '×©×××× ×××¢×× ×ª ×××××§×');
           return;
         }
         const data = await res.json();
         setInspection(data.inspection);
       } catch {
-        setError('שגיאה בטעינת הבדיקה');
+        setError('×©×××× ×××¢×× ×ª ×××××§×');
       } finally {
         setLoading(false);
       }
@@ -288,8 +370,102 @@ export default function InspectionReportPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Shield size={48} className="text-gray-300" />
-        <p className="text-gray-500 text-lg">{error || 'הבדיקה לא נמצאה'}</p>
-        <Button variant="outline" onClick={() => router.back()}>חזור</Button>
+        <p className="text-gray-500 text-lg">{error || '×××××§× ×× × ××¦××'}</p>
+        <Button variant="outline" onClick={() => router.back()}>××××¨</Button>
+      </div>
+    );
+  }
+
+  // ====== SIGNATURE GATE ======
+  if (inspection.status === 'awaiting_signature') {
+    const gateScore = inspection.overallScore ?? 0;
+    const gateVehicle = inspection.vehicle;
+    const gateGarage = inspection.garage;
+    return (
+      <div className="space-y-4 pt-12 lg:pt-0 pb-20 max-w-lg mx-auto px-3" dir="rtl">
+        {/* Blurred preview header */}
+        <div className={`rounded-2xl bg-gradient-to-br ${scoreBg(gateScore)} text-white p-5 shadow-lg text-center`}>
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <span className="text-sm opacity-90">דוח בדיקה</span>
+            <LogoIcon size={24} />
+          </div>
+          <div className="text-5xl font-black mb-1 blur-sm select-none">{gateScore}</div>
+          <div className="text-base font-medium opacity-90 blur-sm select-none">{scoreLabel(gateScore)}</div>
+          <div className="text-xs opacity-75 mt-1">{inspectionTypeLabel(inspection.inspectionType)}</div>
+        </div>
+
+        {/* Vehicle & Garage summary (visible) */}
+        <div className="grid grid-cols-2 gap-3">
+          <Card className="!p-3">
+            <div className="flex items-center gap-1.5 mb-2">
+              <Car size={14} className="text-teal-600" />
+              <span className="font-bold text-xs text-[#1e3a5f]">רכב</span>
+            </div>
+            <p className="text-sm font-medium">{gateVehicle.nickname || `${gateVehicle.manufacturer || ''} ${gateVehicle.model}`.trim()}</p>
+            <p className="text-xs text-gray-500 font-mono">{gateVehicle.licensePlate}</p>
+          </Card>
+          <Card className="!p-3">
+            <div className="flex items-center gap-1.5 mb-2">
+              <Wrench size={14} className="text-teal-600" />
+              <span className="font-bold text-xs text-[#1e3a5f]">מוסך</span>
+            </div>
+            <p className="text-sm font-medium">{gateGarage.name}</p>
+            <p className="text-xs text-gray-500">{gateGarage.city || ''}</p>
+          </Card>
+        </div>
+
+        {/* Lock message */}
+        <Card>
+          <div className="text-center py-3">
+            <div className="w-14 h-14 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-3">
+              <PenLine size={28} className="text-amber-600" />
+            </div>
+            <h2 className="text-lg font-bold text-[#1e3a5f] mb-1">נדרשת חתימה לצפייה בדוח</h2>
+            <p className="text-sm text-gray-500">יש למלא את הפרטים ולחתום כדי לצפות בדוח הבדיקה המלא</p>
+          </div>
+        </Card>
+
+        {/* Signature form */}
+        <Card>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">שם מלא</label>
+              <input type="text" value={signName} onChange={e => setSignName(e.target.value)}
+                placeholder="הזן שם מלא" className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none" dir="rtl" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">מספר תעודת זהות</label>
+              <input type="text" value={signId} onChange={e => setSignId(e.target.value.replace(/\D/g, ''))}
+                placeholder="הזן מספר ת\"ז" inputMode="numeric" maxLength={9}
+                className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none" dir="rtl" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">חתימה דיגיטלית</label>
+              <div className="border-2 border-gray-200 rounded-xl overflow-hidden bg-white">
+                <canvas ref={signCanvasRef} className="w-full touch-none cursor-crosshair block" style={{ height: '150px' }}
+                  onMouseDown={startDraw} onMouseMove={drawMove} onMouseUp={stopDraw} onMouseLeave={stopDraw}
+                  onTouchStart={startDraw} onTouchMove={drawMove} onTouchEnd={stopDraw} />
+              </div>
+              <button onClick={clearSign} className="text-xs text-red-500 hover:underline mt-1">נקה חתימה</button>
+            </div>
+
+            {signError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700 flex items-center gap-2">
+                <AlertTriangle size={16} /> {signError}
+              </div>
+            )}
+
+            <button onClick={handleSign} disabled={signing}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-2">
+              {signing ? <Loader2 size={18} className="animate-spin" /> : <PenLine size={18} />}
+              {signing ? 'שולח חתימה...' : 'חתום וצפה בדוח'}
+            </button>
+
+            <p className="text-[10px] text-gray-400 text-center leading-relaxed">
+              בלחיצה על &quot;חתום וצפה בדוח&quot; אני מאשר/ת שקראתי והבנתי את תנאי הבדיקה. החתימה נשמרת לצרכי תיעוד.
+            </p>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -307,44 +483,44 @@ export default function InspectionReportPage() {
 
   // Photo labels
   const exteriorLabels: Record<string, string> = {
-    front: 'חזית', rear: 'אחורה', right: 'צד ימין', left: 'צד שמאל', roof: 'גג',
+    front: '××××ª', rear: '××××¨×', right: '×¦× ××××', left: '×¦× ×©×××', roof: '××',
   };
   const interiorLabels: Record<string, string> = {
-    frontSeats: 'מושבים קדמיים', rearSeats: 'מושבים אחוריים', dashboard: 'דשבורד',
+    frontSeats: '×××©××× ×§×××××', rearSeats: '×××©××× ××××¨×××', dashboard: '××©×××¨×',
   };
 
   // Tire labels
   const tireLabels: Record<string, string> = {
-    frontLeft: 'קדמי שמאל', frontRight: 'קדמי ימין', rearLeft: 'אחורי שמאל', rearRight: 'אחורי ימין',
+    frontLeft: '×§××× ×©×××', frontRight: '×§××× ××××', rearLeft: '××××¨× ×©×××', rearRight: '××××¨× ××××',
   };
   // Light labels
   const lightLabels: Record<string, string> = {
-    brakes: 'אורות בלם', reverse: 'ריוורס', fog: 'ערפל', headlights: 'פנסים',
-    frontSignal: 'איתות קדמי', rearSignal: 'איתות אחורי', highBeam: 'אור גבוה', plate: 'תאורת לוחית',
+    brakes: '×××¨××ª ×××', reverse: '×¨××××¨×¡', fog: '×¢×¨×¤×', headlights: '×¤× ×¡××',
+    frontSignal: '×××ª××ª ×§×××', rearSignal: '×××ª××ª ××××¨×', highBeam: '×××¨ ××××', plate: '×ª×××¨×ª ×××××ª',
   };
   // Fluid labels
   const fluidLabels: Record<string, string> = {
-    brakeFluid: 'נוזל בלמים', engineOil: 'שמן מנוע', coolant: 'נוזל קירור',
+    brakeFluid: '× ××× ×××××', engineOil: '×©×× ×× ××¢', coolant: '× ××× ×§××¨××¨',
   };
   // Window labels
   const windowLabels: Record<string, string> = {
-    frontLeft: 'קדמי שמאל', frontRight: 'קדמי ימין', rearLeft: 'אחורי שמאל', rearRight: 'אחורי ימין',
+    frontLeft: '×§××× ×©×××', frontRight: '×§××× ××××', rearLeft: '××××¨× ×©×××', rearRight: '××××¨× ××××',
   };
   // Shock labels
   const shockLabels: Record<string, string> = {
-    frontLeft: 'קדמי שמאל', frontRight: 'קדמי ימין', rearLeft: 'אחורי שמאל', rearRight: 'אחורי ימין',
+    frontLeft: '×§××× ×©×××', frontRight: '×§××× ××××', rearLeft: '××××¨× ×©×××', rearRight: '××××¨× ××××',
   };
 
   // Pre-test checklist labels
   const preTestLabels: Record<string, string> = {
-    tires: 'צמיגים (מצב + לחץ)', lights: 'אורות ומחוונים', brakes: 'בלמים',
-    mirrors: 'מראות', wipers: 'מגבים + נוזל', horn: 'צופר',
-    seatbelts: 'חגורות בטיחות', exhaust: 'מערכת פליטה', steering: 'היגוי (משחק)',
-    suspension: 'מתלים ובולמים', fluids: 'נוזלים (שמן, מים, בלמים)', battery: 'מצבר',
-    handbrake: 'בלם יד', speedometer: 'מד מהירות', windows: 'חלונות ושמשות',
+    tires: '×¦××××× (××¦× + ×××¥)', lights: '×××¨××ª ×××××× ××', brakes: '×××××',
+    mirrors: '××¨×××ª', wipers: '××××× + × ×××', horn: '×¦××¤×¨',
+    seatbelts: '××××¨××ª ××××××ª', exhaust: '××¢×¨××ª ×¤××××', steering: '××××× (××©××§)',
+    suspension: '××ª××× ×××××××', fluids: '× ××××× (×©××, ×××, ×××××)', battery: '××¦××¨',
+    handbrake: '××× ××', speedometer: '×× ××××¨××ª', windows: '×××× ××ª ××©××©××ª',
   };
   const actionLabels: Record<string, string> = {
-    replaced: 'הוחלף', fixed: 'תוקן', adjusted: 'כוון', cleaned: 'נוקה', checked: 'נבדק',
+    replaced: '×××××£', fixed: '×ª××§×', adjusted: '××××', cleaned: '× ××§×', checked: '× ×××§',
   };
   const actionColors: Record<string, string> = {
     replaced: 'bg-blue-100 text-blue-700 border-blue-200',
@@ -364,7 +540,7 @@ export default function InspectionReportPage() {
   const pdfUrl = `/api/public/inspections/${inspection.id}/pdf`;
 
   const handleShare = async () => {
-    const text = `דוח בדיקת AutoLog - ${vehicleLabel} (${v.licensePlate}) - ציון: ${score}/100`;
+    const text = `××× ××××§×ª AutoLog - ${vehicleLabel} (${v.licensePlate}) - ×¦×××: ${score}/100`;
 
     try {
       // Try to fetch PDF and share as file
@@ -375,7 +551,7 @@ export default function InspectionReportPage() {
 
         // Use Web Share API with PDF file if supported
         if (navigator.share && navigator.canShare) {
-          const shareData = { title: 'דוח בדיקת AutoLog', text, files: [file] };
+          const shareData = { title: '××× ××××§×ª AutoLog', text, files: [file] };
           if (navigator.canShare(shareData)) {
             await navigator.share(shareData);
             return;
@@ -387,20 +563,20 @@ export default function InspectionReportPage() {
       const fullPdfUrl = `${window.location.origin}${pdfUrl}`;
       if (navigator.share) {
         await navigator.share({
-          title: 'דוח בדיקת AutoLog',
-          text: text + '\n\n צפה בדוח PDF:',
+          title: '××× ××××§×ª AutoLog',
+          text: text + '\n\n ×¦×¤× ×××× PDF:',
           url: fullPdfUrl,
         });
       } else {
         // Desktop fallback: WhatsApp with direct PDF link
-        const waText = `${text}\n\n דוח PDF:\n${fullPdfUrl}`;
+        const waText = `${text}\n\n ××× PDF:\n${fullPdfUrl}`;
         const waUrl = `https://wa.me/?text=${encodeURIComponent(waText)}`;
         window.open(waUrl, '_blank');
       }
     } catch {
       // If share failed/cancelled, try WhatsApp with PDF link
       const fullPdfUrl = `${window.location.origin}${pdfUrl}`;
-      const waText = `${text}\n\n דוח PDF:\n${fullPdfUrl}`;
+      const waText = `${text}\n\n ××× PDF:\n${fullPdfUrl}`;
       const waUrl = `https://wa.me/?text=${encodeURIComponent(waText)}`;
       window.open(waUrl, '_blank');
     }
@@ -429,7 +605,7 @@ export default function InspectionReportPage() {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs sm:text-sm opacity-90">דוח בדיקה</span>
+            <span className="text-xs sm:text-sm opacity-90">××× ××××§×</span>
             <LogoIcon size={24} />
           </div>
         </div>
@@ -444,17 +620,17 @@ export default function InspectionReportPage() {
         <div className="flex justify-center gap-3">
           {okCount > 0 && (
             <div className="bg-white/20 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1">
-              <Check size={12} /> {okCount} תקין
+              <Check size={12} /> {okCount} ×ª×§××
             </div>
           )}
           {warnCount > 0 && (
             <div className="bg-white/20 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1">
-              <AlertTriangle size={12} /> {warnCount} אזהרה
+              <AlertTriangle size={12} /> {warnCount} ××××¨×
             </div>
           )}
           {critCount > 0 && (
             <div className="bg-white/20 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1">
-              <X size={12} /> {critCount} קריטי
+              <X size={12} /> {critCount} ×§×¨×××
             </div>
           )}
         </div>
@@ -465,33 +641,33 @@ export default function InspectionReportPage() {
         <Card className="!p-4">
           <div className="flex items-center gap-2 mb-3">
             <Car size={18} className="text-teal-600" />
-            <span className="font-bold text-[#1e3a5f]">פרטי רכב</span>
+            <span className="font-bold text-[#1e3a5f]">×¤×¨×× ×¨××</span>
           </div>
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-800 font-medium">{vehicleLabel}</span>
-              <span className="text-gray-500">רכב</span>
+              <span className="text-gray-500">×¨××</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-800 font-mono">{v.licensePlate}</span>
-              <span className="text-gray-500">לוחית</span>
+              <span className="text-gray-500">×××××ª</span>
             </div>
             {v.year && (
               <div className="flex justify-between">
                 <span className="text-gray-800">{v.year}</span>
-                <span className="text-gray-500">שנה</span>
+                <span className="text-gray-500">×©× ×</span>
               </div>
             )}
             {inspection.mileage && (
               <div className="flex justify-between">
-                <span className="text-gray-800">{inspection.mileage.toLocaleString()} ק״מ</span>
-                <span className="text-gray-500">קילומטראז׳</span>
+                <span className="text-gray-800">{inspection.mileage.toLocaleString()} ×§×´×</span>
+                <span className="text-gray-500">×§××××××¨×××³</span>
               </div>
             )}
             {inspection.engineNumber && (
               <div className="flex justify-between">
                 <span className="text-gray-800 font-mono text-xs">{inspection.engineNumber}</span>
-                <span className="text-gray-500">מס׳ מנוע</span>
+                <span className="text-gray-500">××¡×³ ×× ××¢</span>
               </div>
             )}
           </div>
@@ -500,33 +676,33 @@ export default function InspectionReportPage() {
         <Card className="!p-4">
           <div className="flex items-center gap-2 mb-3">
             <Wrench size={18} className="text-teal-600" />
-            <span className="font-bold text-[#1e3a5f]">פרטי מוסך</span>
+            <span className="font-bold text-[#1e3a5f]">×¤×¨×× ×××¡×</span>
           </div>
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-800 font-medium">{g.name}</span>
-              <span className="text-gray-500">מוסך</span>
+              <span className="text-gray-500">×××¡×</span>
             </div>
             {g.city && (
               <div className="flex justify-between">
                 <span className="text-gray-800">{g.city}</span>
-                <span className="text-gray-500">עיר</span>
+                <span className="text-gray-500">×¢××¨</span>
               </div>
             )}
             {inspection.mechanicName && (
               <div className="flex justify-between">
                 <span className="text-gray-800">{inspection.mechanicName}</span>
-                <span className="text-gray-500">מכונאי</span>
+                <span className="text-gray-500">×××× ××</span>
               </div>
             )}
             <div className="flex justify-between">
               <span className="text-gray-800">{formatDate(inspection.date)}</span>
-              <span className="text-gray-500">תאריך</span>
+              <span className="text-gray-500">×ª××¨××</span>
             </div>
             {g.phone && (
               <a href={`tel:${g.phone}`} className="flex justify-between items-center text-teal-600 hover:text-teal-700">
                 <span className="flex items-center gap-1"><Phone size={12} /> {g.phone}</span>
-                <span className="text-gray-500">טלפון</span>
+                <span className="text-gray-500">×××¤××</span>
               </a>
             )}
           </div>
@@ -535,7 +711,7 @@ export default function InspectionReportPage() {
 
       {/* ===== PRE-TEST CHECKLIST ===== */}
       {inspection.inspectionType === 'pre_test' && preTestItems.length > 0 && (
-        <Section title="צ'קליסט הכנה לטסט" icon={<Shield size={18} className="text-blue-600" />}
+        <Section title="×¦'×§×××¡× ××× × ×××¡×" icon={<Shield size={18} className="text-blue-600" />}
           badge={
             <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
               preTestPassed === preTestTotal ? 'bg-green-100 text-green-700' :
@@ -556,7 +732,7 @@ export default function InspectionReportPage() {
                     : <X size={16} className="text-red-600" />
                   }
                   <span className={`text-xs font-medium ${item.status === 'ok' ? 'text-green-700' : 'text-red-700'}`}>
-                    {item.status === 'ok' ? 'תקין' : 'לא תקין'}
+                    {item.status === 'ok' ? '×ª×§××' : '×× ×ª×§××'}
                   </span>
                 </div>
                 <span className="text-sm font-medium text-gray-800">{item.itemName}</span>
@@ -565,7 +741,7 @@ export default function InspectionReportPage() {
           </div>
           {inspection.preTestNotes && (
             <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-              <p className="text-xs text-gray-500 mb-1">הערות</p>
+              <p className="text-xs text-gray-500 mb-1">××¢×¨××ª</p>
               <p className="text-sm text-gray-700">{inspection.preTestNotes}</p>
             </div>
           )}
@@ -574,10 +750,10 @@ export default function InspectionReportPage() {
 
       {/* ===== WORK PERFORMED ===== */}
       {inspection.inspectionType === 'pre_test' && (workItems.length > 0 || (inspection.workPerformed && inspection.workPerformed.length > 0)) && (
-        <Section title="עבודות שבוצעו" icon={<Wrench size={18} className="text-emerald-600" />}
+        <Section title="×¢×××××ª ×©×××¦×¢×" icon={<Wrench size={18} className="text-emerald-600" />}
           badge={
             <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
-              {inspection.workPerformed?.length || workItems.length} פריטים
+              {inspection.workPerformed?.length || workItems.length} ×¤×¨××××
             </span>
           }>
           <div className="space-y-2">
@@ -592,7 +768,7 @@ export default function InspectionReportPage() {
                 <div className="flex items-center justify-between mt-2">
                   {work.cost ? (
                     <span className="text-xs font-medium text-teal-700 bg-teal-50 px-2 py-0.5 rounded">
-                      {work.cost.toLocaleString()} ₪
+                      {work.cost.toLocaleString()} âª
                     </span>
                   ) : <span />}
                   {work.notes && (
@@ -604,8 +780,8 @@ export default function InspectionReportPage() {
           </div>
           {totalWorkCost > 0 && (
             <div className="mt-3 p-3 bg-teal-50 rounded-lg border border-teal-200 flex items-center justify-between">
-              <span className="text-base font-bold text-teal-800">{totalWorkCost.toLocaleString()} ₪</span>
-              <span className="text-sm font-medium text-teal-700">סה״כ עלות עבודות</span>
+              <span className="text-base font-bold text-teal-800">{totalWorkCost.toLocaleString()} âª</span>
+              <span className="text-sm font-medium text-teal-700">×¡××´× ×¢×××ª ×¢×××××ª</span>
             </div>
           )}
         </Section>
@@ -613,21 +789,21 @@ export default function InspectionReportPage() {
 
       {/* ===== EXTERIOR PHOTOS ===== */}
       {inspection.exteriorPhotos && Object.keys(inspection.exteriorPhotos).length > 0 && (
-        <Section title="תמונות חוץ" icon={<Camera size={18} className="text-teal-600" />}>
+        <Section title="×ª××× ××ª ×××¥" icon={<Camera size={18} className="text-teal-600" />}>
           <PhotoGrid photos={inspection.exteriorPhotos} labels={exteriorLabels} />
         </Section>
       )}
 
       {/* ===== INTERIOR PHOTOS ===== */}
       {inspection.interiorPhotos && Object.keys(inspection.interiorPhotos).length > 0 && (
-        <Section title="תמונות פנים" icon={<Eye size={18} className="text-teal-600" />}>
+        <Section title="×ª××× ××ª ×¤× ××" icon={<Eye size={18} className="text-teal-600" />}>
           <PhotoGrid photos={inspection.interiorPhotos} labels={interiorLabels} />
         </Section>
       )}
 
       {/* ===== TIRES ===== */}
       {inspection.tiresData && (
-        <Section title="צמיגים" icon={<CircleDot size={18} className="text-teal-600" />}
+        <Section title="×¦×××××" icon={<CircleDot size={18} className="text-teal-600" />}
           badge={
             <div className="flex gap-1">
               {Object.values(inspection.tiresData).some(v => v === 'critical' || v === 'failed') && <span className="w-2 h-2 rounded-full bg-red-500" />}
@@ -645,7 +821,7 @@ export default function InspectionReportPage() {
 
       {/* ===== LIGHTS ===== */}
       {inspection.lightsData && (
-        <Section title="תאורה" icon={<Lightbulb size={18} className="text-teal-600" />}>
+        <Section title="×ª×××¨×" icon={<Lightbulb size={18} className="text-teal-600" />}>
           <div className="grid grid-cols-2 gap-2">
             {Object.entries(inspection.lightsData).filter(([, v]) => v).map(([key, val]) => (
               <StatusRow key={key} label={lightLabels[key] || key} status={val} />
@@ -656,25 +832,25 @@ export default function InspectionReportPage() {
 
       {/* ===== MECHANICAL SYSTEMS ===== */}
       {(inspection.frontAxle || inspection.steeringData || inspection.shocksData || inspection.batteryData) && (
-        <Section title="מערכות מכניות" icon={<Settings size={18} className="text-teal-600" />}>
+        <Section title="××¢×¨×××ª ××× ×××ª" icon={<Settings size={18} className="text-teal-600" />}>
           <div className="space-y-3">
             {/* Front Axle */}
             {inspection.frontAxle && (inspection.frontAxle.status || inspection.frontAxle.items) && (
               <div className="space-y-1">
-                <p className="text-sm font-bold text-gray-700 px-1">סרן קדמי</p>
+                <p className="text-sm font-bold text-gray-700 px-1">×¡×¨× ×§×××</p>
                 {inspection.frontAxle.items && (
                   <div className="grid grid-cols-2 gap-2">
                     {Object.entries(inspection.frontAxle.items).filter(([, v]) => v).map(([key, val]) => {
                       const labels: Record<string, string> = {
-                        stabilizerBars: 'מוטות מייצב', controlArms: 'זרועות',
-                        bushings: 'גומיות', wheelBearings: 'מיסבי גלגל',
+                        stabilizerBars: '×××××ª ××××¦×', controlArms: '××¨××¢××ª',
+                        bushings: '××××××ª', wheelBearings: '×××¡×× ××××',
                       };
                       return <StatusRow key={key} label={labels[key] || key} status={val} />;
                     })}
                   </div>
                 )}
                 {!inspection.frontAxle.items && inspection.frontAxle.status && (
-                  <StatusRow label="סרן קדמי" status={inspection.frontAxle.status} />
+                  <StatusRow label="×¡×¨× ×§×××" status={inspection.frontAxle.status} />
                 )}
                 {inspection.frontAxle.notes && (
                   <p className="text-xs text-gray-500 px-3">{inspection.frontAxle.notes}</p>
@@ -685,20 +861,20 @@ export default function InspectionReportPage() {
             {/* Steering */}
             {inspection.steeringData && (inspection.steeringData.status || inspection.steeringData.items) && (
               <div className="space-y-1">
-                <p className="text-sm font-bold text-gray-700 px-1">מערכת היגוי</p>
+                <p className="text-sm font-bold text-gray-700 px-1">××¢×¨××ª ×××××</p>
                 {inspection.steeringData.items && (
                   <div className="grid grid-cols-2 gap-2">
                     {Object.entries(inspection.steeringData.items).filter(([, v]) => v).map(([key, val]) => {
                       const labels: Record<string, string> = {
-                        steeringWheel: 'הגה (משחק)', pump: 'משאבת הגה',
-                        rack: 'תיבת הגה', column: 'עמוד הגה', alignment: 'כיוון (אלינמנט)',
+                        steeringWheel: '××× (××©××§)', pump: '××©×××ª ×××',
+                        rack: '×ª×××ª ×××', column: '×¢××× ×××', alignment: '××××× (×××× ×× ×)',
                       };
                       return <StatusRow key={key} label={labels[key] || key} status={val} />;
                     })}
                   </div>
                 )}
                 {!inspection.steeringData.items && inspection.steeringData.status && (
-                  <StatusRow label="הגה" status={inspection.steeringData.status} />
+                  <StatusRow label="×××" status={inspection.steeringData.status} />
                 )}
                 {inspection.steeringData.notes && (
                   <p className="text-xs text-gray-500 px-3">{inspection.steeringData.notes}</p>
@@ -709,7 +885,7 @@ export default function InspectionReportPage() {
             {/* Shocks */}
             {inspection.shocksData && (
               <div className="space-y-1">
-                <p className="text-sm font-bold text-gray-700 px-1">בולמים</p>
+                <p className="text-sm font-bold text-gray-700 px-1">××××××</p>
                 <div className="grid grid-cols-2 gap-2">
                   {(() => {
                     const data = (inspection.shocksData as any);
@@ -730,14 +906,14 @@ export default function InspectionReportPage() {
               <div className="space-y-1">
                 <div className="flex items-center justify-between p-3 rounded-lg border bg-gray-50 border-gray-200">
                   <span className="text-xs text-gray-600">
-                    {inspection.batteryData.status === 'original' || inspection.batteryData.isOriginal === true ? 'מקורי' :
-                     inspection.batteryData.status === 'not_visible' ? 'לא ניתן לראות' :
-                     inspection.batteryData.status === 'replaced' || inspection.batteryData.isOriginal === false ? 'הוחלף' : '—'}
+                    {inspection.batteryData.status === 'original' || inspection.batteryData.isOriginal === true ? '××§××¨×' :
+                     inspection.batteryData.status === 'not_visible' ? '×× × ××ª× ××¨×××ª' :
+                     inspection.batteryData.status === 'replaced' || inspection.batteryData.isOriginal === false ? '×××××£' : 'â'}
                   </span>
-                  <span className="text-sm font-medium">מצבר</span>
+                  <span className="text-sm font-medium">××¦××¨</span>
                 </div>
                 {inspection.batteryData.date && (
-                  <p className="text-xs text-gray-500 px-3 text-right">תאריך מצבר: {inspection.batteryData.date}</p>
+                  <p className="text-xs text-gray-500 px-3 text-right">×ª××¨×× ××¦××¨: {inspection.batteryData.date}</p>
                 )}
               </div>
             )}
@@ -747,16 +923,16 @@ export default function InspectionReportPage() {
 
       {/* ===== BODY & CHASSIS ===== */}
       {inspection.bodyData && (
-        <Section title="שלדה ומרכב" icon={<Car size={18} className="text-teal-600" />}>
+        <Section title="×©××× ×××¨××" icon={<Car size={18} className="text-teal-600" />}>
           <div className="space-y-2">
             {inspection.bodyData.condition && (
-              <StatusRow label="מצב שלדה / פח" status={inspection.bodyData.condition} />
+              <StatusRow label="××¦× ×©××× / ×¤×" status={inspection.bodyData.condition} />
             )}
             {inspection.bodyData.tags && inspection.bodyData.tags.length > 0 && (
               <div className="flex flex-wrap gap-1 px-3">
                 {inspection.bodyData.tags.map(tag => (
                   <span key={tag} className={`px-2 py-0.5 rounded-full text-xs border ${
-                    tag === 'תקין - ללא ממצאים' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'
+                    tag === '×ª×§×× - ××× ×××¦×××' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'
                   }`}>{tag}</span>
                 ))}
               </div>
@@ -770,7 +946,7 @@ export default function InspectionReportPage() {
 
       {/* ===== FLUIDS ===== */}
       {inspection.fluidsData && (
-        <Section title="נוזלים" icon={<Droplets size={18} className="text-teal-600" />}>
+        <Section title="× ×××××" icon={<Droplets size={18} className="text-teal-600" />}>
           <div className="space-y-2">
             {Object.entries(inspection.fluidsData).filter(([, v]) => v).map(([key, val]) => (
               <StatusRow key={key} label={fluidLabels[key] || key} status={val} />
@@ -781,18 +957,18 @@ export default function InspectionReportPage() {
 
       {/* ===== INTERIOR SYSTEMS ===== */}
       {(inspection.interiorSystems || inspection.windowsData) && (
-        <Section title="מערכות פנים" icon={<Wind size={18} className="text-teal-600" />}>
+        <Section title="××¢×¨×××ª ×¤× ××" icon={<Wind size={18} className="text-teal-600" />}>
           <div className="space-y-3">
             {inspection.interiorSystems && (
               <div className="space-y-2">
-                {inspection.interiorSystems.acCold && <StatusRow label="מזגן - קור" status={inspection.interiorSystems.acCold} />}
-                {inspection.interiorSystems.acHot && <StatusRow label="מזגן - חום" status={inspection.interiorSystems.acHot} />}
-                {inspection.interiorSystems.audio && <StatusRow label="מערכת שמע" status={inspection.interiorSystems.audio} />}
+                {inspection.interiorSystems.acCold && <StatusRow label="×××× - ×§××¨" status={inspection.interiorSystems.acCold} />}
+                {inspection.interiorSystems.acHot && <StatusRow label="×××× - ×××" status={inspection.interiorSystems.acHot} />}
+                {inspection.interiorSystems.audio && <StatusRow label="××¢×¨××ª ×©××¢" status={inspection.interiorSystems.audio} />}
               </div>
             )}
             {inspection.windowsData && (
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-700 px-1">חלונות חשמליים</p>
+                <p className="text-sm font-medium text-gray-700 px-1">×××× ××ª ××©×××××</p>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(inspection.windowsData).filter(([, v]) => v).map(([key, val]) => (
                     <StatusRow key={key} label={windowLabels[key] || key} status={val} />
@@ -806,7 +982,7 @@ export default function InspectionReportPage() {
 
       {/* ===== ENGINE & GEARBOX ===== */}
       {(inspection.engineIssues || inspection.gearboxIssues) && (
-        <Section title="מנוע ותיבת הילוכים" icon={<Gauge size={18} className="text-teal-600" />}
+        <Section title="×× ××¢ ××ª×××ª ×××××××" icon={<Gauge size={18} className="text-teal-600" />}
           badge={
             inspection.engineIssues?.issues && inspection.engineIssues.issues.length > 0
               ? <span className="w-2 h-2 rounded-full bg-red-500" /> : undefined
@@ -816,18 +992,18 @@ export default function InspectionReportPage() {
               <div>
                 {inspection.engineIssues.issues && inspection.engineIssues.issues.length > 0 ? (
                   <div className="space-y-2">
-                    <p className="text-sm font-medium text-red-600">בעיות שזוהו:</p>
+                    <p className="text-sm font-medium text-red-600">××¢×××ª ×©××××:</p>
                     <div className="flex flex-wrap gap-2">
                       {inspection.engineIssues.issues.map(issue => (
                         <span key={issue} className="px-3 py-1 bg-red-50 text-red-600 rounded-full text-xs font-medium border border-red-200">
-                          ● {issue}
+                          â {issue}
                         </span>
                       ))}
                     </div>
                   </div>
                 ) : (
                   <div className="p-3 bg-green-50 rounded-lg border border-green-200 text-green-700 text-sm flex items-center gap-2">
-                    <Check size={16} /> לא זוהו בעיות מנוע
+                    <Check size={16} /> ×× ×××× ××¢×××ª ×× ××¢
                   </div>
                 )}
                 {inspection.engineIssues.notes && (
@@ -837,7 +1013,7 @@ export default function InspectionReportPage() {
             )}
             {inspection.gearboxIssues?.notes && (
               <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-                <p className="text-sm font-medium text-amber-700 mb-1">תיבת הילוכים</p>
+                <p className="text-sm font-medium text-amber-700 mb-1">×ª×××ª ×××××××</p>
                 <p className="text-xs text-amber-600">{inspection.gearboxIssues.notes}</p>
               </div>
             )}
@@ -847,19 +1023,19 @@ export default function InspectionReportPage() {
 
       {/* ===== BRAKING SYSTEM ===== */}
       {inspection.brakingSystem && (
-        <Section title="מערכת בלימה" icon={<Zap size={18} className="text-teal-600" />}>
+        <Section title="××¢×¨××ª ×××××" icon={<Zap size={18} className="text-teal-600" />}>
           <div className="space-y-4">
             {inspection.brakingSystem.frontDiscs !== undefined && (
-              <BrakeBar label="צלחות קדמיות" value={inspection.brakingSystem.frontDiscs} />
+              <BrakeBar label="×¦××××ª ×§×××××ª" value={inspection.brakingSystem.frontDiscs} />
             )}
             {inspection.brakingSystem.rearDiscs !== undefined && (
-              <BrakeBar label="צלחות אחוריות" value={inspection.brakingSystem.rearDiscs} />
+              <BrakeBar label="×¦××××ª ××××¨×××ª" value={inspection.brakingSystem.rearDiscs} />
             )}
             {inspection.brakingSystem.frontPads !== undefined && (
-              <BrakeBar label="רפידות קדמיות" value={inspection.brakingSystem.frontPads} />
+              <BrakeBar label="×¨×¤××××ª ×§×××××ª" value={inspection.brakingSystem.frontPads} />
             )}
             {inspection.brakingSystem.rearPads !== undefined && (
-              <BrakeBar label="רפידות אחוריות" value={inspection.brakingSystem.rearPads} />
+              <BrakeBar label="×¨×¤××××ª ××××¨×××ª" value={inspection.brakingSystem.rearPads} />
             )}
           </div>
         </Section>
@@ -867,23 +1043,23 @@ export default function InspectionReportPage() {
 
       {/* ===== NOTES ===== */}
       {inspection.notes && (inspection.notes.undercarriage || inspection.notes.engine || inspection.notes.general) && (
-        <Section title="הערות" icon={<FileText size={18} className="text-teal-600" />} defaultOpen={false}>
+        <Section title="××¢×¨××ª" icon={<FileText size={18} className="text-teal-600" />} defaultOpen={false}>
           <div className="space-y-3">
             {inspection.notes.undercarriage && (
               <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500 mb-1">תחתית הרכב</p>
+                <p className="text-xs text-gray-500 mb-1">×ª××ª××ª ××¨××</p>
                 <p className="text-sm text-gray-700">{inspection.notes.undercarriage}</p>
               </div>
             )}
             {inspection.notes.engine && (
               <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500 mb-1">מנוע</p>
+                <p className="text-xs text-gray-500 mb-1">×× ××¢</p>
                 <p className="text-sm text-gray-700">{inspection.notes.engine}</p>
               </div>
             )}
             {inspection.notes.general && (
               <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500 mb-1">הערות כלליות</p>
+                <p className="text-xs text-gray-500 mb-1">××¢×¨××ª ××××××ª</p>
                 <p className="text-sm text-gray-700">{inspection.notes.general}</p>
               </div>
             )}
@@ -893,7 +1069,7 @@ export default function InspectionReportPage() {
 
       {/* ===== RECOMMENDATIONS ===== */}
       {inspection.recommendations && inspection.recommendations.length > 0 && (
-        <Section title="המלצות לתיקון" icon={<AlertTriangle size={18} className="text-amber-500" />} defaultOpen={true}>
+        <Section title="××××¦××ª ××ª××§××" icon={<AlertTriangle size={18} className="text-amber-500" />} defaultOpen={true}>
           <div className="space-y-3">
             {inspection.recommendations.map((rec, idx) => (
               <div key={idx} className="p-3 sm:p-4 bg-yellow-50 rounded-xl border border-yellow-200">
@@ -903,9 +1079,9 @@ export default function InspectionReportPage() {
                     <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2">
                       {rec.urgency && (
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                          rec.urgency.includes('דחוף') || rec.urgency.includes('מיידי')
+                          rec.urgency.includes('××××£') || rec.urgency.includes('×××××')
                             ? 'bg-red-100 text-red-700'
-                            : rec.urgency.includes('חודש')
+                            : rec.urgency.includes('××××©')
                             ? 'bg-amber-100 text-amber-700'
                             : 'bg-blue-100 text-blue-700'
                         }`}>
@@ -930,23 +1106,23 @@ export default function InspectionReportPage() {
         <Card>
           <div className="flex items-center gap-2 mb-3">
             <PenLine size={18} className="text-teal-600" />
-            <span className="font-bold text-[#1e3a5f]">חתימה דיגיטלית</span>
+            <span className="font-bold text-[#1e3a5f]">××ª××× ××××××××ª</span>
           </div>
           <div className="space-y-3">
             <div className="flex gap-4 text-sm">
               {inspection.customerName && (
-                <div><span className="text-gray-500">שם: </span><span className="font-medium">{inspection.customerName}</span></div>
+                <div><span className="text-gray-500">×©×: </span><span className="font-medium">{inspection.customerName}</span></div>
               )}
               {inspection.customerIdNumber && (
-                <div><span className="text-gray-500">ת״ז: </span><span className="font-medium font-mono">{inspection.customerIdNumber}</span></div>
+                <div><span className="text-gray-500">×ª×´×: </span><span className="font-medium font-mono">{inspection.customerIdNumber}</span></div>
               )}
             </div>
             <div className="border-2 border-gray-200 rounded-xl overflow-hidden bg-white p-2">
-              <img src={inspection.customerSignature} alt="חתימת לקוח" className="max-h-24 mx-auto" />
+              <img src={inspection.customerSignature} alt="××ª×××ª ××§××" className="max-h-24 mx-auto" />
             </div>
             {inspection.signedAt && (
               <p className="text-xs text-gray-400 text-center">
-                נחתם בתאריך {formatDate(inspection.signedAt)}
+                × ××ª× ××ª××¨×× {formatDate(inspection.signedAt)}
               </p>
             )}
           </div>
@@ -957,12 +1133,12 @@ export default function InspectionReportPage() {
       <Card className="border-teal-200 bg-gradient-to-l from-[#1e3a5f]/5 to-teal-50/80">
         <div className="flex items-center gap-2 mb-4">
           <Star size={18} className="text-teal-600" />
-          <span className="font-bold text-[#1e3a5f]">ניתוח חכם AutoLog AI</span>
+          <span className="font-bold text-[#1e3a5f]">× ××ª×× ××× AutoLog AI</span>
         </div>
 
         {aiLoading ? (
           <div className="flex items-center justify-center py-6 gap-2">
-            <span className="text-sm text-gray-400">מנתח את תוצאות הבדיקה...</span>
+            <span className="text-sm text-gray-400">×× ×ª× ××ª ×ª××¦×××ª ×××××§×...</span>
             <Loader2 size={18} className="animate-spin text-teal-500" />
           </div>
         ) : aiAnalysis ? (
@@ -976,7 +1152,7 @@ export default function InspectionReportPage() {
             {aiAnalysis.keyFindings?.length > 0 && (
               <div>
                 <h4 className="text-xs font-bold text-[#1e3a5f] text-right mb-2 flex items-center gap-1.5 justify-end">
-                  ממצאים עיקריים
+                  ×××¦××× ×¢××§×¨×××
                   <FileText size={14} className="text-teal-500" />
                 </h4>
                 <div className="space-y-1.5">
@@ -994,7 +1170,7 @@ export default function InspectionReportPage() {
             {aiAnalysis.urgentItems?.length > 0 && (
               <div>
                 <h4 className="text-xs font-bold text-red-700 text-right mb-2 flex items-center gap-1.5 justify-end">
-                  פריטים דחופים
+                  ×¤×¨×××× ××××¤××
                   <AlertTriangle size={14} className="text-red-500" />
                 </h4>
                 <div className="space-y-1.5">
@@ -1012,7 +1188,7 @@ export default function InspectionReportPage() {
             {aiAnalysis.positiveItems?.length > 0 && (
               <div>
                 <h4 className="text-xs font-bold text-green-700 text-right mb-2 flex items-center gap-1.5 justify-end">
-                  נקודות חיוביות
+                  × ×§××××ª ×××××××ª
                   <Check size={14} className="text-green-500" />
                 </h4>
                 <div className="space-y-1.5">
@@ -1027,17 +1203,17 @@ export default function InspectionReportPage() {
             )}
 
             {/* Estimated Repair Cost */}
-            {aiAnalysis.estimatedRepairCost && aiAnalysis.estimatedRepairCost !== '₪0' && (
+            {aiAnalysis.estimatedRepairCost && aiAnalysis.estimatedRepairCost !== 'âª0' && (
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-right flex items-center justify-between">
                 <span className="text-sm font-bold text-amber-800">{aiAnalysis.estimatedRepairCost}</span>
-                <span className="text-xs font-medium text-amber-700">עלות תיקון משוערת</span>
+                <span className="text-xs font-medium text-amber-700">×¢×××ª ×ª××§×× ××©××¢×¨×ª</span>
               </div>
             )}
           </div>
         ) : inspection.aiSummary ? (
           <p className="text-sm text-teal-700 leading-relaxed text-right">{inspection.aiSummary}</p>
         ) : (
-          <p className="text-sm text-gray-400 text-center py-2">הניתוח אינו זמין כרגע</p>
+          <p className="text-sm text-gray-400 text-center py-2">×× ××ª×× ××× × ×××× ××¨××¢</p>
         )}
       </Card>
 
@@ -1046,18 +1222,18 @@ export default function InspectionReportPage() {
         <div className="flex flex-col gap-3">
           <div className="flex gap-3">
             <Button className="flex-1" icon={<Share2 size={16} />} onClick={handleShare}>
-              שתף דוח
+              ×©×ª×£ ×××
             </Button>
             <Button variant="outline" className="flex-1" icon={<Download size={16} />} onClick={handleDownload}>
-              שמור PDF
+              ×©×××¨ PDF
             </Button>
           </div>
           <Button variant="outline" className="w-full" icon={<MessageCircle size={16} />}
             onClick={() => {
-              const text = `דוח בדיקת AutoLog\n${vehicleLabel} (${v.licensePlate})\nציון: ${score}/100\n${window.location.href}`;
+              const text = `××× ××××§×ª AutoLog\n${vehicleLabel} (${v.licensePlate})\n×¦×××: ${score}/100\n${window.location.href}`;
               window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
             }}>
-            שלח בוואטסאפ
+            ×©×× ××××××¡××¤
           </Button>
         </div>
       </Card>
@@ -1066,9 +1242,9 @@ export default function InspectionReportPage() {
       <div className="text-center py-4">
         <div className="flex items-center justify-center gap-2 text-gray-400">
           <LogoIcon size={20} />
-          <span className="text-xs">דוח נוצר באמצעות AutoLog</span>
+          <span className="text-xs">××× × ××¦×¨ ××××¦×¢××ª AutoLog</span>
         </div>
-        <p className="text-xs text-gray-300 mt-1">מזהה דוח: {inspection.id.slice(0, 8)}</p>
+        <p className="text-xs text-gray-300 mt-1">×××× ×××: {inspection.id.slice(0, 8)}</p>
       </div>
     </div>
   );
