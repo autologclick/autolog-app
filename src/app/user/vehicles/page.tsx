@@ -12,6 +12,7 @@ import {
   Camera, Upload, X, Image as ImageIcon, Brain, TrendingUp, AlertTriangle as AlertTriangleIcon
 } from 'lucide-react';
 import LicenseScanButton, { type ScanResult } from '@/components/ui/LicenseScanButton';
+import { useRouter } from 'next/navigation';
 
 interface Vehicle {
   id: string;
@@ -141,6 +142,7 @@ function ImageUploadSection({ imagePreview, onImageSelect, onImageRemove, onCame
 }
 
 export default function VehiclesPage() {
+  const router = useRouter();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -547,8 +549,8 @@ export default function VehiclesPage() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-2">
-                    <Button variant="outline" size="sm" icon={<Eye size={14} />} className="flex-1">צפה בדוחות</Button>
-                    <Button variant="outline" size="sm" icon={<Calendar size={14} />} className="flex-1">קבע תור</Button>
+                    <Button variant="outline" size="sm" icon={<Eye size={14} />} className="flex-1" onClick={() => router.push(`/user/vehicles/${v.id}`)}>צפה בדוחות</Button>
+                    <Button variant="outline" size="sm" icon={<Calendar size={14} />} className="flex-1" onClick={() => router.push('/user/book-garage')}>קבע תור</Button>
                   </div>
                 </div>
               )}
