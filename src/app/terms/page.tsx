@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, FileText, Shield } from 'lucide-react';
+import { ArrowRight, FileText, Shield, Building2, AlertTriangle } from 'lucide-react';
 
 export default function TermsPage() {
   return (
@@ -36,10 +36,10 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">1. הגדרות</h2>
             <ul className="space-y-2 list-disc list-inside">
-              <li><strong>&quot;AutoLog&quot;</strong> או <strong>&quot;האפליקציה&quot;</strong> — פלטפורמת AutoLog לניהול רכבים ושירותי רכב, המופעלת על ידי AutoLog בע&quot;מ.</li>
-              <li><strong>&quot;משתמש&quot;</strong> — כל אדם שנרשם ו/או משתמש בשירותי AutoLog.</li>
-              <li><strong>&quot;מוסך שותף&quot;</strong> — בית עסק לשירותי רכב שנרשם כספק שירות בפלטפורמה ואושר על ידי צוות AutoLog.</li>
-              <li><strong>&quot;שירותים&quot;</strong> — כלל השירותים המוצעים באמצעות האפליקציה, לרבות ניהול רכבים, הזמנת שירותים, ומעקב אחר טיפולים.</li>
+              <li><strong>"AutoLog"</strong> או <strong>"האפליקציה"</strong> — פלטפורמת AutoLog לניהול רכבים ושירותי רכב, המופעלת על ידי AutoLog בע"מ.</li>
+              <li><strong>"משתמש"</strong> — כל אדם שנרשם ו/או משתמש בשירותי AutoLog.</li>
+              <li><strong>"מוסך שותף"</strong> — בית עסק לשירותי רכב שנרשם כספק שירות בפלטפורמה ואושר על ידי צוות AutoLog.</li>
+              <li><strong>"שירותים"</strong> — כלל השירותים המוצעים באמצעות האפליקציה, לרבות ניהול רכבים, הזמנת שירותים, ומעקב אחר טיפולים.</li>
             </ul>
           </section>
 
@@ -99,7 +99,7 @@ export default function TermsPage() {
             <p className="mb-3">
               השימוש באפליקציה כפוף ל<Link href="/privacy" className="text-[#0d9488] hover:underline font-medium">מדיניות הפרטיות</Link> של AutoLog.
               אנו מתחייבים להגן על פרטיות המשתמשים ולעמוד בכל דרישות החוק הרלוונטיות,
-              לרבות חוק הגנת הפרטיות, התשמ&quot;א-1981.
+              לרבות חוק הגנת הפרטיות, התשמ"א-1981.
             </p>
           </section>
 
@@ -108,7 +108,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">6. תשלומים</h2>
             <ul className="space-y-2 list-disc list-inside">
               <li>חלק מהשירותים באפליקציה עשויים להיות כרוכים בתשלום.</li>
-              <li>המחירים המוצגים כוללים מע&quot;מ אלא אם צוין אחרת.</li>
+              <li>המחירים המוצגים כוללים מע"מ אלא אם צוין אחרת.</li>
               <li>התשלום מתבצע באמצעות אמצעי תשלום מאובטחים.</li>
               <li>מדיניות ביטולים והחזרים תהיה בהתאם לחוק הגנת הצרכן.</li>
             </ul>
@@ -117,19 +117,54 @@ export default function TermsPage() {
           {/* Section 7 */}
           <section>
             <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">7. הגבלת אחריות</h2>
-            <ul className="space-y-2 list-disc list-inside">
+            <ul className="space-y-2 list-disc list-inside mb-4">
               <li>AutoLog אינה אחראית לאיכות השירותים הניתנים על ידי מוסכים שותפים.</li>
-              <li>האפליקציה מסופקת &quot;כמות שהיא&quot; (AS IS).</li>
+              <li>האפליקציה מסופקת "כמות שהיא" (AS IS).</li>
               <li>AutoLog לא תישא באחריות לנזקים עקיפים או תוצאתיים.</li>
               <li>AutoLog עושה מאמצים סבירים לשמור על זמינות השירות, אך אינה מתחייבת לזמינות רציפה.</li>
+              <li>בדיקות רכב המבוצעות באמצעות מוסכים שותפים מהוות חוות דעת מקצועית בלבד ואינן מהוות בדיקת מכון רישוי מורשה מטעם משרד התחבורה. אין להן תוקף משפטי מחייב.</li>
+              <li>AutoLog אינה אחראית לנזק שנגרם כתוצאה מהסתמכות על ממצאי בדיקת מוסך כתחליף לבדיקה במכון רישוי מורשה.</li>
             </ul>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <p className="text-amber-800 text-sm">
+                  <strong>שימו לב:</strong> לפרטים מלאים על חלוקת האחריות בנוגע לבדיקות רכב, ההבדל בין בדיקת מוסך לבדיקת מכון רישוי מורשה, והמסגרת הרגולטורית החלה — ראו את <Link href="/warranty" className="text-[#0d9488] hover:underline font-medium">מסמך האחריות בנושא בדיקות רכב</Link>.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 7A - Regulatory Compliance */}
+          <section>
+            <div className="flex items-center gap-2 mb-3">
+              <Building2 className="w-5 h-5 text-[#1e3a5f]" />
+              <h2 className="text-xl font-bold text-[#1e3a5f]">7א. עמידה ברגולציה</h2>
+            </div>
+            <p className="mb-3">
+              השימוש בפלטפורמת AutoLog כפוף לכל דין ורגולציה חלים, לרבות:
+            </p>
+            <ul className="space-y-2 list-disc list-inside mb-4">
+              <li>פקודת התעבורה [נוסח חדש] ותקנות התעבורה</li>
+              <li>חוק רישוי שירותים ומקצועות בענף הרכב, תשע"ו-2016</li>
+              <li>הוראות משרד התחבורה והבטיחות בדרכים</li>
+              <li>חוק הגנת הצרכן, התשמ"א-1981</li>
+            </ul>
+            <p className="mb-3">
+              מוסכים שותפים מתחייבים להחזיק בכל הרישיונות וההיתרים הנדרשים על פי חוק, להעסיק טכנאים מוסמכים בלבד, ולהבהיר ללקוחות כי בדיקות המבוצעות דרך AutoLog אינן מהוות בדיקת מכון רישוי מורשה.
+            </p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-red-800 text-sm font-medium">
+                AutoLog ממליצה לכל רוכש רכב יד שנייה לבצע, בנוסף לבדיקת מוסך, גם בדיקה במכון רישוי מורשה מטעם משרד התחבורה — שהיא הבדיקה היחידה בעלת תוקף משפטי מחייב.
+              </p>
+            </div>
           </section>
 
           {/* Section 8 */}
           <section>
             <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">8. קניין רוחני</h2>
             <p>
-              כל הזכויות באפליקציה, לרבות עיצוב, קוד, תוכן, לוגו וסימני מסחר, שייכות ל-AutoLog בע&quot;מ.
+              כל הזכויות באפליקציה, לרבות עיצוב, קוד, תוכן, לוגו וסימני מסחר, שייכות ל-AutoLog בע"מ.
               אין להעתיק, לשכפל, להפיץ או לעשות שימוש מסחרי בכל חלק מהאפליקציה ללא אישור מראש בכתב.
             </p>
           </section>
@@ -159,7 +194,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">11. יצירת קשר</h2>
             <p className="mb-2">לכל שאלה או פנייה בנוגע לתנאי השימוש, ניתן ליצור קשר:</p>
             <ul className="space-y-1">
-              <li><strong>דוא&quot;ל:</strong> info@autolog.click</li>
+              <li><strong>דוא"ל:</strong> info@autolog.click</li>
               <li><strong>כתובת:</strong> משה בקר 29, ראשון לציון</li>
             </ul>
           </section>
