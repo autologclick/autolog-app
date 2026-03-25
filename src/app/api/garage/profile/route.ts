@@ -1,6 +1,19 @@
 import { NextRequest } from 'next/server';
+import { z } from 'zod';
 import prisma from '@/lib/db';
-import { requireGarageOwner, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { requireGarageOwner, jsonResponse, errorResponse, handleApiError, validationErrorResponse, sanitize } from '@/lib/api-helpers';
+
+const updateGarageSchema = z.object({
+  name: z.string().min(2).max(100).optional(),
+  address: z.string().max(200).optional(),
+  city: z.string().max(50).optional(),
+  phone: z.string().regex(/^[0-9\-+()\s]+$/).max(20).optional(),
+  email: z.string().email().optional(),
+  description: z.string().max(500).optional(),
+  services: z.string().max(1000).optional(),
+  workingHours: z.string().max(500).optional(),
+  amenities: z.string().max(500).optional(),
+});
 
 // GET /api/garage/profile - Get garage profile for current owner
 export async function GET(req: NextRequest) {
@@ -12,7 +25,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!garage) {
-      return errorResponse('מוסך לא נמצא', 404);
+      return errorResponse('×××¡× ×× × ××¦×', 404);
     }
 
     return jsonResponse({ garage });
@@ -33,7 +46,7 @@ export async function PUT(req: NextRequest) {
     });
 
     if (!garage) {
-      return errorResponse('מוסך לא נמצא', 404);
+      return errorResponse('×××¡× ×× × ××¦×', 404);
     }
 
     const updated = await prisma.garage.update({
