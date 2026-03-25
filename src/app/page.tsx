@@ -243,7 +243,8 @@ export default function Home() {
 
           {/* Mobile Menu */}
           <button
-            className="md:hidden p-3 rounded-lg transition active:scale-95"
+            aria-label="תפריט ניווט"
+              className="md:hidden p-3 rounded-lg transition active:scale-95"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen
