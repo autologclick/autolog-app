@@ -26,16 +26,16 @@ interface BrakeSystem { frontDiscs: number; rearDiscs: number; frontPads: number
 interface Recommendation { text: string; urgency: string; estimatedCost: string; }
 
 const statusOptions = [
-  { value: 'ok', label: '×ª×§××', color: 'bg-green-500', icon: Check },
-  { value: 'warning', label: '×××¨×© ×ª×©×××ª ××', color: 'bg-amber-500', icon: AlertTriangle },
-  { value: 'critical', label: '×§×¨×××', color: 'bg-red-500', icon: X },
+  { value: 'ok', label: 'ÃÂªÃÂ§ÃÂÃÂ', color: 'bg-green-500', icon: Check },
+  { value: 'warning', label: 'ÃÂÃÂÃÂ¨ÃÂ© ÃÂªÃÂ©ÃÂÃÂÃÂª ÃÂÃÂ', color: 'bg-amber-500', icon: AlertTriangle },
+  { value: 'critical', label: 'ÃÂ§ÃÂ¨ÃÂÃÂÃÂ', color: 'bg-red-500', icon: X },
 ];
 
 const inspectionTypes = [
-  { value: 'full', label: '××××§×ª AutoLog' },
-  { value: 'pre_test', label: '××× × ×××¡×' },
-  { value: 'troubleshoot', label: '×ª××§××/××××× ×ª×§××' },
-  { value: 'periodic', label: '×××¤×× ×ª×§××¤×ª×' },
+  { value: 'full', label: 'ÃÂÃÂÃÂÃÂ§ÃÂª AutoLog' },
+  { value: 'pre_test', label: 'ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¡ÃÂ' },
+  { value: 'troubleshoot', label: 'ÃÂªÃÂÃÂ§ÃÂÃÂ/ÃÂÃÂÃÂÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ' },
+  { value: 'periodic', label: 'ÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ¤ÃÂªÃÂ' },
 ];
 
 // ====== Status Selector Component ======
@@ -67,8 +67,8 @@ function StatusSelect({ value, onChange, label }: { value: string; onChange: (v:
 
 // ====== Light Status Options (Binary: Pass/Fail) ======
 const lightStatusOptions = [
-  { value: 'ok', label: '×ª×§××', color: 'bg-green-500', emoji: 'â' },
-  { value: 'not_ok', label: '×× ×ª×§××', color: 'bg-red-500', emoji: 'â' },
+  { value: 'ok', label: 'ÃÂªÃÂ§ÃÂÃÂ', color: 'bg-green-500', emoji: 'Ã¢ÂÂ' },
+  { value: 'not_ok', label: 'ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ', color: 'bg-red-500', emoji: 'Ã¢ÂÂ' },
 ];
 
 function LightStatusSelect({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
@@ -98,11 +98,11 @@ function LightStatusSelect({ value, onChange, label }: { value: string; onChange
 
 // ====== Tire Status Options ======
 const tireStatusOptions = [
-  { value: 'new', label: '×××©', color: 'bg-blue-500' },
-  { value: 'ok', label: '×ª×§××', color: 'bg-green-500' },
-  { value: 'worn', label: '×©×××§', color: 'bg-amber-500' },
-  { value: 'dry', label: '×××©', color: 'bg-orange-500' },
-  { value: 'failed', label: '×¤×¡××', color: 'bg-red-500' },
+  { value: 'new', label: 'ÃÂÃÂÃÂ©', color: 'bg-blue-500' },
+  { value: 'ok', label: 'ÃÂªÃÂ§ÃÂÃÂ', color: 'bg-green-500' },
+  { value: 'worn', label: 'ÃÂ©ÃÂÃÂÃÂ§', color: 'bg-amber-500' },
+  { value: 'dry', label: 'ÃÂÃÂÃÂ©', color: 'bg-orange-500' },
+  { value: 'failed', label: 'ÃÂ¤ÃÂ¡ÃÂÃÂ', color: 'bg-red-500' },
 ];
 
 function TireStatusSelect({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
@@ -142,10 +142,10 @@ function TireStatusSelect({ value, onChange, label }: { value: string; onChange:
 
 // ====== Shock Absorber Status Options ======
 const shockStatusOptions = [
-  { value: 'ok', label: '×ª×§××', color: 'bg-green-500' },
-  { value: 'sweating', label: '×××¢×', color: 'bg-amber-500' },
-  { value: 'leaking', label: '× ×××', color: 'bg-orange-500' },
-  { value: 'replace', label: '×××××¤×', color: 'bg-red-500' },
+  { value: 'ok', label: 'ÃÂªÃÂ§ÃÂÃÂ', color: 'bg-green-500' },
+  { value: 'sweating', label: 'ÃÂÃÂÃÂ¢ÃÂ', color: 'bg-amber-500' },
+  { value: 'leaking', label: 'ÃÂ ÃÂÃÂÃÂ', color: 'bg-orange-500' },
+  { value: 'replace', label: 'ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ', color: 'bg-red-500' },
 ];
 
 function ShockStatusSelect({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
@@ -175,10 +175,10 @@ function ShockStatusSelect({ value, onChange, label }: { value: string; onChange
 
 // ====== Fluid Status Options ======
 const fluidStatusOptions = [
-  { value: 'ok', label: '×ª×§××', color: 'bg-green-500' },
-  { value: 'low', label: '××¡×¨', color: 'bg-amber-500' },
-  { value: 'dirty', label: '××××××', color: 'bg-orange-500' },
-  { value: 'replace', label: '×××××¤×', color: 'bg-red-500' },
+  { value: 'ok', label: 'ÃÂªÃÂ§ÃÂÃÂ', color: 'bg-green-500' },
+  { value: 'low', label: 'ÃÂÃÂ¡ÃÂ¨', color: 'bg-amber-500' },
+  { value: 'dirty', label: 'ÃÂÃÂÃÂÃÂÃÂÃÂ', color: 'bg-orange-500' },
+  { value: 'replace', label: 'ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ', color: 'bg-red-500' },
 ];
 
 function FluidStatusSelect({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
@@ -293,7 +293,7 @@ export default function NewInspectionPage() {
 
   // Step 8: Summary, Recommendations, Signature
   const [summary, setSummary] = useState('');
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([{ text: '', urgency: '××©×××¢××ª ××§×¨××××', estimatedCost: '' }]);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([{ text: '', urgency: 'ÃÂÃÂ©ÃÂÃÂÃÂ¢ÃÂÃÂª ÃÂÃÂ§ÃÂ¨ÃÂÃÂÃÂÃÂ', estimatedCost: '' }]);
   const [notesUndercar, setNotesUndercar] = useState('');
   const [notesEngine, setNotesEngine] = useState('');
   const [customerName, setCustomerName] = useState('');
@@ -303,7 +303,7 @@ export default function NewInspectionPage() {
   const [vehiclePhoto, setVehiclePhoto] = useState('');
   const [invoicePhoto, setInvoicePhoto] = useState('');
 
-  // Pre-test checklist (××× × ×××¡×) - each item has checked + notes
+  // Pre-test checklist (ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¡ÃÂ) - each item has checked + notes
   const [preTestChecklist, setPreTestChecklist] = useState<Record<string, boolean>>({
     tires: false, lights: false, brakes: false, mirrors: false, wipers: false,
     horn: false, seatbelts: false, exhaust: false, steering: false, suspension: false,
@@ -314,13 +314,13 @@ export default function NewInspectionPage() {
   const [preTestNotes, setPreTestNotes] = useState('');
   const [preTestWorkItems, setPreTestWorkItems] = useState<Array<{item: string; action: string; notes: string; cost: number | string}>>([]);
 
-  // Service form (×××¤×× ×ª×§××¤×ª×)
+  // Service form (ÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ¤ÃÂªÃÂ)
   const [serviceItems, setServiceItems] = useState<string[]>([]);
   const [serviceNotes, setServiceNotes] = useState('');
   const [serviceRecommendations, setServiceRecommendations] = useState('');
   const [servicePhotos, setServicePhotos] = useState<string[]>([]);
 
-  // Troubleshoot form (×ª××§××/××××× ×ª×§××)
+  // Troubleshoot form (ÃÂªÃÂÃÂ§ÃÂÃÂ/ÃÂÃÂÃÂÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ)
   const [troubleshootProblem, setTroubleshootProblem] = useState('');
   const [troubleshootDiagnosis, setTroubleshootDiagnosis] = useState('');
   const [troubleshootFix, setTroubleshootFix] = useState('');
@@ -467,10 +467,10 @@ export default function NewInspectionPage() {
         }
       } else {
         const err = await res.json().catch(() => ({}));
-        setLookupError(err.error || '×¨×× ×× × ××¦×');
+        setLookupError(err.error || 'ÃÂ¨ÃÂÃÂ ÃÂÃÂ ÃÂ ÃÂÃÂ¦ÃÂ');
       }
     } catch {
-      setLookupError('×©×××× ××××¤××©. × ×¡× ×©××.');
+      setLookupError('ÃÂ©ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ©. ÃÂ ÃÂ¡ÃÂ ÃÂ©ÃÂÃÂ.');
     } finally {
       setLookupLoading(false);
     }
@@ -616,14 +616,14 @@ export default function NewInspectionPage() {
   // Build summary data for quick view
   const getSectionSummary = () => {
     const sections = [
-      { label: '×¦×××××', status: getMajorityStatus(Object.values(tires)) },
-      { label: '×××¨××ª', status: getMajorityStatus(Object.values(lights)) },
-      { label: '×¡×¨× ×§×××', status: getMajorityStatus(Object.values(frontAxleItems)) },
-      { label: '×××××', status: getMajorityStatus(Object.values(steeringItems)) },
-      { label: '××××××', status: getMajorityStatus(Object.values(shocksData)) },
-      { label: '××¨××', status: bodyTags.length > 0 ? (bodyTags.some(t => t.includes('×ª××× ×') || t.includes('××¢××') || t.includes('×××××')) ? 'critical' : 'warning') : 'ok' },
-      { label: '× ×××××', status: getMajorityStatus(Object.values(fluids)) },
-      { label: '×××× ××ª', status: getMajorityStatus(Object.values(windows)) },
+      { label: 'ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ', status: getMajorityStatus(Object.values(tires)) },
+      { label: 'ÃÂÃÂÃÂ¨ÃÂÃÂª', status: getMajorityStatus(Object.values(lights)) },
+      { label: 'ÃÂ¡ÃÂ¨ÃÂ ÃÂ§ÃÂÃÂÃÂ', status: getMajorityStatus(Object.values(frontAxleItems)) },
+      { label: 'ÃÂÃÂÃÂÃÂÃÂ', status: getMajorityStatus(Object.values(steeringItems)) },
+      { label: 'ÃÂÃÂÃÂÃÂÃÂÃÂ', status: getMajorityStatus(Object.values(shocksData)) },
+      { label: 'ÃÂÃÂ¨ÃÂÃÂ', status: bodyTags.length > 0 ? (bodyTags.some(t => t.includes('ÃÂªÃÂÃÂÃÂ ÃÂ') || t.includes('ÃÂÃÂ¢ÃÂÃÂ') || t.includes('ÃÂÃÂÃÂÃÂÃÂ')) ? 'critical' : 'warning') : 'ok' },
+      { label: 'ÃÂ ÃÂÃÂÃÂÃÂÃÂ', status: getMajorityStatus(Object.values(fluids)) },
+      { label: 'ÃÂÃÂÃÂÃÂ ÃÂÃÂª', status: getMajorityStatus(Object.values(windows)) },
     ];
     return sections;
   };
@@ -642,7 +642,7 @@ export default function NewInspectionPage() {
     try {
       setLoading(true);
       setError('');
-      if (!selectedVehicleId && !isManualVehicleValid) { setError('××© ×××××¨ ×¨×× ×× ××××× ××¡×¤×¨ ×¨××©××'); return; }
+      if (!selectedVehicleId && !isManualVehicleValid) { setError('ÃÂÃÂ© ÃÂÃÂÃÂÃÂÃÂ¨ ÃÂ¨ÃÂÃÂ ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¡ÃÂ¤ÃÂ¨ ÃÂ¨ÃÂÃÂ©ÃÂÃÂ'); return; }
 
       // Base payload (common to all types)
       const basePayload: any = {
@@ -691,9 +691,7 @@ export default function NewInspectionPage() {
           summary: summary || undefined,
           recommendations: recommendations.filter(r => r.text.trim()),
           notes: { undercarriage: notesUndercar || undercarNotes, engine: notesEngine, general: summary },
-          customerName: customerName || undefined,
-          customerIdNumber: customerIdNumber || undefined,
-          customerSignature: signatureData || undefined,
+          // Customer signature removed - customer signs via app after receiving the report
         };
       } else if (inspectionType === 'pre_test') {
         const passedCount = Object.values(preTestChecklist).filter(v => v).length;
@@ -712,7 +710,7 @@ export default function NewInspectionPage() {
             notes: w.notes || undefined,
             cost: w.cost ? Number(w.cost) : undefined,
           })),
-          summary: `××× × ×××¡× - ${passedCount}/${totalCount} ×ª×§××${workCount > 0 ? ` | ${workCount} ×¢×××××ª ×××¦×¢×` : ''}`,
+          summary: `ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¡ÃÂ - ${passedCount}/${totalCount} ÃÂªÃÂ§ÃÂÃÂ${workCount > 0 ? ` | ${workCount} ÃÂ¢ÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂ¦ÃÂ¢ÃÂ` : ''}`,
           overallScore: Math.round((passedCount / totalCount) * 100),
         };
       } else if (inspectionType === 'periodic') {
@@ -724,7 +722,7 @@ export default function NewInspectionPage() {
           serviceNotes: serviceNotes || undefined,
           serviceRecommendations: serviceRecommendations || undefined,
           servicePhotos: servicePhotos.length > 0 ? servicePhotos : undefined,
-          summary: `×××¤×× ×ª×§××¤×ª× - ${serviceItems.length} ×¤×¢××××ª ×××¦×¢×`,
+          summary: `ÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ¤ÃÂªÃÂ - ${serviceItems.length} ÃÂ¤ÃÂ¢ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂ¦ÃÂ¢ÃÂ`,
         };
       } else if (inspectionType === 'troubleshoot') {
         payload = {
@@ -738,7 +736,7 @@ export default function NewInspectionPage() {
             parts: troubleshootParts || undefined,
             notes: troubleshootNotes || undefined,
           },
-          summary: troubleshootProblem ? `×ª××§××/×××××: ${troubleshootProblem.substring(0, 100)}` : '×ª××§××/××××× ×ª×§××',
+          summary: troubleshootProblem ? `ÃÂªÃÂÃÂ§ÃÂÃÂ/ÃÂÃÂÃÂÃÂÃÂ: ${troubleshootProblem.substring(0, 100)}` : 'ÃÂªÃÂÃÂ§ÃÂÃÂ/ÃÂÃÂÃÂÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ',
         };
       } else {
         payload = basePayload;
@@ -752,7 +750,7 @@ export default function NewInspectionPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || '×©×××× ××©×××¨×ª ×××××§×');
+        setError(data.error || 'ÃÂ©ÃÂÃÂÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂ¨ÃÂª ÃÂÃÂÃÂÃÂÃÂ§ÃÂ');
         return;
       }
 
@@ -760,7 +758,7 @@ export default function NewInspectionPage() {
       setSuccessId(data.inspection.id);
       setSuccessModal(true);
     } catch (err) {
-      setError('×©×××× ××©×××¨×ª ×××××§×');
+      setError('ÃÂ©ÃÂÃÂÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂ¨ÃÂª ÃÂÃÂÃÂÃÂÃÂ§ÃÂ');
       if (process.env.NODE_ENV === 'development') {
         console.error(err);
       }
@@ -768,18 +766,18 @@ export default function NewInspectionPage() {
   };
 
   const steps = [
-    { num: 1, label: '×¨××', icon: Car },
-    { num: 2, label: '×××¥', icon: Camera },
-    { num: 3, label: '×¤× ××', icon: Eye },
-    { num: 4, label: '×¦××××× ××××¨××ª', icon: Lightbulb },
-    { num: 5, label: '××× ×', icon: Wrench },
-    { num: 6, label: '× ××××× ××¤× ××', icon: Droplets },
-    { num: 7, label: '×× ××¢ ××××××', icon: Settings },
-    { num: 8, label: '×¡×××× ×××ª×××', icon: PenLine },
+    { num: 1, label: 'ÃÂ¨ÃÂÃÂ', icon: Car },
+    { num: 2, label: 'ÃÂÃÂÃÂ¥', icon: Camera },
+    { num: 3, label: 'ÃÂ¤ÃÂ ÃÂÃÂ', icon: Eye },
+    { num: 4, label: 'ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂª', icon: Lightbulb },
+    { num: 5, label: 'ÃÂÃÂÃÂ ÃÂ', icon: Wrench },
+    { num: 6, label: 'ÃÂ ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¤ÃÂ ÃÂÃÂ', icon: Droplets },
+    { num: 7, label: 'ÃÂÃÂ ÃÂÃÂ¢ ÃÂÃÂÃÂÃÂÃÂÃÂ', icon: Settings },
+    { num: 8, label: 'ÃÂ¡ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂªÃÂÃÂÃÂ', icon: PenLine },
   ];
 
   const overallScore = calculateOverallScore();
-  const scoreLabel = overallScore >= 80 ? '×ª×§××' : overallScore >= 50 ? '×××¨×© ×ª×©×××ª ××' : overallScore > 0 ? '×× ×ª×§××' : '';
+  const scoreLabel = overallScore >= 80 ? 'ÃÂªÃÂ§ÃÂÃÂ' : overallScore >= 50 ? 'ÃÂÃÂÃÂ¨ÃÂ© ÃÂªÃÂ©ÃÂÃÂÃÂª ÃÂÃÂ' : overallScore > 0 ? 'ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ' : '';
   const scoreColor = overallScore >= 80 ? 'text-green-600' : overallScore >= 50 ? 'text-amber-600' : 'text-red-600';
 
   return (
@@ -791,9 +789,9 @@ export default function NewInspectionPage() {
         </div>
         <div>
           <h1 className="text-lg sm:text-2xl font-bold text-[#1e3a5f]">
-            {step === 0 ? '×¤×¢××× ×××©×' : inspectionTypes.find(t => t.value === inspectionType)?.label || '××××§× ×××©×'}
+            {step === 0 ? 'ÃÂ¤ÃÂ¢ÃÂÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ' : inspectionTypes.find(t => t.value === inspectionType)?.label || 'ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂÃÂÃÂ©ÃÂ'}
           </h1>
-          <p className="text-sm text-gray-500">×××¦××¢ ××××§× ×××××× ×××¦×××</p>
+          <p className="text-sm text-gray-500">ÃÂÃÂÃÂ¦ÃÂÃÂ¢ ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ</p>
         </div>
       </div>
 
@@ -810,7 +808,7 @@ export default function NewInspectionPage() {
       {/* Score Bar - only for full inspection */}
       {inspectionType === 'full' && overallScore > 0 && step > 0 && (
         <div className="bg-slate-800 rounded-xl p-3 sm:p-4 text-center text-white">
-          <div className="text-xs sm:text-sm opacity-80">×¦××× ××××</div>
+          <div className="text-xs sm:text-sm opacity-80">ÃÂ¦ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ</div>
           <div className={`text-3xl sm:text-4xl font-bold ${overallScore >= 80 ? 'text-green-400' : overallScore >= 50 ? 'text-amber-400' : 'text-red-400'}`}>{overallScore}</div>
           <div className="text-xs sm:text-sm opacity-80">{scoreLabel}</div>
         </div>
@@ -843,7 +841,7 @@ export default function NewInspectionPage() {
       {/* ====== STEP 0: Choose Action Type ====== */}
       {step === 0 && (
         <Card>
-          <CardTitle icon={<Shield className="text-teal-600" />}>×××¨ ×¡×× ×¤×¢×××</CardTitle>
+          <CardTitle icon={<Shield className="text-teal-600" />}>ÃÂÃÂÃÂ¨ ÃÂ¡ÃÂÃÂ ÃÂ¤ÃÂ¢ÃÂÃÂÃÂ</CardTitle>
           <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-4">
             {inspectionTypes.map(t => (
               <button key={t.value} onClick={() => { setInspectionType(t.value); setStep(1); }}
@@ -863,24 +861,24 @@ export default function NewInspectionPage() {
       {step === 1 && (
         <>
           <Card>
-            <CardTitle icon={<Car className="text-teal-600" />}>×¤×¨×× ×¨×× ×××××§×</CardTitle>
+            <CardTitle icon={<Car className="text-teal-600" />}>ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ§ÃÂ</CardTitle>
             <div className="space-y-4 mt-4">
 
               {/* Vehicle Mode Selector */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">×××¨ ×¨××</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">ÃÂÃÂÃÂ¨ ÃÂ¨ÃÂÃÂ</label>
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   <button onClick={() => setVehicleMode('select')}
                     className={`flex items-center justify-center gap-2 p-3 rounded-xl text-xs font-medium transition border-2 ${
                       vehicleMode === 'select' ? 'border-teal-600 bg-teal-50 text-teal-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
                     }`}>
-                    <Search size={14} /> ×××¨ ××¨×©×××
+                    <Search size={14} /> ÃÂÃÂÃÂ¨ ÃÂÃÂ¨ÃÂ©ÃÂÃÂÃÂ
                   </button>
                   <button onClick={() => setVehicleMode('manual')}
                     className={`flex items-center justify-center gap-2 p-3 rounded-xl text-xs font-medium transition border-2 ${
                       vehicleMode === 'manual' ? 'border-teal-600 bg-teal-50 text-teal-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
                     }`}>
-                    <Keyboard size={14} /> ××× × ××× ××ª
+                    <Keyboard size={14} /> ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ ÃÂÃÂª
                   </button>
                 </div>
 
@@ -892,7 +890,7 @@ export default function NewInspectionPage() {
                     ) : vehicles.length > 0 ? (
                       <select value={selectedVehicleId} onChange={e => { setSelectedVehicleId(e.target.value); setManualPlate(''); }}
                         className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400">
-                        <option value="">-- ×××¨ ×¨×× --</option>
+                        <option value="">-- ÃÂÃÂÃÂ¨ ÃÂ¨ÃÂÃÂ --</option>
                         {vehicles.map(v => (
                           <option key={v.id} value={v.id}>
                             {v.nickname || `${v.manufacturer || ''} ${v.model || ''}`} ({v.licensePlate})
@@ -901,15 +899,15 @@ export default function NewInspectionPage() {
                       </select>
                     ) : (
                       <div className="text-center py-4 bg-gray-50 rounded-xl">
-                        <p className="text-sm text-gray-500 mb-2">××× ×¨×××× ××¨×©×××</p>
+                        <p className="text-sm text-gray-500 mb-2">ÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂ¨ÃÂ©ÃÂÃÂÃÂ</p>
                         <button onClick={() => setVehicleMode('manual')}
-                          className="text-teal-600 text-sm font-medium hover:underline">××× ××¡×¤×¨ ×¨×× ××× ××ª</button>
+                          className="text-teal-600 text-sm font-medium hover:underline">ÃÂÃÂÃÂ ÃÂÃÂ¡ÃÂ¤ÃÂ¨ ÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂª</button>
                       </div>
                     )}
                     {vehicles.length > 0 && (
                       <button onClick={() => setVehicleMode('manual')}
                         className="text-sm text-teal-600 hover:underline mt-2 flex items-center gap-1">
-                        <Plus size={12} /> ×¨×× ×× ××¨×©×××? ××× ××× ××ª
+                        <Plus size={12} /> ÃÂ¨ÃÂÃÂ ÃÂÃÂ ÃÂÃÂ¨ÃÂ©ÃÂÃÂÃÂ? ÃÂÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂª
                       </button>
                     )}
                   </>
@@ -920,24 +918,24 @@ export default function NewInspectionPage() {
                   <div className="space-y-3 p-4 bg-blue-50/50 rounded-xl border border-blue-200">
                     {scanPreview && (
                       <div className="flex items-center gap-3 mb-2">
-                        <img src={scanPreview} alt="×¡×¨××§×" className="w-16 h-12 object-cover rounded-lg border" />
+                        <img src={scanPreview} alt="ÃÂ¡ÃÂ¨ÃÂÃÂ§ÃÂ" className="w-16 h-12 object-cover rounded-lg border" />
                         <div className="flex-1">
                           {scanLoading ? (
                             <div className="flex items-center gap-2 text-sm text-teal-600">
-                              <Loader2 size={14} className="animate-spin" /> ×××× ×¤×¨×× ×¨××...
+                              <Loader2 size={14} className="animate-spin" /> ÃÂÃÂÃÂÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂ¨ÃÂÃÂ...
                             </div>
                           ) : (
-                            <p className="text-xs text-green-600 font-medium">â ×××× ×¤×¨××× ×××ª××× ×</p>
+                            <p className="text-xs text-green-600 font-medium">Ã¢ÂÂ ÃÂÃÂÃÂÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂÃÂ ÃÂÃÂÃÂªÃÂÃÂÃÂ ÃÂ</p>
                           )}
                         </div>
                       </div>
                     )}
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">××¡×¤×¨ ×¨××©×× *</label>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">ÃÂÃÂ¡ÃÂ¤ÃÂ¨ ÃÂ¨ÃÂÃÂ©ÃÂÃÂ *</label>
                       <div className="relative">
                         <input type="text" value={manualPlate}
                           onChange={e => { setManualPlate(e.target.value); setLookupDone(false); setLookupError(''); }}
-                          placeholder="×××©×: 7198738"
+                          placeholder="ÃÂÃÂÃÂ©ÃÂ: 7198738"
                           className={`w-full rounded-xl border px-3 py-2.5 text-lg font-mono text-center tracking-widest focus:ring-2 focus:ring-teal-400 ${
                             lookupDone ? 'border-green-400 bg-green-50/50' : lookupError ? 'border-red-300' : 'border-gray-300'
                           }`}
@@ -948,7 +946,7 @@ export default function NewInspectionPage() {
                           ) : manualPlate.replace(/[-\s]/g, '').length >= 5 && !lookupDone ? (
                             <button type="button" onClick={() => lookupVehicle(manualPlate)}
                               className="flex items-center gap-1 px-2 py-1 bg-teal-600 text-white rounded-lg text-xs font-medium hover:bg-teal-700 transition">
-                              <Search size={12} /> ×©×××£
+                              <Search size={12} /> ÃÂ©ÃÂÃÂÃÂ£
                             </button>
                           ) : lookupDone ? (
                             <Check size={18} className="text-green-500" />
@@ -956,10 +954,10 @@ export default function NewInspectionPage() {
                         </div>
                       </div>
                       {lookupLoading && (
-                        <p className="text-xs text-teal-600 mt-1 text-center animate-pulse">×©×××£ × ×ª×× ×× ×××©×¨× ××ª××××¨×...</p>
+                        <p className="text-xs text-teal-600 mt-1 text-center animate-pulse">ÃÂ©ÃÂÃÂÃÂ£ ÃÂ ÃÂªÃÂÃÂ ÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ¨ÃÂ ÃÂÃÂªÃÂÃÂÃÂÃÂ¨ÃÂ...</p>
                       )}
                       {lookupDone && (
-                        <p className="text-xs text-green-600 mt-1 text-center font-medium">â ×¤×¨×× ××¨×× × ×©××¤× ×××¦××× ×××©×¨× ××ª××××¨×</p>
+                        <p className="text-xs text-green-600 mt-1 text-center font-medium">Ã¢ÂÂ ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂÃÂ¨ÃÂÃÂ ÃÂ ÃÂ©ÃÂÃÂ¤ÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ¨ÃÂ ÃÂÃÂªÃÂÃÂÃÂÃÂ¨ÃÂ</p>
                       )}
                       {lookupError && (
                         <p className="text-xs text-red-500 mt-1 text-center">{lookupError}</p>
@@ -967,36 +965,36 @@ export default function NewInspectionPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">××¦×¨×</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">ÃÂÃÂ¦ÃÂ¨ÃÂ</label>
                         <input type="text" value={manualManufacturer} onChange={e => setManualManufacturer(e.target.value)}
-                          placeholder="×××©×: KIA" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualManufacturer ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
+                          placeholder="ÃÂÃÂÃÂ©ÃÂ: KIA" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualManufacturer ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">×××</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">ÃÂÃÂÃÂ</label>
                         <input type="text" value={manualModel} onChange={e => setManualModel(e.target.value)}
-                          placeholder="×××©×: SPORTAGE" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualModel ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
+                          placeholder="ÃÂÃÂÃÂ©ÃÂ: SPORTAGE" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualModel ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">×©× ×</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">ÃÂ©ÃÂ ÃÂ</label>
                         <input type="text" value={manualYear} onChange={e => setManualYear(e.target.value)}
                           placeholder="2024" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualYear ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="ltr" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">×¦××¢</label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">ÃÂ¦ÃÂÃÂ¢</label>
                         <input type="text" value={manualColor} onChange={e => setManualColor(e.target.value)}
-                          placeholder="×××" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualColor ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
+                          placeholder="ÃÂÃÂÃÂ" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualColor ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
                       </div>
                     </div>
                     <div className="flex gap-2">
                       <button onClick={() => { setVehicleMode('scan'); handleScanPhoto(); }}
                         className="flex items-center gap-1 px-3 py-2 bg-white rounded-lg border border-gray-300 text-xs text-gray-600 hover:bg-[#fef7ed]/50 transition">
-                        <Camera size={14} /> ×¦×× ×¨××©××× ×¨××
+                        <Camera size={14} /> ÃÂ¦ÃÂÃÂ ÃÂ¨ÃÂÃÂ©ÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂ
                       </button>
                       <button onClick={() => { setVehicleMode('select'); setManualPlate(''); setScanPreview(''); }}
                         className="flex items-center gap-1 px-3 py-2 text-xs text-gray-500 hover:underline">
-                        ××××¨ ×××××¨× ××¨×©×××
+                        ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂ¨ÃÂ©ÃÂÃÂÃÂ
                       </button>
                     </div>
                   </div>
@@ -1008,16 +1006,16 @@ export default function NewInspectionPage() {
                     {scanLoading ? (
                       <>
                         <Loader2 size={32} className="animate-spin text-teal-600 mb-3" />
-                        <p className="text-sm text-gray-600">×××× ×¤×¨×× ×¨×× ×××ª××× ×...</p>
-                        <p className="text-xs text-gray-400 mt-1">×¢×××× AI</p>
+                        <p className="text-sm text-gray-600">ÃÂÃÂÃÂÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂªÃÂÃÂÃÂ ÃÂ...</p>
+                        <p className="text-xs text-gray-400 mt-1">ÃÂ¢ÃÂÃÂÃÂÃÂ AI</p>
                       </>
                     ) : scanPreview ? (
                       <>
                         <img src={scanPreview} alt="scan" className="w-40 h-28 object-cover rounded-lg mb-3 border" />
-                        <p className="text-sm text-gray-600 mb-2">×× ×××× ×¤×¨×××. ××× ××× ××ª:</p>
+                        <p className="text-sm text-gray-600 mb-2">ÃÂÃÂ ÃÂÃÂÃÂÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂÃÂ. ÃÂÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂª:</p>
                         <button onClick={() => setVehicleMode('manual')}
                           className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition">
-                          ××× × ××× ××ª
+                          ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ ÃÂÃÂª
                         </button>
                       </>
                     ) : (
@@ -1025,20 +1023,20 @@ export default function NewInspectionPage() {
                         <div className="w-16 h-16 bg-teal-100 rounded-2xl flex items-center justify-center mb-4">
                           <Camera size={28} className="text-teal-600" />
                         </div>
-                        <p className="text-sm font-medium text-gray-700 mb-1">×¦×× ×××××ª ×¨××©×× ×× ×¨××©××× ×¨××</p>
-                        <p className="text-xs text-gray-400 mb-4">××¤×¨××× ×××××× ××××××××ª ××××¦×¢××ª AI</p>
+                        <p className="text-sm font-medium text-gray-700 mb-1">ÃÂ¦ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂª ÃÂ¨ÃÂÃÂ©ÃÂÃÂ ÃÂÃÂ ÃÂ¨ÃÂÃÂ©ÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂ</p>
+                        <p className="text-xs text-gray-400 mb-4">ÃÂÃÂ¤ÃÂ¨ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ¦ÃÂ¢ÃÂÃÂª AI</p>
                         <div className="flex gap-3">
                           <button onClick={handleScanPhoto}
                             className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-medium hover:bg-teal-700 transition">
-                            <Camera size={16} /> ×¦×× ×ª××× ×
+                            <Camera size={16} /> ÃÂ¦ÃÂÃÂ ÃÂªÃÂÃÂÃÂ ÃÂ
                           </button>
                           <button onClick={() => setVehicleMode('manual')}
                             className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-600 rounded-xl text-sm font-medium hover:bg-[#fef7ed]/50 transition">
-                            <Keyboard size={16} /> ××× × ××× ××ª
+                            <Keyboard size={16} /> ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ ÃÂÃÂª
                           </button>
                         </div>
                         <button onClick={() => setVehicleMode('select')}
-                          className="text-xs text-gray-400 hover:underline mt-3">××××¨ ×××××¨× ××¨×©×××</button>
+                          className="text-xs text-gray-400 hover:underline mt-3">ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂ¨ÃÂ©ÃÂÃÂÃÂ</button>
                       </>
                     )}
                   </div>
@@ -1046,16 +1044,16 @@ export default function NewInspectionPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Input label="×§××××××¨××'" placeholder="140,000" value={mileage} onChange={e => setMileage(e.target.value)} />
-                <Input label="×©× ××× ××§" placeholder="×©× ×××× ××§" value={mechanicName} onChange={e => setMechanicName(e.target.value)} />
+                <Input label="ÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂ'" placeholder="140,000" value={mileage} onChange={e => setMileage(e.target.value)} />
+                <Input label="ÃÂ©ÃÂ ÃÂÃÂÃÂ ÃÂÃÂ§" placeholder="ÃÂ©ÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂ§" value={mechanicName} onChange={e => setMechanicName(e.target.value)} />
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <Input label="××¡×¤×¨ ×× ××¢" placeholder="Hw523h" value={engineNumber} onChange={e => setEngineNumber(e.target.value)} />
+                <Input label="ÃÂÃÂ¡ÃÂ¤ÃÂ¨ ÃÂÃÂ ÃÂÃÂ¢" placeholder="Hw523h" value={engineNumber} onChange={e => setEngineNumber(e.target.value)} />
                 <div className="flex items-end pb-1">
                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                     <input type="checkbox" checked={engineVerified} onChange={e => setEngineVerified(e.target.checked)}
                       className="w-4 h-4 text-teal-600 rounded" />
-                    <span>××××ª ×¢"× ×××× ××</span>
+                    <span>ÃÂÃÂÃÂÃÂª ÃÂ¢"ÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂ</span>
                   </label>
                 </div>
               </div>
@@ -1067,15 +1065,15 @@ export default function NewInspectionPage() {
       {/* ====== STEP 2: Exterior Photos ====== */}
       {inspectionType === 'full' && step === 2 && (
         <Card>
-          <CardTitle icon={<Camera className="text-teal-600" />}>×ª××× ××ª ×××¥</CardTitle>
-          <p className="text-sm text-gray-500 mt-1 mb-4">×¦×× ××ª ××¨×× ××× ××¦××××</p>
+          <CardTitle icon={<Camera className="text-teal-600" />}>ÃÂªÃÂÃÂÃÂ ÃÂÃÂª ÃÂÃÂÃÂ¥</CardTitle>
+          <p className="text-sm text-gray-500 mt-1 mb-4">ÃÂ¦ÃÂÃÂ ÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂ¦ÃÂÃÂÃÂÃÂ</p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { key: 'front', label: '××××ª' },
-              { key: 'rear', label: '××××¨×' },
-              { key: 'right', label: '××××' },
-              { key: 'left', label: '×©×××' },
-              { key: 'roof', label: '××' },
+              { key: 'front', label: 'ÃÂÃÂÃÂÃÂª' },
+              { key: 'rear', label: 'ÃÂÃÂÃÂÃÂ¨ÃÂ' },
+              { key: 'right', label: 'ÃÂÃÂÃÂÃÂ' },
+              { key: 'left', label: 'ÃÂ©ÃÂÃÂÃÂ' },
+              { key: 'roof', label: 'ÃÂÃÂ' },
             ].map(({ key, label }) => (
               <button key={key} onClick={() => handlePhotoUpload('exterior', key)}
                 className="relative aspect-[4/3] bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 transition flex flex-col items-center justify-center overflow-hidden">
@@ -1094,13 +1092,13 @@ export default function NewInspectionPage() {
       {/* ====== STEP 3: Interior Photos ====== */}
       {inspectionType === 'full' && step === 3 && (
         <Card>
-          <CardTitle icon={<Eye className="text-teal-600" />}>×ª××× ××ª ×¤× ××</CardTitle>
-          <p className="text-sm text-gray-500 mt-1 mb-4">×¦×× ××ª ×¤× ×× ××¨××</p>
+          <CardTitle icon={<Eye className="text-teal-600" />}>ÃÂªÃÂÃÂÃÂ ÃÂÃÂª ÃÂ¤ÃÂ ÃÂÃÂ</CardTitle>
+          <p className="text-sm text-gray-500 mt-1 mb-4">ÃÂ¦ÃÂÃÂ ÃÂÃÂª ÃÂ¤ÃÂ ÃÂÃÂ ÃÂÃÂ¨ÃÂÃÂ</p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { key: 'frontSeats', label: '×××©××× ×§×××××' },
-              { key: 'rearSeats', label: '×××©××× ××××¨×××' },
-              { key: 'dashboard', label: '××× ××××× ××' },
+              { key: 'frontSeats', label: 'ÃÂÃÂÃÂ©ÃÂÃÂÃÂ ÃÂ§ÃÂÃÂÃÂÃÂÃÂ' },
+              { key: 'rearSeats', label: 'ÃÂÃÂÃÂ©ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂ' },
+              { key: 'dashboard', label: 'ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ' },
             ].map(({ key, label }) => (
               <button key={key} onClick={() => handlePhotoUpload('interior', key)}
                 className="relative aspect-[4/3] bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 transition flex flex-col items-center justify-center overflow-hidden">
@@ -1120,33 +1118,33 @@ export default function NewInspectionPage() {
       {inspectionType === 'full' && step === 4 && (
         <>
           <Card>
-            <CardTitle icon={<CircleDot className="text-teal-600" />}>××¦× ×¦×××××</CardTitle>
+            <CardTitle icon={<CircleDot className="text-teal-600" />}>ÃÂÃÂ¦ÃÂ ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ</CardTitle>
             <div className="space-y-2 mt-3">
-              <TireStatusSelect label="×§××× ×©×××" value={tires.frontLeft} onChange={v => setTires(p => ({ ...p, frontLeft: v }))} />
-              <TireStatusSelect label="×§××× ××××" value={tires.frontRight} onChange={v => setTires(p => ({ ...p, frontRight: v }))} />
-              <TireStatusSelect label="××××¨× ×©×××" value={tires.rearLeft} onChange={v => setTires(p => ({ ...p, rearLeft: v }))} />
-              <TireStatusSelect label="××××¨× ××××" value={tires.rearRight} onChange={v => setTires(p => ({ ...p, rearRight: v }))} />
-              <VoiceInput value={tiresNotes} onChange={setTiresNotes} placeholder="××¢×¨××ª ×¦×××××..." rows={2} />
+              <TireStatusSelect label="ÃÂ§ÃÂÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ" value={tires.frontLeft} onChange={v => setTires(p => ({ ...p, frontLeft: v }))} />
+              <TireStatusSelect label="ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ" value={tires.frontRight} onChange={v => setTires(p => ({ ...p, frontRight: v }))} />
+              <TireStatusSelect label="ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂ©ÃÂÃÂÃÂ" value={tires.rearLeft} onChange={v => setTires(p => ({ ...p, rearLeft: v }))} />
+              <TireStatusSelect label="ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂÃÂÃÂ" value={tires.rearRight} onChange={v => setTires(p => ({ ...p, rearRight: v }))} />
+              <VoiceInput value={tiresNotes} onChange={setTiresNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle icon={<Lightbulb className="text-teal-600" />}>××××§×ª ×××¨××ª ×××××× ××</CardTitle>
+            <CardTitle icon={<Lightbulb className="text-teal-600" />}>ÃÂÃÂÃÂÃÂ§ÃÂª ÃÂÃÂÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ</CardTitle>
             <div className="space-y-2 mt-3">
               {[
-                { key: 'brakes', label: '×××××' },
-                { key: 'reverse', label: '×××¨ ×¨×××¨×¡' },
-                { key: 'fog', label: '×¢×¨×¤×' },
-                { key: 'headlights', label: '×××¨ ××¨×' },
-                { key: 'frontSignal', label: '×××ª××ª ×§×××' },
-                { key: 'rearSignal', label: '×××ª××ª ××××¨×' },
-                { key: 'highBeam', label: '×××¨ ××××' },
-                { key: 'plate', label: '×××××ª' },
+                { key: 'brakes', label: 'ÃÂÃÂÃÂÃÂÃÂ' },
+                { key: 'reverse', label: 'ÃÂÃÂÃÂ¨ ÃÂ¨ÃÂÃÂÃÂ¨ÃÂ¡' },
+                { key: 'fog', label: 'ÃÂ¢ÃÂ¨ÃÂ¤ÃÂ' },
+                { key: 'headlights', label: 'ÃÂÃÂÃÂ¨ ÃÂÃÂ¨ÃÂ' },
+                { key: 'frontSignal', label: 'ÃÂÃÂÃÂªÃÂÃÂª ÃÂ§ÃÂÃÂÃÂ' },
+                { key: 'rearSignal', label: 'ÃÂÃÂÃÂªÃÂÃÂª ÃÂÃÂÃÂÃÂ¨ÃÂ' },
+                { key: 'highBeam', label: 'ÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ' },
+                { key: 'plate', label: 'ÃÂÃÂÃÂÃÂÃÂª' },
               ].map(({ key, label }) => (
                 <LightStatusSelect key={key} label={label}
                   value={(lights as any)[key]}
                   onChange={v => setLights(p => ({ ...p, [key]: v }))} />
               ))}
-              <VoiceInput value={lightsNotes} onChange={setLightsNotes} placeholder="××¢×¨××ª ×××¨××ª..." rows={2} />
+              <VoiceInput value={lightsNotes} onChange={setLightsNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂ¨ÃÂÃÂª..." rows={2} />
             </div>
           </Card>
         </>
@@ -1156,97 +1154,97 @@ export default function NewInspectionPage() {
       {inspectionType === 'full' && step === 5 && (
         <>
           <Card>
-            <CardTitle icon={<Settings className="text-teal-600" />}>×¡×¨× ×§×××</CardTitle>
+            <CardTitle icon={<Settings className="text-teal-600" />}>ÃÂ¡ÃÂ¨ÃÂ ÃÂ§ÃÂÃÂÃÂ</CardTitle>
             <div className="space-y-2 mt-3">
               {[
-                { key: 'stabilizerBars', label: '×××××ª ××××¦×' },
-                { key: 'controlArms', label: '××¨××¢××ª' },
-                { key: 'bushings', label: '××××××ª' },
-                { key: 'wheelBearings', label: '×××¡×× ××××' },
+                { key: 'stabilizerBars', label: 'ÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ¦ÃÂ' },
+                { key: 'controlArms', label: 'ÃÂÃÂ¨ÃÂÃÂ¢ÃÂÃÂª' },
+                { key: 'bushings', label: 'ÃÂÃÂÃÂÃÂÃÂÃÂª' },
+                { key: 'wheelBearings', label: 'ÃÂÃÂÃÂ¡ÃÂÃÂ ÃÂÃÂÃÂÃÂ' },
               ].map(({ key, label }) => (
                 <LightStatusSelect key={key} label={label}
                   value={frontAxleItems[key] || ''}
                   onChange={v => setFrontAxleItems(p => ({ ...p, [key]: v }))} />
               ))}
-              <VoiceInput value={frontAxleNotes} onChange={setFrontAxleNotes} placeholder="××¢×¨××ª ×¡×¨×..." rows={2} />
+              <VoiceInput value={frontAxleNotes} onChange={setFrontAxleNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ¡ÃÂ¨ÃÂ..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle icon={<Gauge className="text-teal-600" />}>××¢×¨××ª ×××××</CardTitle>
+            <CardTitle icon={<Gauge className="text-teal-600" />}>ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ</CardTitle>
             <div className="space-y-2 mt-3">
               {[
-                { key: 'steeringWheel', label: '××× (××©××§)' },
-                { key: 'pump', label: '××©×××ª ×××' },
-                { key: 'rack', label: '×ª×××ª ×××' },
-                { key: 'column', label: '×¢××× ×××' },
-                { key: 'alignment', label: '××××× (×××× ×× ×)' },
+                { key: 'steeringWheel', label: 'ÃÂÃÂÃÂ (ÃÂÃÂ©ÃÂÃÂ§)' },
+                { key: 'pump', label: 'ÃÂÃÂ©ÃÂÃÂÃÂª ÃÂÃÂÃÂ' },
+                { key: 'rack', label: 'ÃÂªÃÂÃÂÃÂª ÃÂÃÂÃÂ' },
+                { key: 'column', label: 'ÃÂ¢ÃÂÃÂÃÂ ÃÂÃÂÃÂ' },
+                { key: 'alignment', label: 'ÃÂÃÂÃÂÃÂÃÂ (ÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂ)' },
               ].map(({ key, label }) => (
                 <LightStatusSelect key={key} label={label}
                   value={steeringItems[key] || ''}
                   onChange={v => setSteeringItems(p => ({ ...p, [key]: v }))} />
               ))}
-              <VoiceInput value={steeringNotes} onChange={setSteeringNotes} placeholder="××¢×¨××ª ×××××..." rows={2} />
+              <VoiceInput value={steeringNotes} onChange={setSteeringNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>××¦× ××××××</CardTitle>
+            <CardTitle>ÃÂÃÂ¦ÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ</CardTitle>
             <div className="space-y-2 mt-3">
-              <ShockStatusSelect label="×§××× ×©×××" value={shocksData.frontLeft} onChange={v => setShocksData(p => ({ ...p, frontLeft: v }))} />
-              <ShockStatusSelect label="×§××× ××××" value={shocksData.frontRight} onChange={v => setShocksData(p => ({ ...p, frontRight: v }))} />
-              <ShockStatusSelect label="××××¨× ×©×××" value={shocksData.rearLeft} onChange={v => setShocksData(p => ({ ...p, rearLeft: v }))} />
-              <ShockStatusSelect label="××××¨× ××××" value={shocksData.rearRight} onChange={v => setShocksData(p => ({ ...p, rearRight: v }))} />
-              <VoiceInput value={shocksNotes} onChange={setShocksNotes} placeholder="××¢×¨××ª ××××××..." rows={2} />
+              <ShockStatusSelect label="ÃÂ§ÃÂÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ" value={shocksData.frontLeft} onChange={v => setShocksData(p => ({ ...p, frontLeft: v }))} />
+              <ShockStatusSelect label="ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ" value={shocksData.frontRight} onChange={v => setShocksData(p => ({ ...p, frontRight: v }))} />
+              <ShockStatusSelect label="ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂ©ÃÂÃÂÃÂ" value={shocksData.rearLeft} onChange={v => setShocksData(p => ({ ...p, rearLeft: v }))} />
+              <ShockStatusSelect label="ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂÃÂÃÂ" value={shocksData.rearRight} onChange={v => setShocksData(p => ({ ...p, rearRight: v }))} />
+              <VoiceInput value={shocksNotes} onChange={setShocksNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂ..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>×©×××× ×××¨××</CardTitle>
+            <CardTitle>ÃÂ©ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨ÃÂÃÂ</CardTitle>
             <div className="space-y-3 mt-3">
-              <p className="text-xs text-gray-500 text-right">×¡×× ××ª ×× ××××¦××× ××¨×××× ××××:</p>
+              <p className="text-xs text-gray-500 text-right">ÃÂ¡ÃÂÃÂ ÃÂÃÂª ÃÂÃÂ ÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂ ÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ:</p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  '×ª×§×× - ××× ×××¦×××',
-                  '×ª××× × ×××¤× ××',
-                  '×ª××× × ×××××¨',
-                  '×ª××× × ×¦× ××××',
-                  '×ª××× × ×¦× ×©×××',
-                  '×¤× ×§××× ××ª××§×',
-                  '×¤× ×§××× ××¢××',
-                  '×¤× ××××¨× ××ª××§×',
-                  '×¤× ××××¨× ××¢××',
-                  '×ª××§×× × ×¤× ××¦××¢',
-                  '×××××¤× ×××§× ××¨××',
-                  '×× ×£ ×××× ×××××¤×ª',
-                  '×× ×£ ×©××× ×××××¤×ª',
-                  '×××ª ×××××¤×ª',
-                  '×××¡× ×× ××¢ ×××××£',
-                  '×ª× ×××¢× ××ª××§×',
-                  '××××× ××©××××',
-                  '××××× ××ª××ª××ª',
-                  '×¨××ª××××',
-                  '×¤×××© ×§××× ×¤×××',
-                  '×¤×××© ××××¨× ×¤×××',
-                  '×¡××§ ××©××©×',
-                  '×©××× ×¢×§×××',
+                  'ÃÂªÃÂ§ÃÂÃÂ - ÃÂÃÂÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ',
+                  'ÃÂªÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¤ÃÂ ÃÂÃÂ',
+                  'ÃÂªÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂÃÂÃÂ¨',
+                  'ÃÂªÃÂÃÂÃÂ ÃÂ ÃÂ¦ÃÂ ÃÂÃÂÃÂÃÂ',
+                  'ÃÂªÃÂÃÂÃÂ ÃÂ ÃÂ¦ÃÂ ÃÂ©ÃÂÃÂÃÂ',
+                  'ÃÂ¤ÃÂ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂªÃÂÃÂ§ÃÂ',
+                  'ÃÂ¤ÃÂ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ',
+                  'ÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂªÃÂÃÂ§ÃÂ',
+                  'ÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂ¢ÃÂÃÂ',
+                  'ÃÂªÃÂÃÂ§ÃÂÃÂ ÃÂ ÃÂ¤ÃÂ ÃÂÃÂ¦ÃÂÃÂ¢',
+                  'ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ ÃÂÃÂÃÂ§ÃÂ ÃÂÃÂ¨ÃÂÃÂ',
+                  'ÃÂÃÂ ÃÂ£ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ¤ÃÂª',
+                  'ÃÂÃÂ ÃÂ£ ÃÂ©ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ¤ÃÂª',
+                  'ÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ¤ÃÂª',
+                  'ÃÂÃÂÃÂ¡ÃÂ ÃÂÃÂ ÃÂÃÂ¢ ÃÂÃÂÃÂÃÂÃÂ£',
+                  'ÃÂªÃÂ ÃÂÃÂÃÂ¢ÃÂ ÃÂÃÂªÃÂÃÂ§ÃÂ',
+                  'ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂÃÂ',
+                  'ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂªÃÂÃÂªÃÂÃÂª',
+                  'ÃÂ¨ÃÂÃÂªÃÂÃÂÃÂÃÂ',
+                  'ÃÂ¤ÃÂÃÂÃÂ© ÃÂ§ÃÂÃÂÃÂ ÃÂ¤ÃÂÃÂÃÂ',
+                  'ÃÂ¤ÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂ¤ÃÂÃÂÃÂ',
+                  'ÃÂ¡ÃÂÃÂ§ ÃÂÃÂ©ÃÂÃÂ©ÃÂ',
+                  'ÃÂ©ÃÂÃÂÃÂ ÃÂ¢ÃÂ§ÃÂÃÂÃÂ',
                 ].map(tag => (
                   <button key={tag} onClick={() => setBodyTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
                       bodyTags.includes(tag)
-                        ? tag === '×ª×§×× - ××× ×××¦×××' ? 'bg-green-600 text-white' : 'bg-red-500 text-white'
+                        ? tag === 'ÃÂªÃÂ§ÃÂÃÂ - ÃÂÃÂÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ' ? 'bg-green-600 text-white' : 'bg-red-500 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}>{tag}</button>
                 ))}
               </div>
-              <VoiceInput value={bodyNotes} onChange={setBodyNotes} placeholder="××¢×¨××ª ××¨××..." rows={2} />
+              <VoiceInput value={bodyNotes} onChange={setBodyNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>××¦××¨</CardTitle>
+            <CardTitle>ÃÂÃÂ¦ÃÂÃÂ¨</CardTitle>
             <div className="space-y-3 mt-3">
               <div className="grid grid-cols-3 gap-1.5">
                 {[
-                  { value: 'original', label: '××§××¨×' },
-                  { value: 'not_visible', label: '×× × ××ª× ××¨×××ª' },
-                  { value: 'replaced', label: '×××××£' },
+                  { value: 'original', label: 'ÃÂÃÂ§ÃÂÃÂ¨ÃÂ' },
+                  { value: 'not_visible', label: 'ÃÂÃÂ ÃÂ ÃÂÃÂªÃÂ ÃÂÃÂ¨ÃÂÃÂÃÂª' },
+                  { value: 'replaced', label: 'ÃÂÃÂÃÂÃÂÃÂ£' },
                 ].map(opt => (
                   <button key={opt.value} onClick={() => setBatteryStatus(opt.value)}
                     className={`p-2.5 rounded-xl border-2 text-xs sm:text-sm font-medium text-center transition ${
@@ -1255,7 +1253,7 @@ export default function NewInspectionPage() {
                 ))}
               </div>
               <div>
-                <label className="block text-sm text-gray-600 text-right mb-1">×ª××¨×× ××¦××¨</label>
+                <label className="block text-sm text-gray-600 text-right mb-1">ÃÂªÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂ¦ÃÂÃÂ¨</label>
                 <input type="date" value={batteryDate} onChange={e => setBatteryDate(e.target.value)}
                   className="w-full rounded-xl border border-gray-300 p-3 text-sm" dir="ltr" />
               </div>
@@ -1268,31 +1266,31 @@ export default function NewInspectionPage() {
       {inspectionType === 'full' && step === 6 && (
         <>
           <Card>
-            <CardTitle icon={<Droplets className="text-teal-600" />}>× ×××× ×× ××¢</CardTitle>
+            <CardTitle icon={<Droplets className="text-teal-600" />}>ÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂÃÂ¢</CardTitle>
             <div className="space-y-2 mt-3">
-              <FluidStatusSelect label="× ××× ×××××" value={fluids.brakeFluid} onChange={v => setFluids(p => ({ ...p, brakeFluid: v }))} />
-              <FluidStatusSelect label="×©×× ×× ××¢" value={fluids.engineOil} onChange={v => setFluids(p => ({ ...p, engineOil: v }))} />
-              <FluidStatusSelect label="× ××× ×§××¨××¨" value={fluids.coolant} onChange={v => setFluids(p => ({ ...p, coolant: v }))} />
-              <VoiceInput value={fluidsNotes} onChange={setFluidsNotes} placeholder="××¢×¨××ª × ×××××..." rows={2} />
+              <FluidStatusSelect label="ÃÂ ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ" value={fluids.brakeFluid} onChange={v => setFluids(p => ({ ...p, brakeFluid: v }))} />
+              <FluidStatusSelect label="ÃÂ©ÃÂÃÂ ÃÂÃÂ ÃÂÃÂ¢" value={fluids.engineOil} onChange={v => setFluids(p => ({ ...p, engineOil: v }))} />
+              <FluidStatusSelect label="ÃÂ ÃÂÃÂÃÂ ÃÂ§ÃÂÃÂ¨ÃÂÃÂ¨" value={fluids.coolant} onChange={v => setFluids(p => ({ ...p, coolant: v }))} />
+              <VoiceInput value={fluidsNotes} onChange={setFluidsNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ ÃÂÃÂÃÂÃÂÃÂ..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle icon={<Wind className="text-teal-600" />}>××¢×¨×××ª ×¤× ×××××ª</CardTitle>
+            <CardTitle icon={<Wind className="text-teal-600" />}>ÃÂÃÂ¢ÃÂ¨ÃÂÃÂÃÂª ÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂÃÂª</CardTitle>
             <div className="space-y-2 mt-3">
-              <LightStatusSelect label="×××× - ×§××¨" value={interiorAcCold} onChange={setInteriorAcCold} />
-              <LightStatusSelect label="×××× - ×××" value={interiorAcHot} onChange={setInteriorAcHot} />
-              <LightStatusSelect label="××¢×¨××ª ×©××¢" value={interiorAudio} onChange={setInteriorAudio} />
-              <VoiceInput value={interiorNotes} onChange={setInteriorNotes} placeholder="××¢×¨××ª ××¢×¨×××ª ×¤× ×××××ª..." rows={2} />
+              <LightStatusSelect label="ÃÂÃÂÃÂÃÂ - ÃÂ§ÃÂÃÂ¨" value={interiorAcCold} onChange={setInteriorAcCold} />
+              <LightStatusSelect label="ÃÂÃÂÃÂÃÂ - ÃÂÃÂÃÂ" value={interiorAcHot} onChange={setInteriorAcHot} />
+              <LightStatusSelect label="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ©ÃÂÃÂ¢" value={interiorAudio} onChange={setInteriorAudio} />
+              <VoiceInput value={interiorNotes} onChange={setInteriorNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂ¢ÃÂ¨ÃÂÃÂÃÂª ÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂÃÂª..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>×××× ××ª ××©××</CardTitle>
+            <CardTitle>ÃÂÃÂÃÂÃÂ ÃÂÃÂª ÃÂÃÂ©ÃÂÃÂ</CardTitle>
             <div className="space-y-2 mt-3">
-              <LightStatusSelect label="××××¨× ×©×××" value={windows.rearLeft} onChange={v => setWindows(p => ({ ...p, rearLeft: v }))} />
-              <LightStatusSelect label="××××¨× ××××" value={windows.rearRight} onChange={v => setWindows(p => ({ ...p, rearRight: v }))} />
-              <LightStatusSelect label="×§××× ×©×××" value={windows.frontLeft} onChange={v => setWindows(p => ({ ...p, frontLeft: v }))} />
-              <LightStatusSelect label="×§××× ××××" value={windows.frontRight} onChange={v => setWindows(p => ({ ...p, frontRight: v }))} />
-              <VoiceInput value={windowsNotes} onChange={setWindowsNotes} placeholder="××¢×¨××ª ×××× ××ª..." rows={2} />
+              <LightStatusSelect label="ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂ©ÃÂÃÂÃÂ" value={windows.rearLeft} onChange={v => setWindows(p => ({ ...p, rearLeft: v }))} />
+              <LightStatusSelect label="ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂÃÂÃÂ" value={windows.rearRight} onChange={v => setWindows(p => ({ ...p, rearRight: v }))} />
+              <LightStatusSelect label="ÃÂ§ÃÂÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ" value={windows.frontLeft} onChange={v => setWindows(p => ({ ...p, frontLeft: v }))} />
+              <LightStatusSelect label="ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ" value={windows.frontRight} onChange={v => setWindows(p => ({ ...p, frontRight: v }))} />
+              <VoiceInput value={windowsNotes} onChange={setWindowsNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂ ÃÂÃÂª..." rows={2} />
             </div>
           </Card>
         </>
@@ -1302,50 +1300,50 @@ export default function NewInspectionPage() {
       {inspectionType === 'full' && step === 7 && (
         <>
           <Card>
-            <CardTitle className="text-red-600">××¢×××ª ×× ××¢</CardTitle>
+            <CardTitle className="text-red-600">ÃÂÃÂ¢ÃÂÃÂÃÂª ÃÂÃÂ ÃÂÃÂ¢</CardTitle>
             <div className="space-y-3 mt-3">
               <div className="flex flex-wrap gap-2">
                 {[
-                  '×¨×¢×© ×¨×¦××¢××ª', '××××¤×ª ×©××', '×¨×¢×© ×× ××¢', '××××× ××ª×¨', '×¢×©×',
-                  '×¨×¢××××ª', '××¨×××ª ×××', '× ××¨××ª CHECK ENGINE', '××¢×××ª ××ª× ×¢×',
-                  '×¦×¨×××ª ×××§ ×××××',
+                  'ÃÂ¨ÃÂ¢ÃÂ© ÃÂ¨ÃÂ¦ÃÂÃÂ¢ÃÂÃÂª', 'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ©ÃÂÃÂ', 'ÃÂ¨ÃÂ¢ÃÂ© ÃÂÃÂ ÃÂÃÂ¢', 'ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂªÃÂ¨', 'ÃÂ¢ÃÂ©ÃÂ',
+                  'ÃÂ¨ÃÂ¢ÃÂÃÂÃÂÃÂª', 'ÃÂÃÂ¨ÃÂÃÂÃÂª ÃÂÃÂÃÂ', 'ÃÂ ÃÂÃÂ¨ÃÂÃÂª CHECK ENGINE', 'ÃÂÃÂ¢ÃÂÃÂÃÂª ÃÂÃÂªÃÂ ÃÂ¢ÃÂ',
+                  'ÃÂ¦ÃÂ¨ÃÂÃÂÃÂª ÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂÃÂ',
                 ].map(issue => (
                   <button key={issue} onClick={() => setEngineIssuesList(prev => prev.includes(issue) ? prev.filter(i => i !== issue) : [...prev, issue])}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
                       engineIssuesList.includes(issue) ? 'bg-red-500 text-white' : 'bg-red-50 text-red-600 border border-red-200'
-                    }`}>â {issue}</button>
+                    }`}>Ã¢ÂÂ {issue}</button>
                 ))}
               </div>
-              <VoiceInput value={engineNotes} onChange={setEngineNotes} placeholder="××¢×¨××ª ×× ××¢..." rows={2} />
+              <VoiceInput value={engineNotes} onChange={setEngineNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂ ÃÂÃÂ¢..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle className="text-amber-600">××¢×××ª ×ª×××ª ×××××××</CardTitle>
+            <CardTitle className="text-amber-600">ÃÂÃÂ¢ÃÂÃÂÃÂª ÃÂªÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ</CardTitle>
             <div className="space-y-3 mt-3">
               <div className="flex flex-wrap gap-2">
                 {[
-                  '×¨×¢×© ×××¢××¨×ª ×××××××', '×§××©× ×××¢××¨×ª ×××××××', '××××× ×§××¤×¥',
-                  '××××§×ª ××¦××', '××¦×× ×©×××§', '××××¤×ª ×©×× ×ª×××',
-                  '×¨×¢×© ×××¤×¨× ×¦×××', '×¨×¢××××ª', '× ××¨××ª ×ª×××ª ×××××××',
-                  '××¦× ×××¨×× (Limp Mode)',
+                  'ÃÂ¨ÃÂ¢ÃÂ© ÃÂÃÂÃÂ¢ÃÂÃÂ¨ÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ', 'ÃÂ§ÃÂÃÂ©ÃÂ ÃÂÃÂÃÂ¢ÃÂÃÂ¨ÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ', 'ÃÂÃÂÃÂÃÂÃÂ ÃÂ§ÃÂÃÂ¤ÃÂ¥',
+                  'ÃÂÃÂÃÂÃÂ§ÃÂª ÃÂÃÂ¦ÃÂÃÂ', 'ÃÂÃÂ¦ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ§', 'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ©ÃÂÃÂ ÃÂªÃÂÃÂÃÂ',
+                  'ÃÂ¨ÃÂ¢ÃÂ© ÃÂÃÂÃÂ¤ÃÂ¨ÃÂ ÃÂ¦ÃÂÃÂÃÂ', 'ÃÂ¨ÃÂ¢ÃÂÃÂÃÂÃÂª', 'ÃÂ ÃÂÃÂ¨ÃÂÃÂª ÃÂªÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
+                  'ÃÂÃÂ¦ÃÂ ÃÂÃÂÃÂ¨ÃÂÃÂ (Limp Mode)',
                 ].map(issue => (
                   <button key={issue} onClick={() => setGearboxIssuesList(prev => prev.includes(issue) ? prev.filter(i => i !== issue) : [...prev, issue])}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
                       gearboxIssuesList.includes(issue) ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-600 border border-amber-200'
-                    }`}>â {issue}</button>
+                    }`}>Ã¢ÂÂ {issue}</button>
                 ))}
               </div>
-              <VoiceInput value={gearboxNotes} onChange={setGearboxNotes} placeholder="××¢×¨××ª ×ª×××ª ×××××××..." rows={2} />
+              <VoiceInput value={gearboxNotes} onChange={setGearboxNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂªÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>××¢×¨××ª ×××××</CardTitle>
+            <CardTitle>ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ</CardTitle>
             <div className="space-y-4 mt-3">
               {[
-                { key: 'frontDiscs', label: '×¦××××ª ×§×××××ª' },
-                { key: 'rearDiscs', label: '×¦××××ª ××××¨×××ª' },
-                { key: 'frontPads', label: '×¨×¤××××ª ×§×××××ª' },
-                { key: 'rearPads', label: '×¨×¤××××ª ××××¨×××ª' },
+                { key: 'frontDiscs', label: 'ÃÂ¦ÃÂÃÂÃÂÃÂª ÃÂ§ÃÂÃÂÃÂÃÂÃÂª' },
+                { key: 'rearDiscs', label: 'ÃÂ¦ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂª' },
+                { key: 'frontPads', label: 'ÃÂ¨ÃÂ¤ÃÂÃÂÃÂÃÂª ÃÂ§ÃÂÃÂÃÂÃÂÃÂª' },
+                { key: 'rearPads', label: 'ÃÂ¨ÃÂ¤ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂª' },
               ].map(({ key, label }) => (
                 <div key={key} className="space-y-1">
                   <div className="flex justify-between text-sm">
@@ -1359,11 +1357,11 @@ export default function NewInspectionPage() {
                     className="w-full accent-teal-600" />
                 </div>
               ))}
-              <VoiceInput value={brakeNotes} onChange={setBrakeNotes} placeholder="××¢×¨××ª ×××××..." rows={2} />
+              <VoiceInput value={brakeNotes} onChange={setBrakeNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ..." rows={2} />
             </div>
           </Card>
           <Card>
-            <CardTitle>×¡×¨××× / ××¢×¨××ª ×ª××ª××ª ××¨××</CardTitle>
+            <CardTitle>ÃÂ¡ÃÂ¨ÃÂÃÂÃÂ / ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂªÃÂÃÂªÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ</CardTitle>
             <div className="space-y-3 mt-3">
               {/* Upload buttons */}
               <div className="flex gap-2">
@@ -1383,7 +1381,7 @@ export default function NewInspectionPage() {
                   }}
                   className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition text-sm font-medium"
                 >
-                  <Video size={18} /> ×¦×× ×¡×¨×××
+                  <Video size={18} /> ÃÂ¦ÃÂÃÂ ÃÂ¡ÃÂ¨ÃÂÃÂÃÂ
                 </button>
                 <button
                   onClick={() => {
@@ -1404,7 +1402,7 @@ export default function NewInspectionPage() {
                   }}
                   className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-teal-300 bg-teal-50 text-teal-700 hover:bg-teal-100 transition text-sm font-medium"
                 >
-                  <Plus size={18} /> ××¢×× ×§×××¥
+                  <Plus size={18} /> ÃÂÃÂ¢ÃÂÃÂ ÃÂ§ÃÂÃÂÃÂ¥
                 </button>
               </div>
 
@@ -1432,7 +1430,7 @@ export default function NewInspectionPage() {
                 </div>
               )}
 
-              <VoiceInput value={undercarNotes} onChange={setUndercarNotes} placeholder="×ª××ª××ª ××¨×× × ×§××, ××× × ×××××ª..." rows={3} />
+              <VoiceInput value={undercarNotes} onChange={setUndercarNotes} placeholder="ÃÂªÃÂÃÂªÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ ÃÂ ÃÂ§ÃÂÃÂ, ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂÃÂÃÂª..." rows={3} />
             </div>
           </Card>
         </>
@@ -1443,7 +1441,7 @@ export default function NewInspectionPage() {
         <>
           {/* Quick Summary */}
           <Card>
-            <CardTitle>×¡×××× ××××¨</CardTitle>
+            <CardTitle>ÃÂ¡ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¨</CardTitle>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
               {getSectionSummary().map(s => (
                 <div key={s.label} className={`p-2 rounded-lg text-center text-xs font-medium ${
@@ -1452,51 +1450,51 @@ export default function NewInspectionPage() {
                   s.status === 'critical' ? 'bg-red-50 text-red-700 border border-red-200' :
                   'bg-gray-50 text-gray-500'
                 }`}>
-                  {s.status === 'ok' ? 'â' : s.status === 'warning' ? '!' : s.status === 'critical' ? 'â' : 'â'} {s.label}
+                  {s.status === 'ok' ? 'Ã¢ÂÂ' : s.status === 'warning' ? '!' : s.status === 'critical' ? 'Ã¢ÂÂ' : 'Ã¢ÂÂ'} {s.label}
                 </div>
               ))}
             </div>
           </Card>
 
           <Card>
-            <CardTitle>××¢×¨××ª</CardTitle>
+            <CardTitle>ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª</CardTitle>
             <div className="space-y-3 mt-3">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">×ª××ª××ª ××¨××</label>
-                <VoiceInput value={notesUndercar} onChange={setNotesUndercar} placeholder="×ª××ª××ª ××¨××..." rows={2} />
+                <label className="block text-xs text-gray-500 mb-1">ÃÂªÃÂÃÂªÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ</label>
+                <VoiceInput value={notesUndercar} onChange={setNotesUndercar} placeholder="ÃÂªÃÂÃÂªÃÂÃÂª ÃÂÃÂ¨ÃÂÃÂ..." rows={2} />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">×× ××¢</label>
-                <VoiceInput value={notesEngine} onChange={setNotesEngine} placeholder="××¢×¨××ª ×× ××¢..." rows={2} />
+                <label className="block text-xs text-gray-500 mb-1">ÃÂÃÂ ÃÂÃÂ¢</label>
+                <VoiceInput value={notesEngine} onChange={setNotesEngine} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂ ÃÂÃÂ¢..." rows={2} />
               </div>
             </div>
           </Card>
 
           <Card>
-            <CardTitle>××××¦××ª ××ª××§××</CardTitle>
+            <CardTitle>ÃÂÃÂÃÂÃÂ¦ÃÂÃÂª ÃÂÃÂªÃÂÃÂ§ÃÂÃÂ</CardTitle>
             <div className="space-y-3 mt-3">
               {recommendations.map((rec, idx) => (
                 <div key={idx} className="p-3 bg-yellow-50 rounded-xl space-y-2 border border-yellow-200">
                   <input type="text" value={rec.text} onChange={e => { const n = [...recommendations]; n[idx].text = e.target.value; setRecommendations(n); }}
-                    placeholder="×××©×: ××××× ×××××× - ×××¨×© ××××¤×" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" dir="rtl" />
+                    placeholder="ÃÂÃÂÃÂ©ÃÂ: ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ - ÃÂÃÂÃÂ¨ÃÂ© ÃÂÃÂÃÂÃÂ¤ÃÂ" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" dir="rtl" />
                   <div className="flex flex-wrap gap-2">
                     <select value={rec.urgency} onChange={e => { const n = [...recommendations]; n[idx].urgency = e.target.value; setRecommendations(n); }}
                       className="flex-1 min-w-[140px] rounded-lg border border-gray-300 px-2 py-1.5 text-xs">
-                      <option>××©×××¢××ª ××§×¨××××</option>
-                      <option>××××£ - ×××××</option>
-                      <option>×ª×× ××××©</option>
-                      <option>××××× ××××¤×× ×××</option>
+                      <option>ÃÂÃÂ©ÃÂÃÂÃÂ¢ÃÂÃÂª ÃÂÃÂ§ÃÂ¨ÃÂÃÂÃÂÃÂ</option>
+                      <option>ÃÂÃÂÃÂÃÂ£ - ÃÂÃÂÃÂÃÂÃÂ</option>
+                      <option>ÃÂªÃÂÃÂ ÃÂÃÂÃÂÃÂ©</option>
+                      <option>ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂÃÂÃÂ</option>
                     </select>
                     <input type="text" value={rec.estimatedCost} onChange={e => { const n = [...recommendations]; n[idx].estimatedCost = e.target.value; setRecommendations(n); }}
-                      placeholder="×¢×××ª: âª800" className="w-24 sm:w-28 rounded-lg border border-gray-300 px-2 py-1.5 text-xs" dir="rtl" />
+                      placeholder="ÃÂ¢ÃÂÃÂÃÂª: Ã¢ÂÂª800" className="w-24 sm:w-28 rounded-lg border border-gray-300 px-2 py-1.5 text-xs" dir="rtl" />
                     {recommendations.length > 1 && (
                       <button onClick={() => setRecommendations(recommendations.filter((_, i) => i !== idx))} className="text-red-500 px-2"><X size={14} /></button>
                     )}
                   </div>
                 </div>
               ))}
-              <button onClick={() => setRecommendations([...recommendations, { text: '', urgency: '××©×××¢××ª ××§×¨××××', estimatedCost: '' }])}
-                className="w-full p-2 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm hover:border-teal-400 transition">+ ×××¡×£ ××××¦×</button>
+              <button onClick={() => setRecommendations([...recommendations, { text: '', urgency: 'ÃÂÃÂ©ÃÂÃÂÃÂ¢ÃÂÃÂª ÃÂÃÂ§ÃÂ¨ÃÂÃÂÃÂÃÂ', estimatedCost: '' }])}
+                className="w-full p-2 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm hover:border-teal-400 transition">+ ÃÂÃÂÃÂ¡ÃÂ£ ÃÂÃÂÃÂÃÂ¦ÃÂ</button>
             </div>
           </Card>
 
@@ -1505,9 +1503,9 @@ export default function NewInspectionPage() {
             <div className="flex items-start gap-2.5">
               <AlertTriangle size={18} className="text-red-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs text-red-800 font-bold mb-1">××¦××¨× ×¨××××××¨××ª â ××© ×××§×¨×× ×××§××:</p>
+                <p className="text-xs text-red-800 font-bold mb-1">ÃÂÃÂ¦ÃÂÃÂ¨ÃÂ ÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂª Ã¢ÂÂ ÃÂÃÂ© ÃÂÃÂÃÂ§ÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂ§ÃÂÃÂ:</p>
                 <p className="text-xs text-red-700 leading-relaxed">
-                  &quot;××××§× ×× ××××× ××××ª ××¢×ª ××§×¦××¢××ª ×©× ××××¡× ××××. ××× ××× × ××××× ××××§×ª ×××× ×¨××©×× ×××¨×©× ×××¢× ××©×¨× ××ª××××¨× ×××× ×× ×ª××§×£ ××©×¤×× ×××××. ×××××¥ ×××¦×¢ ×× ××××§× ××××× ×¨××©×× ×××¨×©×, ×××××× ××¤× × ×¨×××©×ª ×¨××.&quot;
+                  &quot;ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂª ÃÂÃÂ¢ÃÂª ÃÂÃÂ§ÃÂ¦ÃÂÃÂ¢ÃÂÃÂª ÃÂ©ÃÂ ÃÂÃÂÃÂÃÂ¡ÃÂ ÃÂÃÂÃÂÃÂ. ÃÂÃÂÃÂ ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂª ÃÂÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂ©ÃÂÃÂ ÃÂÃÂÃÂ¨ÃÂ©ÃÂ ÃÂÃÂÃÂ¢ÃÂ ÃÂÃÂ©ÃÂ¨ÃÂ ÃÂÃÂªÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂªÃÂÃÂ§ÃÂ£ ÃÂÃÂ©ÃÂ¤ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ. ÃÂÃÂÃÂÃÂÃÂ¥ ÃÂÃÂÃÂ¦ÃÂ¢ ÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂÃÂÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂ©ÃÂÃÂ ÃÂÃÂÃÂ¨ÃÂ©ÃÂ, ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¤ÃÂ ÃÂ ÃÂ¨ÃÂÃÂÃÂ©ÃÂª ÃÂ¨ÃÂÃÂ.&quot;
                 </p>
               </div>
             </div>
@@ -1515,12 +1513,12 @@ export default function NewInspectionPage() {
 
           {/* Customer Signature */}
           <Card>
-            <CardTitle icon={<PenLine className="text-teal-600" />}>××ª×××ª ××§××</CardTitle>
-            <p className="text-sm text-gray-500 mt-1 mb-3">××©×¨ ×§×××ª ×××× ×××ª××× ××××××××ª</p>
+            <CardTitle icon={<PenLine className="text-teal-600" />}>ÃÂÃÂªÃÂÃÂÃÂª ÃÂÃÂ§ÃÂÃÂ</CardTitle>
+            <p className="text-sm text-gray-500 mt-1 mb-3">ÃÂÃÂ©ÃÂ¨ ÃÂ§ÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂªÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª</p>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <Input label="×©× ×××" placeholder="×©× ×××§××" value={customerName} onChange={e => setCustomerName(e.target.value)} />
-                <Input label='××¡×¤×¨ ×ª"×' placeholder="012345678" value={customerIdNumber} onChange={e => setCustomerIdNumber(e.target.value)} />
+                <Input label="ÃÂ©ÃÂ ÃÂÃÂÃÂ" placeholder="ÃÂ©ÃÂ ÃÂÃÂÃÂ§ÃÂÃÂ" value={customerName} onChange={e => setCustomerName(e.target.value)} />
+                <Input label='ÃÂÃÂ¡ÃÂ¤ÃÂ¨ ÃÂª"ÃÂ' placeholder="012345678" value={customerIdNumber} onChange={e => setCustomerIdNumber(e.target.value)} />
               </div>
               <div className="border-2 border-gray-200 rounded-xl overflow-hidden bg-white">
                 <canvas ref={canvasRef} className="touch-none cursor-crosshair block"
@@ -1528,7 +1526,7 @@ export default function NewInspectionPage() {
                   onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={stopDrawing} />
               </div>
               <div className="flex gap-2">
-                <button onClick={clearSignature} className="text-sm text-red-500 hover:underline">× ×§× ××ª×××</button>
+                <button onClick={clearSignature} className="text-sm text-red-500 hover:underline">ÃÂ ÃÂ§ÃÂ ÃÂÃÂªÃÂÃÂÃÂ</button>
               </div>
             </div>
           </Card>
@@ -1538,16 +1536,16 @@ export default function NewInspectionPage() {
       {/* ====== VEHICLE PHOTO + INVOICE (shared for non-full types) ====== */}
       {inspectionType !== 'full' && step === 2 && (
         <Card>
-          <CardTitle icon={<Camera className="text-teal-600" />}>×ª××× ××ª</CardTitle>
+          <CardTitle icon={<Camera className="text-teal-600" />}>ÃÂªÃÂÃÂÃÂ ÃÂÃÂª</CardTitle>
           <div className="grid grid-cols-2 gap-3 mt-3">
             {/* Vehicle front photo */}
             <div>
-              <p className="text-xs text-gray-500 text-right mb-2">×ª××× ×ª ×¨×× ××§××××</p>
+              <p className="text-xs text-gray-500 text-right mb-2">ÃÂªÃÂÃÂÃÂ ÃÂª ÃÂ¨ÃÂÃÂ ÃÂÃÂ§ÃÂÃÂÃÂÃÂ</p>
               {vehiclePhoto ? (
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
-                  <img src={vehiclePhoto} alt="×¨××" className="w-full h-full object-cover" />
+                  <img src={vehiclePhoto} alt="ÃÂ¨ÃÂÃÂ" className="w-full h-full object-cover" />
                   <button onClick={() => setVehiclePhoto('')}
-                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">â</button>
+                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">Ã¢ÂÂ</button>
                 </div>
               ) : (
                 <button onClick={() => {
@@ -1563,18 +1561,18 @@ export default function NewInspectionPage() {
                   input.click();
                 }} className="aspect-[4/3] w-full rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-teal-400 transition">
                   <Car size={28} className="text-gray-400" />
-                  <span className="text-xs text-gray-400 mt-1">×¦×× ×¨××</span>
+                  <span className="text-xs text-gray-400 mt-1">ÃÂ¦ÃÂÃÂ ÃÂ¨ÃÂÃÂ</span>
                 </button>
               )}
             </div>
             {/* Invoice/receipt photo */}
             <div>
-              <p className="text-xs text-gray-500 text-right mb-2">××©××× ××ª / ×§×××</p>
+              <p className="text-xs text-gray-500 text-right mb-2">ÃÂÃÂ©ÃÂÃÂÃÂ ÃÂÃÂª / ÃÂ§ÃÂÃÂÃÂ</p>
               {invoicePhoto ? (
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
-                  <img src={invoicePhoto} alt="××©××× ××ª" className="w-full h-full object-cover" />
+                  <img src={invoicePhoto} alt="ÃÂÃÂ©ÃÂÃÂÃÂ ÃÂÃÂª" className="w-full h-full object-cover" />
                   <button onClick={() => setInvoicePhoto('')}
-                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">â</button>
+                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">Ã¢ÂÂ</button>
                 </div>
               ) : (
                 <button onClick={() => {
@@ -1590,7 +1588,7 @@ export default function NewInspectionPage() {
                   input.click();
                 }} className="aspect-[4/3] w-full rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-teal-400 transition">
                   <PenLine size={28} className="text-gray-400" />
-                  <span className="text-xs text-gray-400 mt-1">×¦×× ××©××× ××ª</span>
+                  <span className="text-xs text-gray-400 mt-1">ÃÂ¦ÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂ ÃÂÃÂª</span>
                 </button>
               )}
             </div>
@@ -1598,28 +1596,28 @@ export default function NewInspectionPage() {
         </Card>
       )}
 
-      {/* ====== PRE-TEST CHECKLIST (××× × ×××¡×) ====== */}
+      {/* ====== PRE-TEST CHECKLIST (ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¡ÃÂ) ====== */}
       {inspectionType === 'pre_test' && step === 2 && (
         <Card>
-          <CardTitle icon={<Search className="text-blue-600" />}>×¦'×§×××¡× ××× × ×××¡×</CardTitle>
-          <p className="text-xs text-gray-500 mt-1 mb-3 text-right">×¡×× V ××× ×¤×¨×× ×©× ×××§ ××ª×§××. ×××¥ ×¢× ××¤×¨×× ××××¡×¤×ª ××¢×¨×.</p>
+          <CardTitle icon={<Search className="text-blue-600" />}>ÃÂ¦'ÃÂ§ÃÂÃÂÃÂ¡ÃÂ ÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¡ÃÂ</CardTitle>
+          <p className="text-xs text-gray-500 mt-1 mb-3 text-right">ÃÂ¡ÃÂÃÂ V ÃÂÃÂÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂ©ÃÂ ÃÂÃÂÃÂ§ ÃÂÃÂªÃÂ§ÃÂÃÂ. ÃÂÃÂÃÂ¥ ÃÂ¢ÃÂ ÃÂÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂÃÂ¡ÃÂ¤ÃÂª ÃÂÃÂ¢ÃÂ¨ÃÂ.</p>
           <div className="space-y-2 mt-3">
             {[
-              { key: 'tires', label: '×¦××××× (××¦× + ×××¥)' },
-              { key: 'lights', label: '×××¨××ª ×××××× ××' },
-              { key: 'brakes', label: '×××××' },
-              { key: 'mirrors', label: '××¨×××ª' },
-              { key: 'wipers', label: '××××× + × ×××' },
-              { key: 'horn', label: '×¦××¤×¨' },
-              { key: 'seatbelts', label: '××××¨××ª ××××××ª' },
-              { key: 'exhaust', label: '××¢×¨××ª ×¤××××' },
-              { key: 'steering', label: '××××× (××©××§)' },
-              { key: 'suspension', label: '××ª××× ×××××××' },
-              { key: 'fluids', label: '× ××××× (×©××, ×××, ×××××)' },
-              { key: 'battery', label: '××¦××¨' },
-              { key: 'handbrake', label: '××× ××' },
-              { key: 'speedometer', label: '×× ××××¨××ª' },
-              { key: 'windows', label: '×××× ××ª ××©××©××ª' },
+              { key: 'tires', label: 'ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ (ÃÂÃÂ¦ÃÂ + ÃÂÃÂÃÂ¥)' },
+              { key: 'lights', label: 'ÃÂÃÂÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ' },
+              { key: 'brakes', label: 'ÃÂÃÂÃÂÃÂÃÂ' },
+              { key: 'mirrors', label: 'ÃÂÃÂ¨ÃÂÃÂÃÂª' },
+              { key: 'wipers', label: 'ÃÂÃÂÃÂÃÂÃÂ + ÃÂ ÃÂÃÂÃÂ' },
+              { key: 'horn', label: 'ÃÂ¦ÃÂÃÂ¤ÃÂ¨' },
+              { key: 'seatbelts', label: 'ÃÂÃÂÃÂÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂª' },
+              { key: 'exhaust', label: 'ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ¤ÃÂÃÂÃÂÃÂ' },
+              { key: 'steering', label: 'ÃÂÃÂÃÂÃÂÃÂ (ÃÂÃÂ©ÃÂÃÂ§)' },
+              { key: 'suspension', label: 'ÃÂÃÂªÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ' },
+              { key: 'fluids', label: 'ÃÂ ÃÂÃÂÃÂÃÂÃÂ (ÃÂ©ÃÂÃÂ, ÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂÃÂ)' },
+              { key: 'battery', label: 'ÃÂÃÂ¦ÃÂÃÂ¨' },
+              { key: 'handbrake', label: 'ÃÂÃÂÃÂ ÃÂÃÂ' },
+              { key: 'speedometer', label: 'ÃÂÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂª' },
+              { key: 'windows', label: 'ÃÂÃÂÃÂÃÂ ÃÂÃÂª ÃÂÃÂ©ÃÂÃÂ©ÃÂÃÂª' },
             ].map(item => (
               <div key={item.key} className="rounded-xl border border-gray-200 overflow-hidden transition-all">
                 <div className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 transition">
@@ -1638,7 +1636,7 @@ export default function NewInspectionPage() {
                         preTestItemNotes[item.key] ? 'bg-blue-100 text-blue-600' :
                         'bg-gray-200 text-gray-400 hover:bg-gray-300 hover:text-gray-600'
                       }`}
-                      title="×××¡×£ ××¢×¨×"
+                      title="ÃÂÃÂÃÂ¡ÃÂ£ ÃÂÃÂ¢ÃÂ¨ÃÂ"
                     >
                       <FileText size={14} />
                     </button>
@@ -1659,7 +1657,7 @@ export default function NewInspectionPage() {
                     <VoiceInput
                       value={preTestItemNotes[item.key] || ''}
                       onChange={(val) => setPreTestItemNotes(prev => ({ ...prev, [item.key]: val }))}
-                      placeholder={`××¢×¨× ×${item.label}...`}
+                      placeholder={`ÃÂÃÂ¢ÃÂ¨ÃÂ ÃÂ${item.label}...`}
                       rows={2}
                     />
                   </div>
@@ -1668,33 +1666,33 @@ export default function NewInspectionPage() {
             ))}
           </div>
           <div className="mt-4">
-            <p className="text-xs font-medium text-gray-600 mb-1 text-right">××¢×¨××ª ××××××ª</p>
-            <VoiceInput value={preTestNotes} onChange={setPreTestNotes} placeholder="××¢×¨××ª × ××¡×¤××ª..." rows={3} />
+            <p className="text-xs font-medium text-gray-600 mb-1 text-right">ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂª</p>
+            <VoiceInput value={preTestNotes} onChange={setPreTestNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ ÃÂÃÂ¡ÃÂ¤ÃÂÃÂª..." rows={3} />
           </div>
 
           {/* Work performed section */}
           <div className="mt-6 pt-4 border-t border-gray-200">
-            <h3 className="text-sm font-bold text-gray-800 text-right mb-2">×¢×××××ª ×©×××¦×¢×</h3>
-            <p className="text-xs text-gray-500 mb-3 text-right">×¤×¨× ×× ×ª××§×, ×××××£ ×× ××××</p>
+            <h3 className="text-sm font-bold text-gray-800 text-right mb-2">ÃÂ¢ÃÂÃÂÃÂÃÂÃÂª ÃÂ©ÃÂÃÂÃÂ¦ÃÂ¢ÃÂ</h3>
+            <p className="text-xs text-gray-500 mb-3 text-right">ÃÂ¤ÃÂ¨ÃÂ ÃÂÃÂ ÃÂªÃÂÃÂ§ÃÂ, ÃÂÃÂÃÂÃÂÃÂ£ ÃÂÃÂ ÃÂÃÂÃÂÃÂ</p>
 
             {preTestWorkItems.map((work, idx) => (
               <div key={idx} className="bg-white border border-gray-200 rounded-lg p-3 mb-2">
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <button onClick={() => setPreTestWorkItems(prev => prev.filter((_, i) => i !== idx))}
-                    className="text-red-400 hover:text-red-600 text-xs">â</button>
+                    className="text-red-400 hover:text-red-600 text-xs">Ã¢ÂÂ</button>
                   <input value={work.item} onChange={e => {
                     const updated = [...preTestWorkItems];
                     updated[idx].item = e.target.value;
                     setPreTestWorkItems(updated);
-                  }} placeholder="×©× ××¤×¨×× / ×¢××××" className="flex-1 text-sm border-b border-gray-200 pb-1 text-right focus:outline-none focus:border-teal-400" dir="rtl" />
+                  }} placeholder="ÃÂ©ÃÂ ÃÂÃÂ¤ÃÂ¨ÃÂÃÂ / ÃÂ¢ÃÂÃÂÃÂÃÂ" className="flex-1 text-sm border-b border-gray-200 pb-1 text-right focus:outline-none focus:border-teal-400" dir="rtl" />
                 </div>
                 <div className="flex gap-1 flex-wrap mb-2 justify-end">
                   {[
-                    { value: 'replaced', label: '×××××£' },
-                    { value: 'fixed', label: '×ª××§×' },
-                    { value: 'adjusted', label: '××××' },
-                    { value: 'cleaned', label: '× ××§×' },
-                    { value: 'checked', label: '× ×××§' },
+                    { value: 'replaced', label: 'ÃÂÃÂÃÂÃÂÃÂ£' },
+                    { value: 'fixed', label: 'ÃÂªÃÂÃÂ§ÃÂ' },
+                    { value: 'adjusted', label: 'ÃÂÃÂÃÂÃÂ' },
+                    { value: 'cleaned', label: 'ÃÂ ÃÂÃÂ§ÃÂ' },
+                    { value: 'checked', label: 'ÃÂ ÃÂÃÂÃÂ§' },
                   ].map(opt => (
                     <button key={opt.value} onClick={() => {
                       const updated = [...preTestWorkItems];
@@ -1710,29 +1708,29 @@ export default function NewInspectionPage() {
                     const updated = [...preTestWorkItems];
                     updated[idx].cost = e.target.value;
                     setPreTestWorkItems(updated);
-                  }} placeholder="×¢×××ª âª" type="number" className="w-20 text-xs border border-gray-200 rounded px-2 py-1 text-center" />
+                  }} placeholder="ÃÂ¢ÃÂÃÂÃÂª Ã¢ÂÂª" type="number" className="w-20 text-xs border border-gray-200 rounded px-2 py-1 text-center" />
                   <input value={work.notes} onChange={e => {
                     const updated = [...preTestWorkItems];
                     updated[idx].notes = e.target.value;
                     setPreTestWorkItems(updated);
-                  }} placeholder="××¢×¨××ª" className="flex-1 text-xs border border-gray-200 rounded px-2 py-1 text-right" dir="rtl" />
+                  }} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª" className="flex-1 text-xs border border-gray-200 rounded px-2 py-1 text-right" dir="rtl" />
                 </div>
               </div>
             ))}
 
             <button onClick={() => setPreTestWorkItems(prev => [...prev, { item: '', action: 'replaced', notes: '', cost: '' }])}
               className="w-full py-2 mt-1 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-teal-400 hover:text-teal-600 transition">
-              + ×××¡×£ ×¤×¨×× ×¢××××
+              + ÃÂÃÂÃÂ¡ÃÂ£ ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂ¢ÃÂÃÂÃÂÃÂ
             </button>
 
             {/* Quick-add common pre-test work items */}
             <div className="mt-3">
-              <p className="text-xs text-gray-400 text-right mb-2">×¤×¨×××× × ×¤××¦××:</p>
+              <p className="text-xs text-gray-400 text-right mb-2">ÃÂ¤ÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂ ÃÂ¤ÃÂÃÂ¦ÃÂÃÂ:</p>
               <div className="flex flex-wrap gap-1 justify-end">
                 {[
-                  '××××¤×ª × ××¨×', '××××× ×××¨××ª', '××××¤×ª ×××××', '××××× × ×××××',
-                  '××××¤×ª ×¦×××', '× ××¤×× ×¦×××××', '×ª××§×× ××× ××', '××××¤×ª × ××× ×××××',
-                  '×ª××§×× ×¤××××', '××××× ××¨×××ª', '××××¤×ª ××××¨×', '×ª××§×× ×¦××¤×¨',
+                  'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ ÃÂÃÂ¨ÃÂ', 'ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨ÃÂÃÂª', 'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂÃÂÃÂ', 'ÃÂÃÂÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂÃÂÃÂ',
+                  'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¦ÃÂÃÂÃÂ', 'ÃÂ ÃÂÃÂ¤ÃÂÃÂ ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ', 'ÃÂªÃÂÃÂ§ÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂ', 'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ',
+                  'ÃÂªÃÂÃÂ§ÃÂÃÂ ÃÂ¤ÃÂÃÂÃÂÃÂ', 'ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¨ÃÂÃÂÃÂª', 'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂÃÂ¨ÃÂ', 'ÃÂªÃÂÃÂ§ÃÂÃÂ ÃÂ¦ÃÂÃÂ¤ÃÂ¨',
                 ].map(item => (
                   <button key={item} onClick={() => {
                     if (!preTestWorkItems.find(w => w.item === item)) {
@@ -1748,34 +1746,34 @@ export default function NewInspectionPage() {
         </Card>
       )}
 
-      {/* ====== PERIODIC SERVICE (×××¤×× ×ª×§××¤×ª×) ====== */}
+      {/* ====== PERIODIC SERVICE (ÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ¤ÃÂªÃÂ) ====== */}
       {inspectionType === 'periodic' && step === 2 && (
         <>
           <Card>
-            <CardTitle icon={<Settings className="text-teal-600" />}>×¤××¨×× ×××¤××</CardTitle>
-            <p className="text-xs text-gray-500 mt-1 mb-3 text-right">×¡×× ××ª ×× ××¤×¢××××ª ×©×××¦×¢× ××××¤××</p>
+            <CardTitle icon={<Settings className="text-teal-600" />}>ÃÂ¤ÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂ¤ÃÂÃÂ</CardTitle>
+            <p className="text-xs text-gray-500 mt-1 mb-3 text-right">ÃÂ¡ÃÂÃÂ ÃÂÃÂª ÃÂÃÂ ÃÂÃÂ¤ÃÂ¢ÃÂÃÂÃÂÃÂª ÃÂ©ÃÂÃÂÃÂ¦ÃÂ¢ÃÂ ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ</p>
             <div className="flex flex-wrap gap-2 mt-3">
               {[
-                '××××¤×ª ×©×× ×× ××¢',
-                '××××¤×ª ×¤××××¨ ×©××',
-                '××××¤×ª ×¤××××¨ ×××××¨',
-                '××××¤×ª ×¤××××¨ ×××§',
-                '××××¤×ª ×¤××××¨ ××××',
-                '××××¤×ª × ××× ×××××',
-                '××××¤×ª × ××× ×§××¨××¨',
-                '××××¤×ª ×¨×¦××¢××ª',
-                '××××¤×ª ××¦×ª',
-                '××××¤×ª ×¦×××××',
-                '××××× ××××××',
-                '××××× ×¤×¨×× ×',
-                '××××¤×ª ××××× ×§×××××',
-                '××××¤×ª ××××× ××××¨×××',
-                '××××¤×ª ×××¡×§××',
-                '××××¤×ª ××¦××¨',
-                '×©×××¤×ª ×× ××¢',
-                '×××¤×× ××××',
-                '××××¤×ª ××××××',
-                '××××¤×ª ×××××ª ××××¦×',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ©ÃÂÃÂ ÃÂÃÂ ÃÂÃÂ¢',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¤ÃÂÃÂÃÂÃÂ¨ ÃÂ©ÃÂÃÂ',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¤ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂÃÂ¨',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¤ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂ§',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¤ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ ÃÂÃÂÃÂ ÃÂ§ÃÂÃÂ¨ÃÂÃÂ¨',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¨ÃÂ¦ÃÂÃÂ¢ÃÂÃÂª',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂ¦ÃÂª',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂ¦ÃÂÃÂÃÂÃÂÃÂ',
+                'ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ',
+                'ÃÂÃÂÃÂÃÂÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂ ÃÂ',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂÃÂÃÂ ÃÂ§ÃÂÃÂÃÂÃÂÃÂ',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂ',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂ¡ÃÂ§ÃÂÃÂ',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂ¦ÃÂÃÂ¨',
+                'ÃÂ©ÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂ ÃÂÃÂ¢',
+                'ÃÂÃÂÃÂ¤ÃÂÃÂ ÃÂÃÂÃÂÃÂ',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂ',
+                'ÃÂÃÂÃÂÃÂ¤ÃÂª ÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ¦ÃÂ',
               ].map(item => (
                 <button key={item} onClick={() => setServiceItems(prev =>
                   prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]
@@ -1786,22 +1784,22 @@ export default function NewInspectionPage() {
             </div>
           </Card>
           <Card>
-            <CardTitle>××¢×¨××ª ×××¤××</CardTitle>
-            <VoiceInput value={serviceNotes} onChange={setServiceNotes} placeholder="×¤××¨×× × ××¡×£ ×¢× ××××¤××..." rows={3} />
+            <CardTitle>ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂ¤ÃÂÃÂ</CardTitle>
+            <VoiceInput value={serviceNotes} onChange={setServiceNotes} placeholder="ÃÂ¤ÃÂÃÂ¨ÃÂÃÂ ÃÂ ÃÂÃÂ¡ÃÂ£ ÃÂ¢ÃÂ ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ..." rows={3} />
           </Card>
           <Card>
-            <CardTitle>××××¦××ª ×××©×</CardTitle>
-            <VoiceInput value={serviceRecommendations} onChange={setServiceRecommendations} placeholder="××××¦××ª ××××¤×××× ×¢×ª×××××, ×××§×× ×©×¦×¨×× ××××××£ ××§×¨××..." rows={3} />
+            <CardTitle>ÃÂÃÂÃÂÃÂ¦ÃÂÃÂª ÃÂÃÂÃÂ©ÃÂ</CardTitle>
+            <VoiceInput value={serviceRecommendations} onChange={setServiceRecommendations} placeholder="ÃÂÃÂÃÂÃÂ¦ÃÂÃÂª ÃÂÃÂÃÂÃÂ¤ÃÂÃÂÃÂÃÂ ÃÂ¢ÃÂªÃÂÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂ¦ÃÂ¨ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ£ ÃÂÃÂ§ÃÂ¨ÃÂÃÂ..." rows={3} />
           </Card>
           <Card>
-            <CardTitle icon={<Camera className="text-teal-600" />}>×ª××× ××ª ×××§×× ×©×××××¤×</CardTitle>
-            <p className="text-xs text-gray-500 mt-1 mb-3 text-right">×¦×× ××ª ××××§×× ×©×××××¤× ××ª××¢××</p>
+            <CardTitle icon={<Camera className="text-teal-600" />}>ÃÂªÃÂÃÂÃÂ ÃÂÃÂª ÃÂÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ</CardTitle>
+            <p className="text-xs text-gray-500 mt-1 mb-3 text-right">ÃÂ¦ÃÂÃÂ ÃÂÃÂª ÃÂÃÂÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ ÃÂÃÂªÃÂÃÂ¢ÃÂÃÂ</p>
             <div className="grid grid-cols-3 gap-2 mt-2">
               {servicePhotos.map((photo, idx) => (
                 <div key={idx} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-                  <img src={photo} alt={`×××§ ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={photo} alt={`ÃÂÃÂÃÂ§ ${idx + 1}`} className="w-full h-full object-cover" />
                   <button onClick={() => setServicePhotos(prev => prev.filter((_, i) => i !== idx))}
-                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">â</button>
+                    className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">Ã¢ÂÂ</button>
                 </div>
               ))}
               <button onClick={() => {
@@ -1817,35 +1815,35 @@ export default function NewInspectionPage() {
                 input.click();
               }} className="aspect-square rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-teal-400 transition">
                 <Camera size={24} className="text-gray-400" />
-                <span className="text-xs text-gray-400 mt-1">×××¡×£ ×ª××× ×</span>
+                <span className="text-xs text-gray-400 mt-1">ÃÂÃÂÃÂ¡ÃÂ£ ÃÂªÃÂÃÂÃÂ ÃÂ</span>
               </button>
             </div>
           </Card>
         </>
       )}
 
-      {/* ====== TROUBLESHOOT (×ª××§××/××××× ×ª×§××) ====== */}
+      {/* ====== TROUBLESHOOT (ÃÂªÃÂÃÂ§ÃÂÃÂ/ÃÂÃÂÃÂÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ) ====== */}
       {inspectionType === 'troubleshoot' && step === 2 && (
         <>
           <Card>
-            <CardTitle icon={<Wrench className="text-orange-600" />}>×ª××××¨ ××ª×§××</CardTitle>
-            <VoiceInput value={troubleshootProblem} onChange={setTroubleshootProblem} placeholder="×ª××¨ ××ª ××ª×§×× ××¤× ×©××××× ×¢× ××× ×××§××..." rows={3} />
+            <CardTitle icon={<Wrench className="text-orange-600" />}>ÃÂªÃÂÃÂÃÂÃÂ¨ ÃÂÃÂªÃÂ§ÃÂÃÂ</CardTitle>
+            <VoiceInput value={troubleshootProblem} onChange={setTroubleshootProblem} placeholder="ÃÂªÃÂÃÂ¨ ÃÂÃÂª ÃÂÃÂªÃÂ§ÃÂÃÂ ÃÂÃÂ¤ÃÂ ÃÂ©ÃÂÃÂÃÂÃÂÃÂ ÃÂ¢ÃÂ ÃÂÃÂÃÂ ÃÂÃÂÃÂ§ÃÂÃÂ..." rows={3} />
           </Card>
           <Card>
-            <CardTitle>×××××</CardTitle>
-            <VoiceInput value={troubleshootDiagnosis} onChange={setTroubleshootDiagnosis} placeholder="×××¦×× ×××××× - ×× × ××¦×..." rows={3} />
+            <CardTitle>ÃÂÃÂÃÂÃÂÃÂ</CardTitle>
+            <VoiceInput value={troubleshootDiagnosis} onChange={setTroubleshootDiagnosis} placeholder="ÃÂÃÂÃÂ¦ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂ - ÃÂÃÂ ÃÂ ÃÂÃÂ¦ÃÂ..." rows={3} />
           </Card>
           <Card>
-            <CardTitle>×ª××§×× ×©×××¦×¢</CardTitle>
-            <VoiceInput value={troubleshootFix} onChange={setTroubleshootFix} placeholder="×¤××¨×× ××ª××§×× ×©×××¦×¢..." rows={3} />
+            <CardTitle>ÃÂªÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ¦ÃÂ¢</CardTitle>
+            <VoiceInput value={troubleshootFix} onChange={setTroubleshootFix} placeholder="ÃÂ¤ÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂªÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂ¦ÃÂ¢..." rows={3} />
           </Card>
           <Card>
-            <CardTitle>×××§×× ×©×××××¤×</CardTitle>
-            <VoiceInput value={troubleshootParts} onChange={setTroubleshootParts} placeholder="×¨×©×××ª ×××§×× ×©×××××¤×..." rows={2} />
+            <CardTitle>ÃÂÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ</CardTitle>
+            <VoiceInput value={troubleshootParts} onChange={setTroubleshootParts} placeholder="ÃÂ¨ÃÂ©ÃÂÃÂÃÂª ÃÂÃÂÃÂ§ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ..." rows={2} />
           </Card>
           <Card>
-            <CardTitle>××¢×¨××ª × ××¡×¤××ª</CardTitle>
-            <VoiceInput value={troubleshootNotes} onChange={setTroubleshootNotes} placeholder="××¢×¨××ª × ××¡×¤××ª, ××××¦××ª ×××§××..." rows={2} />
+            <CardTitle>ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ ÃÂÃÂ¡ÃÂ¤ÃÂÃÂª</CardTitle>
+            <VoiceInput value={troubleshootNotes} onChange={setTroubleshootNotes} placeholder="ÃÂÃÂ¢ÃÂ¨ÃÂÃÂª ÃÂ ÃÂÃÂ¡ÃÂ¤ÃÂÃÂª, ÃÂÃÂÃÂÃÂ¦ÃÂÃÂª ÃÂÃÂÃÂ§ÃÂÃÂ..." rows={2} />
           </Card>
         </>
       )}
@@ -1855,31 +1853,31 @@ export default function NewInspectionPage() {
         <div className="flex gap-2 sticky bottom-20 lg:bottom-4 px-1 z-30">
           {step > 1 && (
             <Button variant="outline" className="flex-1" icon={<ArrowRight size={16} />}
-              onClick={() => setStep((step - 1) as Step)}>××××¨</Button>
+              onClick={() => setStep((step - 1) as Step)}>ÃÂÃÂÃÂÃÂ¨</Button>
           )}
           {step === 1 && (
             <Button variant="outline" className="flex-1" icon={<ArrowRight size={16} />}
-              onClick={() => setStep(0 as Step)}>×©× × ×¡×× ×¤×¢×××</Button>
+              onClick={() => setStep(0 as Step)}>ÃÂ©ÃÂ ÃÂ ÃÂ¡ÃÂÃÂ ÃÂ¤ÃÂ¢ÃÂÃÂÃÂ</Button>
           )}
           {/* Full inspection: continue through 8 steps */}
           {inspectionType === 'full' && step < 8 && (
             <Button className="flex-1" icon={<ArrowLeft size={16} />}
               onClick={() => setStep((step + 1) as Step)}
-              disabled={step === 1 && !selectedVehicleId && !isManualVehicleValid}>×××</Button>
+              disabled={step === 1 && !selectedVehicleId && !isManualVehicleValid}>ÃÂÃÂÃÂ</Button>
           )}
           {inspectionType === 'full' && step === 8 && (
             <Button className="flex-1 bg-teal-600 hover:bg-teal-700" icon={<Save size={16} />}
-              loading={loading} onClick={handleSubmit}>×©×× ××××§×</Button>
+              loading={loading} onClick={handleSubmit}>ÃÂ©ÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂ</Button>
           )}
-          {/* Non-full types: step 1 â step 2 (form), step 2 â submit */}
+          {/* Non-full types: step 1 Ã¢ÂÂ step 2 (form), step 2 Ã¢ÂÂ submit */}
           {inspectionType !== 'full' && step === 1 && (
             <Button className="flex-1" icon={<ArrowLeft size={16} />}
               onClick={() => setStep(2 as Step)}
-              disabled={!selectedVehicleId && !isManualVehicleValid}>×××</Button>
+              disabled={!selectedVehicleId && !isManualVehicleValid}>ÃÂÃÂÃÂ</Button>
           )}
           {inspectionType !== 'full' && step === 2 && (
             <Button className="flex-1 bg-teal-600 hover:bg-teal-700" icon={<Save size={16} />}
-              loading={loading} onClick={handleSubmit}>×©×××¨</Button>
+              loading={loading} onClick={handleSubmit}>ÃÂ©ÃÂÃÂÃÂ¨</Button>
           )}
           {/* Cancel button */}
           <Button variant="outline" className="px-3 text-red-500 border-red-200 hover:bg-red-50" icon={<X size={16} />}
@@ -1888,23 +1886,23 @@ export default function NewInspectionPage() {
       )}
 
       {/* Cancel Confirmation Modal */}
-      <Modal isOpen={showCancelModal} onClose={() => setShowCancelModal(false)} title="××¦××ª ×××××¤×¡?">
+      <Modal isOpen={showCancelModal} onClose={() => setShowCancelModal(false)} title="ÃÂÃÂ¦ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ¤ÃÂ¡?">
         <div className="text-center space-y-4">
-          <p className="text-gray-600">×××××¢ ×©××× ×ª ×× ×××©××¨. ××× ××ª× ×××× ×©××¨×¦×× × ××¦××ª?</p>
+          <p className="text-gray-600">ÃÂÃÂÃÂÃÂÃÂ¢ ÃÂ©ÃÂÃÂÃÂ ÃÂª ÃÂÃÂ ÃÂÃÂÃÂ©ÃÂÃÂ¨. ÃÂÃÂÃÂ ÃÂÃÂªÃÂ ÃÂÃÂÃÂÃÂ ÃÂ©ÃÂÃÂ¨ÃÂ¦ÃÂÃÂ ÃÂ ÃÂÃÂ¦ÃÂÃÂª?</p>
           <div className="flex gap-2">
-            <Button variant="outline" className="flex-1" onClick={() => setShowCancelModal(false)}>×××©× ××××</Button>
-            <Button className="flex-1 bg-red-500 hover:bg-red-600" onClick={() => router.push('/garage')}>×¦× ××× ××©×××¨</Button>
+            <Button variant="outline" className="flex-1" onClick={() => setShowCancelModal(false)}>ÃÂÃÂÃÂ©ÃÂ ÃÂÃÂÃÂÃÂ</Button>
+            <Button className="flex-1 bg-red-500 hover:bg-red-600" onClick={() => router.push('/garage')}>ÃÂ¦ÃÂ ÃÂÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂ¨</Button>
           </div>
         </div>
       </Modal>
 
       {/* Success Modal */}
-      <Modal isOpen={successModal} onClose={() => {}} title={inspectionType === 'full' ? '××××§× × ××¦×¨× ×××¦×××!' : '× ×©××¨ ×××¦×××!'}>
+      <Modal isOpen={successModal} onClose={() => {}} title={inspectionType === 'full' ? 'ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂ ÃÂÃÂ¦ÃÂ¨ÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ!' : 'ÃÂ ÃÂ©ÃÂÃÂ¨ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ!'}>
         <div className="text-center space-y-4">
           <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto">
             <Check size={32} className="text-green-600" />
           </div>
-          <p className="text-gray-600">{inspectionTypes.find(t => t.value === inspectionType)?.label} × ×©××¨ ×××¦×××</p>
+          <p className="text-gray-600">{inspectionTypes.find(t => t.value === inspectionType)?.label} ÃÂ ÃÂ©ÃÂÃÂ¨ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ</p>
           {inspectionType === 'full' && overallScore > 0 && (
             <div className="bg-teal-50 p-4 rounded-xl">
               <div className="text-3xl font-bold text-teal-600">{overallScore}</div>
@@ -1913,10 +1911,10 @@ export default function NewInspectionPage() {
           )}
           <div className="flex gap-2">
             <Button variant="outline" className="flex-1" onClick={() => { setSuccessModal(false); router.push('/garage/inspections'); }}>
-              ××××¨ ×××××§××ª
+              ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂª
             </Button>
             <Button className="flex-1" onClick={() => { setSuccessModal(false); router.push(`/inspection/${successId}`); }}>
-              ×¦×¤× ××××
+              ÃÂ¦ÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂ
             </Button>
           </div>
         </div>
