@@ -33,21 +33,21 @@ interface Treatment {
 }
 
 const TREATMENT_TYPES: Record<string, { label: string; icon: typeof Wrench }> = {
-  maintenance: { label: 'טיפול תקופתי', icon: Wrench },
-  repair: { label: 'תיקון', icon: Settings },
-  oil_change: { label: 'החלפת שמן', icon: Droplet },
-  tires: { label: 'צמיגים', icon: CircleDot },
-  brakes: { label: 'בלמים', icon: XCircle },
-  electrical: { label: 'חשמל', icon: Zap },
-  ac: { label: 'מיזוג', icon: Snowflake },
-  bodywork: { label: 'פחחות/צבע', icon: Palette },
-  other: { label: 'אחר', icon: ClipboardList },
+  maintenance: { label: '×××¤×× ×ª×§××¤×ª×', icon: Wrench },
+  repair: { label: '×ª××§××', icon: Settings },
+  oil_change: { label: '××××¤×ª ×©××', icon: Droplet },
+  tires: { label: '×¦×××××', icon: CircleDot },
+  brakes: { label: '×××××', icon: XCircle },
+  electrical: { label: '××©××', icon: Zap },
+  ac: { label: '×××××', icon: Snowflake },
+  bodywork: { label: '×¤××××ª/×¦××¢', icon: Palette },
+  other: { label: '×××¨', icon: ClipboardList },
 };
 
 const STATUS_MAP: Record<string, { label: string; bgClass: string; icon: typeof Clock }> = {
-  pending_approval: { label: 'ממתין לאישור', bgClass: 'bg-amber-50 text-amber-700 border border-amber-200', icon: Clock },
-  approved: { label: 'אושר', bgClass: 'bg-green-50 text-green-700 border border-green-200', icon: CheckCircle },
-  rejected: { label: 'נדחה', bgClass: 'bg-red-50 text-red-700 border border-red-200', icon: XCircle },
+  pending_approval: { label: '×××ª×× ××××©××¨', bgClass: 'bg-amber-50 text-amber-700 border border-amber-200', icon: Clock },
+  approved: { label: '×××©×¨', bgClass: 'bg-green-50 text-green-700 border border-green-200', icon: CheckCircle },
+  rejected: { label: '× ×××', bgClass: 'bg-red-50 text-red-700 border border-red-200', icon: XCircle },
 };
 
 export default function GarageTreatmentsPage() {
@@ -100,7 +100,7 @@ export default function GarageTreatmentsPage() {
 
   const handleSend = async () => {
     if (!form.licensePlate || !form.title) {
-      setError('נא למלא מספר רישוי וכותרת');
+      setError('× × ×××× ××¡×¤×¨ ×¨××©×× ××××ª×¨×ª');
       return;
     }
     setSaving(true);
@@ -124,11 +124,11 @@ export default function GarageTreatmentsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'שגיאה בשליחת הטיפול');
+        setError(data.error || '×©×××× ××©××××ª ××××¤××');
         setSaving(false);
         return;
       }
-      setSuccess('הטיפול נשלח ללקוח לאישור!');
+      setSuccess('××××¤×× × ×©×× ×××§×× ××××©××¨!');
       setShowModal(false);
       setForm({
         licensePlate: '', type: 'maintenance', title: '', description: '',
@@ -137,7 +137,7 @@ export default function GarageTreatmentsPage() {
       fetchTreatments();
       setTimeout(() => setSuccess(''), 4000);
     } catch {
-      setError('שגיאת חיבור');
+      setError('×©××××ª ×××××¨');
     }
     setSaving(false);
   };
@@ -159,12 +159,12 @@ export default function GarageTreatmentsPage() {
             <Wrench size={20} className="text-[#1e3a5f]" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">ניהול טיפולים</h1>
-            <p className="text-sm text-gray-500">שלח ועקוב אחר טיפולים ללקוחות</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">× ×××× ×××¤××××</h1>
+            <p className="text-sm text-gray-500">×©×× ××¢×§×× ×××¨ ×××¤×××× ×××§××××ª</p>
           </div>
         </div>
         <Button icon={<Plus size={16} />} onClick={() => setShowModal(true)} className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700">
-          טיפול חדש
+          ×××¤×× ×××©
         </Button>
       </div>
 
@@ -173,30 +173,30 @@ export default function GarageTreatmentsPage() {
         <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <FileText size={16} className="text-emerald-600" />
-            <span className="text-xs text-gray-400">סה״כ</span>
+            <span className="text-xs text-gray-400">×¡××´×</span>
           </div>
           <p className="text-2xl font-bold text-gray-800">{stats.total}</p>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <Clock size={16} className="text-amber-500" />
-            <span className="text-xs text-gray-400">ממתינים</span>
+            <span className="text-xs text-gray-400">×××ª×× ××</span>
           </div>
           <p className="text-2xl font-bold text-amber-600">{stats.pending}</p>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <CheckCircle size={16} className="text-green-500" />
-            <span className="text-xs text-gray-400">אושרו</span>
+            <span className="text-xs text-gray-400">×××©×¨×</span>
           </div>
           <p className="text-2xl font-bold text-green-600">{stats.approved}</p>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <DollarSign size={16} className="text-teal-600" />
-            <span className="text-xs text-gray-400">סה״כ עלויות</span>
+            <span className="text-xs text-gray-400">×¡××´× ×¢×××××ª</span>
           </div>
-          <p className="text-2xl font-bold text-teal-600">₪{stats.totalCost.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-teal-600">âª{stats.totalCost.toLocaleString()}</p>
         </div>
       </div>
 
@@ -207,40 +207,40 @@ export default function GarageTreatmentsPage() {
             <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-emerald-600" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לטיפולים</h2>
+            <h2 className="text-lg font-bold text-[#1e3a5f]">×ª××× ××ª AI ××××¤××××</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <Clock size={14} className="text-amber-500" />
-                <span className="text-xs font-bold text-gray-700">אישורים ממתינים</span>
+                <span className="text-xs font-bold text-gray-700">×××©××¨×× ×××ª×× ××</span>
               </div>
               <p className="text-xs text-gray-600">
                 {stats.pending > 3
-                  ? `⚠️ ${stats.pending} טיפולים ממתינים לאישור — פנו ללקוחות לזירוז.`
+                  ? `â ï¸ ${stats.pending} ×××¤×××× ×××ª×× ×× ××××©××¨ â ×¤× × ×××§××××ª ××××¨××.`
                   : stats.pending > 0
-                  ? `📋 ${stats.pending} טיפולים בהמתנה. שלחו תזכורת ללקוחות.`
-                  : '✅ כל הטיפולים אושרו — מצוין!'}
+                  ? `ð ${stats.pending} ×××¤×××× ××××ª× ×. ×©××× ×ª××××¨×ª ×××§××××ª.`
+                  : 'â ×× ××××¤×××× ×××©×¨× â ××¦×××!'}
               </p>
             </div>
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <DollarSign size={14} className="text-teal-600" />
-                <span className="text-xs font-bold text-gray-700">עלות ממוצעת</span>
+                <span className="text-xs font-bold text-gray-700">×¢×××ª ××××¦×¢×ª</span>
               </div>
               <p className="text-xs text-gray-600">
                 {(() => {
                   const withCost = treatments.filter(t => t.cost && t.cost > 0);
-                  if (withCost.length === 0) return '📋 אין נתוני עלות זמינים עדיין.';
+                  if (withCost.length === 0) return 'ð ××× × ×ª×× × ×¢×××ª ×××× ×× ×¢××××.';
                   const avg = Math.round(withCost.reduce((s, t) => s + (t.cost || 0), 0) / withCost.length);
-                  return `💰 עלות ממוצעת ₪${avg.toLocaleString()} לטיפול. סה״כ ₪${stats.totalCost.toLocaleString()} מ-${withCost.length} טיפולים.`;
+                  return `ð° ×¢×××ª ××××¦×¢×ª âª${avg.toLocaleString()} ××××¤××. ×¡××´× âª${stats.totalCost.toLocaleString()} ×-${withCost.length} ×××¤××××.`;
                 })()}
               </p>
             </div>
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={14} className="text-emerald-600" />
-                <span className="text-xs font-bold text-gray-700">סוג טיפול נפוץ</span>
+                <span className="text-xs font-bold text-gray-700">×¡×× ×××¤×× × ×¤××¥</span>
               </div>
               <p className="text-xs text-gray-600">
                 {(() => {
@@ -249,9 +249,9 @@ export default function GarageTreatmentsPage() {
                     return acc;
                   }, {} as Record<string, number>);
                   const topType = Object.entries(typeCounts).sort((a, b) => b[1] - a[1])[0];
-                  if (!topType) return '📋 אין מספיק נתונים.';
+                  if (!topType) return 'ð ××× ××¡×¤××§ × ×ª×× ××.';
                   const label = TREATMENT_TYPES[topType[0]]?.label || topType[0];
-                  return `🔧 ${label} — ${topType[1]} טיפולים (${Math.round((topType[1] / treatments.length) * 100)}%). ${topType[1] > treatments.length * 0.5 ? 'שקלו חבילות מיוחדות.' : 'מגוון טיפולים בריא.'}`;
+                  return `ð§ ${label} â ${topType[1]} ×××¤×××× (${Math.round((topType[1] / treatments.length) * 100)}%). ${topType[1] > treatments.length * 0.5 ? '×©×§×× ××××××ª ×××××××ª.' : '××××× ×××¤×××× ××¨××.'}`;
                 })()}
               </p>
             </div>
@@ -277,10 +277,10 @@ export default function GarageTreatmentsPage() {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex gap-2 overflow-x-auto pb-1 flex-1">
           {[
-            { key: 'all', label: 'הכל' },
-            { key: 'pending_approval', label: 'ממתינים' },
-            { key: 'approved', label: 'אושרו' },
-            { key: 'rejected', label: 'נדחו' },
+            { key: 'all', label: '×××' },
+            { key: 'pending_approval', label: '×××ª×× ××' },
+            { key: 'approved', label: '×××©×¨×' },
+            { key: 'rejected', label: '× ×××' },
           ].map(tab => (
             <button
               key={tab.key}
@@ -299,7 +299,7 @@ export default function GarageTreatmentsPage() {
           <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="חיפוש..."
+            placeholder="×××¤××©..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="w-full sm:w-48 pl-3 pr-9 py-2 border border-gray-200 rounded-xl text-sm text-right focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
@@ -314,14 +314,14 @@ export default function GarageTreatmentsPage() {
             <Wrench size={32} className="text-gray-300" />
           </div>
           <h3 className="text-lg font-bold text-gray-600 mb-2">
-            {treatments.length === 0 ? 'אין טיפולים עדיין' : 'אין תוצאות לסינון'}
+            {treatments.length === 0 ? '××× ×××¤×××× ×¢××××' : '××× ×ª××¦×××ª ××¡×× ××'}
           </h3>
           <p className="text-gray-400 text-sm mb-4">
-            {treatments.length === 0 ? 'שלח טיפול ללקוח לפי מספר רישוי' : 'נסה לשנות את הסינון'}
+            {treatments.length === 0 ? '×©×× ×××¤×× ×××§×× ××¤× ××¡×¤×¨ ×¨××©××' : '× ×¡× ××©× ××ª ××ª ××¡×× ××'}
           </p>
           {treatments.length === 0 && (
             <Button icon={<Plus size={16} />} onClick={() => setShowModal(true)} className="bg-emerald-600 hover:bg-emerald-700">
-              טיפול חדש
+              ×××¤×× ×××©
             </Button>
           )}
         </Card>
@@ -356,14 +356,14 @@ export default function GarageTreatmentsPage() {
                       </div>
                       <div className="flex items-center gap-3 text-xs text-gray-500 flex-wrap">
                         <span>{typeInfo.label}</span>
-                        <span>•</span>
+                        <span>â¢</span>
                         <span className="flex items-center gap-1">
                           <Calendar size={10} />
                           {new Date(t.date).toLocaleDateString('he-IL')}
                         </span>
                         {t.mechanicName && (
                           <>
-                            <span className="hidden sm:inline">•</span>
+                            <span className="hidden sm:inline">â¢</span>
                             <span className="hidden sm:inline">{t.mechanicName}</span>
                           </>
                         )}
@@ -373,7 +373,7 @@ export default function GarageTreatmentsPage() {
                     {/* Cost + arrow */}
                     <div className="flex items-center gap-3 flex-shrink-0">
                       {t.cost != null && t.cost > 0 && (
-                        <span className="font-bold text-emerald-600">₪{t.cost.toLocaleString()}</span>
+                        <span className="font-bold text-emerald-600">âª{t.cost.toLocaleString()}</span>
                       )}
                       <ChevronDown size={14} className={`text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                     </div>
@@ -385,25 +385,25 @@ export default function GarageTreatmentsPage() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
                       {t.description && (
                         <div className="col-span-2 sm:col-span-3">
-                          <p className="text-xs text-gray-400 mb-1">תיאור</p>
+                          <p className="text-xs text-gray-400 mb-1">×ª××××¨</p>
                           <p className="text-gray-700 text-sm">{t.description}</p>
                         </div>
                       )}
                       {t.mechanicName && (
                         <div>
-                          <p className="text-xs text-gray-400 mb-1">מכונאי</p>
+                          <p className="text-xs text-gray-400 mb-1">×××× ××</p>
                           <p className="font-semibold text-gray-800">{t.mechanicName}</p>
                         </div>
                       )}
                       {t.mileage && (
                         <div>
-                          <p className="text-xs text-gray-400 mb-1">ק״מ</p>
-                          <p className="font-semibold text-gray-800">{t.mileage.toLocaleString()} ק״מ</p>
+                          <p className="text-xs text-gray-400 mb-1">×§×´×</p>
+                          <p className="font-semibold text-gray-800">{t.mileage.toLocaleString()} ×§×´×</p>
                         </div>
                       )}
                       {t.notes && (
                         <div className="col-span-2 sm:col-span-3">
-                          <p className="text-xs text-gray-400 mb-1">הערות</p>
+                          <p className="text-xs text-gray-400 mb-1">××¢×¨××ª</p>
                           <p className="text-gray-700 text-sm">{t.notes}</p>
                         </div>
                       )}
@@ -419,31 +419,31 @@ export default function GarageTreatmentsPage() {
       {/* Floating Add Button */}
       <button
         onClick={() => setShowModal(true)}
-        className="fixed bottom-20 left-4 lg:bottom-6 lg:left-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all active:scale-95 z-30"
+        className="fixed bottom-20 end-4 lg:bottom-6 lg:end-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all active:scale-95 z-30"
       >
         <Plus size={24} />
       </button>
 
       {/* Send Treatment Modal */}
-      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setError(''); }} title="שליחת טיפול ללקוח" size="lg">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setError(''); }} title="×©××××ª ×××¤×× ×××§××" size="lg">
         <div className="space-y-4">
           {/* Vehicle identification */}
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-3">
               <Car size={16} className="text-emerald-600" />
-              <h4 className="font-bold text-emerald-800 text-sm">זיהוי לקוח לפי מספר רישוי</h4>
+              <h4 className="font-bold text-emerald-800 text-sm">××××× ××§×× ××¤× ××¡×¤×¨ ×¨××©××</h4>
             </div>
             <Input
-              placeholder="הכנס מספר רישוי..."
+              placeholder="××× ×¡ ××¡×¤×¨ ×¨××©××..."
               value={form.licensePlate}
               onChange={(e) => setForm({ ...form, licensePlate: e.target.value })}
             />
-            <p className="text-xs text-emerald-600 mt-2">הלקוח חייב להיות רשום במערכת AutoLog</p>
+            <p className="text-xs text-emerald-600 mt-2">×××§×× ×××× ×××××ª ×¨×©×× ×××¢×¨××ª AutoLog</p>
           </div>
 
           {/* Treatment type as grid */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2 text-right">סוג טיפול</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2 text-right">×¡×× ×××¤××</label>
             <div className="grid grid-cols-3 gap-2">
               {Object.entries(TREATMENT_TYPES).map(([key, info]) => (
                 <button
@@ -465,42 +465,42 @@ export default function GarageTreatmentsPage() {
           </div>
 
           <Input
-            label="כותרת הטיפול"
-            placeholder="למשל: טיפול 30,000 ק״מ"
+            label="×××ª×¨×ª ××××¤××"
+            placeholder="×××©×: ×××¤×× 30,000 ×§×´×"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2 text-right">תיאור העבודה</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2 text-right">×ª××××¨ ××¢××××</label>
             <VoiceInput
               value={form.description}
               onChange={(val) => setForm({ ...form, description: val })}
-              placeholder="פירוט העבודה שבוצעה, חלקים שהוחלפו..."
+              placeholder="×¤××¨×× ××¢×××× ×©×××¦×¢×, ×××§×× ×©×××××¤×..."
               rows={3}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Input label="שם מכונאי" placeholder="אופציונלי" value={form.mechanicName}
+            <Input label="×©× ×××× ××" placeholder="×××¤×¦××× ××" value={form.mechanicName}
               onChange={(e) => setForm({ ...form, mechanicName: e.target.value })} />
-            <Input label="תאריך" type="date" value={form.date}
+            <Input label="×ª××¨××" type="date" value={form.date}
               onChange={(e) => setForm({ ...form, date: e.target.value })} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Input label="עלות (₪)" type="number" placeholder="0" value={form.cost}
+            <Input label="×¢×××ª (âª)" type="number" placeholder="0" value={form.cost}
               onChange={(e) => setForm({ ...form, cost: e.target.value })} />
-            <Input label="ק״מ ברכב" type="number" placeholder="45000" value={form.mileage}
+            <Input label="×§×´× ××¨××" type="number" placeholder="45000" value={form.mileage}
               onChange={(e) => setForm({ ...form, mileage: e.target.value })} />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2 text-right">הערות</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2 text-right">××¢×¨××ª</label>
             <VoiceInput
               value={form.notes}
               onChange={(val) => setForm({ ...form, notes: val })}
-              placeholder="הערות נוספות..."
+              placeholder="××¢×¨××ª × ××¡×¤××ª..."
               rows={2}
             />
           </div>
@@ -513,10 +513,10 @@ export default function GarageTreatmentsPage() {
           )}
 
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Button variant="ghost" onClick={() => setShowModal(false)} className="w-full sm:w-auto">ביטול</Button>
+            <Button variant="ghost" onClick={() => setShowModal(false)} className="w-full sm:w-auto">×××××</Button>
             <Button icon={<Send size={16} />} loading={saving} onClick={handleSend}
               className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700">
-              שלח ללקוח
+              ×©×× ×××§××
             </Button>
           </div>
         </div>
