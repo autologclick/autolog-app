@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://autolog.click'),
   title: {
     default: 'AutoLog - ניהול רכבים חכם',
     template: '%s | AutoLog',
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
   keywords: ['ניהול רכבים', 'טסט', 'ביטוח רכב', 'מוסך', 'בדיקת רכב', 'AutoLog', 'תזכורות רכב', 'SOS חירום'],
   authors: [{ name: 'AutoLog' }],
   creator: 'AutoLog',
-  icons: { icon: [{ url: '/favicon-32.png', sizes: '32x32', type: 'image/png' }, { url: '/favicon-16.png', sizes: '16x16', type: 'image/png' }], apple: '/favicon-32.png' },
+  icons: { icon: [{ url: '/favicon-32.png', sizes: '32x32', type: 'image/png' }, { url: '/favicon-16.png', sizes: '16x16', type: 'image/png' }], apple: '/apple-touch-icon.png' },
   manifest: '/manifest.json',
   themeColor: '#1e3a5f',
   appleWebApp: {
@@ -48,6 +49,9 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+  },
+  alternates: {
+    canonical: '/',
   },
 };
 
