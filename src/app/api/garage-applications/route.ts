@@ -13,6 +13,7 @@ const applicationSchema = z.object({
   address: z.string().max(200).optional(),
   description: z.string().max(1000).optional(),
   services: z.array(z.string()).optional(),
+  languages: z.array(z.string()).optional(),
   yearsExperience: z.number().min(0).max(100).optional(),
   employeeCount: z.number().min(1).max(500).optional(),
   licenseNumber: z.string().max(50).optional(),
