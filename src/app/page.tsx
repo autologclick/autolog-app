@@ -243,7 +243,7 @@ export default function Home() {
 
           {/* Mobile Menu */}
           <button
-            className="md:hidden p-2 rounded-lg transition"
+            className="md:hidden p-3 rounded-lg transition active:scale-95"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen
@@ -256,10 +256,10 @@ export default function Home() {
         {mobileMenuOpen && (
           <div className="md:hidden bg-white shadow-xl border-t">
             <div className="px-4 py-3 space-y-1">
-              <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg">תכונות</a>
-              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg">איך זה עובד</a>
-              <a href="#garages" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg">למוסכים</a>
-              <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg">שאלות נפוצות</a>
+              <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">תכונות</a>
+              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">איך זה עובד</a>
+              <a href="#garages" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">למוסכים</a>
+              <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">שאלות נפוצות</a>
               <hr className="my-2" />
               <Link href="/auth/login" className="block px-4 py-3 text-[מספר 1e3a5f] font-medium hover:bg-[#fef7ed]/50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>
                 כניסה
@@ -273,7 +273,7 @@ export default function Home() {
       </nav>
 
       {/* ============ HERO ============ */}
-      <section className="relative min-h-[100vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[85vh] sm:min-h-[100vh] flex items-center overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0f2b47] via-[מספר 1e3a5f] to-[#0d7377]" />
         <div className="absolute inset-0 opacity-[0.04]" style={{
@@ -301,20 +301,20 @@ export default function Home() {
                 {' '}במקום אחד
               </h1>
 
-              <p className="text-lg text-gray-300 leading-relaxed mb-8 max-w-lg">
+              <p className="text-base sm:text-lg text-gray-300 leading-relaxed mb-8 max-w-lg">
                 בדיקות תקופתיות, ביטוח, טסט, תזכורות חכמות, היסטוריית טיפולים ושירות חירום — הכל בפלטפורמה דיגיטלית אחת, בחינם.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 mb-10">
                 <Link
                   href="/auth/signup"
-                  className="px-8 py-4 bg-[#0d9488] text-white rounded-xl font-bold text-lg hover:bg-[#0b7e74] transition-all shadow-xl shadow-teal-600/30 hover:shadow-teal-600/40 hover:-translate-y-0.5 text-center"
+                  className="px-6 sm:px-8 py-3.5 sm:py-4 bg-[#0d9488] text-white rounded-xl font-bold text-base sm:text-lg hover:bg-[#0b7e74] transition-all shadow-xl shadow-teal-600/30 hover:shadow-teal-600/40 hover:-translate-y-0.5 text-center"
                 >
                   התחל בחינם — ללא כרטיס אשראי
                 </Link>
                 <Link
                   href="/auth/login"
-                  className="px-8 py-4 bg-white/10 backdrop-blur text-white rounded-xl font-bold text-lg hover:bg-white/20 transition-all border border-white/20 text-center"
+                  className="px-6 sm:px-8 py-3.5 sm:py-4 bg-white/10 backdrop-blur text-white rounded-xl font-bold text-base sm:text-lg hover:bg-white/20 transition-all border border-white/20 text-center"
                 >
                   כניסה למערכת
                 </Link>
@@ -825,7 +825,7 @@ export default function Home() {
       {/* ============ CTA ============ */}
       <section ref={cta.ref} className="py-20 sm:py-24">
         <div className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-1000 ${cta.isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-          <div className="bg-gradient-to-br from-[מספר 1e3a5f] via-[#244b75] to-[#0d7377] rounded-3xl p-10 sm:p-14 text-center text-white relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[מספר 1e3a5f] via-[#244b75] to-[#0d7377] rounded-3xl p-6 sm:p-14 text-center text-white relative overflow-hidden">
             {/* Decorative */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-400/10 rounded-full blur-3xl" />
@@ -869,7 +869,7 @@ export default function Home() {
                 <li><a href="#features" className="hover:text-white transition">תכונות</a></li>
                 <li><a href="#how-it-works" className="hover:text-white transition">איך זה עובד</a></li>
                 <li><a href="#garages" className="hover:text-white transition">למוסכים</a></li>
-                <li><a href="#" className="hover:text-white transition">תמחור</a></li>
+                <li><Link href="/auth/signup" className="hover:text-white transition">הרשמה</Link></li>
               </ul>
             </div>
 
