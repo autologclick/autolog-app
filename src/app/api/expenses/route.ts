@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import {
   requireAuth,
   jsonResponse,
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
     const { skip, limit } = getPaginationParams(req);
 
     // Build query filters
-    const whereFilters: any = {};
+    const whereFilters: Prisma.ExpenseWhereInput = {};
 
     // If vehicleId is provided, verify ownership
     if (vehicleId) {
@@ -115,7 +116,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const monthlySummary: Record<string, any> = {};
+    const monthlySummary: Record<string, number> = {};
     const categoryTotals: Record<string, number> = {};
 
     allExpenses.forEach((exp) => {
