@@ -8,6 +8,7 @@ import {
   validationErrorResponse,
   handleApiError,
   getPaginationParams,
+  paginationMeta,
 } from '@/lib/api-helpers';
 import { appointmentSchema } from '@/lib/validations';
 import { createLogger } from '@/lib/logger';
@@ -18,7 +19,7 @@ const logger = createLogger('appointments');
 export async function GET(req: NextRequest) {
   try {
     const payload = requireAuth(req);
-    const { skip, limit } = getPaginationParams(req);
+    const { page, skip, limit } = getPaginationParams(req);
     const url = new URL(req.url);
     const status = url.searchParams.get('status');
 
@@ -58,7 +59,7 @@ export async function GET(req: NextRequest) {
       prisma.appointment.count({ where }),
     ]);
 
-    return jsonResponse({ appointments, total });
+    return jsonResponse({ appointments, ...paginationMeta(total, page, limit) });
   } catch (error) {
     return handleApiError(error);
   }
