@@ -128,17 +128,17 @@ export class AuthError extends Error {
 
 export function handleApiError(error: unknown) {
   if (error instanceof AuthError) {
-    apiLogger.warn('Authorization error', {
+    apiLogger.warn('שגיאת הרשאה', {
       message: error.message,
       status: error.status,
     });
     return errorResponse(error.message, error.status);
   }
-  apiLogger.error('API error', {
-    error: error instanceof Error ? error.message : 'Unknown error',
+  apiLogger.error('שגיאת API', {
+    error: error instanceof Error ? error.message : 'שגיאה לא ידועה',
     stack: error instanceof Error ? error.stack : undefined,
   });
-  return errorResponse('Internal server error', 500);
+  return errorResponse('שגיאת שרת פנימית', 500);
 }
 
 /**
