@@ -6,6 +6,84 @@
  * to provide actionable insights and predictions.
  */
 
+// ====== Constants ======
+
+/** Time conversion constants */
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+const MS_PER_MONTH = MS_PER_DAY * 30;
+
+/** Score deductions for vehicle health analysis */
+const SCORE_DEDUCTION = {
+  DOCUMENT_EXPIRED: 25,
+  DOCUMENT_EXPIRING: 10,
+  LOW_INSPECTION: 20,
+  OLD_INSPECTION: 10,
+  NO_INSPECTION: 15,
+} as const;
+
+/** Thresholds for document validity (in days) */
+const DOCUMENT_EXPIRY_WARNING_DAYS = 30;
+
+/** Inspection score thresholds */
+const INSPECTION_SCORE = {
+  LOW: 50,
+  GOOD: 80,
+} as const;
+
+/** Days since last inspection before warning */
+const INSPECTION_STALE_DAYS = 180;
+
+/** Default base score when no inspection exists */
+const DEFAULT_BASE_SCORE = 70;
+
+/** Vehicle health status thresholds (score ranges) */
+const HEALTH_STATUS_THRESHOLD = {
+  EXCELLENT: 85,
+  GOOD: 70,
+  ATTENTION: 55,
+  WARNING: 35,
+} as const;
+
+/** Inspection assessment thresholds */
+const ASSESSMENT_THRESHOLD = {
+  EXCELLENT: 85,
+  GOOD: 65,
+  NEEDS_ATTENTION: 40,
+} as const;
+
+/** Mileage-based maintenance intervals (in km) */
+const MAINTENANCE_INTERVAL_KM = {
+  OIL_CHANGE: 15000,
+  TIRE_CHANGE: 50000,
+} as const;
+
+/** Upcoming maintenance warning thresholds (in km) */
+const MAINTENANCE_WARNING_KM = {
+  OIL_CHANGE: 2000,
+  TIRE_CHANGE: 10000,
+} as const;
+
+/** High annual mileage threshold */
+const HIGH_MILEAGE_PER_YEAR = 20000;
+
+/** Monthly expense threshold for "high expenses" warning (in NIS) */
+const HIGH_MONTHLY_EXPENSE = 1500;
+
+/** Estimated cost per critical item (in NIS) for rough estimates */
+const ESTIMATED_COST_PER_CRITICAL_ITEM = 500;
+
+/** Ratio thresholds for "most items OK" in inspection */
+const ITEMS_OK_RATIO = 0.8;
+
+/** Expense trend analysis thresholds */
+const TREND_THRESHOLD = {
+  INCREASING: 1.15,
+  DECREASING: 0.85,
+} as const;
+
+/** Months ahead for expense forecast */
+const FORECAST_MONTHS = 3;
+
 // ====== Types ======
 
 export interface VehicleHealthReport {
@@ -73,14 +151,14 @@ function daysUntil(dateStr: string | null | undefined): number | null {
   if (!dateStr) return null;
   const target = new Date(dateStr);
   const now = new Date();
-  return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  return Math.ceil((target.getTime() - now.getTime()) / MS_PER_DAY);
 }
 
 function daysSince(dateStr: string | null | undefined): number | null {
   if (!dateStr) return null;
   const target = new Date(dateStr);
   const now = new Date();
-  return Math.ceil((now.getTime() - target.getTime()) / (1000 * 60 * 60 * 24));
+  return Math.ceil((now.getTime() - target.getTime()) / MS_PER_DAY);
 }
 
 // ====== Vehicle Health Analysis ======
@@ -132,7 +210,7 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
 
   if (testDays !== null) {
     if (testDays < 0) {
-      scoreDeductions += 25;
+      scoreDeductions += SCORE_DEDUCTION.DOCUMENT_EXPIRED;
       insights.push({
         id: 'test-expired',
         type: 'critical',
@@ -146,8 +224,8 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
         urgency: 'immediate',
         description: 'קבע תור לטסט בהקדם האפשרי',
       });
-    } else if (testDays <= 30) {
-      scoreDeductions += 10;
+    } else if (testDays <= DOCUMENT_EXPIRY_WARNING_DAYS) {
+      scoreDeductions += SCORE_DEDUCTION.DOCUMENT_EXPIRING;
       insights.push({
         id: 'test-expiring',
         type: 'warning',
@@ -174,7 +252,7 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
 
   if (insuranceDays !== null) {
     if (insuranceDays < 0) {
-      scoreDeductions += 25;
+      scoreDeductions += SCORE_DEDUCTION.DOCUMENT_EXPIRED;
       insights.push({
         id: 'insurance-expired',
         type: 'critical',
@@ -188,8 +266,8 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
         urgency: 'immediate',
         description: 'חדש את הביטוח מיידית',
       });
-    } else if (insuranceDays <= 30) {
-      scoreDeductions += 10;
+    } else if (insuranceDays <= DOCUMENT_EXPIRY_WARNING_DAYS) {
+      scoreDeductions += SCORE_DEDUCTION.DOCUMENT_EXPIRING;
       insights.push({
         id: 'insurance-expiring',
         type: 'warning',
@@ -212,8 +290,8 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
     const daysSinceInspection = daysSince(lastInspection.date);
     const score = lastInspection.overallScore || 0;
 
-    if (score < 50) {
-      scoreDeductions += 20;
+    if (score < INSPECTION_SCORE.LOW) {
+      scoreDeductions += SCORE_DEDUCTION.LOW_INSPECTION;
       insights.push({
         id: 'low-inspection-score',
         type: 'critical',
@@ -221,7 +299,7 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
         description: `הבדיקה האחרונה קיבלה ציון ${score}/100. נדרש טיפול בממצאים.`,
         category: 'בדיקות',
       });
-    } else if (score >= 80) {
+    } else if (score >= INSPECTION_SCORE.GOOD) {
       insights.push({
         id: 'good-inspection',
         type: 'positive',
@@ -231,8 +309,8 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
       });
     }
 
-    if (daysSinceInspection && daysSinceInspection > 180) {
-      scoreDeductions += 10;
+    if (daysSinceInspection && daysSinceInspection > INSPECTION_STALE_DAYS) {
+      scoreDeductions += SCORE_DEDUCTION.OLD_INSPECTION;
       insights.push({
         id: 'old-inspection',
         type: 'warning',
@@ -278,7 +356,7 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
       }
     }
   } else {
-    scoreDeductions += 15;
+    scoreDeductions += SCORE_DEDUCTION.NO_INSPECTION;
     insights.push({
       id: 'no-inspection',
       type: 'warning',
@@ -299,12 +377,12 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
     const age = new Date().getFullYear() - vehicle.year;
     const avgKmPerYear = age > 0 ? vehicle.mileage / age : vehicle.mileage;
 
-    // Oil change prediction (every ~15,000 km)
-    const kmSinceOilChange = vehicle.mileage % 15000;
-    const kmToOilChange = 15000 - kmSinceOilChange;
+    // Oil change prediction
+    const kmSinceOilChange = vehicle.mileage % MAINTENANCE_INTERVAL_KM.OIL_CHANGE;
+    const kmToOilChange = MAINTENANCE_INTERVAL_KM.OIL_CHANGE - kmSinceOilChange;
     const monthsToOilChange = Math.round((kmToOilChange / avgKmPerYear) * 12);
 
-    if (kmToOilChange < 2000) {
+    if (kmToOilChange < MAINTENANCE_WARNING_KM.OIL_CHANGE) {
       predictions.push({
         id: 'oil-change',
         title: 'החלפת שמן קרובה',
@@ -315,11 +393,11 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
       });
     }
 
-    // Tire change prediction (every ~50,000 km)
-    const kmSinceTires = vehicle.mileage % 50000;
-    const kmToTires = 50000 - kmSinceTires;
+    // Tire change prediction
+    const kmSinceTires = vehicle.mileage % MAINTENANCE_INTERVAL_KM.TIRE_CHANGE;
+    const kmToTires = MAINTENANCE_INTERVAL_KM.TIRE_CHANGE - kmSinceTires;
 
-    if (kmToTires < 10000) {
+    if (kmToTires < MAINTENANCE_WARNING_KM.TIRE_CHANGE) {
       predictions.push({
         id: 'tire-change',
         title: 'החלפת צמיגים צפויה',
@@ -331,7 +409,7 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
     }
 
     // Test prediction based on kilometers
-    if (avgKmPerYear > 20000) {
+    if (avgKmPerYear > HIGH_MILEAGE_PER_YEAR) {
       savingsTips.push({
         id: 'high-mileage',
         title: 'נסיעה רבה בשנה',
@@ -346,11 +424,11 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
     const totalExpenses = vehicle.expenses.reduce((sum, e) => sum + e.amount, 0);
     const avgMonthly = totalExpenses / Math.max(1, getMonthSpan(vehicle.expenses));
 
-    if (avgMonthly > 1500) {
+    if (avgMonthly > HIGH_MONTHLY_EXPENSE) {
       savingsTips.push({
         id: 'high-expenses',
         title: 'הוצאות גבוהות',
-        description: `ממוצע הוצאות חודשי של ₪${Math.round(avgMonthly)} הוא מעל הממוצע. בדוק אפשרויות חיסכון.`,
+        description: `ממוצע הוצאות חודשי של ₪${Math.round(avgMonthly)} הוא מעל הממזצע. בדוק אפשרויות חיסכון.`,
         potentialSaving: '₪300-800 בחודש',
       });
     }
@@ -387,16 +465,16 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
   }
 
   // Calculate final score
-  const baseScore = lastInspection?.overallScore || 70;
+  const baseScore = lastInspection?.overallScore || DEFAULT_BASE_SCORE;
   const overallScore = Math.max(0, Math.min(100, baseScore - scoreDeductions));
 
   // Determine status
   let status: VehicleHealthReport['status'];
   let statusLabel: string;
-  if (overallScore >= 85) { status = 'excellent'; statusLabel = 'מצוין'; }
-  else if (overallScore >= 70) { status = 'good'; statusLabel = 'טוב'; }
-  else if (overallScore >= 55) { status = 'attention'; statusLabel = 'דורש תשומת לב'; }
-  else if (overallScore >= 35) { status = 'warning'; statusLabel = 'אזהרה'; }
+  if (overallScore >= HEALTH_STATUS_THRESHOLD.EXCELLENT) { status = 'excellent'; statusLabel = 'מצוין'; }
+  else if (overallScore >= HEALTH_STATUS_THRESHOLD.GOOD) { status = 'good'; statusLabel = 'טוב'; }
+  else if (overallScore >= HEALTH_STATUS_THRESHOLD.ATTENTION) { status = 'attention'; statusLabel = 'דורש תשומת לב'; }
+  else if (overallScore >= HEALTH_STATUS_THRESHOLD.WARNING) { status = 'warning'; statusLabel = 'אזהרה'; }
   else { status = 'critical'; statusLabel = 'קריטי'; }
 
   return {
@@ -469,11 +547,11 @@ export function analyzeInspection(inspection: InspectionData): InspectionAnalysi
 
   // Positive items
   const positiveItems: string[] = [];
-  if (okItems.length > totalChecked * 0.8) {
+  if (okItems.length > totalChecked * ITEMS_OK_RATIO) {
     positiveItems.push('רוב הפריטים נמצאו תקינים');
   }
   if (items.some(i => i.category === 'brakes' && i.status === 'ok')) {
-    positiveItems.push('מערכת הבלימה תקינה');
+    positiveItems.push('מערכת הבלמים תקינה');
   }
   if (items.some(i => i.category === 'tires' && i.status === 'ok')) {
     positiveItems.push('הצמיגים במצב טוב');
@@ -493,16 +571,16 @@ export function analyzeInspection(inspection: InspectionData): InspectionAnalysi
       estimatedCost = `₪${total.toLocaleString()}`;
     }
   } else if (criticalItems.length > 0) {
-    estimatedCost = `₪${(criticalItems.length * 500).toLocaleString()} (הערכה)`;
+    estimatedCost = `₪${(criticalItems.length * ESTIMATED_COST_PER_CRITICAL_ITEM).toLocaleString()} (הערכה)`;
   }
 
   // Overall assessment
   let overallAssessment: string;
-  if (score >= 85) {
+  if (score >= ASSESSMENT_THRESHOLD.EXCELLENT) {
     overallAssessment = `הרכב ${inspection.vehicle.manufacturer || ''} ${inspection.vehicle.model} במצב מצוין. ציון ${score}/100 מעיד על תחזוקה טובה. המשך לשמור על לוח זמנים קבוע לטיפולים.`;
-  } else if (score >= 65) {
+  } else if (score >= ASSESSMENT_THRESHOLD.GOOD) {
     overallAssessment = `הרכב במצב סביר עם ציון ${score}/100. ישנם מספר נושאים שדורשים תשומת לב${warnItems.length > 0 ? `, כולל ${warnItems.length} פריטים במצב אזהרה` : ''}. מומלץ לטפל בממצאים בהקדם.`;
-  } else if (score >= 40) {
+  } else if (score >= ASSESSMENT_THRESHOLD.NEEDS_ATTENTION) {
     overallAssessment = `הרכב דורש תשומת לב עם ציון ${score}/100. נמצאו ${criticalItems.length} בעיות קריטיות ו-${warnItems.length} אזהרות. מומלץ מאוד לתקן את הפריטים הקריטיים לפני המשך נסיעה.`;
   } else {
     overallAssessment = `הרכב במצב מדאיג עם ציון ${score}/100. נמצאו ${criticalItems.length} בעיות חמורות. יש לטפל בכל הממצאים הקריטיים מיידית ולא לנסוע עד לתיקון.`;
@@ -566,8 +644,8 @@ export function analyzeExpenses(expenses: ExpenseData[]): ExpenseAnalysis {
 
   let trend: ExpenseAnalysis['trend'];
   let trendLabel: string;
-  if (secondAvg > firstAvg * 1.15) { trend = 'increasing'; trendLabel = 'מגמת עלייה'; }
-  else if (secondAvg < firstAvg * 0.85) { trend = 'decreasing'; trendLabel = 'מגמת ירידה'; }
+  if (secondAvg > firstAvg * TREND_THRESHOLD.INCREASING) { trend = 'increasing'; trendLabel = 'מגמת עלייה'; }
+  else if (secondAvg < firstAvg * TREND_THRESHOLD.DECREASING) { trend = 'decreasing'; trendLabel = 'מגמת ירידה'; }
   else { trend = 'stable'; trendLabel = 'יציב'; }
 
   // Top category
@@ -591,11 +669,11 @@ export function analyzeExpenses(expenses: ExpenseData[]): ExpenseAnalysis {
   if (trend === 'increasing') {
     insights.push('ההוצאות במגמת עלייה. מומלץ לבדוק מה גורם לעלייה.');
   } else if (trend === 'decreasing') {
-    insights.push('כל הכבוד! ההוצאות במגמת ירידה.');
+    insights.push('כל הכבוד! ההזצאות במגמת ירידה.');
   }
 
   // Forecast
-  const forecast = `בהתבסס על ההיסטוריה, ההוצאה הצפויה ל-3 חודשים הקרובים: ₪${(monthlyAverage * 3).toLocaleString()}`;
+  const forecast = `בהתבסס על ההיסטוריה, ההוצאה הצפויה ל-${FORECAST_MONTHS} חודשים הקרובים: ₪${(monthlyAverage * FORECAST_MONTHS).toLocaleString()}`;
 
   return {
     monthlyAverage,
@@ -614,7 +692,7 @@ function getMonthSpan(items: Array<{ date: string }>): number {
   const dates = items.map(i => new Date(i.date).getTime());
   const min = Math.min(...dates);
   const max = Math.max(...dates);
-  return Math.max(1, Math.round((max - min) / (1000 * 60 * 60 * 24 * 30)));
+  return Math.max(1, Math.round((max - min) / MS_PER_MONTH));
 }
 
 function categoryLabelHe(c: string): string {
