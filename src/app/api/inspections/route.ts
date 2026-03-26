@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import { requireAuth, requireGarageOwner, jsonResponse, errorResponse, handleApiError, getPaginationParams, validationErrorResponse } from '@/lib/api-helpers';
 import { z } from 'zod';
 
@@ -13,7 +14,7 @@ export async function GET(req: NextRequest) {
     const garageId = url.searchParams.get('garageId');
     const status = url.searchParams.get('status');
 
-    let where: any = {};
+    const where: Prisma.InspectionWhereInput = {};
 
     if (payload.role === 'user') {
       const userVehicles = await prisma.vehicle.findMany({
@@ -222,7 +223,7 @@ export async function POST(req: NextRequest) {
     const garage = await prisma.garage.findUnique({ where: { ownerId: payload.userId } });
     if (!garage) return errorResponse('מוסך לא נמצא', 404);
 
-    let vehicle: any;
+    let vehicle: { id: string; userId: string; nickname: string; manufacturer: string; model: string; licensePlate: string; [key: string]: unknown };
 
     if (data.vehicleId) {
       // Find existing vehicle by ID
@@ -254,7 +255,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Build the inspection data object
-    const inspectionData: any = {
+    const inspectionData: Prisma.InspectionUncheckedCreateInput = {
       vehicleId: vehicle.id,
       garageId: garage.id,
       appointmentId: data.appointmentId || null,
@@ -403,7 +404,7 @@ export async function POST(req: NextRequest) {
           userId: vehicle.userId,
           type: 'system',
           title: 'דוח בדיקה חדש!',
-          message: `דוח בדיקה מסוג ${data.inspectionType === 'full' ? 'בדיקה מלאה' : data.inspectionType === 'pre_test' ? 'הכנה לטסט' : data.inspectionType === 'rot' ? 'בדיקת רקב' : data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
+          message: `דוח בדיקה מסוג ${data.inspectionType === 'full' ? 'בדיקה מלאה' : data.inspectionType === 'pre_test' ? 'הכנה לטסט' : data.inspectionType === 'rot' ? 'בדיקת רקב' : data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפיי�.`,
           link: `/inspection/${newInspection.id}`,
         },
       });
