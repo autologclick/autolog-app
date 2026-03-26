@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { checkApiRateLimit } from '@/lib/rate-limit';
 import { analyzeExpenses } from '@/lib/ai-analysis';
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const vehicleId = url.searchParams.get('vehicleId');
 
-    let where: any = {};
+    const where: Prisma.ExpenseWhereInput = {};
 
     if (vehicleId) {
       // Verify ownership
