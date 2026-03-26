@@ -1,13 +1,8 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, errorResponse, handleApiError, validationErrorResponse } from '@/lib/api-helpers';
+import { safeJsonParse } from '@/lib/utils';
 import { z } from 'zod';
-
-// Helper to safely parse JSON fields
-function safeJsonParse(value: string | null): any {
-  if (!value) return null;
-  try { return JSON.parse(value); } catch { return value; }
-}
 
 // GET /api/inspections/[id] - Get single inspection with all details
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
