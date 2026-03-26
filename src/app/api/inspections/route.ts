@@ -175,7 +175,10 @@ export async function POST(req: NextRequest) {
         general: z.string().optional(),
       }).optional(),
 
-      // Customer signature removed - handled via separate /sign endpoint
+      // Customer signature
+      customerName: z.string().optional(),
+      customerIdNumber: z.string().optional(),
+      customerSignature: z.string().optional(),
 
       // Legacy support
       detailedScores: z.record(z.number()).optional(),
@@ -213,18 +216,18 @@ export async function POST(req: NextRequest) {
     const data = validation.data;
 
     if (!data.vehicleId && !data.manualVehicle) {
-      return errorResponse('××© ×××××¨ ×¨×× ×× ××××× ××¡×¤×¨ ×¨××©××', 400);
+      return errorResponse('יש לבחור רכב או להזין מספר רישוי', 400);
     }
 
     const garage = await prisma.garage.findUnique({ where: { ownerId: payload.userId } });
-    if (!garage) return errorResponse('×××¡× ×× × ××¦×', 404);
+    if (!garage) return errorResponse('מוסך לא נמצא', 404);
 
     let vehicle: any;
 
     if (data.vehicleId) {
       // Find existing vehicle by ID
       vehicle = await prisma.vehicle.findUnique({ where: { id: data.vehicleId } });
-      if (!vehicle) return errorResponse('×¨×× ×× × ××¦×', 404);
+      if (!vehicle) return errorResponse('רכב לא נמצא', 404);
     } else if (data.manualVehicle) {
       // Try to find by license plate first
       vehicle = await prisma.vehicle.findFirst({
@@ -238,8 +241,8 @@ export async function POST(req: NextRequest) {
           data: {
             userId: payload.userId, // temporary owner - garage
             licensePlate: data.manualVehicle.licensePlate,
-            manufacturer: data.manualVehicle.manufacturer || '×× ×¦×××',
-            model: data.manualVehicle.model || '×× ×¦×××',
+            manufacturer: data.manualVehicle.manufacturer || 'לא צוין',
+            model: data.manualVehicle.model || 'לא צוין',
             year: data.manualVehicle.year || 0,
             color: data.manualVehicle.color || null,
             nickname: (data.manualVehicle.manufacturer && data.manualVehicle.model)
@@ -258,7 +261,7 @@ export async function POST(req: NextRequest) {
       inspectionType: data.inspectionType,
       mechanicName: data.mechanicName || null,
       date: new Date(),
-      status: 'awaiting_signature',
+      status: 'completed',
       overallScore: data.overallScore ?? null,
       mileage: data.mileage ?? null,
       engineNumber: data.engineNumber || null,
@@ -289,11 +292,18 @@ export async function POST(req: NextRequest) {
       notes: data.notes ? JSON.stringify(data.notes) : null,
       detailedScores: data.detailedScores ? JSON.stringify(data.detailedScores) : null,
 
-      // Customer signature fields removed - customer signs via /api/inspections/[id]/sign
+      // Customer signature
+      customerName: data.customerName || null,
+      customerIdNumber: data.customerIdNumber || null,
+      customerSignature: data.customerSignature || null,
+      signedAt: data.customerSignature ? new Date() : null,
 
+      // Pre-test fields
+      preTestChecklist: data.preTestChecklist ? JSON.stringify(data.preTestChecklist) : null,
+      preTestNotes: data.preTestNotes || null,
+      serviceItems: data.serviceItems ? JSON.stringify(data.serviceItems) : null,
+      workPerformed: data.workPerformed ? JSON.stringify(data.workPerformed) : null,
     };
-
-
 
     // Create inspection and items in a transaction
     const inspection = await prisma.$transaction(async (tx) => {
@@ -322,7 +332,7 @@ export async function POST(req: NextRequest) {
       if (data.tiresData) {
         Object.entries(data.tiresData).forEach(([key, val]) => {
           if (val) {
-            const nameMap: Record<string, string> = { frontLeft: '×¦××× ×§××× ×©×××', frontRight: '×¦××× ×§××× ××××', rearLeft: '×¦××× ××××¨× ×©×××', rearRight: '×¦××× ××××¨× ××××' };
+            const nameMap: Record<string, string> = { frontLeft: 'צמיג קדמי שמאל', frontRight: 'צמיג קדמי ימין', rearLeft: 'צמיג אחורי שמאל', rearRight: 'צמיג אחורי ימין' };
             autoItems.push({ inspectionId: newInspection.id, category: 'tires', itemName: nameMap[key] || key, status: val, notes: null, score: null });
           }
         });
@@ -332,7 +342,7 @@ export async function POST(req: NextRequest) {
       if (data.lightsData) {
         Object.entries(data.lightsData).forEach(([key, val]) => {
           if (val) {
-            const nameMap: Record<string, string> = { brakes: '×××¨××ª ×××', reverse: '×××¨××ª ×¨××××¨×¡', fog: '×××¨××ª ×¢×¨×¤×', headlights: '×¤× ×¡×× ×¨××©×××', frontSignal: '×××ª××ª ×§×××', rearSignal: '×××ª××ª ××××¨×', highBeam: '×××¨ ××××', plate: '×ª×××¨×ª ×××××ª' };
+            const nameMap: Record<string, string> = { brakes: 'אורות בלם', reverse: 'אורות ריוורס', fog: 'אורות ערפל', headlights: 'פנסים ראשיים', frontSignal: 'איתות קדמי', rearSignal: 'איתות אחורי', highBeam: 'אור גבוה', plate: 'תאורת לוחית' };
             autoItems.push({ inspectionId: newInspection.id, category: 'electrical', itemName: nameMap[key] || key, status: val, notes: null, score: null });
           }
         });
@@ -342,7 +352,7 @@ export async function POST(req: NextRequest) {
       if (data.fluidsData) {
         Object.entries(data.fluidsData).forEach(([key, val]) => {
           if (val) {
-            const nameMap: Record<string, string> = { brakeFluid: '× ××× ×××××', engineOil: '×©×× ×× ××¢', coolant: '× ××× ×§××¨××¨' };
+            const nameMap: Record<string, string> = { brakeFluid: 'נוזל בלמים', engineOil: 'שמן מנוע', coolant: 'נוזל קירור' };
             autoItems.push({ inspectionId: newInspection.id, category: 'fluids', itemName: nameMap[key] || key, status: val, notes: null, score: null });
           }
         });
@@ -351,11 +361,11 @@ export async function POST(req: NextRequest) {
       // Auto-generate items from pre-test checklist
       if (data.preTestChecklist) {
         const preTestNameMap: Record<string, string> = {
-          tires: '×¦××××× (××¦× + ×××¥)', lights: '×××¨××ª ×××××× ××', brakes: '×××××',
-          mirrors: '××¨×××ª', wipers: '××××× + × ×××', horn: '×¦××¤×¨',
-          seatbelts: '××××¨××ª ××××××ª', exhaust: '××¢×¨××ª ×¤××××', steering: '×××××',
-          suspension: '××ª××× ×××××××', fluids: '× ×××××', battery: '××¦××¨',
-          handbrake: '××× ××', speedometer: '×× ××××¨××ª', windows: '×××× ××ª ××©××©××ª',
+          tires: 'צמיגים (מצב + לחץ)', lights: 'אורות ומחוונים', brakes: 'בלמים',
+          mirrors: 'מראות', wipers: 'מגבים + נוזל', horn: 'צופר',
+          seatbelts: 'חגורות בטיחות', exhaust: 'מערכת פליטה', steering: 'היגוי',
+          suspension: 'מתלים ובולמים', fluids: 'נוזלים', battery: 'מצבר',
+          handbrake: 'בלם יד', speedometer: 'מד מהירות', windows: 'חלונות ושמשות',
         };
         const preTestItems = Object.entries(data.preTestChecklist).map(([key, passed]) => ({
           inspectionId: newInspection.id,
@@ -392,20 +402,11 @@ export async function POST(req: NextRequest) {
         data: {
           userId: vehicle.userId,
           type: 'system',
-          title: '××× ××××§× ×××©!',
-          message: `××× ××××§× ××¡×× ${data.inspectionType === 'full' ? '××××§× ××××' : data.inspectionType === 'pre_test' ? '××× × ×××¡×' : data.inspectionType === 'rot' ? '××××§×ª ×¨×§×' : data.inspectionType} ××¨×× ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) ×××× ××¦×¤×××.`,
+          title: 'דוח בדיקה חדש!',
+          message: `דוח בדיקה מסוג ${data.inspectionType === 'full' ? 'בדיקה מלאה' : data.inspectionType === 'pre_test' ? 'הכנה לטסט' : data.inspectionType === 'rot' ? 'בדיקת רקב' : data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
           link: `/inspection/${newInspection.id}`,
         },
       });
-
-
-      // Auto-complete linked appointment if exists
-      if (data.appointmentId) {
-        await tx.appointment.update({
-          where: { id: data.appointmentId },
-          data: { status: 'completed', completedAt: new Date() },
-        }).catch(() => {}); // Ignore if appointment doesn't exist
-      }
 
       return await tx.inspection.findUnique({
         where: { id: newInspection.id },
@@ -417,7 +418,7 @@ export async function POST(req: NextRequest) {
       });
     });
 
-    return jsonResponse({ inspection, message: '×××××§× × ××¦×¨× ×××¦×××' }, 201);
+    return jsonResponse({ inspection, message: 'הבדיקה נוצרה בהצלחה' }, 201);
   } catch (error) {
     return handleApiError(error);
   }
