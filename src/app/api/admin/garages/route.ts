@@ -1,14 +1,14 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
-import { requireAdmin, jsonResponse, handleApiError, getPaginationParams, errorResponse } from '@/lib/api-helpers';
+import { requireAdmin, jsonResponse, handleApiError, getPaginationParams, paginationMeta, errorResponse } from '@/lib/api-helpers';
 import { garageSchema } from '@/lib/validations';
 
 // GET /api/admin/garages - List all garages (admin only)
 export async function GET(req: NextRequest) {
   try {
     const payload = requireAdmin(req);
-    const { skip, limit } = getPaginationParams(req);
+    const { page, skip, limit } = getPaginationParams(req);
     const url = new URL(req.url);
     const search = url.searchParams.get('search');
 
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       prisma.garage.count({ where }),
     ]);
 
-    return jsonResponse({ garages, total });
+    return jsonResponse({ garages, ...paginationMeta(total, page, limit) });
   } catch (error) {
     return handleApiError(error);
   }
