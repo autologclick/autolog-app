@@ -9,6 +9,7 @@ import {
   handleApiError,
   AuthError,
   getPaginationParams,
+  paginationMeta,
 } from '@/lib/api-helpers';
 import { checkApiRateLimit } from '@/lib/rate-limit';
 import { expenseSchema } from '@/lib/validations';
@@ -27,7 +28,7 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const vehicleId = url.searchParams.get('vehicleId');
     const category = url.searchParams.get('category');
-    const { skip, limit } = getPaginationParams(req);
+    const { page, skip, limit } = getPaginationParams(req);
 
     // Build query filters
     const whereFilters: Prisma.ExpenseWhereInput = {};
@@ -144,11 +145,9 @@ export async function GET(req: NextRequest) {
 
     return jsonResponse({
       expenses,
-      total,
-      page: Math.floor(skip / limit) + 1,
-      limit,
       monthlySummary: monthlySummaryArray,
       categoryTotals,
+      ...paginationMeta(total, page, limit),
     });
   } catch (error) {
     return handleApiError(error);
