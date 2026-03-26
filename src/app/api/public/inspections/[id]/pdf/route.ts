@@ -21,10 +21,7 @@ function getPythonCommand(): string {
   }
 }
 
-function safeJsonParse(value: string | null): any {
-  if (!value) return null;
-  try { return JSON.parse(value); } catch { return value; }
-}
+import { safeJsonParse } from '@/lib/utils';
 
 export async function GET(
   req: NextRequest,
