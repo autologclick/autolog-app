@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import { requireAuth, jsonResponse, errorResponse, handleApiError, getPaginationParams, validationErrorResponse } from '@/lib/api-helpers';
 import { sosEventSchema } from '@/lib/validations';
 
@@ -9,7 +10,7 @@ export async function GET(req: NextRequest) {
     const payload = requireAuth(req);
     const { skip, limit } = getPaginationParams(req);
 
-    let where: any = {};
+    const where: Prisma.SosEventWhereInput = {};
     if (payload.role === 'user') {
       where.userId = payload.userId;
     }
