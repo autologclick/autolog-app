@@ -1,8 +1,11 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { sanitizeInput } from '@/lib/security';
 import { createApplication, checkDuplicateEmail } from '@/lib/garage-applications-db';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('garage-applications');
 
 const applicationSchema = z.object({
   garageName: z.string().min(2, 'שם המוסך חייב להכיל לפחות 2 תווים').max(100),
@@ -32,6 +35,7 @@ export async function POST(req: NextRequest) {
 
     const data = parsed.data;
 
+    // Sanitize inputs
     const sanitized: Record<string, any> = {
       garageName: sanitizeInput(data.garageName),
       ownerName: sanitizeInput(data.ownerName),
@@ -47,16 +51,20 @@ export async function POST(req: NextRequest) {
       licenseNumber: data.licenseNumber ? sanitizeInput(data.licenseNumber) : undefined,
     };
 
+    // Check for duplicate pending/approved applications
     const isDuplicate = await checkDuplicateEmail(sanitized.email);
     if (isDuplicate) {
       return errorResponse('כבר קיימת בקשה עם כתובת אימייל זו. אנו נחזור אליך בהקדם.', 409);
     }
 
+    // Store image data URIs directly in DB (Vercel has read-only filesystem)
     if (data.images && data.images.length > 0) {
+      // Filter valid images and limit size (keep only thumbnails < 500KB each)
       const validImages = data.images.filter(img => {
         if (!img.startsWith('data:image/')) return false;
+        // Rough size estimate: base64 is ~4/3 of original
         const sizeEstimate = (img.length * 3) / 4;
-        return sizeEstimate < 2 * 1024 * 1024;
+        return sizeEstimate < 2 * 1024 * 1024; // Max 2MB per image
       });
       if (validImages.length > 0) {
         sanitized.images = JSON.stringify(validImages);
@@ -70,7 +78,7 @@ export async function POST(req: NextRequest) {
       message: 'הבקשה נשלחה בהצלחה! צוות AutoLog יבדוק את הבקשה ויחזור אליך בהקדם.',
     }, 201);
   } catch (error) {
-    console.error('garage-applications POST error:', error);
+    logger.error('garage-applications POST error', { error: error instanceof Error ? error.message : String(error) });
     const errMsg = error instanceof Error ? error.message : 'שגיאת שרת פנימית';
     return NextResponse.json({ error: errMsg }, { status: 500 });
   }
