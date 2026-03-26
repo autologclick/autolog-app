@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import {
   requireAuth,
   jsonResponse,
@@ -99,7 +100,7 @@ export async function PUT(
     }
 
     // Build update data
-    const updateData: any = {};
+    const updateData: Prisma.ExpenseUpdateInput = {};
     const data = validation.data;
 
     if (data.vehicleId !== undefined) {
