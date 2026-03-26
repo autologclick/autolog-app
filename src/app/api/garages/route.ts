@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import { jsonResponse, handleApiError, getPaginationParams } from '@/lib/api-helpers';
 
 // GET /api/garages - List garages (public, filterable, sortable)
@@ -10,9 +11,9 @@ export async function GET(req: NextRequest) {
     const city = url.searchParams.get('city');
     const search = url.searchParams.get('search');
     const partnersOnly = url.searchParams.get('partners') === 'true';
-    const sortBy = url.searchParams.get('sort') || 'rating'; // rating | name | city | reviewCount
+    const sortBy = url.searchParams.get('sort') || 'rating';
 
-    let where: any = { isActive: true };
+    const where: Prisma.GarageWhereInput = { isActive: true };
     if (city) where.city = city;
     if (partnersOnly) where.isPartner = true;
     if (search) {
@@ -22,8 +23,7 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    // Determine sort order
-    let orderBy: any = { rating: 'desc' };
+    let orderBy: Prisma.GarageOrderByWithRelationInput = { rating: 'desc' };
     if (sortBy === 'name') orderBy = { name: 'asc' };
     else if (sortBy === 'city') orderBy = { city: 'asc' };
     else if (sortBy === 'reviewCount') orderBy = { reviewCount: 'desc' };
@@ -47,7 +47,6 @@ export async function GET(req: NextRequest) {
       prisma.garage.count({ where }),
     ]);
 
-    // Get distinct cities for filter options
     const cities = await prisma.garage.findMany({
       where: { isActive: true },
       select: { city: true },
