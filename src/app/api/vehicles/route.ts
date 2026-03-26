@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, errorResponse, handleApiError, getPaginationParams, validationErrorResponse } from '@/lib/api-helpers';
+import { requireAuth, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
 import { vehicleSchema } from '@/lib/validations';
 import { checkApiRateLimit } from '@/lib/rate-limit';
 
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
     }
 
-    const { skip, limit } = getPaginationParams(req);
+    const { page, skip, limit } = getPaginationParams(req);
 
     const [vehicles, total] = await Promise.all([
       prisma.vehicle.findMany({
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
       lastInspectionDate: v.inspections?.[0]?.date ?? null,
     }));
 
-    return jsonResponse({ vehicles: vehiclesWithScore, total });
+    return jsonResponse({ vehicles: vehiclesWithScore, ...paginationMeta(total, page, limit) });
   } catch (error) {
     return handleApiError(error);
   }
