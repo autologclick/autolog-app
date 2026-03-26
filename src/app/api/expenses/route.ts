@@ -10,9 +10,11 @@ import {
   AuthError,
   getPaginationParams,
   paginationMeta,
+  requireOwnership,
 } from '@/lib/api-helpers';
 import { checkApiRateLimit } from '@/lib/rate-limit';
 import { expenseSchema } from '@/lib/validations';
+import { NOT_FOUND } from '@/lib/messages';
 
 // GET /api/expenses - List expenses for user's vehicles
 export async function GET(req: NextRequest) {
@@ -22,7 +24,7 @@ export async function GET(req: NextRequest) {
     // Rate limit general API calls
     const rateLimit = checkApiRateLimit(payload.userId);
     if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
+      return errorResponse('יותר מדי בקשות. אנא נסה שוג מאוחר יותר.', 429);
     }
 
     const url = new URL(req.url);
@@ -41,12 +43,10 @@ export async function GET(req: NextRequest) {
       });
 
       if (!vehicle) {
-        return errorResponse('רכב לא נמצא', 404);
+        return errorResponse(NOT_FOUND.VEHICLE, 404);
       }
 
-      if (vehicle.userId !== payload.userId) {
-        throw new AuthError('אין לך הרשאה לגשת לנתוני רכב זה', 403);
-      }
+      requireOwnership(payload.userId, vehicle.userId);
 
       whereFilters.vehicleId = vehicleId;
     } else {
@@ -183,12 +183,10 @@ export async function POST(req: NextRequest) {
     });
 
     if (!vehicle) {
-      return errorResponse('רכב לא נמצא', 404);
+      return errorResponse(NOT_FOUND.VEHICLE, 404);
     }
 
-    if (vehicle.userId !== payload.userId) {
-      throw new AuthError('אין לך הרשאה לערוך הוצאות לרכב זה', 403);
-    }
+    requireOwnership(payload.userId, vehicle.userId);
 
     // Parse date
     const expenseDate = new Date(date);

@@ -8,6 +8,7 @@ import {
   validationErrorResponse,
   handleApiError,
   AuthError,
+  requireOwnership,
 } from '@/lib/api-helpers';
 import { updateDocumentSchema } from '@/lib/validations';
 
@@ -41,9 +42,7 @@ export async function GET(
     }
 
     // Verify user owns the vehicle
-    if (document.vehicle.userId !== payload.userId) {
-      throw new AuthError('אינך רשאי לגשת למסמך זה', 403);
-    }
+    requireOwnership(payload.userId, document.vehicle.userId);
 
     return jsonResponse({ document });
   } catch (error) {
@@ -81,9 +80,7 @@ export async function PUT(
       return errorResponse('מסמך לא נמצא', 404);
     }
 
-    if (document.vehicle.userId !== payload.userId) {
-      throw new AuthError('אינך רשאי לערוך מסמך זה', 403);
-    }
+    requireOwnership(payload.userId, document.vehicle.userId);
 
     // Build update data from validated input
     const updateData: Prisma.DocumentUpdateInput = {};
@@ -155,9 +152,7 @@ export async function DELETE(
       return errorResponse('מסמך לא נמצא', 404);
     }
 
-    if (document.vehicle.userId !== payload.userId) {
-      throw new AuthError('אינך רשאי למחוק מסמך זה', 403);
-    }
+    requireOwnership(payload.userId, document.vehicle.userId);
 
     // Delete document
     await prisma.document.delete({

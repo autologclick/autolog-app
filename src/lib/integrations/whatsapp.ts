@@ -16,11 +16,11 @@ const MESSAGE_TEMPLATES = {
   },
   appointment_confirmation: {
     title: 'אישור תור',
-    body: 'שלום {{customerName}},\n\nתור שלך אושר בהצלחה!\n\nגראז: {{garageName}}\nתאריך: {{date}}\nשעה: {{time}}\n\nאנא הגיעו 5 דקות לפני המועד. במידה וצריכים לבטל או לשנות את התור, אנא הודיעו לנו בהקדם.\n\nתודה,\nצוות AutoLog',
+    body: 'שלום {{customerName}},\n\nתור שלך אושר בהצלחה!\n\nגראז: {{garageName}}\nתאריך: {{date}}\nשעה: {{time}}\n\nאנא הגיעו 5 דקות לפני המועד. במידה וצריכים לבטל או לשנות את התות, אנא הודיעו לנו בהקדם.\n\nתודה,\nצוות AutoLog',
   },
   sos_alert: {
     title: 'התראת חירום',
-    body: 'התראת חירום לרכב {{vehicleName}}\n\nמיקום: {{location}}\nזמן: {{timestamp}}\n\nאנא בדוקו את מצב הרכב ובטאו תרומה לשירותי החרום במידת הצורך.',
+    body: 'התראת חירום לרכג {{vehicleName}}\n\nמיקום: {{location}}\nזמן: {{timestamp}}\n\nאנא בדוקו את מצב הרכב ובטאו תרומה לשירותי החרום במידת הצורך.',
   },
 };
 
@@ -83,7 +83,8 @@ export async function sendWhatsAppMessage(
   try {
     // Dynamically import Twilio SDK only if available
     // This allows graceful degradation if twilio package is not installed
-    let twilio: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic require for optional dependency
+    let twilio: (sid: string, token: string) => { messages: { create: (opts: Record<string, string>) => Promise<{ sid: string }> } };
     try {
       twilio = require('twilio');
     } catch {

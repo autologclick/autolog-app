@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { createGarageTreatment, getGarageTreatments } from '@/lib/treatments-db';
 import prisma from '@/lib/db';
+import { NOT_FOUND } from '@/lib/messages';
 import { z } from 'zod';
 
 const garageTreatmentSchema = z.object({
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!garage) {
-      return errorResponse('מוסך לא נמצא', 404);
+      return errorResponse(NOT_FOUND.GARAGE, 404);
     }
 
     const treatments = await getGarageTreatments(garage.id);
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!garage) {
-      return errorResponse('מוסך לא נמצא', 404);
+      return errorResponse(NOT_FOUND.GARAGE, 404);
     }
 
     // Find the vehicle by license plate

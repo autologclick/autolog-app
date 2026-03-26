@@ -45,7 +45,7 @@ model Vehicle {
   id                String    @id @default(cuid())
   userId            String
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  nickname          String    // e.g. "×¡×¤××¨×× ××× ×"
+  nickname          String    // e.g. "ספורטז לבנה"
   manufacturer      String    // e.g. "KIA"
   model             String    // e.g. "SPORTAGE"
   year              Int
@@ -76,6 +76,8 @@ model Vehicle {
 
   @@index([userId])
   @@index([licensePlate])
+  @@index([testExpiryDate])
+  @@index([insuranceExpiry])
 }
 
 model VehicleDriver {
@@ -134,7 +136,7 @@ model Inspection {
   mechanicName    String?
   inspectionType  String    // full | rot | engine | tires | brakes | pre_test
   date            DateTime
-  status          String    @default("pending") // pending | in_progress | awaiting_signature | completed | cancelled
+  status          String    @default("pending") // pending | in_progress | completed | cancelled
   overallScore    Int?      // 0-100
 
   // Detailed scores (JSON)
@@ -183,8 +185,6 @@ model Inspection {
   customerIdNumber String?
   customerSignature String?  // base64 signature image
   signedAt        DateTime?
-  signatureIp     String?   // IP address at time of signature
-  signatureDevice String?   // User-Agent at time of signature
 
   // AI summary
   aiSummary       String?   // AI-generated smart summary
@@ -198,6 +198,8 @@ model Inspection {
   @@index([vehicleId])
   @@index([garageId])
   @@index([status])
+  @@index([createdAt])
+  @@index([date])
 }
 
 model InspectionItem {
@@ -361,8 +363,9 @@ model Notification {
 
   @@index([userId])
   @@index([isRead])
+  @@index([userId, isRead])
+  @@index([createdAt])
 }
-
 
 // ============================================================
 // GARAGE APPLICATIONS
@@ -378,7 +381,7 @@ model GarageApplication {
   address         String?
   description     String?
   services        String?
-  languages        String?
+  languages       String?
   yearsExperience Int       @default(0)
   employeeCount   Int       @default(1)
   licenseNumber   String?
@@ -389,6 +392,39 @@ model GarageApplication {
   reviewedAt      DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+}
+
+// ============================================================
+// TREATMENTS
+// ============================================================
+
+model Treatment {
+  id              String    @id @default(cuid())
+  vehicleId       String
+  userId          String
+  garageId        String?
+  garageName      String?
+  mechanicName    String?
+  type            String    @default("maintenance") // maintenance | repair | inspection | other
+  title           String
+  description     String?
+  items           String?   // JSON array of treatment items
+  mileage         Int?
+  cost            Float?
+  date            String
+  status          String    @default("draft") // draft | pending_approval | approved | rejected
+  sentByGarage    Boolean   @default(false)
+  approvedAt      DateTime?
+  rejectedAt      DateTime?
+  rejectionReason String?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([vehicleId])
+  @@index([userId])
+  @@index([garageId])
+  @@index([status])
 }
 
 // ============================================================

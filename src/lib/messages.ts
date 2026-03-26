@@ -89,7 +89,7 @@ export const SUCCESS_MESSAGES = {
 // Vehicle-Specific
 // ==========================================
 export const VEHICLE_MESSAGES = {
-  NOT_FOUND: 'הרכב לא נמצא',
+  NOT_FOUND: 'רכב לא נמצא',
   ALREADY_EXISTS: 'רכב עם מספר רישוי זה כבר קיים במערכת',
   TEST_EXPIRING: 'הטסט עומד לפוג בקרוב',
   INSURANCE_EXPIRING: 'הביטוח עומד לפוג בקרוב',
@@ -104,7 +104,25 @@ export const GARAGE_MESSAGES = {
   APPLICATION_SENT: 'הבקשה נשלחה בהצלחה',
   APPLICATION_APPROVED: 'הבקשה אושרה',
   APPLICATION_REJECTED: 'הבקשה נדחתה',
-  NOT_FOUND: 'המוסך לא נמצא',
+  NOT_FOUND: 'מוסך לא נמצא',
+} as const;
+
+// ==========================================
+// Entity-Specific Not Found Messages
+// ==========================================
+export const NOT_FOUND = {
+  VEHICLE: 'רכב לא נמצא',
+  GARAGE: 'מוסך לא נמצא',
+  APPOINTMENT: 'תור לא נמצא',
+  INSPECTION: 'בדיקה לא נמצאה',
+  EXPENSE: 'הוצאה לא נמצאה',
+  DOCUMENT: 'מסמך לא נמצא',
+  NOTIFICATION: 'הודעה לא נמצאה',
+  USER: 'משתמש לא נמצא',
+  SOS_EVENT: 'אירוע לא נמצא',
+  TREATMENT: 'טיפול לא נמצא',
+  REVIEW: 'ביקורת לא נמצאה',
+  BENEFIT: 'הטבה לא נמצאה',
 } as const;
 
 // ==========================================

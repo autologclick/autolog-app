@@ -88,6 +88,19 @@ export function requireOwnership(
 }
 
 /**
+ * Verify ownership, but allow admin to bypass
+ * Throws AuthError (403) if user is not admin and doesn't own the resource
+ */
+export function requireOwnershipOrAdmin(
+  payload: JwtPayload,
+  resourceUserId: string,
+): void {
+  if (payload.role !== 'admin' && payload.userId !== resourceUserId) {
+    throw new AuthError(AUTH_ERRORS.FORBIDDEN_RESOURCE, 403);
+  }
+}
+
+/**
  * Sanitize user input by removing HTML/script tags
  * Prevents XSS attacks
  */
@@ -104,7 +117,7 @@ export function sanitizeInput(input: string | undefined | null): string {
 /**
  * Sanitize object properties (recursively for strings)
  */
-export function sanitizeObject<T extends Record<string, any>>(obj: T): T {
+export function sanitizeObject<T extends Record<string, unknown>>(obj: T): T {
   const sanitized = { ...obj };
 
   for (const key in sanitized) {

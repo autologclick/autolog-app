@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAdmin, jsonResponse, handleApiError, errorResponse } from '@/lib/api-helpers';
+import { NOT_FOUND } from '@/lib/messages';
 
 // GET /api/admin/garages/[id] - Get single garage details
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       },
     });
 
-    if (!garage) return errorResponse('מוסך לא נמצא', 404);
+    if (!garage) return errorResponse(NOT_FOUND.GARAGE, 404);
 
     return jsonResponse({ garage });
   } catch (error) {
@@ -32,7 +33,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const body = await req.json();
 
     const existing = await prisma.garage.findUnique({ where: { id: params.id } });
-    if (!existing) return errorResponse('מוסך לא נמצא', 404);
+    if (!existing) return errorResponse(NOT_FOUND.GARAGE, 404);
 
     const { name, city, address, phone, email, description, isPartner, isActive } = body;
 

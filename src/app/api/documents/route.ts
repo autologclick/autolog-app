@@ -8,9 +8,11 @@ import {
   validationErrorResponse,
   handleApiError,
   AuthError,
+  requireOwnership,
 } from '@/lib/api-helpers';
 import { documentSchema } from '@/lib/validations';
 import { checkApiRateLimit } from '@/lib/rate-limit';
+import { NOT_FOUND } from '@/lib/messages';
 
 // GET /api/documents - List documents for user's vehicles
 export async function GET(req: NextRequest) {
@@ -97,12 +99,10 @@ export async function POST(req: NextRequest) {
     });
 
     if (!vehicle) {
-      return errorResponse('רכב לא נמצא', 404);
+      return errorResponse(NOT_FOUND.VEHICLE, 404);
     }
 
-    if (vehicle.userId !== payload.userId) {
-      throw new AuthError('אינך רשאי ליצור מסמך לרכב זה', 403);
-    }
+    requireOwnership(payload.userId, vehicle.userId);
 
     // Parse expiry date if provided
     let parsedExpiryDate: Date | null = null;

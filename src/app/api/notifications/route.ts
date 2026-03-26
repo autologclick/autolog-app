@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
-import { requireAuth, requireAdmin, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
+import { requireAuth, requireAdmin, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse, requireOwnership } from '@/lib/api-helpers';
 import { z } from 'zod';
 
 // GET /api/notifications - List user's notifications
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       userId: z.string().min(1, 'userId נדרש'),
       type: z.enum(['test_expiry', 'insurance_expiry', 'appointment', 'sos', 'benefit', 'system']),
       title: z.string().min(1, 'כותרת נדרשת'),
-      message: z.string().min(1, 'הודעג נדרשת'),
+      message: z.string().min(1, 'הודעה נדרשת'),
       link: z.string().optional(),
     });
 
@@ -142,9 +142,7 @@ export async function PUT(req: NextRequest) {
       // Mark specific as read
       const notification = await prisma.notification.findUnique({ where: { id } });
       if (!notification) return errorResponse('הודעה לא נמצאה', 404);
-      if (notification.userId !== payload.userId) {
-        return errorResponse('אין הרשאה', 403);
-      }
+      requireOwnership(payload.userId, notification.userId);
 
       const updated = await prisma.notification.update({
         where: { id },

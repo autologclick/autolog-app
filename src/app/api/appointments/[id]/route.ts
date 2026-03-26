@@ -7,10 +7,11 @@ import {
   validationErrorResponse,
   handleApiError,
   AuthError,
+  requireOwnership,
 } from '@/lib/api-helpers';
 
 const updateAppointmentSchema = z.object({
-  status: z.enum(['confirmed', 'cancelled', 'completed', 'in_progress']),
+  status: z.enum(['cancelled']),
 });
 
 // GET /api/appointments/[id] - Get single appointment
@@ -51,13 +52,11 @@ export async function GET(
     });
 
     if (!appointment) {
-      return jsonResponse({ error: '××ª××¨ ×× × ××¦×' }, 404);
+      return jsonResponse({ error: 'התור לא נמצא' }, 404);
     }
 
     // Verify ownership
-    if (appointment.userId !== payload.userId) {
-      throw new AuthError('Forbidden', 403);
-    }
+    requireOwnership(payload.userId, appointment.userId);
 
     return jsonResponse({ appointment });
   } catch (error) {
@@ -90,17 +89,15 @@ export async function PUT(
     });
 
     if (!appointment) {
-      return jsonResponse({ error: '××ª××¨ ×× × ××¦×' }, 404);
+      return jsonResponse({ error: 'התור לא נמצא' }, 404);
     }
 
-    if (appointment.userId !== payload.userId) {
-      throw new AuthError('Forbidden', 403);
-    }
+    requireOwnership(payload.userId, appointment.userId);
 
     // Can't update cancelled appointments
     if (appointment.status === 'cancelled') {
       return jsonResponse(
-        { error: '×× × ××ª× ××¢××× ×ª××¨ ×××××' },
+        { error: 'לא ניתן לעדכן תור מבוטל' },
         400
       );
     }
@@ -108,7 +105,7 @@ export async function PUT(
     // Can't update completed appointments
     if (appointment.status === 'completed') {
       return jsonResponse(
-        { error: '×× × ××ª× ××¢××× ×ª××¨ ×©×××©××' },
+        { error: 'לא ניתן לעדכן תור שהושלם' },
         400
       );
     }
@@ -138,7 +135,7 @@ export async function PUT(
 
     return jsonResponse({
       appointment: updated,
-      message: `××ª××¨ ×¢×××× ×${status === 'confirmed' ? '××××©×¨' : status === 'cancelled' ? '×××××' : '×××©××'}`,
+      message: `התור עודכן ל${status === 'confirmed' ? 'מאושר' : status === 'cancelled' ? 'מבוטל' : 'הושלם'}`,
     });
   } catch (error) {
     return handleApiError(error);
@@ -161,17 +158,15 @@ export async function DELETE(
     });
 
     if (!appointment) {
-      return jsonResponse({ error: '××ª××¨ ×× × ××¦×' }, 404);
+      return jsonResponse({ error: 'התור לא נמצא' }, 404);
     }
 
-    if (appointment.userId !== payload.userId) {
-      throw new AuthError('Forbidden', 403);
-    }
+    requireOwnership(payload.userId, appointment.userId);
 
     // Can only cancel pending or confirmed appointments
     if (appointment.status !== 'pending' && appointment.status !== 'confirmed') {
       return jsonResponse(
-        { error: '×× × ××ª× ×××× ×ª××¨ ××' },
+        { error: 'לא ניתן לבטל תור זה' },
         400
       );
     }
@@ -191,7 +186,7 @@ export async function DELETE(
 
     return jsonResponse({
       appointment: cancelled,
-      message: '××ª××¨ ×××× ×××¦×××',
+      message: 'התור בוטל בהצלחה',
     });
   } catch (error) {
     return handleApiError(error);

@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { requireAuth, jsonResponse, errorResponse, handleApiError, requireOwnershipOrAdmin } from '@/lib/api-helpers';
 import { checkApiRateLimit } from '@/lib/rate-limit';
 import { analyzeVehicleHealth } from '@/lib/ai-analysis';
+import { NOT_FOUND } from '@/lib/messages';
 
 // GET /api/ai/vehicle-health?vehicleId=xxx
 export async function GET(req: NextRequest) {
@@ -42,13 +43,10 @@ export async function GET(req: NextRequest) {
     });
 
     if (!vehicle) {
-      return errorResponse('רכב לא נמצא', 404);
+      return errorResponse(NOT_FOUND.VEHICLE, 404);
     }
 
-    // Verify ownership (unless admin)
-    if (payload.role !== 'admin' && vehicle.userId !== payload.userId) {
-      return errorResponse('אין הרשאה', 403);
-    }
+    requireOwnershipOrAdmin(payload, vehicle.userId);
 
     // Prepare data for analysis
     const vehicleData = {

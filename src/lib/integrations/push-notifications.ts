@@ -28,7 +28,7 @@ const NOTIFICATION_TEMPLATES = {
   sos_notification: {
     title: 'התראת חירום',
     getBody: (vehicleName: string, location: string) =>
-      `התראת חירום ל-${vehicleName} ב-${location}. בדוקו כעת!`,
+      `התראת חירום לרכב {{vehicleName} ב-${location}. בדוקו כעת!`,
   },
 };
 
@@ -87,7 +87,8 @@ export async function sendPushNotification(
 
   try {
     // Dynamically load web-push only if available
-    let webPush: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic require for optional dependency
+    let webPush: { setVapidDetails: (...args: unknown[]) => void; sendNotification: (sub: unknown, payload: string) => Promise<unknown> };
     try {
       webPush = require('web-push');
     } catch {

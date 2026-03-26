@@ -49,8 +49,7 @@ export async function POST(req: NextRequest) {
 
     return jsonResponse({
       message: 'אם הכתובת קיימת במערכת, נשלח אליך קישור לאיפוס סיסמה',
-      // In dev mode, return the token for testing
-      ...(process.env.NODE_ENV === 'development' && { devToken: resetToken }),
+      // Token is logged via logger.debug above — never returned in response
     });
   } catch (error) {
     return handleApiError(error);

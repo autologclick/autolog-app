@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { getUserTreatments, createTreatment, getPendingTreatments } from '@/lib/treatments-db';
 import { z } from 'zod';
+import { NOT_FOUND } from '@/lib/messages';
 
 const createTreatmentSchema = z.object({
   vehicleId: z.string().min(1),
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!vehicle) {
-      return errorResponse('רכב לא נמצא', 404);
+      return errorResponse(NOT_FOUND.VEHICLE, 404);
     }
 
     const treatment = await createTreatment({

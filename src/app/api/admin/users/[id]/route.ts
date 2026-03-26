@@ -1,6 +1,14 @@
 import { NextRequest } from 'next/server';
+import { z } from 'zod';
 import prisma from '@/lib/db';
-import { requireAdmin, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { requireAdmin, jsonResponse, errorResponse, handleApiError, validationErrorResponse } from '@/lib/api-helpers';
+
+const updateUserSchema = z.object({
+  fullName: z.string().min(2, 'שם חייב להכיל לפחות 2 תווים').max(100).optional(),
+  phone: z.string().regex(/^[\d\-+() ]{7,20}$/, 'מספר טלפון לא תקין').optional(),
+  role: z.enum(['user', 'admin', 'garage_owner'], { errorMap: () => ({ message: 'תפקיד לא תקין' }) }).optional(),
+  isActive: z.boolean().optional(),
+});
 
 // GET /api/admin/users/[id] - Get single user with vehicles, appointments, and SOS events
 export async function GET(
@@ -95,22 +103,16 @@ export async function PUT(
   try {
     requireAdmin(req);
 
-    const data = await req.json();
-    const { fullName, phone, role, isActive } = data;
+    const body = await req.json();
 
-    // Validate role
-    if (role && !['user', 'admin', 'garage_owner'].includes(role)) {
-      return errorResponse('תפקיד לא תקין', 400);
+    const validation = updateUserSchema.safeParse(body);
+    if (!validation.success) {
+      return validationErrorResponse(validation.error);
     }
 
     const user = await prisma.user.update({
       where: { id: params.id },
-      data: {
-        ...(fullName && { fullName }),
-        ...(phone && { phone }),
-        ...(role && { role }),
-        ...(typeof isActive === 'boolean' && { isActive }),
-      },
+      data: validation.data,
       select: {
         id: true,
         email: true,

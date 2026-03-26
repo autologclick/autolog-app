@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
 import { vehicleSchema } from '@/lib/validations';
 import { checkApiRateLimit } from '@/lib/rate-limit';
+import { parseFlexDate, getExpiryStatus } from '@/lib/utils';
 
 // GET /api/vehicles - List user's vehicles
 export async function GET(req: NextRequest) {
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
     if (vin) {
       const existingVin = await prisma.vehicle.findUnique({ where: { vin } });
       if (existingVin) {
-        return errorResponse('VIN זה כבר קיים במערכת', 409);
+        return errorResponse('VIN הז כבר קיים במערכת', 409);
       }
     }
 
@@ -105,8 +106,8 @@ export async function POST(req: NextRequest) {
         registrationDate: parseFlexDate(registrationDate),
         mileage: mileage || null,
         isPrimary: vehicleCount === 0,
-        testStatus: parseFlexDate(testExpiryDate) ? getDocStatus(parseFlexDate(testExpiryDate)!) : 'valid',
-        insuranceStatus: parseFlexDate(insuranceExpiry) ? getDocStatus(parseFlexDate(insuranceExpiry)!) : 'valid',
+        testStatus: parseFlexDate(testExpiryDate) ? getExpiryStatus(parseFlexDate(testExpiryDate)!) : 'valid',
+        insuranceStatus: parseFlexDate(insuranceExpiry) ? getExpiryStatus(parseFlexDate(insuranceExpiry)!) : 'valid',
       },
     });
 
@@ -116,19 +117,4 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Parse dates - support DD/MM/YYYY, YYYY-MM-DD, and ISO formats
-function parseFlexDate(dateStr?: string): Date | null {
-  if (!dateStr) return null;
-  const ddmm = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (ddmm) return new Date(Number(ddmm[3]), Number(ddmm[2]) - 1, Number(ddmm[1]));
-  const d = new Date(dateStr);
-  return isNaN(d.getTime()) ? null : d;
-}
-
-function getDocStatus(expiryDate: Date): string {
-  const now = new Date();
-  const diffDays = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  if (diffDays < 0) return 'expired';
-  if (diffDays < 30) return 'expiring';
-  return 'valid';
-}
+// parseFlexDate and getExpiryStatus imported from @/lib/utils

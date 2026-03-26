@@ -8,7 +8,10 @@ import {
   validationErrorResponse,
   handleApiError,
   AuthError,
+  requireOwnership,
 } from '@/lib/api-helpers';
+import { NOT_FOUND } from '@/lib/messages';
+import { getExpiryStatus } from '@/lib/utils';
 
 const updateVehicleSchema = z.object({
   nickname: z.string().min(1).optional(),
@@ -24,16 +27,7 @@ const updateVehicleSchema = z.object({
   isPrimary: z.boolean().optional(),
 });
 
-function getDocStatus(expiryDate: Date | null): string {
-  if (!expiryDate) return 'valid';
-  const now = new Date();
-  const diffDays = Math.ceil(
-    (expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  if (diffDays < 0) return 'expired';
-  if (diffDays < 30) return 'expiring';
-  return 'valid';
-}
+// getExpiryStatus imported from @/lib/utils
 
 // GET /api/vehicles/[id] - Get single vehicle with details
 export async function GET(
@@ -95,13 +89,10 @@ export async function GET(
     });
 
     if (!vehicle) {
-      return jsonResponse({ error: 'רכב לא נמצא' }, 404);
+      return jsonResponse({ error: NOT_FOUND.VEHICLE }, 404);
     }
 
-    // Verify ownership
-    if (vehicle.userId !== payload.userId) {
-      throw new AuthError('Forbidden', 403);
-    }
+    requireOwnership(payload.userId, vehicle.userId);
 
     return jsonResponse({ vehicle });
   } catch (error) {
@@ -132,12 +123,10 @@ export async function PUT(
     });
 
     if (!vehicle) {
-      return jsonResponse({ error: 'רכב לא נמצא' }, 404);
+      return jsonResponse({ error: NOT_FOUND.VEHICLE }, 404);
     }
 
-    if (vehicle.userId !== payload.userId) {
-      throw new AuthError('Forbidden', 403);
-    }
+    requireOwnership(payload.userId, vehicle.userId);
 
     const updateData: Prisma.VehicleUpdateInput = {};
     const d = validation.data;
@@ -160,7 +149,7 @@ export async function PUT(
       const testDate = new Date(d.testExpiryDate);
       if (!isNaN(testDate.getTime())) {
         updateData.testExpiryDate = testDate;
-        updateData.testStatus = getDocStatus(testDate);
+        updateData.testStatus = getExpiryStatus(testDate);
       }
     }
 
@@ -168,7 +157,7 @@ export async function PUT(
       const insDate = new Date(d.insuranceExpiry);
       if (!isNaN(insDate.getTime())) {
         updateData.insuranceExpiry = insDate;
-        updateData.insuranceStatus = getDocStatus(insDate);
+        updateData.insuranceStatus = getExpiryStatus(insDate);
       }
     }
 
@@ -223,12 +212,10 @@ export async function DELETE(
     });
 
     if (!vehicle) {
-      return jsonResponse({ error: 'רכב לא נמצא' }, 404);
+      return jsonResponse({ error: NOT_FOUND.VEHICLE }, 404);
     }
 
-    if (vehicle.userId !== payload.userId) {
-      throw new AuthError('Forbidden', 403);
-    }
+    requireOwnership(payload.userId, vehicle.userId);
 
     // Hard delete - cascade handled by Prisma
     await prisma.vehicle.delete({

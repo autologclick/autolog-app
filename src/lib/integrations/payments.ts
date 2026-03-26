@@ -58,7 +58,8 @@ export async function createPaymentIntent(
 
   try {
     // Dynamically load Stripe SDK only if available
-    let Stripe: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic require for optional dependency
+    let Stripe: { new (key: string): unknown };
     try {
       Stripe = require('stripe');
     } catch {
@@ -122,7 +123,8 @@ export async function createSubscription(
 
   try {
     // Dynamically load Stripe SDK only if available
-    let Stripe: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic require for optional dependency
+    let Stripe: { new (key: string): unknown };
     try {
       Stripe = require('stripe');
     } catch {
@@ -245,9 +247,9 @@ export function verifyWebhookSignature(
  * Parse and process a Stripe webhook event
  * @param payload - Parsed webhook payload
  */
-export function parseWebhookEvent(payload: Record<string, any>): {
+export function parseWebhookEvent(payload: Record<string, unknown>): {
   type: string;
-  data: any;
+  data: Record<string, unknown>;
 } | null {
   try {
     if (!payload.type || !payload.data) {
@@ -277,7 +279,7 @@ export function parseWebhookEvent(payload: Record<string, any>): {
  */
 export function handleWebhookEvent(
   eventType: string,
-  eventData: any
+  eventData: Record<string, unknown>
 ): { handled: boolean; action?: string } {
   switch (eventType) {
     case 'payment_intent.succeeded':

@@ -8,9 +8,11 @@ import {
   validationErrorResponse,
   handleApiError,
   AuthError,
+  requireOwnership,
 } from '@/lib/api-helpers';
 import { checkApiRateLimit } from '@/lib/rate-limit';
 import { updateExpenseSchema } from '@/lib/validations';
+import { NOT_FOUND } from '@/lib/messages';
 
 // GET /api/expenses/[id] - Get single expense
 export async function GET(
@@ -42,13 +44,10 @@ export async function GET(
     });
 
     if (!expense) {
-      return errorResponse('הוצאה לא נמצאה', 404);
+      return errorResponse(NOT_FOUND.EXPENSE, 404);
     }
 
-    // Verify ownership through vehicle
-    if (expense.vehicle.userId !== payload.userId) {
-      throw new AuthError('אין לך הרשאה לגשת להוצאה זו', 403);
-    }
+    requireOwnership(payload.userId, expense.vehicle.userId);
 
     return jsonResponse({ expense });
   } catch (error) {
@@ -86,7 +85,7 @@ export async function PUT(
     });
 
     if (!expense) {
-      return errorResponse('הוצאה לא נמצאה', 404);
+      return errorResponse(NOT_FOUND.EXPENSE, 404);
     }
 
     // Verify vehicle ownership
@@ -95,9 +94,10 @@ export async function PUT(
       select: { userId: true },
     });
 
-    if (!vehicle || vehicle.userId !== payload.userId) {
-      throw new AuthError('אין לך הרשאה לערוך הוצאה זו', 403);
+    if (!vehicle) {
+      throw new AuthError(NOT_FOUND.VEHICLE, 404);
     }
+    requireOwnership(payload.userId, vehicle.userId);
 
     // Build update data
     const updateData: Prisma.ExpenseUpdateInput = {};
@@ -110,9 +110,10 @@ export async function PUT(
         select: { userId: true },
       });
 
-      if (!newVehicle || newVehicle.userId !== payload.userId) {
-        throw new AuthError('אין לך הרשאה להשתמש בכלי רכב זה', 403);
+      if (!newVehicle) {
+        throw new AuthError(NOT_FOUND.VEHICLE, 404);
       }
+      requireOwnership(payload.userId, newVehicle.userId);
 
       updateData.vehicleId = data.vehicleId;
     }
@@ -178,7 +179,7 @@ export async function DELETE(
     });
 
     if (!expense) {
-      return errorResponse('הוצאה לא נמצאה', 404);
+      return errorResponse(NOT_FOUND.EXPENSE, 404);
     }
 
     // Verify vehicle ownership
@@ -187,9 +188,10 @@ export async function DELETE(
       select: { userId: true },
     });
 
-    if (!vehicle || vehicle.userId !== payload.userId) {
-      throw new AuthError('אין לך הרשאה למחוק הוצאה זו', 403);
+    if (!vehicle) {
+      throw new AuthError(NOT_FOUND.VEHICLE, 404);
     }
+    requireOwnership(payload.userId, vehicle.userId);
 
     // Delete expense
     await prisma.expense.delete({

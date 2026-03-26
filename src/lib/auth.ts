@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 import prisma from './db';
+import { getCacheStore } from './cache-store';
 
 // ============================================================================
 // JWT Secret Management - Cryptographically Strong Fallback
@@ -37,28 +38,19 @@ export const REFRESH_TOKEN_EXPIRY = '7d'; // 7 days
 export const REFRESH_TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 
 // ============================================================================
-// Token Blacklist - In-Memory Store
-// TODO: Migrate to Redis for production use with SET commands and key expiration
-// Redis: Use `SET blacklist:{tokenId} 1 EX {expirySeconds}` for scalable token blacklisting
+// Token Blacklist - Uses CacheStore (in-memory or Redis)
+// To switch to Redis: update getCacheStore() in cache-store.ts
 // ============================================================================
-const tokenBlacklist = new Set<string>();
+const BLACKLIST_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days (matches refresh token expiry)
 
 export function blacklistToken(tokenId: string): void {
-  tokenBlacklist.add(tokenId);
-  // In production with Redis:
-  // await redis.set(`blacklist:${tokenId}`, '1', 'EX', REFRESH_TOKEN_EXPIRY_MS / 1000);
+  const cache = getCacheStore();
+  cache.set(`blacklist:${tokenId}`, true, BLACKLIST_TTL_MS);
 }
 
 export function isTokenBlacklisted(tokenId: string): boolean {
-  return tokenBlacklist.has(tokenId);
-}
-
-// Cleanup blacklist entries periodically (tokens expire naturally after 7 days)
-if (typeof global !== 'undefined') {
-  setInterval(() => {
-    // In production with Redis, expiration is automatic via Redis TTL
-    // For in-memory, we rely on token expiry validation
-  }, 60 * 60 * 1000); // Check every hour
+  const cache = getCacheStore();
+  return cache.has(`blacklist:${tokenId}`);
 }
 
 export interface JwtPayload {

@@ -1,12 +1,13 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { NOT_FOUND } from '@/lib/messages';
 
 // GET /api/garages/[id]/reviews - Get reviews for a garage
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const garage = await prisma.garage.findUnique({ where: { id: params.id } });
-    if (!garage) return errorResponse('מוסך לא נמצא', 404);
+    if (!garage) return errorResponse(NOT_FOUND.GARAGE, 404);
 
     const reviews = await prisma.garageReview.findMany({
       where: { garageId: params.id },
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
 
     const garage = await prisma.garage.findUnique({ where: { id: params.id } });
-    if (!garage) return errorResponse('מוסך לא נמצא', 404);
+    if (!garage) return errorResponse(NOT_FOUND.GARAGE, 404);
 
     // Get user name
     const user = await prisma.user.findUnique({

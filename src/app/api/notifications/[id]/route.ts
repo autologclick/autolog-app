@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, errorResponse, handleApiError, validationErrorResponse } from '@/lib/api-helpers';
+import { requireAuth, jsonResponse, errorResponse, handleApiError, validationErrorResponse, requireOwnership } from '@/lib/api-helpers';
 import { z } from 'zod';
 
 // PATCH /api/notifications/[id] - Mark single notification as read
@@ -24,9 +24,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     // Verify notification exists and belongs to user
     const notification = await prisma.notification.findUnique({ where: { id } });
     if (!notification) return errorResponse('הודעה לא נמצאה', 404);
-    if (notification.userId !== payload.userId) {
-      return errorResponse('אין הרשאה', 403);
-    }
+    requireOwnership(payload.userId, notification.userId);
 
     // Update notification
     const updated = await prisma.notification.update({
@@ -49,9 +47,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     // Verify notification exists and belongs to user
     const notification = await prisma.notification.findUnique({ where: { id } });
     if (!notification) return errorResponse('הודעה לא נמצאה', 404);
-    if (notification.userId !== payload.userId) {
-      return errorResponse('אין הרשאה', 403);
-    }
+    requireOwnership(payload.userId, notification.userId);
 
     // Delete notification
     await prisma.notification.delete({ where: { id } });

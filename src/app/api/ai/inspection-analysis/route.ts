@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { requireAuth, jsonResponse, errorResponse, handleApiError, requireOwnershipOrAdmin } from '@/lib/api-helpers';
 import { checkApiRateLimit } from '@/lib/rate-limit';
 import { analyzeInspection } from '@/lib/ai-analysis';
 
@@ -35,10 +35,7 @@ export async function GET(req: NextRequest) {
       return errorResponse('בדיקה לא נמצאה', 404);
     }
 
-    // Verify ownership (unless admin or garage owner)
-    if (payload.role === 'user' && inspection.vehicle.userId !== payload.userId) {
-      return errorResponse('אין הרשאה', 403);
-    }
+    requireOwnershipOrAdmin(payload, inspection.vehicle.userId);
 
     // Parse JSON fields (recommendations and workPerformed are stored as JSON strings)
     let recommendations: Array<{ text: string; urgency?: string; estimatedCost?: string }> | undefined;

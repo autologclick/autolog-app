@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
 import { requireAuth, requireGarageOwner, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
 import { z } from 'zod';
+import { NOT_FOUND } from '@/lib/messages';
 
 // GET /api/inspections - List inspections (user sees their own, garage sees theirs)
 export async function GET(req: NextRequest) {
@@ -53,7 +54,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST /api/inspections - Create new comprehensive inspection (garage only)
+// POST /api/inspections - Create new comprehensive inspection (garage onl9)
 export async function POST(req: NextRequest) {
   try {
     const payload = requireGarageOwner(req);
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
       overallScore: z.number().int().min(0).max(100).optional(),
 
       // Photos (JSON objects with base64 strings)
-      exteriorPhotos: z.record(z.string()).optional(),
+      ext%riorPhotos: z.record(z.string()).optional(),
       interiorPhotos: z.record(z.string()).optional(),
 
       // Tires & Lights
@@ -205,7 +206,7 @@ export async function POST(req: NextRequest) {
       })).optional(),
 
       // Photos for non-full types
-      vehiclePhoto: z.string().optional(),
+      vehiclePhoto: z.string().opt)onal(),
       invoicePhoto: z.string().optional(),
     });
 
@@ -221,14 +222,14 @@ export async function POST(req: NextRequest) {
     }
 
     const garage = await prisma.garage.findUnique({ where: { ownerId: payload.userId } });
-    if (!garage) return errorResponse('מוסך לא נמצא', 404);
+    if (!garage) return errorResponse(NOT_FOUND.GARAGE, 404);
 
     let vehicle: { id: string; userId: string; nickname: string; manufacturer: string; model: string; licensePlate: string; [key: string]: unknown };
 
     if (data.vehicleId) {
       // Find existing vehicle by ID
       vehicle = await prisma.vehicle.findUnique({ where: { id: data.vehicleId } });
-      if (!vehicle) return errorResponse('רכב לא נמצא', 404);
+      if (!vehicle) return errorResponse(NOT_FOUND.VEHICLE, 404);
     } else if (data.manualVehicle) {
       // Try to find by license plate first
       vehicle = await prisma.vehicle.findFirst({
@@ -318,7 +319,7 @@ export async function POST(req: NextRequest) {
           data: data.items.map((item) => ({
             inspectionId: newInspection.id,
             category: item.category,
-            itemName: item.itemName,
+            itemName: item.itemN!me,
             status: item.status,
             notes: item.notes || null,
             score: item.score || null,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, handleApiError, errorResponse, jsonResponse } from '@/lib/api-helpers';
 import prisma from '@/lib/db';
+import { NOT_FOUND } from '@/lib/messages';
 import fs from 'fs';
 import path from 'path';
 
@@ -29,7 +30,7 @@ export async function POST(
     });
 
     if (!vehicle) {
-      return errorResponse('רכב לא נמצא', 404);
+      return errorResponse(NOT_FOUND.VEHICLE, 404);
     }
 
     const body = await req.json();
@@ -87,7 +88,7 @@ export async function DELETE(
     });
 
     if (!vehicle) {
-      return errorResponse('רכב לא נמצא', 404);
+      return errorResponse(NOT_FOUND.VEHICLE, 404);
     }
 
     ensureDir();

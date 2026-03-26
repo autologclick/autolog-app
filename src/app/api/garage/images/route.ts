@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { requireGarageOwner, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import prisma from '@/lib/db';
+import { NOT_FOUND } from '@/lib/messages';
 import fs from 'fs';
 import path from 'path';
 import { basename } from 'path';
@@ -37,7 +38,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!garage) {
-      return errorResponse('מוסך לא נמצא', 404);
+      return errorResponse(NOT_FOUND.GARAGE, 404);
     }
 
     const garageDir = path.join(UPLOAD_DIR, garage.id);
@@ -70,7 +71,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!garage) {
-      return errorResponse('מוסך לא נמצא', 404);
+      return errorResponse(NOT_FOUND.GARAGE, 404);
     }
 
     const body = await req.json();
@@ -162,7 +163,7 @@ export async function DELETE(req: NextRequest) {
     });
 
     if (!garage) {
-      return errorResponse('מוסך לא נמצא', 404);
+      return errorResponse(NOT_FOUND.GARAGE, 404);
     }
 
     const body = await req.json();

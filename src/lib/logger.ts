@@ -33,7 +33,7 @@ interface LogContext {
   method?: string;
   requestId?: string;
   module: LogModule;
-  [key: string]: any;
+  [key: string]: string | number | boolean | undefined | null;
 }
 
 interface LogEntry {
@@ -41,7 +41,7 @@ interface LogEntry {
   level: LogLevel;
   module: LogModule;
   message: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 const LOG_LEVELS = {
