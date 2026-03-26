@@ -1,14 +1,14 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
-import { requireAuth, requireAdmin, jsonResponse, errorResponse, handleApiError, getPaginationParams, validationErrorResponse } from '@/lib/api-helpers';
+import { requireAuth, requireAdmin, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
 import { z } from 'zod';
 
 // GET /api/notifications - List user's notifications
 export async function GET(req: NextRequest) {
   try {
     const payload = requireAuth(req);
-    const { skip, limit } = getPaginationParams(req);
+    const { page, skip, limit } = getPaginationParams(req);
     const url = new URL(req.url);
     const type = url.searchParams.get('type');
     const isRead = url.searchParams.get('isRead');
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       where: { userId: payload.userId, isRead: false },
     });
 
-    return jsonResponse({ notifications, total, unreadCount });
+    return jsonResponse({ notifications, unreadCount, ...paginationMeta(total, page, limit) });
   } catch (error) {
     return handleApiError(error);
   }
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       userId: z.string().min(1, 'userId נדרש'),
       type: z.enum(['test_expiry', 'insurance_expiry', 'appointment', 'sos', 'benefit', 'system']),
       title: z.string().min(1, 'כותרת נדרשת'),
-      message: z.string().min(1, 'הודעה נדרשת'),
+      message: z.string().min(1, 'הודעג נדרשת'),
       link: z.string().optional(),
     });
 
