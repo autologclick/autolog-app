@@ -19,15 +19,7 @@ function getPythonCommand(): string {
   }
 }
 
-// Helper to safely parse JSON fields
-function safeJsonParse(value: string | null): any {
-  if (!value) return null;
-  try {
-    return JSON.parse(value);
-  } catch {
-    return value;
-  }
-}
+import { safeJsonParse } from '@/lib/utils';
 
 // GET /api/inspections/[id]/pdf - Generate and return inspection PDF
 export async function GET(
