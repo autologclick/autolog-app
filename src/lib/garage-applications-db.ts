@@ -88,27 +88,25 @@ export async function createApplication(data: {
   licenseNumber?: string;
   images?: string;
 }): Promise<string> {
-  await ensureGarageApplicationTable();
-  const id = generateId();
-  await prisma.$executeRawUnsafe(
-    `INSERT INTO "GarageApplication" (id, "garageName", "ownerName", email, phone, city, address, description, services, "yearsExperience", "employeeCount", "licenseNumber", images, "languages", status)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 'pending')`,
-    id,
-    data.garageName,
-    data.ownerName,
-    data.email,
-    data.phone,
-    data.city,
-    data.address || null,
-    data.description || null,
-    data.services || null,
-    data.yearsExperience || 0,
-    data.employeeCount || 1,
-    data.licenseNumber || null,
-    data.images || null,
-      data.languages || null
-  );
-  return id;
+  const result = await prisma.garageApplication.create({
+    data: {
+      garageName: data.garageName,
+      ownerName: data.ownerName,
+      email: data.email,
+      phone: data.phone,
+      city: data.city,
+      address: data.address || null,
+      description: data.description || null,
+      services: data.services || null,
+      languages: data.languages || null,
+      yearsExperience: data.yearsExperience || 0,
+      employeeCount: data.employeeCount || 1,
+      licenseNumber: data.licenseNumber || null,
+      images: data.images || null,
+      status: 'pending',
+    },
+  });
+  return result.id;
 }
 
 export async function getApplications(status?: string): Promise<GarageApplicationRow[]> {
