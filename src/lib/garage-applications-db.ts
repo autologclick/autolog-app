@@ -1,55 +1,5 @@
 import prisma from './db';
 
-// Ensure the GarageApplication table exists (auto-migration for PostgreSQL)
-let tableChecked = false;
-
-export async function ensureGarageApplicationTable() {
-  if (tableChecked) return;
-  try {
-    await prisma.$executeRawUnsafe(`
-      CREATE TABLE IF NOT EXISTS "GarageApplication" (
-        id TEXT PRIMARY KEY,
-        "garageName" TEXT NOT NULL,
-        "ownerName" TEXT NOT NULL,
-        email TEXT NOT NULL,
-        phone TEXT NOT NULL,
-        city TEXT NOT NULL,
-        address TEXT,
-        description TEXT,
-        services TEXT,
-    languages TEXT,
-        "yearsExperience" INTEGER DEFAULT 0,
-        "employeeCount" INTEGER DEFAULT 1,
-        "licenseNumber" TEXT,
-        images TEXT,
-        status TEXT NOT NULL DEFAULT 'pending',
-        "adminNotes" TEXT,
-        "reviewedBy" TEXT,
-        "reviewedAt" TIMESTAMP,
-        "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-    try {
-      await prisma.$executeRawUnsafe(`ALTER TABLE "GarageApplication" ADD COLUMN IF NOT EXISTS images TEXT`);
-    } catch {
-      // Column already exists
-    }
-    tableChecked = true;
-  } catch (e) {
-    console.error('Failed to ensure GarageApplication table:', e);
-  }
-}
-
-function generateId() {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  let id = 'gapp_';
-  for (let i = 0; i < 20; i++) {
-    id += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return id;
-}
-
 export interface GarageApplicationRow {
   id: string;
   garageName: string;
@@ -68,9 +18,9 @@ export interface GarageApplicationRow {
   status: string;
   adminNotes: string | null;
   reviewedBy: string | null;
-  reviewedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
+  reviewedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export async function createApplication(data: {
@@ -110,41 +60,38 @@ export async function createApplication(data: {
 }
 
 export async function getApplications(status?: string): Promise<GarageApplicationRow[]> {
-  await ensureGarageApplicationTable();
   if (status) {
-    return prisma.$queryRawUnsafe(
-      `SELECT * FROM "GarageApplication" WHERE status = $1 ORDER BY "createdAt" DESC`,
-      status
-    ) as Promise<GarageApplicationRow[]>;
+    return prisma.garageApplication.findMany({
+      where: { status },
+      orderBy: { createdAt: 'desc' },
+    });
   }
-  return prisma.$queryRawUnsafe(
-    `SELECT * FROM "GarageApplication" ORDER BY
-      CASE status WHEN 'pending' THEN 0 WHEN 'approved' THEN 1 WHEN 'rejected' THEN 2 END,
-      "createdAt" DESC`
-  ) as Promise<GarageApplicationRow[]>;
+  // Sort: pending first, then approved, then rejected
+  const applications = await prisma.garageApplication.findMany({
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const statusOrder: Record<string, number> = { pending: 0, approved: 1, rejected: 2 };
+  return applications.sort((a, b) => {
+    const orderA = statusOrder[a.status] ?? 3;
+    const orderB = statusOrder[b.status] ?? 3;
+    if (orderA !== orderB) return orderA - orderB;
+    return b.createdAt.getTime() - a.createdAt.getTime();
+  });
 }
 
 export async function getApplicationById(id: string): Promise<GarageApplicationRow | null> {
-  await ensureGarageApplicationTable();
-  const rows = await prisma.$queryRawUnsafe(
-    `SELECT * FROM "GarageApplication" WHERE id = $1`,
-    id
-  ) as GarageApplicationRow[];
-  return rows[0] || null;
+  return prisma.garageApplication.findUnique({
+    where: { id },
+  });
 }
 
 export async function getApplicationCount(): Promise<{ total: number; pending: number }> {
-  await ensureGarageApplicationTable();
-  const total = await prisma.$queryRawUnsafe(
-    `SELECT COUNT(*) as count FROM "GarageApplication"`
-  ) as { count: number }[];
-  const pending = await prisma.$queryRawUnsafe(
-    `SELECT COUNT(*) as count FROM "GarageApplication" WHERE status = 'pending'`
-  ) as { count: number }[];
-  return {
-    total: Number(total[0]?.count || 0),
-    pending: Number(pending[0]?.count || 0),
-  };
+  const [total, pending] = await Promise.all([
+    prisma.garageApplication.count(),
+    prisma.garageApplication.count({ where: { status: 'pending' } }),
+  ]);
+  return { total, pending };
 }
 
 export async function updateApplicationStatus(
@@ -153,23 +100,23 @@ export async function updateApplicationStatus(
   adminNotes: string | null,
   reviewedBy: string
 ) {
-  await ensureGarageApplicationTable();
-  await prisma.$executeRawUnsafe(
-    `UPDATE "GarageApplication"
-     SET status = $1, "adminNotes" = $2, "reviewedBy" = $3, "reviewedAt" = CURRENT_TIMESTAMP, "updatedAt" = CURRENT_TIMESTAMP
-     WHERE id = $4`,
-    status,
-    adminNotes,
-    reviewedBy,
-    id
-  );
+  await prisma.garageApplication.update({
+    where: { id },
+    data: {
+      status,
+      adminNotes,
+      reviewedBy,
+      reviewedAt: new Date(),
+    },
+  });
 }
 
 export async function checkDuplicateEmail(email: string): Promise<boolean> {
-  await ensureGarageApplicationTable();
-  const rows = await prisma.$queryRawUnsafe(
-    `SELECT COUNT(*) as count FROM "GarageApplication" WHERE email = $1 AND status != 'rejected'`,
-    email
-  ) as { count: number }[];
-  return Number(rows[0]?.count || 0) > 0;
+  const count = await prisma.garageApplication.count({
+    where: {
+      email,
+      status: { not: 'rejected' },
+    },
+  });
+  return count > 0;
 }
