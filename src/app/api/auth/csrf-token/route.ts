@@ -1,6 +1,9 @@
 import { NextRequest } from 'next/server';
 import { generateCsrfToken, storeCsrfToken } from '@/lib/csrf';
 import { jsonResponse, errorResponse } from '@/lib/api-helpers';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('security');
 
 // GET /api/auth/csrf-token - Generate a CSRF token for the current session
 export async function GET(req: NextRequest) {
@@ -18,13 +21,13 @@ export async function GET(req: NextRequest) {
     const csrfToken = generateCsrfToken();
 
     // Store the token
-    storeCsrfToken(sessionId!, csrfToken);
+    storeCsrfToken(sessionId, csrfToken);
 
     const response = jsonResponse({ csrfToken });
 
     // Set session ID cookie if not already set
     if (!req.cookies.get('session-id')?.value) {
-      response.cookies.set('session-id', sessionId!, {
+      response.cookies.set('session-id', sessionId, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -35,7 +38,7 @@ export async function GET(req: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error('CSRF token generation error:', error);
-    return errorResponse('×©×××× ××× ×¤×§×ª ×××§× ×××××', 500);
+    logger.error('CSRF token generation error', { error: error instanceof Error ? error.message : String(error) });
+    return errorResponse('שגיאה בהנפקת טוקן אבטחה', 500);
   }
 }
