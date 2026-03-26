@@ -93,7 +93,7 @@ class MemoryCacheStore implements CacheStore {
  *   }
  *   async delete(key: string): Promise<void> { await this.client.del(key); }
  *   async has(key: string): Promise<boolean> { return (await this.client.exists(key)) === 1; }
- *   async cleanup(): Promise<void> { /* Redis TTL handles this automatically */ }
+ *   async cleanup(): Promise<void> { } // Redis TTL handles this automatically
  * }
  */
 
