@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
       address: data.address ? sanitizeInput(data.address) : undefined,
       description: data.description ? sanitizeInput(data.description) : undefined,
       services: data.services ? JSON.stringify(data.services) : undefined,
+      languages: data.languages ? JSON.stringify(data.languages) : undefined,
       yearsExperience: data.yearsExperience,
       employeeCount: data.employeeCount,
       licenseNumber: data.licenseNumber ? sanitizeInput(data.licenseNumber) : undefined,
