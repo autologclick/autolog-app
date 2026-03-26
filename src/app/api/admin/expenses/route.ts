@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { requireAdmin, jsonResponse, handleApiError, getPaginationParams } from '@/lib/api-helpers';
+import { requireAdmin, jsonResponse, handleApiError, getPaginationParams, paginationMeta } from '@/lib/api-helpers';
 import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
 
@@ -13,8 +13,7 @@ export async function GET(req: NextRequest) {
     const from = searchParams.get('from');
     const to = searchParams.get('to');
 
-    const { skip, limit } = getPaginationParams(req);
-    const page = Math.floor(skip / limit) + 1;
+    const { page, skip, limit } = getPaginationParams(req);
 
     const where: Prisma.ExpenseWhereInput = {};
 
@@ -79,11 +78,9 @@ export async function GET(req: NextRequest) {
 
     return jsonResponse({
       expenses,
-      total,
       totalAmount,
       categoryBreakdown,
-      page,
-      limit,
+      ...paginationMeta(total, page, limit),
     });
   } catch (error) {
     return handleApiError(error);
