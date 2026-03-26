@@ -75,17 +75,13 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       gearboxIssues: safeJsonParse(inspection.gearboxIssues),
       brakingSystem: safeJsonParse(inspection.brakingSystem),
       notes: safeJsonParse(inspection.notes),
-    };
-
-    const fullResponse = {
-      ...response,
       preTestChecklist: safeJsonParse(inspection.preTestChecklist),
       preTestNotes: inspection.preTestNotes || null,
-      workPerformed: safeJsonParse(inspection.workPerformed),
       serviceItems: safeJsonParse(inspection.serviceItems),
+      workPerformed: safeJsonParse(inspection.workPerformed),
     };
 
-    return jsonResponse({ inspection: fullResponse });
+    return jsonResponse({ inspection: response });
   } catch (error) {
     return handleApiError(error);
   }
