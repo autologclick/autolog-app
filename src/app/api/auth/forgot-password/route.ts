@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { randomBytes, createHash } from 'crypto';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('auth');
 
 // POST /api/auth/forgot-password
 export async function POST(req: NextRequest) {
@@ -41,9 +44,7 @@ export async function POST(req: NextRequest) {
     // In production, send email here
     // For now, log the token in development
     if (process.env.NODE_ENV === 'development') {
-      console.log(`\n🔑 Password Reset Token for ${user.email}:`);
-      console.log(`Token: ${resetToken}`);
-      console.log(`Reset URL: /auth/forgot-password?token=${resetToken}\n`);
+      logger.debug('Password reset token generated', { email: user.email, resetUrl: `/auth/forgot-password?token=${resetToken}` });
     }
 
     return jsonResponse({
