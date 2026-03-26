@@ -3,6 +3,9 @@ import { execSync } from 'child_process';
 import path from 'path';
 import prisma from '@/lib/db';
 import { errorResponse, handleApiError } from '@/lib/api-helpers';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('pdf');
 
 // Public PDF endpoint - no auth required (accessible via shared links)
 // Security: Inspection IDs are UUIDs, hard to guess
@@ -92,7 +95,7 @@ export async function GET(
       });
       pdfBuffer = result;
     } catch (error: any) {
-      console.error('PDF generation error:', error.stderr?.toString() || error.message);
+      logger.error('PDF generation error', { error: error.stderr?.toString() || error.message });
       return errorResponse('שגיאה בייצור דוח PDF', 500);
     }
 
