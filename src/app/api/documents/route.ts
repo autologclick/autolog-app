@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import {
   requireAuth,
   jsonResponse,
@@ -27,7 +28,7 @@ export async function GET(req: NextRequest) {
     const vehicleId = url.searchParams.get('vehicleId');
 
     // Build query filters
-    const whereClause: any = {
+    const whereClause: Prisma.DocumentWhereInput = {
       vehicle: {
         userId: payload.userId, // Ensure user owns the vehicle
       },
