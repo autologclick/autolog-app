@@ -70,6 +70,7 @@ export async function POST(req: NextRequest) {
       message: 'הבקשה נשלחה בהצלחה! צוות AutoLog יבדוק את הבקשה ויחזור אליך בהקדם.',
     }, 201);
   } catch (error) {
-    return handleApiError(error);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: errMsg }, { status: 500 });
   }
 }
