@@ -3,6 +3,9 @@ import { execSync, spawnSync } from 'child_process';
 import path from 'path';
 import prisma from '@/lib/db';
 import { requireAuth, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('pdf');
 
 // Detect the Python command available on this system
 function getPythonCommand(): string {
@@ -126,7 +129,7 @@ export async function GET(
       });
       pdfBuffer = Buffer.from(result, 'binary');
     } catch (error: any) {
-      console.error('PDF generation error:', error.message);
+      logger.error('PDF generation error', { error: error.message });
       return errorResponse(
         'שגיאה בייצור דוח PDF: ' + (error.message || 'שגיאה לא ידועה'),
         500
