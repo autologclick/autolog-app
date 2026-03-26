@@ -70,7 +70,8 @@ export async function POST(req: NextRequest) {
       message: 'הבקשה נשלחה בהצלחה! צוות AutoLog יבדוק את הבקשה ויחזור אליך בהקדם.',
     }, 201);
   } catch (error) {
-    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error('garage-applications POST error:', error);
+    const errMsg = error instanceof Error ? error.message : 'שגיאת שרת פנימית';
     return NextResponse.json({ error: errMsg }, { status: 500 });
   }
 }
