@@ -390,3 +390,26 @@ model GarageApplication {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }
+
+// ============================================================
+// BENEFIT REDEMPTIONS
+// ============================================================
+
+model BenefitRedemption {
+  id          String    @id @default(cuid())
+  benefitId   String
+  userId      String
+  code        String    @unique
+  qrData      String?
+  benefitName String
+  partnerName String?
+  discount    String?
+  status      String    @default("active") // active | used | expired
+  usedAt      DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
+  @@index([code])
+  @@index([status])
+}
