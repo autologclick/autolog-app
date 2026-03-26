@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server';
-import { z } from 'zod';
 import prisma from '@/lib/db';
 import { requireAdmin, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 
@@ -79,7 +78,7 @@ export async function GET(
     });
 
     if (!user) {
-      return errorResponse('User not found', 404);
+      return errorResponse('משתמש לא נמצא', 404);
     }
 
     return jsonResponse({ user });
@@ -96,18 +95,13 @@ export async function PUT(
   try {
     requireAdmin(req);
 
-    const body = await req.json();
-    const schema = z.object({
-      fullName: z.string().min(2).max(100).optional(),
-      phone: z.string().regex(/^[0-9\-+()\s]*$/).max(20).optional(),
-      role: z.enum(['user', 'admin', 'garage_owner']).optional(),
-      isActive: z.boolean().optional(),
-    });
-    const validation = schema.safeParse(body);
-    if (!validation.success) {
-      return errorResponse('נתונים לא תקינים', 400);
+    const data = await req.json();
+    const { fullName, phone, role, isActive } = data;
+
+    // Validate role
+    if (role && !['user', 'admin', 'garage_owner'].includes(role)) {
+      return errorResponse('תפקיד לא תקין', 400);
     }
-    const { fullName, phone, role, isActive } = validation.data;
 
     const user = await prisma.user.update({
       where: { id: params.id },

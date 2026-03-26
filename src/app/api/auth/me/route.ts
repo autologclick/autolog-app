@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    if (!user) return jsonResponse({ error: 'User not found' }, 404);
+    if (!user) return jsonResponse({ error: 'משתמש לא נמצא' }, 404);
 
     return jsonResponse({ user });
   } catch (error) {

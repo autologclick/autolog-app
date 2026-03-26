@@ -25,13 +25,13 @@ export async function GET() {
     });
   } catch (error) {
     healthLogger.error('Health check failed', {
-      error: error instanceof Error ? error.message : 'Database connection failed',
+      error: error instanceof Error ? error.message : 'חיבור למסד הנתונים נכשל',
     });
 
     return NextResponse.json({
       status: 'error',
       timestamp: new Date().toISOString(),
-      error: 'Database connection failed',
+      error: 'חיבור למסד הנתונים נכשל',
     }, { status: 503 });
   }
 }
