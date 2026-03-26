@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { requireAdmin, jsonResponse, handleApiError, getPaginationParams } from '@/lib/api-helpers';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 
 export async function GET(req: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function GET(req: NextRequest) {
     const { skip, limit } = getPaginationParams(req);
     const page = Math.floor(skip / limit) + 1;
 
-    const where: any = {};
+    const where: Prisma.ExpenseWhereInput = {};
 
     if (vehicleId) {
       where.vehicleId = vehicleId;
