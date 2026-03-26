@@ -293,11 +293,7 @@ export async function POST(req: NextRequest) {
 
     };
 
-    // Pre-test fields stored via raw SQL (Prisma client not regenerated for new columns)
-    const preTestChecklistJson = data.preTestChecklist ? JSON.stringify(data.preTestChecklist) : null;
-    const preTestNotesVal = data.preTestNotes || null;
-    const serviceItemsJson = data.serviceItems ? JSON.stringify(data.serviceItems) : null;
-    const workPerformedJson = data.workPerformed ? JSON.stringify(data.workPerformed) : null;
+
 
     // Create inspection and items in a transaction
     const inspection = await prisma.$transaction(async (tx) => {
@@ -420,14 +416,6 @@ export async function POST(req: NextRequest) {
         },
       });
     });
-
-    // Update new columns via raw SQL since Prisma client wasn't regenerated for new DB columns
-    if (inspection && (preTestChecklistJson || preTestNotesVal || serviceItemsJson || workPerformedJson)) {
-      await (prisma as any).$executeRawUnsafe(
-        `UPDATE Inspection SET preTestChecklist = ?, preTestNotes = ?, serviceItems = ?, workPerformed = ? WHERE id = ?`,
-        preTestChecklistJson, preTestNotesVal, serviceItemsJson, workPerformedJson, inspection.id
-      );
-    }
 
     return jsonResponse({ inspection, message: '×××××§× × ××¦×¨× ×××¦×××' }, 201);
   } catch (error) {

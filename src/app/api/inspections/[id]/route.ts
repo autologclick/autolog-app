@@ -77,24 +77,12 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       notes: safeJsonParse(inspection.notes),
     };
 
-    // Fetch new columns via raw SQL since Prisma client wasn't regenerated
-    let extraFields: any = {};
-    try {
-      const rawRows: any[] = await (prisma as any).$queryRawUnsafe(
-        `SELECT preTestChecklist, preTestNotes, serviceItems, workPerformed FROM Inspection WHERE id = ?`,
-        id
-      );
-      if (rawRows && rawRows.length > 0) {
-        extraFields = rawRows[0];
-      }
-    } catch {}
-
     const fullResponse = {
       ...response,
-      preTestChecklist: safeJsonParse(extraFields.preTestChecklist || null),
-      preTestNotes: extraFields.preTestNotes || null,
-      workPerformed: safeJsonParse(extraFields.workPerformed || null),
-      serviceItems: safeJsonParse(extraFields.serviceItems || null),
+      preTestChecklist: safeJsonParse(inspection.preTestChecklist),
+      preTestNotes: inspection.preTestNotes || null,
+      workPerformed: safeJsonParse(inspection.workPerformed),
+      serviceItems: safeJsonParse(inspection.serviceItems),
     };
 
     return jsonResponse({ inspection: fullResponse });
