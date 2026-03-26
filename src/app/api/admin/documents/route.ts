@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { requireAdmin, jsonResponse, handleApiError } from '@/lib/api-helpers';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 
 export async function GET(req: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function GET(req: NextRequest) {
     const type = searchParams.get('type');
     const search = searchParams.get('search');
 
-    const where: any = {};
+    const where: Prisma.DocumentWhereInput = {};
 
     if (vehicleId) {
       where.vehicleId = vehicleId;
