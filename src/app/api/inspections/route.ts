@@ -1,14 +1,14 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
-import { requireAuth, requireGarageOwner, jsonResponse, errorResponse, handleApiError, getPaginationParams, validationErrorResponse } from '@/lib/api-helpers';
+import { requireAuth, requireGarageOwner, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
 import { z } from 'zod';
 
 // GET /api/inspections - List inspections (user sees their own, garage sees theirs)
 export async function GET(req: NextRequest) {
   try {
     const payload = requireAuth(req);
-    const { skip, limit } = getPaginationParams(req);
+    const { page, skip, limit } = getPaginationParams(req);
     const url = new URL(req.url);
     const vehicleId = url.searchParams.get('vehicleId');
     const garageId = url.searchParams.get('garageId');
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
       prisma.inspection.count({ where }),
     ]);
 
-    return jsonResponse({ inspections, total });
+    return jsonResponse({ inspections, ...paginationMeta(total, page, limit) });
   } catch (error) {
     return handleApiError(error);
   }
