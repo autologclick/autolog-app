@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import {
   requireAuth,
   jsonResponse,
@@ -138,7 +139,7 @@ export async function PUT(
       throw new AuthError('Forbidden', 403);
     }
 
-    const updateData: any = {};
+    const updateData: Prisma.VehicleUpdateInput = {};
     const d = validation.data;
 
     if (d.nickname !== undefined) updateData.nickname = d.nickname;
