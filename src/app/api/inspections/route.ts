@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST /api/inspections - Create new comprehensive inspection (garage onl9)
+// POST /api/inspections - Create new comprehensive inspection (garage only)
 export async function POST(req: NextRequest) {
   try {
     const payload = requireGarageOwner(req);
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
       overallScore: z.number().int().min(0).max(100).optional(),
 
       // Photos (JSON objects with base64 strings)
-      ext%riorPhotos: z.record(z.string()).optional(),
+      exteriorPhotos: z.record(z.string()).optional(),
       interiorPhotos: z.record(z.string()).optional(),
 
       // Tires & Lights
@@ -206,7 +206,7 @@ export async function POST(req: NextRequest) {
       })).optional(),
 
       // Photos for non-full types
-      vehiclePhoto: z.string().opt)onal(),
+      vehiclePhoto: z.string().optional(),
       invoicePhoto: z.string().optional(),
     });
 
@@ -218,7 +218,7 @@ export async function POST(req: NextRequest) {
     const data = validation.data;
 
     if (!data.vehicleId && !data.manualVehicle) {
-      return errorResponse('יש לבחור רכב או להזין מספר רישוי', 400);
+      return errorResponse('\u05d9\u05e9 \u05dc\u05d1\u05d7\u05d5\u05e8 \u05e8\u05db\u05d1 \u05d0\u05d5 \u05dc\u05d4\u05d6\u05d9\u05df \u05de\u05e1\u05e4\u05e8 \u05e8\u05d9\u05e9\u05d5\u05d9', 400);
     }
 
     const garage = await prisma.garage.findUnique({ where: { ownerId: payload.userId } });
@@ -243,8 +243,8 @@ export async function POST(req: NextRequest) {
           data: {
             userId: payload.userId, // temporary owner - garage
             licensePlate: data.manualVehicle.licensePlate,
-            manufacturer: data.manualVehicle.manufacturer || 'לא צוין',
-            model: data.manualVehicle.model || 'לא צוין',
+            manufacturer: data.manualVehicle.manufacturer || '\u05dc\u05d0 \u05e6\u05d5\u05d9\u05df',
+            model: data.manualVehicle.model || '\u05dc\u05d0 \u05e6\u05d5\u05d9\u05df',
             year: data.manualVehicle.year || 0,
             color: data.manualVehicle.color || null,
             nickname: (data.manualVehicle.manufacturer && data.manualVehicle.model)
@@ -319,7 +319,7 @@ export async function POST(req: NextRequest) {
           data: data.items.map((item) => ({
             inspectionId: newInspection.id,
             category: item.category,
-            itemName: item.itemN!me,
+            itemName: item.itemName,
             status: item.status,
             notes: item.notes || null,
             score: item.score || null,
@@ -334,7 +334,7 @@ export async function POST(req: NextRequest) {
       if (data.tiresData) {
         Object.entries(data.tiresData).forEach(([key, val]) => {
           if (val) {
-            const nameMap: Record<string, string> = { frontLeft: 'צמיג קדמי שמאל', frontRight: 'צמיג קדמי ימין', rearLeft: 'צמיג אחורי שמאל', rearRight: 'צמיג אחורי ימין' };
+            const nameMap: Record<string, string> = { frontLeft: '\u05e6\u05de\u05d9\u05d2 \u05e7\u05d3\u05de\u05d9 \u05e9\u05de\u05d0\u05dc', frontRight: '\u05e6\u05de\u05d9\u05d2 \u05e7\u05d3\u05de\u05d9 \u05d9\u05de\u05d9\u05df', rearLeft: '\u05e6\u05de\u05d9\u05d2 \u05d0\u05d7\u05d5\u05e8\u05d9 \u05e9\u05de\u05d0\u05dc', rearRight: '\u05e6\u05de\u05d9\u05d2 \u05d0\u05d7\u05d5\u05e8\u05d9 \u05d9\u05de\u05d9\u05df' };
             autoItems.push({ inspectionId: newInspection.id, category: 'tires', itemName: nameMap[key] || key, status: val, notes: null, score: null });
           }
         });
@@ -344,7 +344,7 @@ export async function POST(req: NextRequest) {
       if (data.lightsData) {
         Object.entries(data.lightsData).forEach(([key, val]) => {
           if (val) {
-            const nameMap: Record<string, string> = { brakes: 'אורות בלם', reverse: 'אורות ריוורס', fog: 'אורות ערפל', headlights: 'פנסים ראשיים', frontSignal: 'איתות קדמי', rearSignal: 'איתות אחורי', highBeam: 'אור גבוה', plate: 'תאורת לוחית' };
+            const nameMap: Record<string, string> = { brakes: '\u05d0\u05d5\u05e8\u05d5\u05ea \u05d1\u05dc\u05dd', reverse: '\u05d0\u05d5\u05e8\u05d5\u05ea \u05e8\u05d9\u05d5\u05d5\u05e8\u05e1', fog: '\u05d0\u05d5\u05e8\u05d5\u05ea \u05e2\u05e8\u05e4\u05dc', headlights: '\u05e4\u05e0\u05e1\u05d9\u05dd \u05e8\u05d0\u05e9\u05d9\u05d9\u05dd', frontSignal: '\u05d0\u05d9\u05ea\u05d5\u05ea \u05e7\u05d3\u05de\u05d9', rearSignal: '\u05d0\u05d9\u05ea\u05d5\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9', highBeam: '\u05d0\u05d5\u05e8 \u05d2\u05d1\u05d5\u05d4', plate: '\u05ea\u05d0\u05d5\u05e8\u05ea \u05dc\u05d5\u05d7\u05d9\u05ea' };
             autoItems.push({ inspectionId: newInspection.id, category: 'electrical', itemName: nameMap[key] || key, status: val, notes: null, score: null });
           }
         });
@@ -354,7 +354,7 @@ export async function POST(req: NextRequest) {
       if (data.fluidsData) {
         Object.entries(data.fluidsData).forEach(([key, val]) => {
           if (val) {
-            const nameMap: Record<string, string> = { brakeFluid: 'נוזל בלמים', engineOil: 'שמן מנוע', coolant: 'נוזל קירור' };
+            const nameMap: Record<string, string> = { brakeFluid: '\u05e0\u05d5\u05d6\u05dc \u05d1\u05dc\u05de\u05d9\u05dd', engineOil: '\u05e9\u05de\u05df \u05de\u05e0\u05d5\u05e2', coolant: '\u05e0\u05d5\u05d6\u05dc \u05e7\u05d9\u05e8\u05d5\u05e8' };
             autoItems.push({ inspectionId: newInspection.id, category: 'fluids', itemName: nameMap[key] || key, status: val, notes: null, score: null });
           }
         });
@@ -363,11 +363,11 @@ export async function POST(req: NextRequest) {
       // Auto-generate items from pre-test checklist
       if (data.preTestChecklist) {
         const preTestNameMap: Record<string, string> = {
-          tires: 'צמיגים (מצב + לחץ)', lights: 'אורות ומחוונים', brakes: 'בלמים',
-          mirrors: 'מראות', wipers: 'מגבים + נוזל', horn: 'צופר',
-          seatbelts: 'חגורות בטיחות', exhaust: 'מערכת פליטה', steering: 'היגוי',
-          suspension: 'מתלים ובולמים', fluids: 'נוזלים', battery: 'מצבר',
-          handbrake: 'בלם יד', speedometer: 'מד מהירות', windows: 'חלונות ושמשות',
+          tires: '\u05e6\u05de\u05d9\u05d2\u05d9\u05dd (\u05de\u05e6\u05d1 + \u05dc\u05d7\u05e5)', lights: '\u05d0\u05d5\u05e8\u05d5\u05ea \u05d5\u05de\u05d7\u05d5\u05d5\u05e0\u05d9\u05dd', brakes: '\u05d1\u05dc\u05de\u05d9\u05dd',
+          mirrors: '\u05de\u05e8\u05d0\u05d5\u05ea', wipers: '\u05de\u05d2\u05d1\u05d9\u05dd + \u05e0\u05d5\u05d6\u05dc', horn: '\u05e6\u05d5\u05e4\u05e8',
+          seatbelts: '\u05d7\u05d2\u05d5\u05e8\u05d5\u05ea \u05d1\u05d8\u05d9\u05d7\u05d5\u05ea', exhaust: '\u05de\u05e2\u05e8\u05db\u05ea \u05e4\u05dc\u05d9\u05d8\u05d4', steering: '\u05d4\u05d9\u05d2\u05d5\u05d9',
+          suspension: '\u05de\u05ea\u05dc\u05d9\u05dd \u05d5\u05d1\u05d5\u05dc\u05de\u05d9\u05dd', fluids: '\u05e0\u05d5\u05d6\u05dc\u05d9\u05dd', battery: '\u05de\u05e6\u05d1\u05e8',
+          handbrake: '\u05d1\u05dc\u05dd \u05d9\u05d3', speedometer: '\u05de\u05d3 \u05de\u05d4\u05d9\u05e8\u05d5\u05ea', windows: '\u05d7\u05dc\u05d5\u05e0\u05d5\u05ea \u05d5\u05e9\u05de\u05e9\u05d5\u05ea',
         };
         const preTestItems = Object.entries(data.preTestChecklist).map(([key, passed]) => ({
           inspectionId: newInspection.id,
@@ -404,8 +404,8 @@ export async function POST(req: NextRequest) {
         data: {
           userId: vehicle.userId,
           type: 'system',
-          title: 'דוח בדיקה חדש!',
-          message: `דוח בדיקה מסוג ${data.inspectionType === 'full' ? 'בדיקה מלאה' : data.inspectionType === 'pre_test' ? 'הכנה לטסט' : data.inspectionType === 'rot' ? 'בדיקת רקב' : data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
+          title: '\u05d3\u05d5\u05d7 \u05d1\u05d3\u05d9\u05e7\u05d4 \u05d7\u05d3\u05e9!',
+          message: `\u05d3\u05d5\u05d7 \u05d1\u05d3\u05d9\u05e7\u05d4 \u05de\u05e1\u05d5\u05d2 ${data.inspectionType === 'full' ? '\u05d1\u05d3\u05d9\u05e7\u05d4 \u05de\u05dc\u05d0\u05d4' : data.inspectionType === 'pre_test' ? '\u05d4\u05db\u05e0\u05d4 \u05dc\u05d8\u05e1\u05d8' : data.inspectionType === 'rot' ? '\u05d1\u05d3\u05d9\u05e7\u05ea \u05e8\u05e7\u05d1' : data.inspectionType} \u05dc\u05e8\u05db\u05d1 ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) \u05d6\u05de\u05d9\u05df \u05dc\u05e6\u05e4\u05d9\u05d9\u05d4.`,
           link: `/inspection/${newInspection.id}`,
         },
       });
@@ -420,7 +420,7 @@ export async function POST(req: NextRequest) {
       });
     });
 
-    return jsonResponse({ inspection, message: 'הבדיקה נוצרה בהצלחה' }, 201);
+    return jsonResponse({ inspection, message: '\u05d4\u05d1\u05d3\u05d9\u05e7\u05d4 \u05e0\u05d5\u05e6\u05e8\u05d4 \u05d1\u05d4\u05e6\u05dc\u05d7\u05d4' }, 201);
   } catch (error) {
     return handleApiError(error);
   }
