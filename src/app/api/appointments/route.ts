@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import {
   requireAuth,
   jsonResponse,
@@ -21,7 +22,7 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const status = url.searchParams.get('status');
 
-    let where: any = { userId: payload.userId };
+    const where: Prisma.AppointmentWhereInput = { userId: payload.userId };
     if (status && status !== 'all') {
       where.status = status;
     }
