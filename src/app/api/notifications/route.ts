@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import { requireAuth, requireAdmin, jsonResponse, errorResponse, handleApiError, getPaginationParams, validationErrorResponse } from '@/lib/api-helpers';
 import { z } from 'zod';
 
@@ -12,7 +13,7 @@ export async function GET(req: NextRequest) {
     const type = url.searchParams.get('type');
     const isRead = url.searchParams.get('isRead');
 
-    let where: any = { userId: payload.userId };
+    const where: Prisma.NotificationWhereInput = { userId: payload.userId };
 
     if (type) where.type = type;
     if (isRead !== null) where.isRead = isRead === 'true';
