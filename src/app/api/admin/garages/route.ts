@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import { requireAdmin, jsonResponse, handleApiError, getPaginationParams, errorResponse } from '@/lib/api-helpers';
 import { garageSchema } from '@/lib/validations';
 
@@ -11,7 +12,7 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const search = url.searchParams.get('search');
 
-    let where: any = {};
+    const where: Prisma.GarageWhereInput = {};
     if (search) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
