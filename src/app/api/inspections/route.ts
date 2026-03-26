@@ -404,7 +404,7 @@ export async function POST(req: NextRequest) {
           userId: vehicle.userId,
           type: 'system',
           title: 'דוח בדיקה חדש!',
-          message: `דוח בדיקה מסוג ${data.inspectionType === 'full' ? 'בדיקה מלאה' : data.inspectionType === 'pre_test' ? 'הכנה לטסט' : data.inspectionType === 'rot' ? 'בדיקת רקב' : data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפיי�.`,
+          message: `דוח בדיקה מסוג ${data.inspectionType === 'full' ? 'בדיקה מלאה' : data.inspectionType === 'pre_test' ? 'הכנה לטסט' : data.inspectionType === 'rot' ? 'בדיקת רקב' : data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
           link: `/inspection/${newInspection.id}`,
         },
       });
