@@ -128,14 +128,14 @@ export class AuthError extends Error {
 
 export function handleApiError(error: unknown) {
   if (error instanceof AuthError) {
-    apiLogger.warn('שגיאת הרשאה', {
+    apiLogger.warn('Authorization error', {
       message: error.message,
       status: error.status,
     });
     return errorResponse(error.message, error.status);
   }
-  apiLogger.error('שגיאת API', {
-    error: error instanceof Error ? error.message : 'שגיאה לא ידועה',
+  apiLogger.error('API error', {
+    error: error instanceof Error ? error.message : 'Unknown error',
     stack: error instanceof Error ? error.stack : undefined,
   });
   return errorResponse('שגיאת שרת פנימית', 500);
@@ -165,4 +165,27 @@ export function getPaginationParams(req: NextRequest) {
 
   const skip = (validPage - 1) * validLimit;
   return { page: validPage, limit: validLimit, skip };
+}
+
+/**
+ * Build a standardized pagination response envelope.
+ * All list endpoints should use this to ensure consistent metadata.
+ *
+ * @param items - The items array (domain-specific name will be set by caller)
+ * @param total - Total number of items matching the query
+ * @param page  - Current page number
+ * @param limit - Items per page
+ * @returns Pagination metadata object to spread into the response
+ */
+export function paginationMeta(total: number, page: number, limit: number) {
+  const totalPages = Math.ceil(total / limit);
+  return {
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages,
+      hasMore: page < totalPages,
+    },
+  };
 }
