@@ -1,12 +1,12 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireGarageOwner, jsonResponse, handleApiError, getPaginationParams } from '@/lib/api-helpers';
+import { requireGarageOwner, jsonResponse, handleApiError, getPaginationParams, paginationMeta } from '@/lib/api-helpers';
 
 // GET /api/garage/reviews - Get reviews for garage owned by current user
 export async function GET(req: NextRequest) {
   try {
     const payload = requireGarageOwner(req);
-    const { skip, limit } = getPaginationParams(req);
+    const { page, skip, limit } = getPaginationParams(req);
 
     // Find garage owned by current user
     const garage = await prisma.garage.findUnique({
@@ -36,8 +36,8 @@ export async function GET(req: NextRequest) {
 
     return jsonResponse({
       reviews,
-      total,
       averageRating: parseFloat(averageRating as string),
+      ...paginationMeta(total, page, limit),
     });
   } catch (error) {
     return handleApiError(error);
