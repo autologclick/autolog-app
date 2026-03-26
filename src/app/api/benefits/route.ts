@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import { jsonResponse, handleApiError, getPaginationParams } from '@/lib/api-helpers';
 
 // GET /api/benefits - List club benefits
@@ -9,7 +10,7 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const category = url.searchParams.get('category');
 
-    let where: any = { isActive: true };
+    const where: Prisma.ClubBenefitWhereInput = { isActive: true };
     if (category && category !== 'הכל') where.category = category;
 
     const [benefits, total] = await Promise.all([
