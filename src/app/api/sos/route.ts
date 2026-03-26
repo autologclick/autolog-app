@@ -1,14 +1,14 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
-import { requireAuth, jsonResponse, errorResponse, handleApiError, getPaginationParams, validationErrorResponse } from '@/lib/api-helpers';
+import { requireAuth, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
 import { sosEventSchema } from '@/lib/validations';
 
 // GET /api/sos - List user's SOS events
 export async function GET(req: NextRequest) {
   try {
     const payload = requireAuth(req);
-    const { skip, limit } = getPaginationParams(req);
+    const { page, skip, limit } = getPaginationParams(req);
 
     const where: Prisma.SosEventWhereInput = {};
     if (payload.role === 'user') {
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
       prisma.sosEvent.count({ where }),
     ]);
 
-    return jsonResponse({ events, total });
+    return jsonResponse({ events, ...paginationMeta(total, page, limit) });
   } catch (error) {
     return handleApiError(error);
   }
