@@ -94,8 +94,10 @@ export async function GET(
         maxBuffer: 10 * 1024 * 1024,
       });
       pdfBuffer = result;
-    } catch (error: any) {
-      logger.error('PDF generation error', { error: error.stderr?.toString() || error.message });
+    } catch (error: unknown) {
+      const errMsg = error instanceof Error ? error.message : 'שגיאה לא ידועה';
+      const stderr = (error as { stderr?: Buffer })?.stderr?.toString();
+      logger.error('PDF generation error', { error: stderr || errMsg });
       return errorResponse('שגיאה בייצור דוח PDF', 500);
     }
 
