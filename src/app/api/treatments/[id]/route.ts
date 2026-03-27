@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { NOT_FOUND, TREATMENT_ERRORS, SUCCESS_MESSAGES } from '@/lib/messages';
 import {
   getTreatmentById,
   updateTreatment,
@@ -18,7 +19,7 @@ export async function GET(
     const treatment = await getTreatmentById(params.id);
 
     if (!treatment || treatment.userId !== payload.userId) {
-      return errorResponse('טיפול לא נמצא', 404);
+      return errorResponse(NOT_FOUND.TREATMENT, 404);
     }
 
     return jsonResponse({ treatment });
@@ -38,11 +39,11 @@ export async function PUT(
 
     const updated = await updateTreatment(params.id, payload.userId, body);
     if (!updated) {
-      return errorResponse('טיפול לא נמצא או שאין הרשאה', 404);
+      return errorResponse(TREATMENT_ERRORS.UNAUTHORIZED, 404);
     }
 
     const treatment = await getTreatmentById(params.id);
-    return jsonResponse({ treatment, message: 'הטיפול עודכן בהצלחה' });
+    return jsonResponse({ treatment, message: SUCCESS_MESSAGES.TREATMENT_UPDATED });
   } catch (error) {
     return handleApiError(error);
   }
@@ -58,10 +59,10 @@ export async function DELETE(
     const deleted = await deleteTreatment(params.id, payload.userId);
 
     if (!deleted) {
-      return errorResponse('טיפול לא נמצא או שאין הרשאה', 404);
+      return errorResponse(TREATMENT_ERRORS.UNAUTHORIZED, 404);
     }
 
-    return jsonResponse({ message: 'הטיפול נמחק בהצלחה' });
+    return jsonResponse({ message: SUCCESS_MESSAGES.TREATMENT_DELETED });
   } catch (error) {
     return handleApiError(error);
   }
@@ -80,20 +81,20 @@ export async function PATCH(
     if (action === 'approve') {
       const approved = await approveTreatment(params.id, payload.userId);
       if (!approved) {
-        return errorResponse('לא ניתן לאשר טיפול זה', 400);
+        return errorResponse(TREATMENT_ERRORS.CANNOT_APPROVE, 400);
       }
-      return jsonResponse({ message: 'הטיפול אושר בהצלחה!' });
+      return jsonResponse({ message: SUCCESS_MESSAGES.TREATMENT_APPROVED });
     }
 
     if (action === 'reject') {
       const rejected = await rejectTreatment(params.id, payload.userId, reason);
       if (!rejected) {
-        return errorResponse('לא ניתן לדחות טיפול זה', 400);
+        return errorResponse(TREATMENT_ERRORS.CANNOT_REJECT, 400);
       }
-      return jsonResponse({ message: 'הטיפול נדחה' });
+      return jsonResponse({ message: SUCCESS_MESSAGES.TREATMENT_REJECTED });
     }
 
-    return errorResponse('פעולה לא תקינה', 400);
+    return errorResponse(TREATMENT_ERRORS.INVALID_ACTION, 400);
   } catch (error) {
     return handleApiError(error);
   }
