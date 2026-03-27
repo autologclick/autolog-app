@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken, JwtPayload } from './auth';
 import { createLogger } from './logger';
 import { ZodError } from 'zod';
-import { AUTH_ERRORS, VALIDATION_ERRORS } from './messages';
+import { AUTH_ERRORS, VALIDATION_ERRORS, RATE_LIMIT_ERRORS } from './messages';
+import { checkApiRateLimit } from './rate-limit';
 
 const apiLogger = createLogger('api');
 
@@ -12,6 +13,18 @@ export function jsonResponse(data: unknown, status = 200) {
 
 export function errorResponse(message: string, status = 400) {
   return NextResponse.json({ error: message }, { status });
+}
+
+/**
+ * Check API rate limit for the given user and return an error response if exceeded.
+ * Returns null when the request is allowed to proceed.
+ */
+export function enforceRateLimit(userId: string): NextResponse | null {
+  const rateLimit = checkApiRateLimit(userId);
+  if (!rateLimit.allowed) {
+    return errorResponse(RATE_LIMIT_ERRORS.TOO_MANY_REQUESTS, 429);
+  }
+  return null;
 }
 
 export function validationErrorResponse(error: ZodError) {
@@ -151,7 +164,7 @@ export function handleApiError(error: unknown) {
     error: error instanceof Error ? error.message : 'Unknown error',
     stack: error instanceof Error ? error.stack : undefined,
   });
-  return errorResponse('שגיאת שרת פנימית', 500);
+  return errorResponse('×©××××ª ×©×¨×ª ×¤× ××××ª', 500);
 }
 
 /**
