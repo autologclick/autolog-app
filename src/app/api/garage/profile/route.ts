@@ -1,1 +1,155 @@
-import { NextRequest } from "next/server";\nimport { z } from "zod";\nimport prisma from "@/lib/db";\nimport { requireGarageOwner, jsonResponse, errorResponse, handleApiError, validationErrorResponse } from "@/lib/api-helpers";\nimport { NOT_FOUND } from "@/lib/messages";\n\nconst updateGarageProfileSchema = z.object({\n  name: z.string().min(2, "שם המוסך חייב להכיל לפחות 2 תווים").max(100).optional(),\n  address: z.string().min(2, "כתובה חייבה להכיל לפחות 2 תווים").max(200).optional(),\n  city: z.string().min(2, "עיר חייבה להכיל לפחות 2 תווים").max(100).optional(),\n  phone: z.string().regex(/^[\d\-+() ]{7,20}$/, "מספר טלפון לא תקין").optional(),\n  email: z.string().email("כתובה אימייל לא תקינה").optional(),\n  description: z.string().max(1000, "תיאור ארוך מדי").optional(),\n  services: z.array(z.string()).optional(),\n  workingHours: z.record(z.string()).optional(),\n  amenities: z.array(z.string()).optional(),\n\n  // Branding & media\n  logoUrl: z.string().url("כתובה לוגו לא תקינה").optional().or(z.literal("")),\n  galleryImages: z.array(z.string().url("כתובה תמונה לא תקינה")).max(20, "ניתן להעלות עד 20 תמונות").optional(),\n  coverImageUrl: z.string().url("כתובה תמונט כיסוי לא תקינה").optional().or(z.literal("")),\n\n  // Business identity\n  businessLicense: z.string().max(50, "מספר רישיון ארוך מדי").optional().or(z.literal("")),\n  taxId: z.string().max(20, "מספר ח.פ ארוך מדי").optional().or(z.literal("")),\n  foundedYear: z.number().int().min(1950).max(new Date().getFullYear()).optional(),\n\n  // Specializations\n  specializations: z.array(z.string()).optional(),\n  vehicleBrands: z.array(z.string()).optional(),\n  certifications: z.array(z.string()).optional(),\n\n  // Pricing & payment\n  priceList: z.array(z.object({\n    service: z.string(),\n    price: z.number().nonnegative(),\n    duration: z.string().optional(),\n  })).optional(),\n  paymentMethods: z.array(z.enum(['cash', 'credit', 'bit', 'paybox', 'bank_transfer'])).optional(),\n  priceRange: z.enum(['budget', 'moderate', 'premium']).optional(),\n\n  // Social & contact\n  socialLinks: z.object({\n    website: z.string().url().optional().or(z.literal("")),\n    facebook: z.string().url().optional().or(z.literal("")),\n    instagram: z.string().url().optional().or(z.literal("")),\n    whatsapp: z.string().optional().or(z.literal("")),\n    waze: z.string().url().optional().or(z.literal("")),\n    googleMaps: z.string().url().optional().or(z.literal("")),\n  }).optional(),\n  whatsappNumber: z.string().regex(/^[\d\-+() ]{7,20}$/, "מספר WhatsApp לא תקין").optional().or(z.literal("")),\n});\n\n// GET /api/garage/profile - Get garage profile for current owner\nexport async function GET(req: NextRequest) {\n  try {\n    const payload = requireGarageOwner(req);\n\n    const garage = await prisma.garage.findUnique({\n      where: { ownerId: payload.userId },\n      include: {\n        mechanics: {\n          where: { isActive: true },\n          orderBy: { createdAt: 'asc' },\n        },\n        _count: {\n          select: {\n            inspections: true,\n            appointments: true,\n            reviews: true,\n          },\n        },\n      },\n    });\n\n    if (!garage) {\n      return errorResponse(NOT_FOUND.GARAGE, 404);\n    }\n\n    // Parse JSON fields\n    const parsed = {\n      ...garage,\n      galleryImages: garage.galleryImages ? JSON.parse(garage.galleryImages) : [],\n      specializations: garage.specializations ? JSON.parse(garage.specializations) : [],\n      vehicleBrands: garage.vehicleBrands ? JSON.parse(garage.vehicleBrands) : [],\n      certifications: garage.certifications ? JSON.parse(garage.certifications) : [],\n      priceList: garage.priceList ? JSON.parse(garage.priceList) : [],\n      paymentMethods: garage.paymentMethods ? JSON.parse(garage.paymentMethods) : [],\n      socialLinks: garage.socialLinks ? JSON.parse(garage.socialLinks) : {},\n      services: garage.services ? JSON.parse(garage.services) : [],\n      workingHours: garage.workingHours ? JSON.parse(garage.workingHours) : {},\n      amenities: garage.amenities ? JSON.parse(garage.amenities) : [],\n    };\n\n    return jsonResponse({ garage: parsed });\n  } catch (error) {\n    return handleApiError(error);\n  }\n}\n\n// PUT /api/garage/profile - Update garage profile\nexport async function PUT(req: NextRequest) {\n  try {\n    const payload = requireGarageOwner(req);\n    const body = await req.json();\n\n    const validation = updateGarageProfileSchema.safeParse(body);\n    if (!validation.success) {\n      return validationErrorResponse(validation.error);\n    }\n\n    const garage = await prisma.garage.findUnique({\n      where: { ownerId: payload.userId },\n      select: { id: true },\n    });\n\n    if (!garage) {\n      return errorResponse(NOT_FOUND.GARAGE, 404);\n    }\n\n    const data = validation.data;\n    const updateData: Record<string, unknown> = {};\n\n    // Simple string/number fields\n    const simpleFields = ['name', 'address', 'city', 'phone', 'email', 'description',\n      'logoUrl', 'coverImageUrl', 'businessLicense', 'taxId', 'foundedYear',\n      'whatsappNumber', 'priceRange'] as const;\n\n    for (const field of simpleFields) {\n      if (data[field] !== undefined) {\n        updateData[field] = data[field] || null;\n      }\n    }\n\n    // JSON array fields\n    const jsonArrayFields = ['services', 'workingHours', 'amenities', 'galleryImages',\n      'specializations', 'vehicleBrands', 'certifications',\n      'priceList', 'paymentMethods', 'socialLinks'] as const;\n\n    for (const field of jsonArrayFields) {\n      if (data[field] !== undefined) {\n        updateData[field] = JSON.stringify(data[field]);\n      }\n    }\n\n    const updated = await prisma.garage.update({\n      where: { id: garage.id },\n      data: updateData,\n    });\n\n    return jsonResponse({ garage: updated, message: "פרופיל המוסך עודכן בהצלחה" });\n  } catch (error) {\n    return handleApiError(error);\n  }\n}
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import prisma from '@/lib/db';
+import { requireGarageOwner, jsonResponse, errorResponse, handleApiError, validationErrorResponse } from '@/lib/api-helpers';
+import { NOT_FOUND } from '@/lib/messages';
+
+const updateGarageProfileSchema = z.object({
+  name: z.string().min(2, 'שם המוסך חייב להכיל לפחות 2 תווים').max(100).optional(),
+  address: z.string().min(2, 'כתובת חייבת להכיל לפחות 2 תווים').max(200).optional(),
+  city: z.string().min(2, 'עיר חייבת להכיל לפחות 2 תווים').max(100).optional(),
+  phone: z.string().regex(/^[\d\-+() ]{7,20}$/, 'מספר טלפון לא תקין').optional(),
+  email: z.string().email('כתובת אימייל לא תקינה').optional(),
+  description: z.string().max(1000, 'תיאור ארוך מדי').optional(),
+  services: z.array(z.string()).optional(),
+  workingHours: z.record(z.string()).optional(),
+  amenities: z.array(z.string()).optional(),
+
+  // Branding & media
+  logoUrl: z.string().url('כתובת לוגו לא תקינה').optional().or(z.literal('')),
+  galleryImages: z.array(z.string().url('כתובת תמונה לא תקינה')).max(20, 'ניתן להעלות עד 20 תמונות').optional(),
+  coverImageUrl: z.string().url('כתובת תמונת כיסוי לא תקינה').optional().or(z.literal('')),
+
+  // Business identity
+  businessLicense: z.string().max(50, 'מספר רישיון ארוך מדי').optional().or(z.literal('')),
+  taxId: z.string().max(20, 'מספר ח.פ ארוך מדי').optional().or(z.literal('')),
+  foundedYear: z.number().int().min(1950).max(new Date().getFullYear()).optional(),
+
+  // Specializations
+  specializations: z.array(z.string()).optional(),
+  vehicleBrands: z.array(z.string()).optional(),
+  certifications: z.array(z.string()).optional(),
+
+  // Pricing & payment
+  priceList: z.array(z.object({
+    service: z.string(),
+    price: z.number().nonnegative(),
+    duration: z.string().optional(),
+  })).optional(),
+  paymentMethods: z.array(z.enum(['cash', 'credit', 'bit', 'paybox', 'bank_transfer'])).optional(),
+  priceRange: z.enum(['budget', 'moderate', 'premium']).optional(),
+
+  // Social & contact
+  socialLinks: z.object({
+    website: z.string().url().optional().or(z.literal('')),
+    facebook: z.string().url().optional().or(z.literal('')),
+    instagram: z.string().url().optional().or(z.literal('')),
+    whatsapp: z.string().optional().or(z.literal('')),
+    waze: z.string().url().optional().or(z.literal('')),
+    googleMaps: z.string().url().optional().or(z.literal('')),
+  }).optional(),
+  whatsappNumber: z.string().regex(/^[\d\-+() ]{7,20}$/, 'מספר WhatsApp לא תקין').optional().or(z.literal('')),
+});
+
+// GET /api/garage/profile - Get garage profile for current owner
+export async function GET(req: NextRequest) {
+  try {
+    const payload = requireGarageOwner(req);
+
+    const garage = await prisma.garage.findUnique({
+      where: { ownerId: payload.userId },
+      include: {
+        mechanics: {
+          where: { isActive: true },
+          orderBy: { createdAt: 'asc' },
+        },
+        _count: {
+          select: {
+            inspections: true,
+            appointments: true,
+            reviews: true,
+          },
+        },
+      },
+    });
+
+    if (!garage) {
+      return errorResponse(NOT_FOUND.GARAGE, 404);
+    }
+
+    // Parse JSON fields
+    const parsed = {
+      ...garage,
+      galleryImages: garage.galleryImages ? JSON.parse(garage.galleryImages) : [],
+      specializations: garage.specializations ? JSON.parse(garage.specializations) : [],
+      vehicleBrands: garage.vehicleBrands ? JSON.parse(garage.vehicleBrands) : [],
+      certifications: garage.certifications ? JSON.parse(garage.certifications) : [],
+      priceList: garage.priceList ? JSON.parse(garage.priceList) : [],
+      paymentMethods: garage.paymentMethods ? JSON.parse(garage.paymentMethods) : [],
+      socialLinks: garage.socialLinks ? JSON.parse(garage.socialLinks) : {},
+      services: garage.services ? JSON.parse(garage.services) : [],
+      workingHours: garage.workingHours ? JSON.parse(garage.workingHours) : {},
+      amenities: garage.amenities ? JSON.parse(garage.amenities) : [],
+    };
+
+    return jsonResponse({ garage: parsed });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
+// PUT /api/garage/profile - Update garage profile
+export async function PUT(req: NextRequest) {
+  try {
+    const payload = requireGarageOwner(req);
+    const body = await req.json();
+
+    const validation = updateGarageProfileSchema.safeParse(body);
+    if (!validation.success) {
+      return validationErrorResponse(validation.error);
+    }
+
+    const garage = await prisma.garage.findUnique({
+      where: { ownerId: payload.userId },
+      select: { id: true },
+    });
+
+    if (!garage) {
+      return errorResponse(NOT_FOUND.GARAGE, 404);
+    }
+
+    const data = validation.data;
+    const updateData: Record<string, unknown> = {};
+
+    // Simple string/number fields
+    const simpleFields = ['name', 'address', 'city', 'phone', 'email', 'description',
+      'logoUrl', 'coverImageUrl', 'businessLicense', 'taxId', 'foundedYear',
+      'whatsappNumber', 'priceRange'] as const;
+
+    for (const field of simpleFields) {
+      if (data[field] !== undefined) {
+        updateData[field] = data[field] || null;
+      }
+    }
+
+    // JSON array fields
+    const jsonArrayFields = ['services', 'workingHours', 'amenities', 'galleryImages',
+      'specializations', 'vehicleBrands', 'certifications',
+      'priceList', 'paymentMethods', 'socialLinks'] as const;
+
+    for (const field of jsonArrayFields) {
+      if (data[field] !== undefined) {
+        updateData[field] = JSON.stringify(data[field]);
+      }
+    }
+
+    const updated = await prisma.garage.update({
+      where: { id: garage.id },
+      data: updateData,
+    });
+
+    return jsonResponse({ garage: updated, message: 'פרופיל המוסך עודכן בהצלחה' });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
