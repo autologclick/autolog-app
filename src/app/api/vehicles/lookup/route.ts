@@ -107,15 +107,15 @@ export async function GET(req: NextRequest) {
     });
 
     return jsonResponse({ vehicle: vehicleInfo });
-  } catch (error: any) {
-    if (error?.name === 'TimeoutError' || error?.name === 'AbortError') {
+  } catch (error: unknown) {
+    if (error instanceof Error && (error.name === 'TimeoutError' || error.name === 'AbortError')) {
       logger.warn('Vehicle API timeout', {
-        error: error?.name,
+        error: error.name,
       });
       return errorResponse('שרת משרד התחבורה לא מגיב, נסה שוב', 504);
     }
     logger.error('Vehicle lookup error', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : 'שגיאה לא ידועה',
       stack: error instanceof Error ? error.stack : undefined,
     });
     return errorResponse('שגיאה בחיפוש רכב', 500);
