@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/db';
 import { jsonResponse, errorResponse, validationErrorResponse, handleApiError } from '@/lib/api-helpers';
+import { NOT_FOUND } from '@/lib/messages';
 
 const signSchema = z.object({
   customerName: z.string().min(2, 'נא להזין שם מלא'),
@@ -32,7 +33,7 @@ export async function PUT(
     });
 
     if (!inspection) {
-      return errorResponse('הבדיקה לא נמצאה', 404);
+      return errorResponse(NOT_FOUND.INSPECTION, 404);
     }
 
     if (inspection.status !== 'awaiting_signature') {
