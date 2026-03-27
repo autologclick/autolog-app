@@ -197,8 +197,8 @@ export default function GarageSettingsPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setLogo(data.logo);
-    } catch (err: any) {
-      setError(err.message || 'שגיאה בהעלאת הלוגו');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'שגיאה בהעלאת הלוגו');
     } finally {
       setUploadingLogo(false);
       e.target.value = '';
@@ -248,8 +248,8 @@ export default function GarageSettingsPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setGallery(prev => [...prev, ...(data.uploaded || [])]);
-    } catch (err: any) {
-      setError(err.message || 'שגיאה בהעלאת התמונות');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'שגיאה בהעלאת התמונות');
     } finally {
       setUploadingGallery(false);
       e.target.value = '';
@@ -301,8 +301,8 @@ export default function GarageSettingsPage() {
 
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch (err: any) {
-      setError(err.message || 'שגיאה בשמירת הפרופיל');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'שגיאה בשמירת הפרופיל');
     } finally {
       setSaving(false);
     }
