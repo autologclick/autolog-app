@@ -3,13 +3,14 @@ import { jsonResponse, errorResponse, handleApiError, requireAdmin } from '@/lib
 import { getApplicationById, updateApplicationStatus } from '@/lib/garage-applications-db';
 import prisma from '@/lib/db';
 import { hashPassword } from '@/lib/auth';
+import { GARAGE_APP_ERRORS } from '@/lib/messages';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     requireAdmin(req);
     const application = await getApplicationById(params.id);
     if (!application) {
-      return errorResponse('בקשה לא נמצאה', 404);
+      return errorResponse(GARAGE_APP_ERRORS.NOT_FOUND, 404);
     }
     return jsonResponse(application);
   } catch (error) {
@@ -24,16 +25,16 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const { status, adminNotes } = body;
 
     if (!status || !['approved', 'rejected'].includes(status)) {
-      return errorResponse('סטטוס לא תקין', 400);
+      return errorResponse(GARAGE_APP_ERRORS.INVALID_STATUS, 400);
     }
 
     const application = await getApplicationById(params.id);
     if (!application) {
-      return errorResponse('בקשה לא נמצאה', 404);
+      return errorResponse(GARAGE_APP_ERRORS.NOT_FOUND, 404);
     }
 
     if (application.status !== 'pending') {
-      return errorResponse('בקשה זו כבר טופלה', 400);
+      return errorResponse(GARAGE_APP_ERRORS.ALREADY_PROCESSED, 400);
     }
 
     // Update application status
