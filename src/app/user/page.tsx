@@ -62,6 +62,46 @@ interface Appointment {
   vehicle?: { nickname: string; licensePlate: string };
 }
 
+interface AiInsight {
+  id: string;
+  type: 'critical' | 'warning' | 'positive' | 'info';
+  title: string;
+  description: string;
+}
+
+interface AiPrediction {
+  id: string;
+  confidence: 'high' | 'medium' | 'low';
+  title: string;
+  description: string;
+  estimatedCost?: string;
+  estimatedDate: string;
+}
+
+interface AiSavingsTip {
+  id: string;
+  title: string;
+  description: string;
+  potentialSaving: string;
+}
+
+interface AiNextAction {
+  id: string;
+  urgency: 'immediate' | 'soon' | 'planned';
+  title: string;
+  description: string;
+}
+
+interface AiReport {
+  status: 'excellent' | 'good' | 'attention' | 'warning' | 'critical';
+  statusLabel: string;
+  overallScore: number;
+  insights: AiInsight[];
+  predictions: AiPrediction[];
+  savingsTips: AiSavingsTip[];
+  nextActions: AiNextAction[];
+}
+
 export default function UserDashboard() {
   const router = useRouter();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -74,7 +114,7 @@ export default function UserDashboard() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [vehicleImages, setVehicleImages] = useState<Record<string, string>>({});
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [aiReport, setAiReport] = useState<any>(null);
+  const [aiReport, setAiReport] = useState<AiReport | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [awaitingSignature, setAwaitingSignature] = useState<Array<{id: string; vehicle: string}>>([]);
   const [showAiDetails, setShowAiDetails] = useState(false);
@@ -572,7 +612,7 @@ export default function UserDashboard() {
                 {/* Quick Insights - Top 3 */}
                 {aiReport.insights?.length > 0 && (
                   <div className="space-y-2 mb-3">
-                    {aiReport.insights.slice(0, showAiDetails ? 10 : 3).map((insight: any) => (
+                    {aiReport.insights.slice(0, showAiDetails ? 10 : 3).map((insight: AiInsight) => (
                       <div key={insight.id} className={`flex items-start gap-2.5 p-2.5 rounded-xl text-right ${
                         insight.type === 'critical' ? 'bg-red-50' :
                         insight.type === 'warning' ? 'bg-amber-50' :
@@ -612,7 +652,7 @@ export default function UserDashboard() {
                           <Target size={14} className="text-teal-500" />
                         </div>
                         <div className="space-y-2">
-                          {aiReport.predictions.map((pred: any) => (
+                          {aiReport.predictions.map((pred: AiPrediction) => (
                             <div key={pred.id} className="bg-white rounded-lg p-3 text-right">
                               <div className="flex items-center justify-between">
                                 <span className={`text-[10px] px-2 py-0.5 rounded-full ${
@@ -644,7 +684,7 @@ export default function UserDashboard() {
                           <Lightbulb size={14} className="text-amber-500" />
                         </div>
                         <div className="space-y-2">
-                          {aiReport.savingsTips.map((tip: any) => (
+                          {aiReport.savingsTips.map((tip: AiSavingsTip) => (
                             <div key={tip.id} className="bg-amber-50/50 rounded-lg p-3 text-right">
                               <div className="flex items-center justify-between">
                                 <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
@@ -667,7 +707,7 @@ export default function UserDashboard() {
                           <Zap size={14} className="text-orange-500" />
                         </div>
                         <div className="space-y-2">
-                          {aiReport.nextActions.map((action: any) => (
+                          {aiReport.nextActions.map((action: AiNextAction) => (
                             <div key={action.id} className={`flex items-center gap-2.5 p-2.5 rounded-lg text-right ${
                               action.urgency === 'immediate' ? 'bg-red-50 border border-red-200' :
                               action.urgency === 'soon' ? 'bg-amber-50 border border-amber-200' :
