@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
 import { requireAuth, jsonResponse, errorResponse, handleApiError, validationErrorResponse, requireOwnershipOrAdmin } from '@/lib/api-helpers';
 import { sosEventUpdateSchema } from '@/lib/validations';
+import { NOT_FOUND } from '@/lib/messages';
 
 // GET /api/sos/[id] - Get single SOS event
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       },
     });
 
-    if (!event) return errorResponse('אירוע לא נמצא', 404);
+    if (!event) return errorResponse(NOT_FOUND.SOS_EVENT, 404);
 
     // Users can only see their own events
     requireOwnershipOrAdmin(payload, event.userId);
@@ -42,7 +43,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const validatedData = validation.data;
 
     const event = await prisma.sosEvent.findUnique({ where: { id: params.id } });
-    if (!event) return errorResponse('אירוע לא נמצא', 404);
+    if (!event) return errorResponse(NOT_FOUND.SOS_EVENT, 404);
 
     // Only admin or event owner can update
     requireOwnershipOrAdmin(payload, event.userId);
