@@ -104,6 +104,161 @@ export const inspectionSchema = z.object({
   items: z.array(inspectionItemSchema).optional(),
 });
 
+/**
+ * Comprehensive inspection schema - matches the 8-step garage inspection form.
+ * Used by POST /api/inspections for creating full vehicle inspections.
+ */
+export const comprehensiveInspectionSchema = z.object({
+  vehicleId: z.string().optional(),
+  appointmentId: z.string().optional(),
+
+  // Manual vehicle entry (when vehicleId is not provided)
+  manualVehicle: z.object({
+    licensePlate: z.string().min(5),
+    manufacturer: z.string().optional(),
+    model: z.string().optional(),
+    year: z.number().int().optional(),
+    color: z.string().optional(),
+  }).optional(),
+
+  inspectionType: z.enum(['full', 'rot', 'engine', 'tires', 'brakes', 'pre_test']),
+  mechanicName: z.string().max(100).optional(),
+  mileage: z.number().int().optional(),
+  engineNumber: z.string().optional(),
+  engineVerified: z.boolean().optional(),
+  overallScore: z.number().int().min(0).max(100).optional(),
+
+  // Photos (JSON objects with base64 strings)
+  exteriorPhotos: z.record(z.string()).optional(),
+  interiorPhotos: z.record(z.string()).optional(),
+
+  // Tires & Lights
+  tiresData: z.object({
+    frontLeft: z.string().optional(),
+    frontRight: z.string().optional(),
+    rearLeft: z.string().optional(),
+    rearRight: z.string().optional(),
+  }).optional(),
+  lightsData: z.object({
+    brakes: z.string().optional(),
+    reverse: z.string().optional(),
+    fog: z.string().optional(),
+    headlights: z.string().optional(),
+    frontSignal: z.string().optional(),
+    rearSignal: z.string().optional(),
+    highBeam: z.string().optional(),
+    plate: z.string().optional(),
+  }).optional(),
+
+  // Mechanical systems
+  frontAxle: z.object({
+    status: z.string().optional(),
+    ballBearings: z.string().optional(),
+    notes: z.string().optional(),
+  }).optional(),
+  steeringData: z.object({
+    status: z.string().optional(),
+    alignment: z.string().optional(),
+    notes: z.string().optional(),
+  }).optional(),
+  shocksData: z.object({
+    frontLeft: z.string().optional(),
+    frontRight: z.string().optional(),
+    rearLeft: z.string().optional(),
+    rearRight: z.string().optional(),
+    notes: z.string().optional(),
+  }).optional(),
+  bodyData: z.object({
+    condition: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    notes: z.string().optional(),
+  }).optional(),
+  batteryData: z.object({
+    isOriginal: z.boolean().optional(),
+    date: z.string().optional(),
+  }).optional(),
+
+  // Fluids & Interior
+  fluidsData: z.object({
+    brakeFluid: z.string().optional(),
+    engineOil: z.string().optional(),
+    coolant: z.string().optional(),
+  }).optional(),
+  interiorSystems: z.object({
+    acCold: z.string().optional(),
+    acHot: z.string().optional(),
+    audio: z.string().optional(),
+  }).optional(),
+  windowsData: z.object({
+    frontLeft: z.string().optional(),
+    frontRight: z.string().optional(),
+    rearLeft: z.string().optional(),
+    rearRight: z.string().optional(),
+  }).optional(),
+
+  // Engine & Gearbox
+  engineIssues: z.object({
+    issues: z.array(z.string()).optional(),
+    notes: z.string().optional(),
+  }).optional(),
+  gearboxIssues: z.object({
+    notes: z.string().optional(),
+  }).optional(),
+
+  // Braking system percentages
+  brakingSystem: z.object({
+    frontDiscs: z.number().optional(),
+    rearDiscs: z.number().optional(),
+    frontPads: z.number().optional(),
+    rearPads: z.number().optional(),
+  }).optional(),
+
+  // Summary & Notes
+  summary: z.string().optional(),
+  recommendations: z.array(z.object({
+    text: z.string(),
+    urgency: z.string().optional(),
+    estimatedCost: z.string().optional(),
+  })).optional(),
+  notes: z.object({
+    undercarriage: z.string().optional(),
+    engine: z.string().optional(),
+    general: z.string().optional(),
+  }).optional(),
+
+  // Customer signature
+  customerName: z.string().optional(),
+  customerIdNumber: z.string().optional(),
+  customerSignature: z.string().optional(),
+
+  // Legacy support
+  detailedScores: z.record(z.number()).optional(),
+  items: z.array(z.object({
+    category: z.string(),
+    itemName: z.string(),
+    status: z.enum(['ok', 'warning', 'critical']),
+    notes: z.string().optional(),
+    score: z.number().int().min(0).max(100).optional(),
+  })).optional(),
+
+  // Pre-test data
+  preTestChecklist: z.record(z.boolean()).optional(),
+  preTestNotes: z.string().optional(),
+
+  // Service/work items
+  serviceItems: z.array(z.string()).optional(),
+  workPerformed: z.array(z.object({
+    item: z.string(),
+    action: z.enum(['fixed', 'replaced', 'adjusted', 'checked', 'cleaned']),
+    notes: z.string().optional(),
+    cost: z.number().optional(),
+  })).optional(),
+
+  // Photos for non-full types
+  vehiclePhoto: z.string().optional(),
+  invoicePhoto: z.string().optional(),
+});
+
 // ============================================================
 // SOS EVENT SCHEMAS
 // ============================================================
@@ -270,6 +425,7 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type VehicleInput = z.infer<typeof vehicleSchema>;
 export type InspectionInput = z.infer<typeof inspectionSchema>;
+export type ComprehensiveInspectionInput = z.infer<typeof comprehensiveInspectionSchema>;
 export type SosEventInput = z.infer<typeof sosEventSchema>;
 export type SosEventUpdateInput = z.infer<typeof sosEventUpdateSchema>;
 export type AppointmentInput = z.infer<typeof appointmentSchema>;
