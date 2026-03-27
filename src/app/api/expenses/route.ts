@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
     // Add category filter if provided
     if (category) {
       if (!isValidExpenseCategory(category)) {
-        return errorResponse('×§××××¨×× ×× ×ª×§×× ×', 400);
+        return errorResponse('ÃÂ§ÃÂÃÂÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ ÃÂ', 400);
       }
       whereFilters.category = category;
     }
@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
     // Parse date
     const expenseDate = new Date(date);
     if (isNaN(expenseDate.getTime())) {
-      return errorResponse('×ª××¨×× ×× ×ª×§××', 400);
+      return errorResponse('ÃÂªÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ', 400);
     }
 
     // Create expense
@@ -175,7 +175,7 @@ export async function POST(req: NextRequest) {
     });
 
     return jsonResponse(
-      { expense, message: '×××¦×× × ××¡×¤× ×××¦×××' },
+      { expense, message: 'ÃÂÃÂÃÂ¦ÃÂÃÂ ÃÂ ÃÂÃÂ¡ÃÂ¤ÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ' },
       201
     );
   } catch (error) {
