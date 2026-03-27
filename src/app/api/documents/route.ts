@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return jsonResponse({ document, message: '×××¡×× × ××¡×£ ×××¦×××!' }, 201);
+    return jsonResponse({ document, message: 'ÃÂÃÂÃÂ¡ÃÂÃÂ ÃÂ ÃÂÃÂ¡ÃÂ£ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ!' }, 201);
   } catch (error) {
     return handleApiError(error);
   }
