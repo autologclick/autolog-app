@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, handleApiError, validationErrorResponse } from '@/lib/api-helpers';
+import { NOT_FOUND, SUCCESS_MESSAGES } from '@/lib/messages';
 import { updateProfileSchema } from '@/lib/validations';
 
 export async function GET(req: NextRequest) {
@@ -22,7 +23,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    if (!user) return jsonResponse({ error: 'משתמש לא נמצא' }, 404);
+    if (!user) return jsonResponse({ error: NOT_FOUND.USER }, 404);
 
     // Parse JSON fields for cleaner response
     const parsed = {
@@ -82,7 +83,7 @@ export async function PUT(req: NextRequest) {
       },
     });
 
-    return jsonResponse({ user, message: 'הפרופיל עודכן בהצלחה' });
+    return jsonResponse({ user, message: SUCCESS_MESSAGES.PROFILE_UPDATED });
   } catch (error) {
     return handleApiError(error);
   }
