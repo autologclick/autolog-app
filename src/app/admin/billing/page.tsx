@@ -44,6 +44,15 @@ const typeLabels: Record<string, string> = {
   troubleshoot: 'אבחון תקלה',
 };
 
+
+interface InspectionRecord {
+  id: string;
+  date: string;
+  garageId?: string;
+  garage?: { name: string };
+  [key: string]: unknown;
+}
+
 export default function AdminBillingPage() {
   const [inspections, setInspections] = useState<BillingInspection[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,7 +70,7 @@ export default function AdminBillingPage() {
       if (res.ok) {
         const data = await res.json();
         // Parse workPerformed JSON for each inspection
-        const parsed = (data.inspections || []).map((i: any) => ({
+        const parsed = (data.inspections || []).map((i: InspectionRecord) => ({
           ...i,
           workPerformed: typeof i.workPerformed === 'string' ? JSON.parse(i.workPerformed) : i.workPerformed || null,
           cost: i.cost || null,
