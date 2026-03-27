@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
   Shield, AlertCircle, Zap, MapPin, Users, Menu, X,
@@ -74,7 +74,7 @@ function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
 
 // Feature card
 function FeatureCard({ icon: Icon, title, description, delay }: {
-  icon: any; title: string; description: string; delay: number;
+  icon: React.ReactNode; title: string; description: string; delay: number;
 }) {
   const { ref, isVisible } = useInView();
   return (
