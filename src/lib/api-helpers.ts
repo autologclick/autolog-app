@@ -215,3 +215,18 @@ export function paginationMeta(total: number, page: number, limit: number) {
     },
   };
 }
+
+// ==========================================
+// Safe JSON Parser
+// ==========================================
+export async function safeParseJson(req: NextRequest): Promise<{ success: true; data: unknown } | { success: false; response: NextResponse }> {
+  try {
+    const data = await req.json();
+    return { success: true, data };
+  } catch {
+    return {
+      success: false,
+      response: errorResponse(VALIDATION_ERRORS.DATA_VALIDATION, 400),
+    };
+  }
+}
