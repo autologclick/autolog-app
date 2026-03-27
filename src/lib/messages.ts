@@ -197,6 +197,35 @@ export const GARAGE_APP_ERRORS = {
 } as const;
 
 // ==========================================
+// Vehicle Lookup (Ministry of Transport)
+// ==========================================
+export const VEHICLE_LOOKUP_ERRORS = {
+  LICENSE_REQUIRED: 'נא להזין מספר רישוי',
+  FETCH_ERROR: 'שגיאה בשליפת נתונים ממשרד התחבורה',
+  NOT_FOUND: 'רכב לא נמצא במאגר משרד התחבורה',
+  SERVER_DOWN: 'שרת משרד התחבורה לא מגיב, נסה שוב',
+  UNKNOWN_ERROR: 'שגיאה לא ידועה',
+  SEARCH_ERROR: 'שגיאה בחיפוש רכב',
+} as const;
+
+// ==========================================
+// Image Upload/Management
+// ==========================================
+export const IMAGE_ERRORS = {
+  NOT_SELECTED: 'לא נבחרה תמונה',
+  INVALID_FORMAT: 'פורמט תמונה לא נתמך. השתמש ב-JPEG, PNG או WebP',
+  NONE_SELECTED: 'לא נבחרו תמונות',
+  UPLOAD_FAILED: 'לא הצלחנו להעלות את התמונות. בדוק את הפורמט והגודל.',
+  INVALID_TYPE: 'סוג לא תקין. השתמש ב-logo או gallery',
+  INVALID_IMAGE: 'תמונה לא תקינה',
+  INVALID_FILENAME: 'שם קובץ לא תקין',
+  SPECIFY_IMAGE: 'נא לציין תמונה למחיקה',
+  LOGO_UPLOADED: 'הלוגו הועלה בהצלחה',
+  LOGO_DELETED: 'הלוגו נמחק',
+  IMAGE_DELETED: 'התמונה נמחקה',
+} as const;
+
+// ==========================================
 // UI Labels & Placeholders
 // ==========================================
 export const UI = {
