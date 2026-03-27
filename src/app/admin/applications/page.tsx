@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { useState, useEffect } from 'react';
 import {
@@ -27,7 +28,7 @@ interface Application {
   createdAt: string;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
+const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   pending: { label: 'ממתין לאישור', color: 'bg-amber-100 text-amber-700', icon: Clock },
   approved: { label: 'אושר', color: 'bg-green-100 text-green-700', icon: CheckCircle2 },
   rejected: { label: 'נדחה', color: 'bg-red-100 text-red-700', icon: XCircle },
