@@ -39,14 +39,14 @@ export interface AuditLogEntry {
   resourceId: string;
   resourceName?: string;
   changes?: {
-    before?: Record<string, any>;
-    after?: Record<string, any>;
+    before?: Record<string, unknown>;
+    after?: Record<string, unknown>;
   };
   ip: string;
   userAgent?: string;
   status: 'success' | 'failure';
   errorMessage?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 const auditLogger = createLogger('security');
@@ -83,14 +83,14 @@ export function logAuditEvent(
   options?: {
     resourceName?: string;
     changes?: {
-      before?: Record<string, any>;
-      after?: Record<string, any>;
+      before?: Record<string, unknown>;
+      after?: Record<string, unknown>;
     };
     ip?: string;
     userAgent?: string;
     status?: 'success' | 'failure';
     errorMessage?: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
     req?: NextRequest;
   }
 ): AuditLogEntry {
@@ -160,7 +160,7 @@ export function logCreateEvent(
   userId: string,
   resourceType: ResourceType,
   resourceId: string,
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   options?: {
     resourceName?: string;
     ip?: string;
@@ -183,8 +183,8 @@ export function logUpdateEvent(
   userId: string,
   resourceType: ResourceType,
   resourceId: string,
-  before: Record<string, any>,
-  after: Record<string, any>,
+  before: Record<string, unknown>,
+  after: Record<string, unknown>,
   options?: {
     resourceName?: string;
     ip?: string;
@@ -208,7 +208,7 @@ export function logDeleteEvent(
   userId: string,
   resourceType: ResourceType,
   resourceId: string,
-  data?: Record<string, any>,
+  data?: Record<string, unknown>,
   options?: {
     resourceName?: string;
     ip?: string;
@@ -271,7 +271,7 @@ function sanitizeAuditEntry(entry: AuditLogEntry): AuditLogEntry {
  * Sanitize data to remove sensitive fields
  * Redacts passwords, tokens, and credit card information
  */
-function sanitizeData(data: Record<string, any>): Record<string, any> {
+function sanitizeData(data: Record<string, unknown>): Record<string, unknown> {
   const sanitized = { ...data };
   const sensitiveFields = [
     'password',
