@@ -2,14 +2,12 @@ import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { checkApiRateLimit } from '@/lib/rate-limit';
-
-// Hebrew titles for event types
-const EVENT_TITLES: Record<string, string> = {
-  inspection: 'בדיקה טכנית',
-  appointment: 'תור בסדנה',
-  expense: 'הוצאה',
-  sos: 'קריאת SOS',
-};
+import {
+  HISTORY_EVENT_TITLES,
+  INSPECTION_TYPE_HEB,
+  EXPENSE_CATEGORY_HEB,
+  SOS_TYPE_HEB,
+} from '@/lib/constants/translations';
 
 type TimelineEvent = {
   id: string;
@@ -95,7 +93,7 @@ export async function GET(req: NextRequest) {
             id: `inspection_${inspection.id}`,
             type: 'inspection',
             date: inspection.date,
-            title: EVENT_TITLES.inspection,
+            title: HISTORY_EVENT_TITLES.inspection,
             description: `בדיקה ${inspection.inspectionType} ב${inspection.garage?.name || 'סדנה'}`,
             vehicleId: inspection.vehicleId,
             vehicleName: `${vehicle.manufacturer} ${vehicle.model}`,
@@ -133,7 +131,7 @@ export async function GET(req: NextRequest) {
             id: `appointment_${appointment.id}`,
             type: 'appointment',
             date: appointment.date,
-            title: EVENT_TITLES.appointment,
+            title: HISTORY_EVENT_TITLES.appointment,
             description: `תור ל${getServiceTypeName(appointment.serviceType)} ב${appointment.garage?.name || 'סדנה'}`,
             vehicleId: appointment.vehicleId,
             vehicleName: `${vehicle.manufacturer} ${vehicle.model}`,
@@ -170,7 +168,7 @@ export async function GET(req: NextRequest) {
             id: `expense_${expense.id}`,
             type: 'expense',
             date: expense.date,
-            title: EVENT_TITLES.expense,
+            title: HISTORY_EVENT_TITLES.expense,
             description: `${getExpenseCategoryName(expense.category)}${expense.description ? `: ${expense.description}` : ''}`,
             vehicleId: expense.vehicleId,
             vehicleName: `${vehicle.manufacturer} ${vehicle.model}`,
@@ -207,7 +205,7 @@ export async function GET(req: NextRequest) {
             id: `sos_${sosEvent.id}`,
             type: 'sos',
             date: sosEvent.createdAt,
-            title: EVENT_TITLES.sos,
+            title: HISTORY_EVENT_TITLES.sos,
             description: `${getEventTypeName(sosEvent.eventType)}${sosEvent.description ? `: ${sosEvent.description}` : ''}`,
             vehicleId: sosEvent.vehicleId,
             vehicleName: `${vehicle.manufacturer} ${vehicle.model}`,
@@ -239,40 +237,15 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Helper function to get service type name in Hebrew
+// Helper functions use centralized translations
 function getServiceTypeName(serviceType: string): string {
-  const names: Record<string, string> = {
-    inspection: 'בדיקה טכנית',
-    maintenance: 'תחזוקה',
-    repair: 'תיקון',
-    test_prep: 'הכנה למבחן',
-  };
-  return names[serviceType] || serviceType;
+  return INSPECTION_TYPE_HEB[serviceType] || serviceType;
 }
 
-// Helper function to get expense category name in Hebrew
 function getExpenseCategoryName(category: string): string {
-  const names: Record<string, string> = {
-    fuel: 'דלק',
-    maintenance: 'תחזוקה',
-    insurance: 'ביטוח',
-    test: 'בדיקה טכנית',
-    parking: 'חנייה',
-    fines: 'קנסות',
-    other: 'אחר',
-  };
-  return names[category] || category;
+  return EXPENSE_CATEGORY_HEB[category] || category;
 }
 
-// Helper function to get SOS event type name in Hebrew
 function getEventTypeName(eventType: string): string {
-  const names: Record<string, string> = {
-    accident: 'תאונה',
-    breakdown: 'תקלה',
-    flat_tire: 'צמיג פרוץ',
-    fuel: 'בעיית דלק',
-    electrical: 'בעיה חשמלית',
-    other: 'אחר',
-  };
-  return names[eventType] || eventType;
+  return SOS_TYPE_HEB[eventType] || eventType;
 }
