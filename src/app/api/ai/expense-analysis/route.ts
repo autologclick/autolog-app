@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
-import { requireAuth, jsonResponse, errorResponse, handleApiError, requireOwnershipOrAdmin   enforceRateLimit,
+import { requireAuth, jsonResponse, errorResponse, handleApiError, requireOwnershipOrAdmin,
+  enforceRateLimit,
 } from '@/lib/api-helpers';
 import { analyzeExpenses } from '@/lib/ai-analysis';
 import { NOT_FOUND } from '@/lib/messages';
