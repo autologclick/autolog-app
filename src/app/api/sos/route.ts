@@ -4,6 +4,7 @@ import { notifyAdmins } from '@/lib/services/notification-service';
 import { Prisma } from '@prisma/client';
 import { requireAuth, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
 import { sosEventSchema } from '@/lib/validations';
+import { NOT_FOUND } from '@/lib/messages';
 
 // GET /api/sos - List user's SOS events
 export async function GET(req: NextRequest) {
