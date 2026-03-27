@@ -55,6 +55,15 @@ const getExpiryColor = (expiryDate: string | null) => {
   return 'text-green-600';
 };
 
+
+interface DocumentRecord {
+  id: string;
+  type: string;
+  expiryDate?: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
 export default function AdminDocumentsPage() {
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,14 +87,14 @@ export default function AdminDocumentsPage() {
         setDocuments(data.documents || []);
 
         const total = data.documents?.length || 0;
-        const expiringSoon = data.documents?.filter((doc: any) => {
+        const expiringSoon = data.documents?.filter((doc: DocumentRecord) => {
           if (!doc.expiryDate) return false;
           const daysUntil = Math.ceil(
             (new Date(doc.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
           );
           return daysUntil >= 0 && daysUntil <= 30;
         }).length || 0;
-        const expired = data.documents?.filter((doc: any) => {
+        const expired = data.documents?.filter((doc: DocumentRecord) => {
           if (!doc.expiryDate) return false;
           return new Date(doc.expiryDate) < new Date();
         }).length || 0;
