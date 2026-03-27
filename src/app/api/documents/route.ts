@@ -9,9 +9,9 @@ import {
   handleApiError,
   AuthError,
   requireOwnership,
+  enforceRateLimit,
 } from '@/lib/api-helpers';
 import { documentSchema } from '@/lib/validations';
-import { checkApiRateLimit } from '@/lib/rate-limit';
 import { NOT_FOUND } from '@/lib/messages';
 
 // GET /api/documents - List documents for user's vehicles
@@ -20,10 +20,8 @@ export async function GET(req: NextRequest) {
     const payload = requireAuth(req);
 
     // Rate limit general API calls
-    const rateLimit = checkApiRateLimit(payload.userId);
-    if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
-    }
+    const rateLimitError = enforceRateLimit(payload.userId);
+    if (rateLimitError) return rateLimitError;
 
     // Get query params
     const url = new URL(req.url);
@@ -67,10 +65,8 @@ export async function POST(req: NextRequest) {
     const payload = requireAuth(req);
 
     // Rate limit API calls
-    const rateLimit = checkApiRateLimit(payload.userId);
-    if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
-    }
+    const rateLimitError = enforceRateLimit(payload.userId);
+    if (rateLimitError) return rateLimitError;
 
     const body = await req.json();
 
@@ -137,7 +133,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return jsonResponse({ document, message: 'המסמך נוסף בהצלחה!' }, 201);
+    return jsonResponse({ document, message: '×××¡×× × ××¡×£ ×××¦×××!' }, 201);
   } catch (error) {
     return handleApiError(error);
   }
