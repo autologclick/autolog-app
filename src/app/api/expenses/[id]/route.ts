@@ -124,7 +124,7 @@ export async function PUT(
     if (data.date !== undefined) {
       const expenseDate = new Date(data.date);
       if (isNaN(expenseDate.getTime())) {
-        return errorResponse('×ª××¨×× ×× ×ª×§××', 400);
+        return errorResponse('ÃÂªÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ', 400);
       }
       updateData.date = expenseDate;
     }
@@ -146,7 +146,7 @@ export async function PUT(
 
     return jsonResponse({
       expense: updated,
-      message: '×××¦×× ×¢×××× × ×××¦×××',
+      message: 'ÃÂÃÂÃÂ¦ÃÂÃÂ ÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ',
     });
   } catch (error) {
     return handleApiError(error);
@@ -192,7 +192,7 @@ export async function DELETE(
       where: { id },
     });
 
-    return jsonResponse({ message: '×××¦×× × ×××§× ×××¦×××' });
+    return jsonResponse({ message: 'ÃÂÃÂÃÂ¦ÃÂÃÂ ÃÂ ÃÂÃÂÃÂ§ÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ' });
   } catch (error) {
     return handleApiError(error);
   }
