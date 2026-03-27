@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/db';
 import { requireAdmin, jsonResponse, errorResponse, handleApiError, validationErrorResponse } from '@/lib/api-helpers';
+import { NOT_FOUND } from '@/lib/messages';
 
 const updateUserSchema = z.object({
   fullName: z.string().min(2, 'שם חייב להכיל לפחות 2 תווים').max(100).optional(),
@@ -86,7 +87,7 @@ export async function GET(
     });
 
     if (!user) {
-      return errorResponse('משתמש לא נמצא', 404);
+      return errorResponse(NOT_FOUND.USER, 404);
     }
 
     return jsonResponse({ user });
