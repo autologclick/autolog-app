@@ -9,6 +9,7 @@ import {
   AuthError,
   requireOwnership,
 } from '@/lib/api-helpers';
+import { NOT_FOUND, APPOINTMENT_ERRORS } from '@/lib/messages';
 
 const updateAppointmentSchema = z.object({
   status: z.enum(['cancelled']),
@@ -52,7 +53,7 @@ export async function GET(
     });
 
     if (!appointment) {
-      return jsonResponse({ error: 'התור לא נמצא' }, 404);
+      return jsonResponse({ error: NOT_FOUND.APPOINTMENT }, 404);
     }
 
     // Verify ownership
@@ -89,7 +90,7 @@ export async function PUT(
     });
 
     if (!appointment) {
-      return jsonResponse({ error: 'התור לא נמצא' }, 404);
+      return jsonResponse({ error: NOT_FOUND.APPOINTMENT }, 404);
     }
 
     requireOwnership(payload.userId, appointment.userId);
@@ -97,7 +98,7 @@ export async function PUT(
     // Can't update cancelled appointments
     if (appointment.status === 'cancelled') {
       return jsonResponse(
-        { error: 'לא ניתן לעדכן תור מבוטל' },
+        { error: APPOINTMENT_ERRORS.CANNOT_UPDATE_CANCELLED },
         400
       );
     }
@@ -105,7 +106,7 @@ export async function PUT(
     // Can't update completed appointments
     if (appointment.status === 'completed') {
       return jsonResponse(
-        { error: 'לא ניתן לעדכן תור שהושלם' },
+        { error: APPOINTMENT_ERRORS.CANNOT_UPDATE_COMPLETED },
         400
       );
     }
@@ -158,7 +159,7 @@ export async function DELETE(
     });
 
     if (!appointment) {
-      return jsonResponse({ error: 'התור לא נמצא' }, 404);
+      return jsonResponse({ error: NOT_FOUND.APPOINTMENT }, 404);
     }
 
     requireOwnership(payload.userId, appointment.userId);
@@ -166,7 +167,7 @@ export async function DELETE(
     // Can only cancel pending or confirmed appointments
     if (appointment.status !== 'pending' && appointment.status !== 'confirmed') {
       return jsonResponse(
-        { error: 'לא ניתן לבטל תור זה' },
+        { error: APPOINTMENT_ERRORS.CANNOT_CANCEL },
         400
       );
     }
@@ -186,7 +187,7 @@ export async function DELETE(
 
     return jsonResponse({
       appointment: cancelled,
-      message: 'התור בוטל בהצלחה',
+      message: APPOINTMENT_ERRORS.CANCELLED_SUCCESS,
     });
   } catch (error) {
     return handleApiError(error);
