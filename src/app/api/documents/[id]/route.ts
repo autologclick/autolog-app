@@ -11,6 +11,7 @@ import {
   requireOwnership,
 } from '@/lib/api-helpers';
 import { updateDocumentSchema } from '@/lib/validations';
+import { NOT_FOUND, SUCCESS_MESSAGES } from '@/lib/messages';
 
 // GET /api/documents/[id] - Get single document
 export async function GET(
@@ -38,7 +39,7 @@ export async function GET(
     });
 
     if (!document) {
-      return errorResponse('מסמך לא נמצא', 404);
+      return errorResponse(NOT_FOUND.DOCUMENT, 404);
     }
 
     // Verify user owns the vehicle
@@ -77,7 +78,7 @@ export async function PUT(
     });
 
     if (!document) {
-      return errorResponse('מסמך לא נמצא', 404);
+      return errorResponse(NOT_FOUND.DOCUMENT, 404);
     }
 
     requireOwnership(payload.userId, document.vehicle.userId);
@@ -122,7 +123,7 @@ export async function PUT(
 
     return jsonResponse({
       document: updated,
-      message: 'המסמך עודכן בהצלחה',
+      message: SUCCESS_MESSAGES.DOCUMENT_UPDATED,
     });
   } catch (error) {
     return handleApiError(error);
@@ -149,7 +150,7 @@ export async function DELETE(
     });
 
     if (!document) {
-      return errorResponse('מסמך לא נמצא', 404);
+      return errorResponse(NOT_FOUND.DOCUMENT, 404);
     }
 
     requireOwnership(payload.userId, document.vehicle.userId);
@@ -159,7 +160,7 @@ export async function DELETE(
       where: { id },
     });
 
-    return jsonResponse({ message: 'המסמך נמחק בהצלחה' });
+    return jsonResponse({ message: SUCCESS_MESSAGES.DOCUMENT_DELETED });
   } catch (error) {
     return handleApiError(error);
   }
