@@ -1,1 +1,110 @@
-import { NextRequest } from "next/server";\nimport { z } from "zod";\nimport prisma from "@/lib/db";\nimport { requireGarageOwner, jsonResponse, errorResponse, handleApiError, validationErrorResponse } from "@/lib/api-helpers";\nimport { NOT_FOUND } from "@/lib/messages";\n\nconst mechanicSchema = z.object({\n  fullName: z.string().min(2, "שם חייב להכיל לפחות 2 תווים").max(100),\n  phone: z.string().regex(/^[\d\-+() ]{7,20}$/, "מספר טלפון לא תקין").optional().or(z.literal("")),\n  role: z.enum(['mechanic', 'senior_mechanic', 'manager', 'inspector']).optional(),\n  specialization: z.enum(['engine', 'electrical', 'bodywork', 'tires', 'general']).optional(),\n  avatarUrl: z.string().url("כתובה תמונה לא תקינה").optional().or(z.literal("")),\n  startDate: z.string().optional().or(z.literal("")),\n});\n\n// GET /api/garage/mechanics - List all mechanics for garage\nexport async function GET(req: NextRequest) {\n  try {\n    const payload = requireGarageOwner(req);\n\n    const garage = await prisma.garage.findUnique({\n      where: { ownerId: payload.userId },\n      select: { id: true },\n    });\n\n    if (!garage) return errorResponse(NOT_FOUND.GARAGE, 404);\n\n    const mechanics = await prisma.garageMechanic.findMany({\n      where: { garageId: garage.id },\n      orderBy: { createdAt: 'asc' },\n    });\n\n    return jsonResponse({ mechanics });\n  } catch (error) {\n    return handleApiError(error);\n  }\n}\n\n// POST /api/garage/mechanics - Add a new mechanic\nexport async function POST(req: NextRequest) {\n  try {\n    const payload = requireGarageOwner(req);\n    const body = await req.json();\n\n    const validation = mechanicSchema.safeParse(body);\n    if (!validation.success) {\n      return validationErrorResponse(validation.error);\n    }\n\n    const garage = await prisma.garage.findUnique({\n      where: { ownerId: payload.userId },\n      select: { id: true },\n    });\n\n    if (!garage) return errorResponse(NOT_FOUND.GARAGE, 404);\n\n    const data = validation.data;\n    const mechanic = await prisma.garageMechanic.create({\n      data: {\n        garageId: garage.id,\n        fullName: data.fullName,\n        phone: data.phone || null,\n        role: data.role || 'mechanic',\n        specialization: data.specialization || 'general',\n        avatarUrl: data.avatarUrl || null,\n        startDate: data.startDate ? new Date(data.startDate) : null,\n      },\n    });\n\n    return jsonResponse({ mechanic, message: "מכונאי נוסף בהצלחה" }, 201);\n  } catch (error) {\n    return handleApiError(error);\n  }\n}\n\n// DELETE /api/garage/mechanics?id=xxx - Soft-delete a mechanic\nexport async function DELETE(req: NextRequest) {\n  try {\n    const payload = requireGarageOwner(req);\n    const url = new URL(req.url);\n    const mechanicId = url.searchParams.get('id');\n\n    if (!mechanicId) {\n      return errorResponse("מזהה מכונאי נדרש", 400);\n    }\n\n    const garage = await prisma.garage.findUnique({\n      where: { ownerId: payload.userId },\n      select: { id: true },\n    });\n\n    if (!garage) return errorResponse(NOT_FOUND.GARAGE, 404);\n\n    // Verify mechanic belongs to this garage\n    const mechanic = await prisma.garageMechanic.findFirst({\n      where: { id: mechanicId, garageId: garage.id },\n    });\n\n    if (!mechanic) return errorResponse("מכונאי לא נמצא", 404);\n\n    await prisma.garageMechanic.update({\n      where: { id: mechanicId },\n      data: { isActive: false },\n    });\n\n    return jsonResponse({ message: "מכונאי הוסר בהצלחה" });\n  } catch (error) {\n    return handleApiError(error);\n  }\n}
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import prisma from '@/lib/db';
+import { requireGarageOwner, jsonResponse, errorResponse, handleApiError, validationErrorResponse } from '@/lib/api-helpers';
+import { NOT_FOUND } from '@/lib/messages';
+
+const mechanicSchema = z.object({
+  fullName: z.string().min(2, 'שם חייב להכיל לפחות 2 תווים').max(100),
+  phone: z.string().regex(/^[\d\-+() ]{7,20}$/, 'מספר טלפון לא תקין').optional().or(z.literal('')),
+  role: z.enum(['mechanic', 'senior_mechanic', 'manager', 'inspector']).optional(),
+  specialization: z.enum(['engine', 'electrical', 'bodywork', 'tires', 'general']).optional(),
+  avatarUrl: z.string().url('כתובת תמונה לא תקינה').optional().or(z.literal('')),
+  startDate: z.string().optional().or(z.literal('')),
+});
+
+// GET /api/garage/mechanics - List all mechanics for garage
+export async function GET(req: NextRequest) {
+  try {
+    const payload = requireGarageOwner(req);
+
+    const garage = await prisma.garage.findUnique({
+      where: { ownerId: payload.userId },
+      select: { id: true },
+    });
+
+    if (!garage) return errorResponse(NOT_FOUND.GARAGE, 404);
+
+    const mechanics = await prisma.garageMechanic.findMany({
+      where: { garageId: garage.id },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    return jsonResponse({ mechanics });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
+// POST /api/garage/mechanics - Add a new mechanic
+export async function POST(req: NextRequest) {
+  try {
+    const payload = requireGarageOwner(req);
+    const body = await req.json();
+
+    const validation = mechanicSchema.safeParse(body);
+    if (!validation.success) {
+      return validationErrorResponse(validation.error);
+    }
+
+    const garage = await prisma.garage.findUnique({
+      where: { ownerId: payload.userId },
+      select: { id: true },
+    });
+
+    if (!garage) return errorResponse(NOT_FOUND.GARAGE, 404);
+
+    const data = validation.data;
+    const mechanic = await prisma.garageMechanic.create({
+      data: {
+        garageId: garage.id,
+        fullName: data.fullName,
+        phone: data.phone || null,
+        role: data.role || 'mechanic',
+        specialization: data.specialization || 'general',
+        avatarUrl: data.avatarUrl || null,
+        startDate: data.startDate ? new Date(data.startDate) : null,
+      },
+    });
+
+    return jsonResponse({ mechanic, message: 'מכונאי נוסף בהצלחה' }, 201);
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
+// DELETE /api/garage/mechanics?id=xxx - Soft-delete a mechanic
+export async function DELETE(req: NextRequest) {
+  try {
+    const payload = requireGarageOwner(req);
+    const url = new URL(req.url);
+    const mechanicId = url.searchParams.get('id');
+
+    if (!mechanicId) {
+      return errorResponse('מזהה מכונאי נדרש', 400);
+    }
+
+    const garage = await prisma.garage.findUnique({
+      where: { ownerId: payload.userId },
+      select: { id: true },
+    });
+
+    if (!garage) return errorResponse(NOT_FOUND.GARAGE, 404);
+
+    // Verify mechanic belongs to this garage
+    const mechanic = await prisma.garageMechanic.findFirst({
+      where: { id: mechanicId, garageId: garage.id },
+    });
+
+    if (!mechanic) return errorResponse('מכונאי לא נמצא', 404);
+
+    await prisma.garageMechanic.update({
+      where: { id: mechanicId },
+      data: { isActive: false },
+    });
+
+    return jsonResponse({ message: 'מכונאי הוסר בהצלחה' });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
