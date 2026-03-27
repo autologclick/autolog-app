@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
+import { requireAuth, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse   enforceRateLimit,
+} from '@/lib/api-helpers';
 import { vehicleSchema } from '@/lib/validations';
-import { checkApiRateLimit } from '@/lib/rate-limit';
 import { parseFlexDate, getExpiryStatus } from '@/lib/utils';
 
 // GET /api/vehicles - List user's vehicles
@@ -11,10 +11,8 @@ export async function GET(req: NextRequest) {
     const payload = requireAuth(req);
 
     // Rate limit general API calls: 100 per minute per user
-    const rateLimit = checkApiRateLimit(payload.userId);
-    if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
-    }
+    const rateLimitError = enforceRateLimit(payload.userId);
+    if (rateLimitError) return rateLimitError;
 
     const { page, skip, limit } = getPaginationParams(req);
 
@@ -57,10 +55,8 @@ export async function POST(req: NextRequest) {
     const payload = requireAuth(req);
 
     // Rate limit API calls
-    const rateLimit = checkApiRateLimit(payload.userId);
-    if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
-    }
+    const rateLimitError = enforceRateLimit(payload.userId);
+    if (rateLimitError) return rateLimitError;
 
     const body = await req.json();
 
@@ -76,14 +72,14 @@ export async function POST(req: NextRequest) {
     // Check plate uniqueness
     const existing = await prisma.vehicle.findUnique({ where: { licensePlate } });
     if (existing) {
-      return errorResponse('מספר רישוי כבר קיים במערכת', 409);
+      return errorResponse('××¡×¤×¨ ×¨××©×× ×××¨ ×§××× ×××¢×¨××ª', 409);
     }
 
     // Check if VIN already exists (if provided)
     if (vin) {
       const existingVin = await prisma.vehicle.findUnique({ where: { vin } });
       if (existingVin) {
-        return errorResponse('VIN הז כבר קיים במערכת', 409);
+        return errorResponse('VIN ×× ×××¨ ×§××× ×××¢×¨××ª', 409);
       }
     }
 
@@ -111,7 +107,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return jsonResponse({ vehicle, message: 'הרכב נוסף בהצלחה!' }, 201);
+    return jsonResponse({ vehicle, message: '××¨×× × ××¡×£ ×××¦×××!' }, 201);
   } catch (error) {
     return handleApiError(error);
   }
