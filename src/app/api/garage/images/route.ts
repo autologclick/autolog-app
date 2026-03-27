@@ -2,30 +2,20 @@ import { NextRequest } from 'next/server';
 import { requireGarageOwner, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import prisma from '@/lib/db';
 import { NOT_FOUND } from '@/lib/messages';
-import fs from 'fs';
 import path from 'path';
+import {
+  parseBase64Image,
+  validateImageSize,
+  ensureUploadDir,
+  saveImageFile,
+  deleteMatchingFiles,
+  listImageFiles,
+  MAX_FILE_SIZE,
+} from '@/lib/services/image-service';
 import { basename } from 'path';
 
 const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads', 'garages');
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const MAX_IMAGES = 10;
-
-function ensureDir(subDir?: string) {
-  const dir = subDir ? path.join(UPLOAD_DIR, subDir) : UPLOAD_DIR;
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  return dir;
-}
-
-function parseBase64Image(image: string): { ext: string; buffer: Buffer } | null {
-  if (!image || !image.startsWith('data:image/')) return null;
-  const matches = image.match(/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/);
-  if (!matches) return null;
-  const ext = matches[1] === 'jpg' ? 'jpeg' : matches[1];
-  const buffer = Buffer.from(matches[2], 'base64');
-  return { ext, buffer };
-}
+const MAX_GALLERY_IMAGES = 10;
 
 // GET /api/garage/images - Get all images for garage
 export async function GET(req: NextRequest) {
@@ -42,14 +32,8 @@ export async function GET(req: NextRequest) {
     }
 
     const garageDir = path.join(UPLOAD_DIR, garage.id);
-    let galleryImages: string[] = [];
-
-    if (fs.existsSync(garageDir)) {
-      galleryImages = fs.readdirSync(garageDir)
-        .filter(f => /\.(jpeg|jpg|png|webp)$/i.test(f) && !f.startsWith('logo.'))
-        .map(f => `/uploads/garages/${garage.id}/${f}`)
-        .sort();
-    }
+    const galleryImages = listImageFiles(garageDir, 'logo.')
+      .map((f) => `/uploads/garages/${garage.id}/${f}`);
 
     return jsonResponse({
       logo: garage.imageUrl || null,
@@ -76,35 +60,26 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const { type, image, images } = body;
-    // type: 'logo' | 'gallery'
-    // image: single base64 (for logo)
-    // images: array of base64 (for gallery batch upload)
 
-    const garageDir = ensureDir(garage.id);
+    const garageDir = ensureUploadDir(UPLOAD_DIR, garage.id);
+    const publicPrefix = `/uploads/garages/${garage.id}`;
 
     if (type === 'logo') {
       if (!image) return errorResponse('לא נבחרה תמונה', 400);
 
       const parsed = parseBase64Image(image);
       if (!parsed) return errorResponse('פורמט תמונה לא נתמך. השתמש ב-JPEG, PNG או WebP', 400);
-      if (parsed.buffer.length > MAX_FILE_SIZE) return errorResponse('התמונה גדולה מדי (מקסימום 5MB)', 400);
+
+      const sizeError = validateImageSize(parsed);
+      if (sizeError) return errorResponse(sizeError, 400);
 
       // Remove old logo
-      const oldLogos = fs.readdirSync(garageDir).filter(f => f.startsWith('logo.'));
-      oldLogos.forEach(f => {
-        // Ensure file is in expected directory (defense in depth)
-        const sanitized = basename(f);
-        if (sanitized === f) {
-          fs.unlinkSync(path.join(garageDir, sanitized));
-        }
-      });
+      deleteMatchingFiles(garageDir, (f) => f.startsWith('logo.'));
 
       // Save new logo
       const filename = `logo.${parsed.ext}`;
-      fs.writeFileSync(path.join(garageDir, filename), parsed.buffer);
-      const logoUrl = `/uploads/garages/${garage.id}/${filename}`;
+      const logoUrl = saveImageFile(garageDir, filename, parsed.buffer, publicPrefix);
 
-      // Update DB
       await prisma.garage.update({
         where: { id: garage.id },
         data: { imageUrl: logoUrl },
@@ -117,10 +92,9 @@ export async function POST(req: NextRequest) {
       const imagesToUpload = images || (image ? [image] : []);
       if (!imagesToUpload.length) return errorResponse('לא נבחרו תמונות', 400);
 
-      // Check existing gallery count
-      const existingFiles = fs.readdirSync(garageDir).filter(f => !f.startsWith('logo.') && /\.(jpeg|jpg|png|webp)$/i.test(f));
-      if (existingFiles.length + imagesToUpload.length > MAX_IMAGES) {
-        return errorResponse(`ניתן להעלות עד ${MAX_IMAGES} תמונות לגלריה. יש כרגע ${existingFiles.length} תמונות.`, 400);
+      const existingCount = listImageFiles(garageDir, 'logo.').length;
+      if (existingCount + imagesToUpload.length > MAX_GALLERY_IMAGES) {
+        return errorResponse(`ניתן להעלות עד ${MAX_GALLERY_IMAGES} תמונות לגלריה. יש כרגע ${existingCount} תמונות.`, 400);
       }
 
       const uploadedUrls: string[] = [];
@@ -128,12 +102,13 @@ export async function POST(req: NextRequest) {
       for (let i = 0; i < imagesToUpload.length; i++) {
         const parsed = parseBase64Image(imagesToUpload[i]);
         if (!parsed) continue;
-        if (parsed.buffer.length > MAX_FILE_SIZE) continue;
+
+        const sizeError = validateImageSize(parsed);
+        if (sizeError) continue;
 
         const timestamp = Date.now();
         const filename = `img_${timestamp}_${i}.${parsed.ext}`;
-        fs.writeFileSync(path.join(garageDir, filename), parsed.buffer);
-        uploadedUrls.push(`/uploads/garages/${garage.id}/${filename}`);
+        uploadedUrls.push(saveImageFile(garageDir, filename, parsed.buffer, publicPrefix));
       }
 
       if (!uploadedUrls.length) {
@@ -170,18 +145,9 @@ export async function DELETE(req: NextRequest) {
     const { imageUrl, type } = body;
 
     if (type === 'logo') {
-      // Delete logo
       const garageDir = path.join(UPLOAD_DIR, garage.id);
-      if (fs.existsSync(garageDir)) {
-        const logos = fs.readdirSync(garageDir).filter(f => f.startsWith('logo.'));
-        logos.forEach(f => {
-          // Sanitize filename to prevent path traversal
-          const sanitized = basename(f);
-          if (sanitized === f) {
-            fs.unlinkSync(path.join(garageDir, sanitized));
-          }
-        });
-      }
+      deleteMatchingFiles(garageDir, (f) => f.startsWith('logo.'));
+
       await prisma.garage.update({
         where: { id: garage.id },
         data: { imageUrl: null },
@@ -190,26 +156,18 @@ export async function DELETE(req: NextRequest) {
     }
 
     if (imageUrl) {
-      // Verify the URL belongs to this garage
       const expectedPrefix = `/uploads/garages/${garage.id}/`;
       if (!imageUrl.startsWith(expectedPrefix)) {
         return errorResponse('תמונה לא תקינה', 400);
       }
 
       const filename = imageUrl.replace(expectedPrefix, '');
-
-      // Sanitize filename to prevent path traversal attacks (e.g., ../../etc/passwd)
       const sanitizedFilename = basename(filename);
       if (sanitizedFilename !== filename) {
         return errorResponse('שם קובץ לא תקין', 400);
       }
 
-      const filePath = path.join(UPLOAD_DIR, garage.id, sanitizedFilename);
-
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-
+      deleteMatchingFiles(path.join(UPLOAD_DIR, garage.id), (f) => f === sanitizedFilename);
       return jsonResponse({ message: 'התמונה נמחקה' });
     }
 
