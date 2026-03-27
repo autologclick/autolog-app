@@ -128,10 +128,12 @@ export async function GET(
         maxBuffer: 10 * 1024 * 1024, // 10MB max buffer
       });
       pdfBuffer = Buffer.from(result, 'binary');
-    } catch (error: any) {
-      logger.error('PDF generation error', { error: error.message });
+    } catch (error: unknown) {
+      const errMsg = error instanceof Error ? error.message : 'שגיאה לא ידועה';
+      const stderr = (error as { stderr?: Buffer })?.stderr?.toString();
+      logger.error('PDF generation error', { error: stderr || errMsg });
       return errorResponse(
-        'שגיאה בייצור דוח PDF: ' + (error.message || 'שגיאה לא ידועה'),
+        'שגיאה בייצור דוח PDF: ' + errMsg,
         500
       );
     }
