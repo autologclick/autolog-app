@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
-import { checkApiRateLimit } from '@/lib/rate-limit';
+import { requireAuth, jsonResponse, errorResponse, handleApiError   enforceRateLimit,
+} from '@/lib/api-helpers';
 import {
   buildVehicleMap,
   buildInspectionEvents,
@@ -17,10 +17,8 @@ export async function GET(req: NextRequest) {
     const payload = requireAuth(req);
 
     // Rate limit
-    const rateLimit = checkApiRateLimit(payload.userId);
-    if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
-    }
+    const rateLimitError = enforceRateLimit(payload.userId);
+    if (rateLimitError) return rateLimitError;
 
     // Parse query parameters
     const url = new URL(req.url);
@@ -30,7 +28,7 @@ export async function GET(req: NextRequest) {
 
     // Validate type if provided
     if (type && !['inspection', 'appointment', 'expense', 'sos'].includes(type)) {
-      return errorResponse('סוג אירוע לא תקין', 400);
+      return errorResponse('×¡×× ×××¨××¢ ×× ×ª×§××', 400);
     }
 
     // If vehicleId is specified, verify user owns it
@@ -40,7 +38,7 @@ export async function GET(req: NextRequest) {
       });
 
       if (!vehicle || vehicle.userId !== payload.userId) {
-        return errorResponse('אין הרשאה לגישה לרכב זה', 403);
+        return errorResponse('××× ××¨×©×× ××××©× ××¨×× ××', 403);
       }
     }
 
