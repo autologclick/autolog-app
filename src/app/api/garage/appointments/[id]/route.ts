@@ -10,6 +10,7 @@ import {
   handleApiError,
 } from '@/lib/api-helpers';
 import { SERVICE_TYPE_HEB, APPOINTMENT_STATUS_HEB } from '@/lib/constants/translations';
+import { NOT_FOUND, APPOINTMENT_ERRORS } from '@/lib/messages';
 import {
   notifyAppointmentCompleted,
   notifyAppointmentConfirmed,
@@ -50,7 +51,7 @@ export async function PUT(
     });
 
     if (!appointment) {
-      return errorResponse('ÃÂÃÂªÃÂÃÂ¨ ÃÂÃÂ ÃÂ ÃÂÃÂ¦ÃÂ', 404);
+      return errorResponse(NOT_FOUND.APPOINTMENT, 404);
     }
 
     // Verify this garage belongs to the current user
@@ -60,10 +61,10 @@ export async function PUT(
 
     // Can't update cancelled or already completed appointments
     if (appointment.status === 'cancelled') {
-      return errorResponse('ÃÂÃÂ ÃÂ ÃÂÃÂªÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂ ÃÂªÃÂÃÂ¨ ÃÂÃÂÃÂÃÂÃÂ', 400);
+      return errorResponse(APPOINTMENT_ERRORS.CANNOT_UPDATE_CANCELLED, 400);
     }
     if (appointment.status === 'completed') {
-      return errorResponse('ÃÂÃÂªÃÂÃÂ¨ ÃÂÃÂÃÂ¨ ÃÂÃÂÃÂ©ÃÂÃÂ', 400);
+      return errorResponse(APPOINTMENT_ERRORS.ALREADY_COMPLETED, 400);
     }
 
     // Build update data
@@ -149,7 +150,7 @@ export async function GET(
     });
 
     if (!appointment) {
-      return errorResponse('ÃÂÃÂªÃÂÃÂ¨ ÃÂÃÂ ÃÂ ÃÂÃÂ¦ÃÂ', 404);
+      return errorResponse(NOT_FOUND.APPOINTMENT, 404);
     }
 
     if (appointment.garage.ownerId !== payload.userId) {
