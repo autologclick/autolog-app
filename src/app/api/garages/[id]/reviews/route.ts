@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
-import { NOT_FOUND } from '@/lib/messages';
+import { NOT_FOUND, SUCCESS_MESSAGES, VALIDATION_ERRORS } from '@/lib/messages';
 
 // GET /api/garages/[id]/reviews - Get reviews for a garage
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       },
     });
 
-    return jsonResponse({ review, newRating: newAvg, message: 'הביקורת נשמרה בהצלחה' }, 201);
+    return jsonResponse({ review, newRating: newAvg, message: SUCCESS_MESSAGES.SAVED }, 201);
   } catch (error) {
     return handleApiError(error);
   }
