@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse   enforceRateLimit,
+import { requireAuth, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse,
+  enforceRateLimit,
 } from '@/lib/api-helpers';
 import { vehicleSchema } from '@/lib/validations';
 import { parseFlexDate, getExpiryStatus } from '@/lib/utils';
@@ -72,14 +73,14 @@ export async function POST(req: NextRequest) {
     // Check plate uniqueness
     const existing = await prisma.vehicle.findUnique({ where: { licensePlate } });
     if (existing) {
-      return errorResponse('××¡×¤×¨ ×¨××©×× ×××¨ ×§××× ×××¢×¨××ª', 409);
+      return errorResponse('ÃÂÃÂ¡ÃÂ¤ÃÂ¨ ÃÂ¨ÃÂÃÂ©ÃÂÃÂ ÃÂÃÂÃÂ¨ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂ¢ÃÂ¨ÃÂÃÂª', 409);
     }
 
     // Check if VIN already exists (if provided)
     if (vin) {
       const existingVin = await prisma.vehicle.findUnique({ where: { vin } });
       if (existingVin) {
-        return errorResponse('VIN ×× ×××¨ ×§××× ×××¢×¨××ª', 409);
+        return errorResponse('VIN ÃÂÃÂ ÃÂÃÂÃÂ¨ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂ¢ÃÂ¨ÃÂÃÂª', 409);
       }
     }
 
@@ -107,7 +108,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return jsonResponse({ vehicle, message: '××¨×× × ××¡×£ ×××¦×××!' }, 201);
+    return jsonResponse({ vehicle, message: 'ÃÂÃÂ¨ÃÂÃÂ ÃÂ ÃÂÃÂ¡ÃÂ£ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ!' }, 201);
   } catch (error) {
     return handleApiError(error);
   }
