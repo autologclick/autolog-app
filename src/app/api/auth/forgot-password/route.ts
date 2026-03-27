@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { VALIDATION_ERRORS } from '@/lib/messages';
 import { randomBytes, createHash } from 'crypto';
 import { createLogger } from '@/lib/logger';
 
@@ -12,7 +13,7 @@ export async function POST(req: NextRequest) {
     const { email } = await req.json();
 
     if (!email || typeof email !== 'string' || !email.includes('@') || email.trim().length < 5) {
-      return errorResponse('נא למלא כתובת אימייל תקינה', 400);
+      return errorResponse(VALIDATION_ERRORS.INVALID_EMAIL, 400);
     }
 
     const user = await prisma.user.findUnique({
