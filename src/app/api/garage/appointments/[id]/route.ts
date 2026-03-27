@@ -9,6 +9,7 @@ import {
   validationErrorResponse,
   handleApiError,
 } from '@/lib/api-helpers';
+import { SERVICE_TYPE_HEB, APPOINTMENT_STATUS_HEB } from '@/lib/constants/translations';
 
 const updateSchema = z.object({
   status: z.enum(['confirmed', 'in_progress', 'completed', 'cancelled']),
@@ -82,13 +83,7 @@ export async function PUT(
 
     // If completed, create a notification for the customer
     if (status === 'completed') {
-      const serviceTypeHeb: Record<string, string> = {
-        inspection: 'בדיקה',
-        maintenance: 'טיפול',
-        repair: 'תיקון',
-        test_prep: 'הכנה לטסט',
-      };
-      const serviceLabel = serviceTypeHeb[appointment.serviceType] || appointment.serviceType;
+      const serviceLabel = SERVICE_TYPE_HEB[appointment.serviceType] || appointment.serviceType;
       const vehicleLabel = appointment.vehicle.nickname || `${appointment.vehicle.manufacturer} ${appointment.vehicle.model}`;
 
       await prisma.notification.create({
@@ -143,16 +138,9 @@ export async function PUT(
       });
     }
 
-    const statusHeb: Record<string, string> = {
-      confirmed: 'מאושר',
-      in_progress: 'בטיפול',
-      completed: 'הושלם',
-      cancelled: 'מבוטל',
-    };
-
     return jsonResponse({
       appointment: updated,
-      message: `התור עודכן ל${statusHeb[status] || status}`,
+      message: `התור עודכן ל${APPOINTMENT_STATUS_HEB[status] || status}`,
     });
   } catch (error) {
     return handleApiError(error);
