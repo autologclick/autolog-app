@@ -14,6 +14,7 @@ import { appointmentSchema } from '@/lib/validations';
 import { createLogger } from '@/lib/logger';
 import { NOT_FOUND } from '@/lib/messages';
 import { SERVICE_TYPE_HEB } from '@/lib/constants/translations';
+import { notifyNewAppointment } from '@/lib/services/notification-service';
 
 const logger = createLogger('appointments');
 
@@ -88,7 +89,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!garage || !garage.isActive) {
-      return errorResponse('מוסך לא נמצא או אינו פעיל', 404);
+      return errorResponse('×××¡× ×× × ××¦× ×× ××× × ×¤×¢××', 404);
     }
 
     // Verify vehicle exists and belongs to user
@@ -111,12 +112,12 @@ export async function POST(req: NextRequest) {
 
     // Validate date is valid
     if (isNaN(appointmentDate.getTime())) {
-      return errorResponse('תאריך לא תקין', 400);
+      return errorResponse('×ª××¨×× ×× ×ª×§××', 400);
     }
 
     // Check if appointment is in the future
     if (appointmentDate < new Date()) {
-      return errorResponse('לא ניתן להזמין תור בתאריך שעבר', 400);
+      return errorResponse('×× × ××ª× ×××××× ×ª××¨ ××ª××¨×× ×©×¢××¨', 400);
     }
 
     // Create appointment
@@ -175,15 +176,14 @@ export async function POST(req: NextRequest) {
 
         const serviceLabel = SERVICE_TYPE_HEB[serviceType] || serviceType;
 
-        await prisma.notification.create({
-          data: {
-            userId: garageWithOwner.ownerId,
-            type: 'appointment',
-            title: `תור חדש — ${user?.fullName || 'לקוח'}`,
-            message: `${user?.fullName || 'לקוח'} קבע תור ל${serviceLabel} עבור ${vehicleLabel} בתאריך ${dateLabel} בשעה ${timeLabel}`,
-            link: '/garage/appointments',
-          },
-        });
+        await notifyNewAppointment(
+            garageWithOwner.ownerId,
+            user?.fullName || 'לקוח',
+            serviceLabel,
+            vehicleLabel,
+            dateLabel,
+            timeLabel,
+          )
       }
     } catch (notifError) {
       // Don't fail the appointment creation if notification fails
@@ -191,7 +191,7 @@ export async function POST(req: NextRequest) {
     }
 
     return jsonResponse(
-      { appointment, message: 'התור נקבע בהצלחה!' },
+      { appointment, message: '××ª××¨ × ×§××¢ ×××¦×××!' },
       201
     );
   } catch (error) {
