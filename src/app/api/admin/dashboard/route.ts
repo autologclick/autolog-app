@@ -1,53 +1,18 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAdmin, jsonResponse, handleApiError } from '@/lib/api-helpers';
-
-// =============================================
-// Dashboard data types (replacing `any` usage)
-// =============================================
-
-interface TopGarageRow {
-  id: string;
-  name: string;
-  city: string | null;
-  isActive: boolean;
-  _count: { inspections: number; reviews: number };
-  reviews: { rating: number }[];
-}
-
-interface RecentUserRow {
-  id: string;
-  fullName: string;
-  email: string;
-  createdAt: Date;
-  _count: { vehicles: number };
-}
-
-interface RecentInspectionRow {
-  id: string;
-  createdAt: Date;
-  overallScore: number | null;
-  status: string;
-  vehicle: { nickname: string; licensePlate: string } | null;
-  garage: { name: string } | null;
-}
-
-interface RecentAppointmentRow {
-  id: string;
-  createdAt: Date;
-  date: Date;
-  status: string;
-  user: { fullName: string } | null;
-  garage: { name: string } | null;
-}
-
-interface RecentSosEventRow {
-  id: string;
-  createdAt: Date;
-  status: string;
-  user: { fullName: string } | null;
-  vehicle: { nickname: string; licensePlate: string } | null;
-}
+import {
+  TopGarageRow,
+  RecentUserRow,
+  RecentInspectionRow,
+  RecentAppointmentRow,
+  RecentSosEventRow,
+  calculateTrend,
+  mapTopGarages,
+  mapRecentUsers,
+  mapRecentInspections,
+  buildRecentActivity,
+} from '@/lib/services/dashboard-service';
 
 export async function GET(req: NextRequest) {
   try {
@@ -139,88 +104,34 @@ export async function GET(req: NextRequest) {
       prisma.appointment.count({ where: { date: { gte: weekStart, lte: todayEnd } } }),
     ]);
 
-    // GarageApplication model may not exist yet - safely default to 0
+    // GarageApplication model may not exist yet
     let garageApplications = 0;
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- model may not exist in schema yet
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       garageApplications = await (prisma as Record<string, any>).garageApplication?.count({ where: { status: 'pending' } }) ?? 0;
     } catch (_) {
       // Model not in schema yet
     }
 
-    // Calculate trends
-    const inspectionTrend = lastMonthInspections > 0
-      ? Math.round(((monthlyInspections - lastMonthInspections) / lastMonthInspections) * 100)
-      : 100;
-
-    // Calculate revenue trend
+    // Use service layer for calculations and transformations
     const currentMonthRevenue = monthlyRevenue._sum.cost || 0;
     const previousMonthRevenue = lastMonthRevenue._sum.cost || 0;
-    const revenueTrend = previousMonthRevenue > 0
-      ? Math.round(((currentMonthRevenue - previousMonthRevenue) / previousMonthRevenue) * 100)
-      : 100;
 
-    // Calculate average rating for each garage
-    const garagesWithRating = (topGarages as TopGarageRow[]).map((g) => ({
-      id: g.id,
-      name: g.name,
-      city: g.city || '',
-      isActive: g.isActive,
-      inspectionCount: g._count.inspections,
-      reviewCount: g._count.reviews,
-      avgRating: g.reviews.length > 0
-        ? Number((g.reviews.reduce((sum, r) => sum + r.rating, 0) / g.reviews.length).toFixed(1))
-        : 0,
-    }));
-
-    // Build unified recent activity feed (last 10 items)
-    const recentActivity = [
-      ...(recentUsers as RecentUserRow[]).map((u) => ({
-        id: u.id,
-        type: 'user' as const,
-        title: u.fullName,
-        description: 'משתמש חדש',
-        timestamp: u.createdAt,
-        meta: { email: u.email, vehicles: u._count.vehicles },
-      })),
-      ...(recentInspections as RecentInspectionRow[]).map((i) => ({
-        id: i.id,
-        type: 'inspection' as const,
-        title: i.vehicle?.nickname || i.vehicle?.licensePlate || 'רכב',
-        description: 'בדיקה חדשה',
-        timestamp: i.createdAt,
-        meta: { garage: i.garage?.name, score: i.overallScore, status: i.status },
-      })),
-      ...(recentAppointments as RecentAppointmentRow[]).map((a) => ({
-        id: a.id,
-        type: 'appointment' as const,
-        title: a.user?.fullName || 'משתמש',
-        description: 'תור חדש',
-        timestamp: a.createdAt,
-        meta: { garage: a.garage?.name, date: a.date, status: a.status },
-      })),
-      ...(recentSosEvents as RecentSosEventRow[]).map((s) => ({
-        id: s.id,
-        type: 'sos' as const,
-        title: s.user?.fullName || 'משתמש',
-        description: 'אירוע SOS',
-        timestamp: s.createdAt,
-        meta: { vehicle: `${s.vehicle?.nickname || ''} (${s.vehicle?.licensePlate || ''})`, status: s.status },
-      })),
-    ]
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      .slice(0, 10);
+    const typedUsers = recentUsers as RecentUserRow[];
+    const typedInspections = recentInspections as RecentInspectionRow[];
+    const typedAppointments = recentAppointments as RecentAppointmentRow[];
+    const typedSosEvents = recentSosEvents as RecentSosEventRow[];
 
     return jsonResponse({
       stats: {
         totalUsers,
         totalVehicles,
         monthlyInspections,
-        inspectionTrend,
+        inspectionTrend: calculateTrend(monthlyInspections, lastMonthInspections),
         openSos,
         pendingAppointments,
         monthlyRevenue: currentMonthRevenue,
-        revenueTrend,
+        revenueTrend: calculateTrend(currentMonthRevenue, previousMonthRevenue),
         expiredDocuments,
         activeGarages,
         inactiveGarages,
@@ -228,23 +139,10 @@ export async function GET(req: NextRequest) {
         weekAppointments,
         garageApplications,
       },
-      recentUsers: (recentUsers as RecentUserRow[]).map((u) => ({
-        id: u.id,
-        name: u.fullName,
-        email: u.email,
-        vehicleCount: u._count.vehicles,
-        createdAt: u.createdAt,
-      })),
-      recentInspections: (recentInspections as RecentInspectionRow[]).map((i) => ({
-        id: i.id,
-        vehicle: `${i.vehicle?.nickname || ''} (${i.vehicle?.licensePlate || ''})`,
-        garage: i.garage?.name || '',
-        score: i.overallScore,
-        status: i.status,
-        date: i.createdAt,
-      })),
-      recentActivity,
-      topGarages: garagesWithRating,
+      recentUsers: mapRecentUsers(typedUsers),
+      recentInspections: mapRecentInspections(typedInspections),
+      recentActivity: buildRecentActivity(typedUsers, typedInspections, typedAppointments, typedSosEvents),
+      topGarages: mapTopGarages(topGarages as TopGarageRow[]),
     });
   } catch (error) {
     return handleApiError(error);
