@@ -7,7 +7,6 @@ import {
   errorResponse,
   validationErrorResponse,
   handleApiError,
-  AuthError,
   getPaginationParams,
   paginationMeta,
   requireOwnership,
@@ -15,6 +14,7 @@ import {
 import { checkApiRateLimit } from '@/lib/rate-limit';
 import { expenseSchema } from '@/lib/validations';
 import { NOT_FOUND } from '@/lib/messages';
+import { isValidExpenseCategory, aggregateExpenses } from '@/lib/services/expense-service';
 
 // GET /api/expenses - List expenses for user's vehicles
 export async function GET(req: NextRequest) {
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     // Rate limit general API calls
     const rateLimit = checkApiRateLimit(payload.userId);
     if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוג מאוחר יותר.', 429);
+      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
     }
 
     const url = new URL(req.url);
@@ -72,16 +72,7 @@ export async function GET(req: NextRequest) {
 
     // Add category filter if provided
     if (category) {
-      const validCategories = [
-        'fuel',
-        'maintenance',
-        'insurance',
-        'test',
-        'parking',
-        'fines',
-        'other',
-      ];
-      if (!validCategories.includes(category)) {
+      if (!isValidExpenseCategory(category)) {
         return errorResponse('קטגוריה לא תקינה', 400);
       }
       whereFilters.category = category;
@@ -107,45 +98,17 @@ export async function GET(req: NextRequest) {
       prisma.expense.count({ where: whereFilters }),
     ]);
 
-    // Calculate monthly summary
+    // Aggregate monthly summary and category totals
     const allExpenses = await prisma.expense.findMany({
       where: whereFilters,
-      select: {
-        amount: true,
-        date: true,
-        category: true,
-      },
+      select: { amount: true, date: true, category: true },
     });
 
-    const monthlySummary: Record<string, number> = {};
-    const categoryTotals: Record<string, number> = {};
-
-    allExpenses.forEach((exp) => {
-      // Monthly summary
-      const monthKey = new Date(exp.date).toISOString().substring(0, 7); // YYYY-MM
-      if (!monthlySummary[monthKey]) {
-        monthlySummary[monthKey] = 0;
-      }
-      monthlySummary[monthKey] += exp.amount;
-
-      // Category totals
-      if (!categoryTotals[exp.category]) {
-        categoryTotals[exp.category] = 0;
-      }
-      categoryTotals[exp.category] += exp.amount;
-    });
-
-    // Convert to sorted array for monthly summary
-    const monthlySummaryArray = Object.entries(monthlySummary)
-      .map(([month, total]) => ({
-        month,
-        total,
-      }))
-      .sort((a, b) => b.month.localeCompare(a.month));
+    const { monthlySummary, categoryTotals } = aggregateExpenses(allExpenses);
 
     return jsonResponse({
       expenses,
-      monthlySummary: monthlySummaryArray,
+      monthlySummary,
       categoryTotals,
       ...paginationMeta(total, page, limit),
     });
