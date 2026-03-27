@@ -25,6 +25,7 @@ function getPythonCommand(): string {
 }
 
 import { safeJsonParse } from '@/lib/utils';
+import { NOT_FOUND } from '@/lib/messages';
 
 export async function GET(
   req: NextRequest,
@@ -53,7 +54,7 @@ export async function GET(
     });
 
     if (!inspection) {
-      return errorResponse('בדיקה לא נמצאה', 404);
+      return errorResponse(NOT_FOUND.INSPECTION, 404);
     }
 
     const pdfData = {
