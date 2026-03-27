@@ -7,6 +7,22 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('garage-applications');
 
+interface SanitizedApplication {
+  garageName: string;
+  ownerName: string;
+  email: string;
+  phone: string;
+  city: string;
+  address?: string;
+  description?: string;
+  services?: string;
+  languages?: string;
+  yearsExperience?: number;
+  employeeCount?: number;
+  licenseNumber?: string;
+  images?: string;
+}
+
 const applicationSchema = z.object({
   garageName: z.string().min(2, 'שם המוסך חייב להכיל לפחות 2 תווים').max(100),
   ownerName: z.string().min(2, 'שם בעל המוסך חייב להכיל לפחות 2 תווים').max(100),
@@ -36,7 +52,7 @@ export async function POST(req: NextRequest) {
     const data = parsed.data;
 
     // Sanitize inputs
-    const sanitized: Record<string, any> = {
+    const sanitized: SanitizedApplication = {
       garageName: sanitizeInput(data.garageName),
       ownerName: sanitizeInput(data.ownerName),
       email: data.email.toLowerCase().trim(),
