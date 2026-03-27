@@ -9,8 +9,8 @@ import {
   handleApiError,
   AuthError,
   requireOwnership,
+  enforceRateLimit,
 } from '@/lib/api-helpers';
-import { checkApiRateLimit } from '@/lib/rate-limit';
 import { updateExpenseSchema } from '@/lib/validations';
 import { NOT_FOUND } from '@/lib/messages';
 
@@ -24,10 +24,8 @@ export async function GET(
     const { id } = params;
 
     // Rate limit API calls
-    const rateLimit = checkApiRateLimit(payload.userId);
-    if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
-    }
+    const rateLimitError = enforceRateLimit(payload.userId);
+    if (rateLimitError) return rateLimitError;
 
     const expense = await prisma.expense.findUnique({
       where: { id },
@@ -65,10 +63,8 @@ export async function PUT(
     const { id } = params;
 
     // Rate limit API calls
-    const rateLimit = checkApiRateLimit(payload.userId);
-    if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
-    }
+    const rateLimitError = enforceRateLimit(payload.userId);
+    if (rateLimitError) return rateLimitError;
 
     const body = await req.json();
 
@@ -128,7 +124,7 @@ export async function PUT(
     if (data.date !== undefined) {
       const expenseDate = new Date(data.date);
       if (isNaN(expenseDate.getTime())) {
-        return errorResponse('תאריך לא תקין', 400);
+        return errorResponse('×ª××¨×× ×× ×ª×§××', 400);
       }
       updateData.date = expenseDate;
     }
@@ -150,7 +146,7 @@ export async function PUT(
 
     return jsonResponse({
       expense: updated,
-      message: 'הוצאה עודכנה בהצלחה',
+      message: '×××¦×× ×¢×××× × ×××¦×××',
     });
   } catch (error) {
     return handleApiError(error);
@@ -167,10 +163,8 @@ export async function DELETE(
     const { id } = params;
 
     // Rate limit API calls
-    const rateLimit = checkApiRateLimit(payload.userId);
-    if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
-    }
+    const rateLimitError = enforceRateLimit(payload.userId);
+    if (rateLimitError) return rateLimitError;
 
     // Verify expense exists and belongs to user
     const expense = await prisma.expense.findUnique({
@@ -198,7 +192,7 @@ export async function DELETE(
       where: { id },
     });
 
-    return jsonResponse({ message: 'הוצאה נמחקה בהצלחה' });
+    return jsonResponse({ message: '×××¦×× × ×××§× ×××¦×××' });
   } catch (error) {
     return handleApiError(error);
   }
