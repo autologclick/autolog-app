@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, errorResponse, handleApiError, validationErrorResponse } from '@/lib/api-helpers';
+import { AUTH_ERRORS } from '@/lib/messages';
 import { safeJsonParse } from '@/lib/utils';
 import { z } from 'zod';
 
@@ -30,13 +31,13 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     });
 
     if (!inspection) {
-      return errorResponse('בדיקה לא נמצאה', 404);
+      return errorResponse('××××§× ×× × ××¦××', 404);
     }
 
     // Verify access
     if (payload.role === 'user') {
       if (inspection.vehicle.userId !== payload.userId) {
-        return errorResponse('אין הרשאה להציג בדיקה זו', 403);
+        return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
       }
     } else if (payload.role === 'garage_owner') {
       const garage = await prisma.garage.findUnique({
@@ -44,7 +45,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         select: { id: true },
       });
       if (garage?.id !== inspection.garageId) {
-        return errorResponse('אין הרשאה להציג בדיקה זו', 403);
+        return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
       }
     }
 
@@ -95,7 +96,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     });
 
     if (!inspection) {
-      return errorResponse('בדיקה לא נמצאה', 404);
+      return errorResponse('××××§× ×× × ××¦××', 404);
     }
 
     if (payload.role === 'garage_owner') {
@@ -104,10 +105,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         select: { id: true },
       });
       if (garage?.id !== inspection.garageId) {
-        return errorResponse('אין הרשאה לעדכן בדיקה זו', 403);
+        return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
       }
     } else if (payload.role !== 'admin') {
-      return errorResponse('אין הרשאה לעדכן בדיקה זו', 403);
+      return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
     }
 
     const updateSchema = z.object({
