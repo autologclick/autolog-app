@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { requireGarageOwner, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import prisma from '@/lib/db';
-import { NOT_FOUND } from '@/lib/messages';
+import { NOT_FOUND, IMAGE_ERRORS } from '@/lib/messages';
 import path from 'path';
 import {
   parseBase64Image,
@@ -65,10 +65,10 @@ export async function POST(req: NextRequest) {
     const publicPrefix = `/uploads/garages/${garage.id}`;
 
     if (type === 'logo') {
-      if (!image) return errorResponse('לא נבחרה תמונה', 400);
+      if (!image) return errorResponse(IMAGE_ERRORS.NOT_SELECTED, 400);
 
       const parsed = parseBase64Image(image);
-      if (!parsed) return errorResponse('פורמט תמונה לא נתמך. השתמש ב-JPEG, PNG או WebP', 400);
+      if (!parsed) return errorResponse(IMAGE_ERRORS.INVALID_FORMAT, 400);
 
       const sizeError = validateImageSize(parsed);
       if (sizeError) return errorResponse(sizeError, 400);
@@ -85,12 +85,12 @@ export async function POST(req: NextRequest) {
         data: { imageUrl: logoUrl },
       });
 
-      return jsonResponse({ logo: logoUrl, message: 'הלוגו הועלה בהצלחה' });
+      return jsonResponse({ logo: logoUrl, message: IMAGE_ERRORS.LOGO_UPLOADED });
     }
 
     if (type === 'gallery') {
       const imagesToUpload = images || (image ? [image] : []);
-      if (!imagesToUpload.length) return errorResponse('לא נבחרו תמונות', 400);
+      if (!imagesToUpload.length) return errorResponse(IMAGE_ERRORS.NONE_SELECTED, 400);
 
       const existingCount = listImageFiles(garageDir, 'logo.').length;
       if (existingCount + imagesToUpload.length > MAX_GALLERY_IMAGES) {
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
       }
 
       if (!uploadedUrls.length) {
-        return errorResponse('לא הצלחנו להעלות את התמונות. בדוק את הפורמט והגודל.', 400);
+        return errorResponse(IMAGE_ERRORS.UPLOAD_FAILED, 400);
       }
 
       return jsonResponse({
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    return errorResponse('סוג לא תקין. השתמש ב-logo או gallery', 400);
+    return errorResponse(IMAGE_ERRORS.INVALID_TYPE, 400);
   } catch (error) {
     return handleApiError(error);
   }
@@ -152,26 +152,26 @@ export async function DELETE(req: NextRequest) {
         where: { id: garage.id },
         data: { imageUrl: null },
       });
-      return jsonResponse({ message: 'הלוגו נמחק' });
+      return jsonResponse({ message: IMAGE_ERRORS.LOGO_DELETED });
     }
 
     if (imageUrl) {
       const expectedPrefix = `/uploads/garages/${garage.id}/`;
       if (!imageUrl.startsWith(expectedPrefix)) {
-        return errorResponse('תמונה לא תקינה', 400);
+        return errorResponse(IMAGE_ERRORS.INVALID_IMAGE, 400);
       }
 
       const filename = imageUrl.replace(expectedPrefix, '');
       const sanitizedFilename = basename(filename);
       if (sanitizedFilename !== filename) {
-        return errorResponse('שם קובץ לא תקין', 400);
+        return errorResponse(IMAGE_ERRORS.INVALID_FILENAME, 400);
       }
 
       deleteMatchingFiles(path.join(UPLOAD_DIR, garage.id), (f) => f === sanitizedFilename);
-      return jsonResponse({ message: 'התמונה נמחקה' });
+      return jsonResponse({ message: IMAGE_ERRORS.IMAGE_DELETED });
     }
 
-    return errorResponse('נא לציין תמונה למחיקה', 400);
+    return errorResponse(IMAGE_ERRORS.SPECIFY_IMAGE, 400);
   } catch (error) {
     return handleApiError(error);
   }
