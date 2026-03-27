@@ -10,6 +10,12 @@ import {
   handleApiError,
 } from '@/lib/api-helpers';
 import { SERVICE_TYPE_HEB, APPOINTMENT_STATUS_HEB } from '@/lib/constants/translations';
+import {
+  notifyAppointmentCompleted,
+  notifyAppointmentConfirmed,
+  notifyAppointmentCancelled,
+  notifyAppointmentInProgress,
+} from '@/lib/services/notification-service';
 
 const updateSchema = z.object({
   status: z.enum(['confirmed', 'in_progress', 'completed', 'cancelled']),
@@ -44,20 +50,20 @@ export async function PUT(
     });
 
     if (!appointment) {
-      return errorResponse('התור לא נמצא', 404);
+      return errorResponse('××ª××¨ ×× × ××¦×', 404);
     }
 
     // Verify this garage belongs to the current user
     if (appointment.garage.ownerId !== payload.userId) {
-      return errorResponse('אין הרשאה', 403);
+      return errorResponse('××× ××¨×©××', 403);
     }
 
     // Can't update cancelled or already completed appointments
     if (appointment.status === 'cancelled') {
-      return errorResponse('לא ניתן לעדכן תור מבוטל', 400);
+      return errorResponse('×× × ××ª× ××¢××× ×ª××¨ ×××××', 400);
     }
     if (appointment.status === 'completed') {
-      return errorResponse('התור כבר הושלם', 400);
+      return errorResponse('××ª××¨ ×××¨ ×××©××', 400);
     }
 
     // Build update data
@@ -85,62 +91,39 @@ export async function PUT(
     if (status === 'completed') {
       const serviceLabel = SERVICE_TYPE_HEB[appointment.serviceType] || appointment.serviceType;
       const vehicleLabel = appointment.vehicle.nickname || `${appointment.vehicle.manufacturer} ${appointment.vehicle.model}`;
-
-      await prisma.notification.create({
-        data: {
-          userId: appointment.user.id,
-          type: 'appointment',
-          title: 'הטיפול הושלם בהצלחה!',
-          message: completionNotes
-            ? `${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}) הושלם ב${appointment.garage.name}. סיכום: ${completionNotes}`
-            : `${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}) הושלם בהצלחה ב${appointment.garage.name}.`,
-          link: '/user/appointments',
-        },
-      });
+      await notifyAppointmentCompleted(
+        appointment.user.id,
+        appointment.garage.name,
+        serviceLabel,
+        vehicleLabel,
+        appointment.vehicle.licensePlate,
+        completionNotes,
+      );
     }
 
     // If confirmed, notify the customer
     if (status === 'confirmed') {
-      await prisma.notification.create({
-        data: {
-          userId: appointment.user.id,
-          type: 'appointment',
-          title: 'התור אושר!',
-          message: `התור שלך ב${appointment.garage.name} אושר. נתראה בתאריך ${new Date(appointment.date).toLocaleDateString('he-IL')} בשעה ${appointment.time}.`,
-          link: '/user/appointments',
-        },
-      });
+      await notifyAppointmentConfirmed(
+        appointment.user.id,
+        appointment.garage.name,
+        new Date(appointment.date).toLocaleDateString('he-IL'),
+        appointment.time,
+      );
     }
 
     // If cancelled by garage, notify the customer
     if (status === 'cancelled') {
-      await prisma.notification.create({
-        data: {
-          userId: appointment.user.id,
-          type: 'appointment',
-          title: 'התור בוטל',
-          message: `התור שלך ב${appointment.garage.name} בוטל. אנא צור קשר עם המוסך לפרטים נוספים.`,
-          link: '/user/appointments',
-        },
-      });
+      await notifyAppointmentCancelled(appointment.user.id, appointment.garage.name);
     }
 
     // If in_progress, notify the customer
     if (status === 'in_progress') {
-      await prisma.notification.create({
-        data: {
-          userId: appointment.user.id,
-          type: 'appointment',
-          title: 'הרכב נכנס לטיפול',
-          message: `הרכב שלך נכנס לטיפול ב${appointment.garage.name}.`,
-          link: '/user/appointments',
-        },
-      });
+      await notifyAppointmentInProgress(appointment.user.id, appointment.garage.name);
     }
 
     return jsonResponse({
       appointment: updated,
-      message: `התור עודכן ל${APPOINTMENT_STATUS_HEB[status] || status}`,
+      message: `××ª××¨ ×¢×××× ×${APPOINTMENT_STATUS_HEB[status] || status}`,
     });
   } catch (error) {
     return handleApiError(error);
@@ -166,11 +149,11 @@ export async function GET(
     });
 
     if (!appointment) {
-      return errorResponse('התור לא נמצא', 404);
+      return errorResponse('××ª××¨ ×× × ××¦×', 404);
     }
 
     if (appointment.garage.ownerId !== payload.userId) {
-      return errorResponse('אין הרשאה', 403);
+      return errorResponse('××× ××¨×©××', 403);
     }
 
     return jsonResponse({ appointment });
