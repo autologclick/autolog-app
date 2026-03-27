@@ -3,6 +3,7 @@ import { execSync, spawnSync } from 'child_process';
 import path from 'path';
 import prisma from '@/lib/db';
 import { requireAuth, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { AUTH_ERRORS } from '@/lib/messages';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('pdf');
@@ -66,14 +67,14 @@ export async function GET(
     });
 
     if (!inspection) {
-      return errorResponse('בדיקה לא נמצאה', 404);
+      return errorResponse('××××§× ×× × ××¦××', 404);
     }
 
     // Verify access control
     if (payload.role === 'user') {
       // Regular users can only access PDFs for their own vehicles
       if (inspection.vehicle.userId !== payload.userId) {
-        return errorResponse('אין הרשאה להוריד דוח זה', 403);
+        return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
       }
     } else if (payload.role === 'garage_owner') {
       // Garage owners can only access PDFs for inspections they performed
@@ -82,7 +83,7 @@ export async function GET(
         select: { id: true },
       });
       if (garage?.id !== inspection.garageId) {
-        return errorResponse('אין הרשאה להוריד דוח זה', 403);
+        return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
       }
     }
     // Admin can access all PDFs
@@ -129,11 +130,11 @@ export async function GET(
       });
       pdfBuffer = Buffer.from(result, 'binary');
     } catch (error: unknown) {
-      const errMsg = error instanceof Error ? error.message : 'שגיאה לא ידועה';
+      const errMsg = error instanceof Error ? error.message : '×©×××× ×× ××××¢×';
       const stderr = (error as { stderr?: Buffer })?.stderr?.toString();
       logger.error('PDF generation error', { error: stderr || errMsg });
       return errorResponse(
-        'שגיאה בייצור דוח PDF: ' + errMsg,
+        '×©×××× ××××¦××¨ ××× PDF: ' + errMsg,
         500
       );
     }
