@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/db';
 import { requireGarageOwner, jsonResponse, errorResponse, handleApiError, validationErrorResponse } from '@/lib/api-helpers';
-import { NOT_FOUND } from '@/lib/messages';
+import { NOT_FOUND, SUCCESS_MESSAGES } from '@/lib/messages';
 
 const mechanicSchema = z.object({
   fullName: z.string().min(2, 'שם חייב להכיל לפחות 2 תווים').max(100),
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return jsonResponse({ mechanic, message: 'מכונאי נוסף בהצלחה' }, 201);
+    return jsonResponse({ mechanic, message: SUCCESS_MESSAGES.SAVED }, 201);
   } catch (error) {
     return handleApiError(error);
   }
@@ -103,7 +103,7 @@ export async function DELETE(req: NextRequest) {
       data: { isActive: false },
     });
 
-    return jsonResponse({ message: 'מכונאי הוסר בהצלחה' });
+    return jsonResponse({ message: SUCCESS_MESSAGES.DELETED });
   } catch (error) {
     return handleApiError(error);
   }
