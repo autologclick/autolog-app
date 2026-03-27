@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { jsonResponse, errorResponse } from '@/lib/api-helpers';
 import { getResourceId, getApiUrl } from '@/lib/mot-config';
 import { createRequestLogger } from '@/lib/logger';
+import { VEHICLE_LOOKUP_ERRORS, VALIDATION_ERRORS } from '@/lib/messages';
 
 // Israel Ministry of Transport - Vehicle data lookup via data.gov.il CKAN API
 // Resource ID and API URL are managed in mot-config.ts and can be updated dynamically
@@ -42,7 +43,7 @@ export async function GET(req: NextRequest) {
 
     if (!plateNumber) {
       logger.warn('Vehicle lookup: missing plate number');
-      return errorResponse('נא להזין מספר רישוי');
+      return errorResponse(VALIDATION_ERRORS.INVALID_LICENSE_PLATE);
     }
 
     // Clean the plate number - remove dashes, spaces
@@ -63,14 +64,14 @@ export async function GET(req: NextRequest) {
         status: response.status,
         plateNumber: cleanPlate,
       });
-      return errorResponse('שגיאה בשליפת נתונים ממשרד התחבורה', 502);
+      return errorResponse(VEHICLE_LOOKUP_ERRORS.FETCH_ERROR, 502);
     }
 
     const data = await response.json();
 
     if (!data.success || !data.result?.records?.length) {
       logger.warn('Vehicle not found', { plateNumber: cleanPlate });
-      return errorResponse('רכב לא נמצא במאגר משרד התחבורה', 404);
+      return errorResponse(VEHICLE_LOOKUP_ERRORS.NOT_FOUND, 404);
     }
 
     // Find exact match by plate number
@@ -112,12 +113,12 @@ export async function GET(req: NextRequest) {
       logger.warn('Vehicle API timeout', {
         error: error.name,
       });
-      return errorResponse('שרת משרד התחבורה לא מגיב, נסה שוב', 504);
+      return errorResponse(VEHICLE_LOOKUP_ERRORS.SERVER_DOWN, 504);
     }
     logger.error('Vehicle lookup error', {
       error: error instanceof Error ? error.message : 'שגיאה לא ידועה',
       stack: error instanceof Error ? error.stack : undefined,
     });
-    return errorResponse('שגיאה בחיפוש רכב', 500);
+    return errorResponse(VEHICLE_LOOKUP_ERRORS.SEARCH_ERROR, 500);
   }
 }
