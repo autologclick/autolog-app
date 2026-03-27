@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { hashPassword, generateToken, generateRefreshToken } from '@/lib/auth';
 import { jsonResponse, errorResponse, validationErrorResponse, sanitizeInput } from '@/lib/api-helpers';
 import { registerSchema } from '@/lib/validations';
+import { AUTH_ERRORS, SUCCESS_MESSAGES } from '@/lib/messages';
 import { checkRegisterRateLimit } from '@/lib/rate-limit';
 import { createRequestLogger } from '@/lib/logger';
 import { logAuthEvent, logCreateEvent } from '@/lib/audit-log';
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       logger.warn('Registration failed: email already exists', { email });
-      return errorResponse('כתובת המייל כבר רשומה במערכת', 409);
+      return errorResponse(AUTH_ERRORS.EMAIL_EXISTS, 409);
     }
 
     // Check if ID number already exists (if provided)
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
       const existingId = await prisma.user.findUnique({ where: { idNumber } });
       if (existingId) {
         logger.warn('Registration failed: ID number already exists', { idNumber });
-        return errorResponse('מספר תעודה זה כבר רשום במערכת', 409);
+        return errorResponse(AUTH_ERRORS.ID_NUMBER_EXISTS, 409);
       }
     }
 
@@ -98,7 +99,7 @@ export async function POST(req: NextRequest) {
 
     const response = jsonResponse({
       user: { id: user.id, email: user.email, fullName: user.fullName, role: user.role },
-      message: 'נרשמת בהצלחה!',
+      message: SUCCESS_MESSAGES.REGISTERED,
     }, 201);
 
     // Set short-lived access token (15 minutes)
@@ -127,9 +128,9 @@ export async function POST(req: NextRequest) {
 
     // Handle Prisma constraint errors
     if (error instanceof Error && error.message.includes('Unique constraint failed')) {
-      return errorResponse('כתובת המייל או מספר התעודה כבר רשומים במערכת', 409);
+      return errorResponse(AUTH_ERRORS.EMAIL_OR_ID_EXISTS, 409);
     }
 
-    return errorResponse('שגיאה ברישום. אנא נסה שוב מאוחר יותר.', 500);
+    return errorResponse(AUTH_ERRORS.REGISTER_ERROR, 500);
   }
 }
