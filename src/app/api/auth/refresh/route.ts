@@ -9,6 +9,7 @@ import {
 import { jsonResponse, errorResponse, getClientIp } from '@/lib/api-helpers';
 import { createRequestLogger } from '@/lib/logger';
 import { logAuthEvent } from '@/lib/audit-log';
+import { AUTH_ERRORS } from '@/lib/messages';
 
 /**
  * POST /api/auth/refresh
@@ -34,14 +35,14 @@ export async function POST(req: NextRequest) {
 
     if (!refreshToken) {
       logger.warn('Refresh failed: no refresh token provided');
-      return errorResponse('אין refresh token', 401);
+      return errorResponse(AUTH_ERRORS.REFRESH_TOKEN_MISSING, 401);
     }
 
     // Verify the refresh token
     const decoded = verifyToken(refreshToken);
     if (!decoded) {
       logger.warn('Refresh failed: invalid refresh token', { clientIp });
-      return errorResponse('טוקן הרענון אינו תקף', 401);
+      return errorResponse(AUTH_ERRORS.REFRESH_TOKEN_INVALID, 401);
     }
 
     // Ensure this is actually a refresh token (optional: check for specific claim)
@@ -88,6 +89,6 @@ export async function POST(req: NextRequest) {
     logger.error('Refresh error', {
       error: error instanceof Error ? error.message : 'Unknown error',
     });
-    return errorResponse('שגיאה ברענון הtoken. אנא התחברו מחדש.', 500);
+    return errorResponse(AUTH_ERRORS.REFRESH_ERROR, 500);
   }
 }
