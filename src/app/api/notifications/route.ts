@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
 import { requireAuth, requireAdmin, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse, requireOwnership } from '@/lib/api-helpers';
 import { z } from 'zod';
+import { NOT_FOUND, VALIDATION_ERRORS } from '@/lib/messages';
 
 // GET /api/notifications - List user's notifications
 export async function GET(req: NextRequest) {
@@ -61,7 +62,7 @@ export async function POST(req: NextRequest) {
 
     // Verify user exists
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) return errorResponse('משתמש לא נמצא', 404);
+    if (!user) return errorResponse(NOT_FOUND.USER, 404);
 
     const notification = await prisma.notification.create({
       data: {
@@ -141,7 +142,7 @@ export async function PUT(req: NextRequest) {
     if (id) {
       // Mark specific as read
       const notification = await prisma.notification.findUnique({ where: { id } });
-      if (!notification) return errorResponse('הודעה לא נמצאה', 404);
+      if (!notification) return errorResponse(NOT_FOUND.NOTIFICATION, 404);
       requireOwnership(payload.userId, notification.userId);
 
       const updated = await prisma.notification.update({
