@@ -50,20 +50,20 @@ export async function PUT(
     });
 
     if (!appointment) {
-      return errorResponse('××ª××¨ ×× × ××¦×', 404);
+      return errorResponse('ÃÂÃÂªÃÂÃÂ¨ ÃÂÃÂ ÃÂ ÃÂÃÂ¦ÃÂ', 404);
     }
 
     // Verify this garage belongs to the current user
     if (appointment.garage.ownerId !== payload.userId) {
-      return errorResponse('××× ××¨×©××', 403);
+      return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
     }
 
     // Can't update cancelled or already completed appointments
     if (appointment.status === 'cancelled') {
-      return errorResponse('×× × ××ª× ××¢××× ×ª××¨ ×××××', 400);
+      return errorResponse('ÃÂÃÂ ÃÂ ÃÂÃÂªÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂ ÃÂªÃÂÃÂ¨ ÃÂÃÂÃÂÃÂÃÂ', 400);
     }
     if (appointment.status === 'completed') {
-      return errorResponse('××ª××¨ ×××¨ ×××©××', 400);
+      return errorResponse('ÃÂÃÂªÃÂÃÂ¨ ÃÂÃÂÃÂ¨ ÃÂÃÂÃÂ©ÃÂÃÂ', 400);
     }
 
     // Build update data
@@ -123,7 +123,7 @@ export async function PUT(
 
     return jsonResponse({
       appointment: updated,
-      message: `××ª××¨ ×¢×××× ×${APPOINTMENT_STATUS_HEB[status] || status}`,
+      message: `ÃÂÃÂªÃÂÃÂ¨ ÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂ${APPOINTMENT_STATUS_HEB[status] || status}`,
     });
   } catch (error) {
     return handleApiError(error);
@@ -149,11 +149,11 @@ export async function GET(
     });
 
     if (!appointment) {
-      return errorResponse('××ª××¨ ×× × ××¦×', 404);
+      return errorResponse('ÃÂÃÂªÃÂÃÂ¨ ÃÂÃÂ ÃÂ ÃÂÃÂ¦ÃÂ', 404);
     }
 
     if (appointment.garage.ownerId !== payload.userId) {
-      return errorResponse('××× ××¨×©××', 403);
+      return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
     }
 
     return jsonResponse({ appointment });
