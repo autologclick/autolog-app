@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { createHash } from 'crypto';
 import bcrypt from 'bcryptjs';
+import { AUTH_ERRORS, SUCCESS_MESSAGES } from '@/lib/messages';
 
 // POST /api/auth/reset-password
 export async function POST(req: NextRequest) {
@@ -10,25 +11,25 @@ export async function POST(req: NextRequest) {
     const { token, password } = await req.json();
 
     if (!token || typeof token !== 'string') {
-      return errorResponse('קישור לא תקין', 400);
+      return errorResponse(AUTH_ERRORS.INVALID_RESET_LINK, 400);
     }
 
     if (!password || typeof password !== 'string') {
-      return errorResponse('סיסמה נדרשת', 400);
+      return errorResponse(AUTH_ERRORS.PASSWORD_REQUIRED, 400);
     }
 
     // Validate password strength consistency with registration
     if (password.length < 8) {
-      return errorResponse('הסיסמה חייבת להכיל לפחות 8 תווים', 400);
+      return errorResponse(AUTH_ERRORS.PASSWORD_MIN_LENGTH, 400);
     }
     if (!/[A-Z]/.test(password)) {
-      return errorResponse('הסיסמה חייבת להכיל אות גדולה באנגלית', 400);
+      return errorResponse(AUTH_ERRORS.PASSWORD_UPPERCASE, 400);
     }
     if (!/[a-z]/.test(password)) {
-      return errorResponse('הסיסמה חייבת להכיל אות קטנה באנגלית', 400);
+      return errorResponse(AUTH_ERRORS.PASSWORD_LOWERCASE, 400);
     }
     if (!/[0-9]/.test(password)) {
-      return errorResponse('הסיסמה חייבת להכיל ספרה', 400);
+      return errorResponse(AUTH_ERRORS.PASSWORD_DIGIT, 400);
     }
 
     // Hash the token to compare with stored hash
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user) {
-      return errorResponse('קישור לא תקין או שפג תוקפו. נא לבקש קישור חדש.', 400);
+      return errorResponse(AUTH_ERRORS.RESET_LINK_EXPIRED, 400);
     }
 
     // Hash new password and clear reset token
@@ -65,7 +66,7 @@ export async function POST(req: NextRequest) {
     });
 
     return jsonResponse({
-      message: 'הסיסמה עודכנה בהצלחה! אפשר להתחבר עם הסיסמה החדשה.',
+      message: SUCCESS_MESSAGES.PASSWORD_CHANGED,
     });
   } catch (error) {
     return handleApiError(error);
