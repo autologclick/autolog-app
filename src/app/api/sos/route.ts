@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { notifyAdmins } from '@/lib/services/notification-service';
 import { Prisma } from '@prisma/client';
 import { requireAuth, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
 import { sosEventSchema } from '@/lib/validations';
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
         orderBy: { isPrimary: 'desc' },
       });
     }
-    if (!vehicle) return errorResponse('לא נמצא רכב. יש להוסיף רכב תחילה.', 404);
+    if (!vehicle) return errorResponse('×× × ××¦× ×¨××. ××© ××××¡××£ ×¨×× ×ª××××.', 404);
 
     const event = await prisma.sosEvent.create({
       data: {
@@ -78,19 +79,15 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Create notification for admin
-    const admins = await prisma.user.findMany({ where: { role: 'admin' } });
-    await prisma.notification.createMany({
-      data: admins.map(admin => ({
-        userId: admin.id,
-        type: 'sos',
-        title: 'אירוע SOS חדש!',
-        message: `${vehicle.nickname} (${vehicle.licensePlate}) - ${eventType}`,
-        link: `/admin/sos/${event.id}`,
-      })),
-    });
+    // Create notification for admins
+    await notifyAdmins(
+      'sos',
+      'אירוע SOS חדש!',
+      `${vehicle.nickname} (${vehicle.licensePlate}) - ${eventType}`,
+      `/admin/sos/${event.id}`,
+    )
 
-    return jsonResponse({ event, message: 'אירוע SOS דווח בהצלחה. צוות שלנו בדרך!' }, 201);
+    return jsonResponse({ event, message: '×××¨××¢ SOS ×××× ×××¦×××. ×¦×××ª ×©×× × ×××¨×!' }, 201);
   } catch (error) {
     return handleApiError(error);
   }
