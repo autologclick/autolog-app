@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, errorResponse, handleApiError   enforceRateLimit,
+import { requireAuth, jsonResponse, errorResponse, handleApiError,
+  enforceRateLimit,
 } from '@/lib/api-helpers';
 import {
   buildVehicleMap,
@@ -28,7 +29,7 @@ export async function GET(req: NextRequest) {
 
     // Validate type if provided
     if (type && !['inspection', 'appointment', 'expense', 'sos'].includes(type)) {
-      return errorResponse('×¡×× ×××¨××¢ ×× ×ª×§××', 400);
+      return errorResponse('ÃÂ¡ÃÂÃÂ ÃÂÃÂÃÂ¨ÃÂÃÂ¢ ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ', 400);
     }
 
     // If vehicleId is specified, verify user owns it
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
       });
 
       if (!vehicle || vehicle.userId !== payload.userId) {
-        return errorResponse('××× ××¨×©×× ××××©× ××¨×× ××', 403);
+        return errorResponse('ÃÂÃÂÃÂ ÃÂÃÂ¨ÃÂ©ÃÂÃÂ ÃÂÃÂÃÂÃÂ©ÃÂ ÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂ', 403);
       }
     }
 
