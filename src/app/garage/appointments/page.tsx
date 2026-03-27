@@ -87,7 +87,7 @@ export default function AppointmentsPage() {
     setSuccess('');
 
     try {
-      const body: any = { status };
+      const body: Record<string, string> = { status };
       if (notes) body.completionNotes = notes;
 
       const res = await fetch(`/api/garage/appointments/${appointmentId}`, {
