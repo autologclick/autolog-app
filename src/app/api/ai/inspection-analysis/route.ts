@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, errorResponse, handleApiError, requireOwnershipOrAdmin   enforceRateLimit,
+import { requireAuth, jsonResponse, errorResponse, handleApiError, requireOwnershipOrAdmin,
+  enforceRateLimit,
 } from '@/lib/api-helpers';
 import { analyzeInspection } from '@/lib/ai-analysis';
 
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest) {
     const inspectionId = url.searchParams.get('inspectionId');
 
     if (!inspectionId) {
-      return errorResponse('××¡×¨ ×××× ××××§×', 400);
+      return errorResponse('ÃÂÃÂ¡ÃÂ¨ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂ', 400);
     }
 
     const inspection = await prisma.inspection.findUnique({
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!inspection) {
-      return errorResponse('××××§× ×× × ××¦××', 404);
+      return errorResponse('ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂÃÂ ÃÂ ÃÂÃÂ¦ÃÂÃÂ', 404);
     }
 
     requireOwnershipOrAdmin(payload, inspection.vehicle.userId);
