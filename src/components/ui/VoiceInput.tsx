@@ -54,7 +54,7 @@ export default function VoiceInput({
     recognition.continuous = true;
     recognition.interimResults = true;
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: { results: { [index: number]: { [index: number]: { transcript: string } } }; resultIndex: number }) => {
       let interim = '';
       let final = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -75,7 +75,7 @@ export default function VoiceInput({
       }
     };
 
-    recognition.onerror = (event: any) => {
+    recognition.onerror = (event: { error: string }) => {
       if (event.error === 'not-allowed') {
         setErrorMsg('יש לאשר גישה למיקרופון');
       } else if (event.error === 'network') {
