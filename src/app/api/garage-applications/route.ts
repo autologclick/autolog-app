@@ -4,6 +4,7 @@ import { jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { sanitizeInput } from '@/lib/security';
 import { createApplication, checkDuplicateEmail } from '@/lib/garage-applications-db';
 import { createLogger } from '@/lib/logger';
+import { VALIDATION_ERRORS, GARAGE_MESSAGES, API_ERRORS } from '@/lib/messages';
 
 const logger = createLogger('garage-applications');
 
@@ -91,7 +92,7 @@ export async function POST(req: NextRequest) {
 
     return jsonResponse({
       id,
-      message: 'הבקשה נשלחה בהצלחה! צוות AutoLog יבדוק את הבקשה ויחזור אליך בהקדם.',
+      message: GARAGE_MESSAGES.APPLICATION_SENT,
     }, 201);
   } catch (error) {
     logger.error('garage-applications POST error', { error: error instanceof Error ? error.message : String(error) });
