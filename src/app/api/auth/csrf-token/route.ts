@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { generateCsrfToken, storeCsrfToken } from '@/lib/csrf';
 import { jsonResponse, errorResponse } from '@/lib/api-helpers';
 import { createLogger } from '@/lib/logger';
+import { AUTH_ERRORS } from '@/lib/messages';
 
 const logger = createLogger('security');
 
@@ -39,6 +40,6 @@ export async function GET(req: NextRequest) {
     return response;
   } catch (error) {
     logger.error('CSRF token generation error', { error: error instanceof Error ? error.message : String(error) });
-    return errorResponse('שגיאה בהנפקת טוקן אבטחה', 500);
+    return errorResponse(AUTH_ERRORS.CSRF_ERROR, 500);
   }
 }
