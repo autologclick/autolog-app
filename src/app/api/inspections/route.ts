@@ -4,13 +4,8 @@ import { Prisma } from '@prisma/client';
 import { requireAuth, requireGarageOwner, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
 import { comprehensiveInspectionSchema } from '@/lib/validations';
 import { NOT_FOUND } from '@/lib/messages';
-import {
-  TIRE_NAMES_HEB,
-  LIGHT_NAMES_HEB,
-  FLUID_NAMES_HEB,
-  PRE_TEST_NAMES_HEB,
-  INSPECTION_TYPE_HEB,
-} from '@/lib/constants/translations';
+import { INSPECTION_TYPE_HEB } from '@/lib/constants/translations';
+import { buildInspectionData, generateAutoInspectionItems, ValidatedInspectionInput } from '@/lib/services/inspection-service';
 
 // GET /api/inspections - List inspections (user sees their own, garage sees theirs)
 export async function GET(req: NextRequest) {
@@ -75,7 +70,7 @@ export async function POST(req: NextRequest) {
     const data = validation.data;
 
     if (!data.vehicleId && !data.manualVehicle) {
-      return errorResponse('יש לבחור רכב או להזין מספר רישוי', 400);
+      return errorResponse('××© ×××××¨ ×¨×× ×× ××××× ××¡×¤×¨ ×¨××©××', 400);
     }
 
     const garage = await prisma.garage.findUnique({ where: { ownerId: payload.userId } });
@@ -100,8 +95,8 @@ export async function POST(req: NextRequest) {
           data: {
             userId: payload.userId, // temporary owner - garage
             licensePlate: data.manualVehicle.licensePlate,
-            manufacturer: data.manualVehicle.manufacturer || 'לא צוין',
-            model: data.manualVehicle.model || 'לא צוין',
+            manufacturer: data.manualVehicle.manufacturer || '×× ×¦×××',
+            model: data.manualVehicle.model || '×× ×¦×××',
             year: data.manualVehicle.year || 0,
             color: data.manualVehicle.color || null,
             nickname: (data.manualVehicle.manufacturer && data.manualVehicle.model)
@@ -113,56 +108,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Build the inspection data object
-    const inspectionData: Prisma.InspectionUncheckedCreateInput = {
-      vehicleId: vehicle.id,
-      garageId: garage.id,
-      appointmentId: data.appointmentId || null,
-      inspectionType: data.inspectionType,
-      mechanicName: data.mechanicName || null,
-      date: new Date(),
-      status: 'completed',
-      overallScore: data.overallScore ?? null,
-      mileage: data.mileage ?? null,
-      engineNumber: data.engineNumber || null,
-      engineVerified: data.engineVerified ?? false,
-
-      // Photos as JSON strings
-      exteriorPhotos: data.exteriorPhotos ? JSON.stringify(data.exteriorPhotos) : null,
-      interiorPhotos: data.interiorPhotos ? JSON.stringify(data.interiorPhotos) : null,
-
-      // System checks as JSON strings
-      tiresData: data.tiresData ? JSON.stringify(data.tiresData) : null,
-      lightsData: data.lightsData ? JSON.stringify(data.lightsData) : null,
-      frontAxle: data.frontAxle ? JSON.stringify(data.frontAxle) : null,
-      steeringData: data.steeringData ? JSON.stringify(data.steeringData) : null,
-      shocksData: data.shocksData ? JSON.stringify(data.shocksData) : null,
-      bodyData: data.bodyData ? JSON.stringify(data.bodyData) : null,
-      batteryData: data.batteryData ? JSON.stringify(data.batteryData) : null,
-      fluidsData: data.fluidsData ? JSON.stringify(data.fluidsData) : null,
-      interiorSystems: data.interiorSystems ? JSON.stringify(data.interiorSystems) : null,
-      windowsData: data.windowsData ? JSON.stringify(data.windowsData) : null,
-      engineIssues: data.engineIssues ? JSON.stringify(data.engineIssues) : null,
-      gearboxIssues: data.gearboxIssues ? JSON.stringify(data.gearboxIssues) : null,
-      brakingSystem: data.brakingSystem ? JSON.stringify(data.brakingSystem) : null,
-
-      // Summary & results
-      summary: data.summary || null,
-      recommendations: data.recommendations ? JSON.stringify(data.recommendations) : null,
-      notes: data.notes ? JSON.stringify(data.notes) : null,
-      detailedScores: data.detailedScores ? JSON.stringify(data.detailedScores) : null,
-
-      // Customer signature
-      customerName: data.customerName || null,
-      customerIdNumber: data.customerIdNumber || null,
-      customerSignature: data.customerSignature || null,
-      signedAt: data.customerSignature ? new Date() : null,
-
-      // Pre-test fields
-      preTestChecklist: data.preTestChecklist ? JSON.stringify(data.preTestChecklist) : null,
-      preTestNotes: data.preTestNotes || null,
-      serviceItems: data.serviceItems ? JSON.stringify(data.serviceItems) : null,
-      workPerformed: data.workPerformed ? JSON.stringify(data.workPerformed) : null,
-    };
+    const inspectionData = buildInspectionData(data as ValidatedInspectionInput, vehicle.id, garage.id);
 
     // Create inspection and items in a transaction
     const inspection = await prisma.$transaction(async (tx) => {
@@ -185,62 +131,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Auto-generate inspection items from the system checks
-      const autoItems: Array<{ inspectionId: string; category: string; itemName: string; status: string; notes: string | null; score: number | null }> = [];
-
-      // Tires
-      if (data.tiresData) {
-        Object.entries(data.tiresData).forEach(([key, val]) => {
-          if (val) {
-            autoItems.push({ inspectionId: newInspection.id, category: 'tires', itemName: TIRE_NAMES_HEB[key] || key, status: val, notes: null, score: null });
-          }
-        });
-      }
-
-      // Lights
-      if (data.lightsData) {
-        Object.entries(data.lightsData).forEach(([key, val]) => {
-          if (val) {
-            autoItems.push({ inspectionId: newInspection.id, category: 'electrical', itemName: LIGHT_NAMES_HEB[key] || key, status: val, notes: null, score: null });
-          }
-        });
-      }
-
-      // Fluids
-      if (data.fluidsData) {
-        Object.entries(data.fluidsData).forEach(([key, val]) => {
-          if (val) {
-            autoItems.push({ inspectionId: newInspection.id, category: 'fluids', itemName: FLUID_NAMES_HEB[key] || key, status: val, notes: null, score: null });
-          }
-        });
-      }
-
-      // Auto-generate items from pre-test checklist
-      if (data.preTestChecklist) {
-        const preTestItems = Object.entries(data.preTestChecklist).map(([key, passed]) => ({
-          inspectionId: newInspection.id,
-          category: 'pre_test',
-          itemName: PRE_TEST_NAMES_HEB[key] || key,
-          status: passed ? 'ok' : 'critical',
-          notes: null,
-          score: passed ? 100 : 0,
-        }));
-        if (preTestItems.length > 0) {
-          autoItems.push(...preTestItems);
-        }
-      }
-
-      // Auto-generate items from work performed
-      if (data.workPerformed && data.workPerformed.length > 0) {
-        const workItems = data.workPerformed.map((work) => ({
-          inspectionId: newInspection.id,
-          category: 'work_performed',
-          itemName: work.item,
-          status: work.action,
-          notes: work.notes || null,
-          score: null,
-        }));
-        autoItems.push(...workItems);
-      }
+      const autoItems = generateAutoInspectionItems(newInspection.id, data as ValidatedInspectionInput);
 
       if (autoItems.length > 0) {
         await tx.inspectionItem.createMany({ data: autoItems });
@@ -251,8 +142,8 @@ export async function POST(req: NextRequest) {
         data: {
           userId: vehicle.userId,
           type: 'system',
-          title: 'דוח בדיקה חדש!',
-          message: `דוח בדיקה מסוג ${INSPECTION_TYPE_HEB[data.inspectionType] || data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
+          title: '××× ××××§× ×××©!',
+          message: `××× ××××§× ××¡×× ${INSPECTION_TYPE_HEB[data.inspectionType] || data.inspectionType} ××¨×× ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) ×××× ××¦×¤×××.`,
           link: `/inspection/${newInspection.id}`,
         },
       });
@@ -267,7 +158,7 @@ export async function POST(req: NextRequest) {
       });
     });
 
-    return jsonResponse({ inspection, message: 'הבדיקה נוצרה בהצלחה' }, 201);
+    return jsonResponse({ inspection, message: '×××××§× × ××¦×¨× ×××¦×××' }, 201);
   } catch (error) {
     return handleApiError(error);
   }
