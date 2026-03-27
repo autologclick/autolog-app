@@ -126,6 +126,19 @@ export const NOT_FOUND = {
 } as const;
 
 // ==========================================
+// Appointment-Specific Errors
+// ==========================================
+export const APPOINTMENT_ERRORS = {
+  CANNOT_UPDATE_CANCELLED: 'לא ניתן לעדכן תור מבוטל',
+  CANNOT_UPDATE_COMPLETED: 'לא ניתן לעדכן תור שהושלם',
+  CANNOT_CANCEL: 'לא ניתן לבטל תור זה',
+  CANCELLED_SUCCESS: 'התור בוטל בהצלחה',
+  ALREADY_COMPLETED: 'התור כבר הושלם',
+  VEHICLE_REQUIRED: 'יש לבחור רכב',
+  SERVICE_TYPE_REQUIRED: 'יש לבחור סוג טיפול',
+} as const;
+
+// ==========================================
 // UI Labels & Placeholders
 // ==========================================
 export const UI = {
