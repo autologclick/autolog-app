@@ -12,6 +12,8 @@ import {
 } from '@/lib/api-helpers';
 import { appointmentSchema } from '@/lib/validations';
 import { createLogger } from '@/lib/logger';
+import { NOT_FOUND } from '@/lib/messages';
+import { SERVICE_TYPE_HEB } from '@/lib/constants/translations';
 
 const logger = createLogger('appointments');
 
@@ -96,7 +98,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!vehicle || vehicle.userId !== payload.userId) {
-      return errorResponse('רכב לא נמצא', 404);
+      return errorResponse(NOT_FOUND.VEHICLE, 404);
     }
 
     // Parse date
@@ -171,13 +173,7 @@ export async function POST(req: NextRequest) {
         const dateLabel = appointmentDate.toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' });
         const timeLabel = time || appointmentDate.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
 
-        const serviceTypeHeb: Record<string, string> = {
-          inspection: 'בדיקה',
-          maintenance: 'טיפול',
-          repair: 'תיקון',
-          test_prep: 'הכנה לטסט',
-        };
-        const serviceLabel = serviceTypeHeb[serviceType] || serviceType;
+        const serviceLabel = SERVICE_TYPE_HEB[serviceType] || serviceType;
 
         await prisma.notification.create({
           data: {
