@@ -14,11 +14,15 @@ export function Card({ children, className, hover, onClick }: CardProps) {
     <div
       className={cn(
         'bg-white rounded-xl shadow-sm border border-gray-100 p-3 sm:p-5',
-        hover && 'hover:shadow-md hover:border-teal-200 transition-all cursor-pointer',
-        onClick && 'cursor-pointer',
+        'transition-all duration-200 ease-out',
+        hover && 'hover:shadow-md hover:border-teal-200 hover:-translate-y-0.5 cursor-pointer',
+        onClick && 'cursor-pointer hover:shadow-md hover:border-teal-200 hover:-translate-y-0.5',
         className
       )}
       onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } } : undefined}
     >
       {children}
     </div>
@@ -55,7 +59,12 @@ export function StatCard({ label, value, icon, color = 'teal', trend }: {
   };
 
   return (
-    <div className={cn('rounded-xl border p-3 sm:p-4', colors[color])}>
+    <div className={cn(
+      'rounded-xl border p-3 sm:p-4',
+      'transition-all duration-200 ease-out',
+      'hover:shadow-sm hover:-translate-y-0.5',
+      colors[color]
+    )}>
       <div className="flex items-center justify-between mb-1 sm:mb-2">
         <span className="text-xs sm:text-sm font-medium opacity-80">{label}</span>
         {icon}
