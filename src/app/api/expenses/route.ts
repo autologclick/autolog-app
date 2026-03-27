@@ -10,8 +10,8 @@ import {
   getPaginationParams,
   paginationMeta,
   requireOwnership,
+  enforceRateLimit,
 } from '@/lib/api-helpers';
-import { checkApiRateLimit } from '@/lib/rate-limit';
 import { expenseSchema } from '@/lib/validations';
 import { NOT_FOUND } from '@/lib/messages';
 import { isValidExpenseCategory, aggregateExpenses } from '@/lib/services/expense-service';
@@ -22,10 +22,8 @@ export async function GET(req: NextRequest) {
     const payload = requireAuth(req);
 
     // Rate limit general API calls
-    const rateLimit = checkApiRateLimit(payload.userId);
-    if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
-    }
+    const rateLimitError = enforceRateLimit(payload.userId);
+    if (rateLimitError) return rateLimitError;
 
     const url = new URL(req.url);
     const vehicleId = url.searchParams.get('vehicleId');
@@ -73,7 +71,7 @@ export async function GET(req: NextRequest) {
     // Add category filter if provided
     if (category) {
       if (!isValidExpenseCategory(category)) {
-        return errorResponse('קטגוריה לא תקינה', 400);
+        return errorResponse('×§××××¨×× ×× ×ª×§×× ×', 400);
       }
       whereFilters.category = category;
     }
@@ -123,10 +121,8 @@ export async function POST(req: NextRequest) {
     const payload = requireAuth(req);
 
     // Rate limit API calls
-    const rateLimit = checkApiRateLimit(payload.userId);
-    if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
-    }
+    const rateLimitError = enforceRateLimit(payload.userId);
+    if (rateLimitError) return rateLimitError;
 
     const body = await req.json();
 
@@ -154,7 +150,7 @@ export async function POST(req: NextRequest) {
     // Parse date
     const expenseDate = new Date(date);
     if (isNaN(expenseDate.getTime())) {
-      return errorResponse('תאריך לא תקין', 400);
+      return errorResponse('×ª××¨×× ×× ×ª×§××', 400);
     }
 
     // Create expense
@@ -179,7 +175,7 @@ export async function POST(req: NextRequest) {
     });
 
     return jsonResponse(
-      { expense, message: 'הוצאה נוספה בהצלחה' },
+      { expense, message: '×××¦×× × ××¡×¤× ×××¦×××' },
       201
     );
   } catch (error) {
