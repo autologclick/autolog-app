@@ -24,6 +24,15 @@ interface FluidStatus { brakeFluid: string; engineOil: string; coolant: string; 
 interface WindowStatus { frontLeft: string; frontRight: string; rearLeft: string; rearRight: string; }
 interface BrakeSystem { frontDiscs: number; rearDiscs: number; frontPads: number; rearPads: number; }
 interface Recommendation { text: string; urgency: string; estimatedCost: string; }
+interface GarageVehicle {
+  id: string;
+  licensePlate: string;
+  manufacturer: string;
+  model: string;
+  year?: number;
+  nickname?: string;
+}
+
 
 const statusOptions = [
   { value: 'ok', label: 'תקין', color: 'bg-green-500', icon: Check },
@@ -219,7 +228,7 @@ export default function NewInspectionPage() {
   const [successId, setSuccessId] = useState('');
 
   // Step 1: Vehicle & Type
-  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [vehicles, setVehicles] = useState<GarageVehicle[]>([]);
   const [selectedVehicleId, setSelectedVehicleId] = useState('');
   const [inspectionType, setInspectionType] = useState('full');
   const [mechanicName, setMechanicName] = useState('');
@@ -385,7 +394,7 @@ export default function NewInspectionPage() {
         const urlVehicleId = searchParams.get('vehicleId');
         if (urlVehicleId && vList.length > 0) {
           // Try to match by ID or license plate
-          const match = vList.find((v: any) =>
+          const match = vList.find((v: GarageVehicle) =>
             v.id === urlVehicleId || v.licensePlate === urlVehicleId
           );
           if (match) setSelectedVehicleId(match.id);
@@ -645,7 +654,7 @@ export default function NewInspectionPage() {
       if (!selectedVehicleId && !isManualVehicleValid) { setError('יש לבחור רכב או להזין מספר רישוי'); return; }
 
       // Base payload (common to all types)
-      const basePayload: any = {
+      const basePayload: Record<string, unknown> = {
         vehicleId: selectedVehicleId || undefined,
         appointmentId: appointmentId || undefined,
         manualVehicle: !selectedVehicleId && isManualVehicleValid ? {
@@ -660,7 +669,7 @@ export default function NewInspectionPage() {
         mileage: mileage ? parseInt(mileage) : undefined,
       };
 
-      let payload: any;
+      let payload: Record<string, unknown>;
 
       if (inspectionType === 'full') {
         payload = {
