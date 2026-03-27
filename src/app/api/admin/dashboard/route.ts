@@ -2,6 +2,53 @@ import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAdmin, jsonResponse, handleApiError } from '@/lib/api-helpers';
 
+// =============================================
+// Dashboard data types (replacing `any` usage)
+// =============================================
+
+interface TopGarageRow {
+  id: string;
+  name: string;
+  city: string | null;
+  isActive: boolean;
+  _count: { inspections: number; reviews: number };
+  reviews: { rating: number }[];
+}
+
+interface RecentUserRow {
+  id: string;
+  fullName: string;
+  email: string;
+  createdAt: Date;
+  _count: { vehicles: number };
+}
+
+interface RecentInspectionRow {
+  id: string;
+  createdAt: Date;
+  overallScore: number | null;
+  status: string;
+  vehicle: { nickname: string; licensePlate: string } | null;
+  garage: { name: string } | null;
+}
+
+interface RecentAppointmentRow {
+  id: string;
+  createdAt: Date;
+  date: Date;
+  status: string;
+  user: { fullName: string } | null;
+  garage: { name: string } | null;
+}
+
+interface RecentSosEventRow {
+  id: string;
+  createdAt: Date;
+  status: string;
+  user: { fullName: string } | null;
+  vehicle: { nickname: string; licensePlate: string } | null;
+}
+
 export async function GET(req: NextRequest) {
   try {
     requireAdmin(req);
@@ -95,7 +142,8 @@ export async function GET(req: NextRequest) {
     // GarageApplication model may not exist yet - safely default to 0
     let garageApplications = 0;
     try {
-      garageApplications = await (prisma as any).garageApplication.count({ where: { status: 'pending' } });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- model may not exist in schema yet
+      garageApplications = await (prisma as Record<string, any>).garageApplication?.count({ where: { status: 'pending' } }) ?? 0;
     } catch (_) {
       // Model not in schema yet
     }
@@ -113,7 +161,7 @@ export async function GET(req: NextRequest) {
       : 100;
 
     // Calculate average rating for each garage
-    const garagesWithRating = topGarages.map((g: any) => ({
+    const garagesWithRating = (topGarages as TopGarageRow[]).map((g) => ({
       id: g.id,
       name: g.name,
       city: g.city || '',
@@ -121,39 +169,39 @@ export async function GET(req: NextRequest) {
       inspectionCount: g._count.inspections,
       reviewCount: g._count.reviews,
       avgRating: g.reviews.length > 0
-        ? Number((g.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / g.reviews.length).toFixed(1))
+        ? Number((g.reviews.reduce((sum, r) => sum + r.rating, 0) / g.reviews.length).toFixed(1))
         : 0,
     }));
 
     // Build unified recent activity feed (last 10 items)
     const recentActivity = [
-      ...recentUsers.map((u: any) => ({
+      ...(recentUsers as RecentUserRow[]).map((u) => ({
         id: u.id,
-        type: 'user',
+        type: 'user' as const,
         title: u.fullName,
         description: 'משתמש חדש',
         timestamp: u.createdAt,
         meta: { email: u.email, vehicles: u._count.vehicles },
       })),
-      ...recentInspections.map((i: any) => ({
+      ...(recentInspections as RecentInspectionRow[]).map((i) => ({
         id: i.id,
-        type: 'inspection',
+        type: 'inspection' as const,
         title: i.vehicle?.nickname || i.vehicle?.licensePlate || 'רכב',
         description: 'בדיקה חדשה',
         timestamp: i.createdAt,
         meta: { garage: i.garage?.name, score: i.overallScore, status: i.status },
       })),
-      ...recentAppointments.map((a: any) => ({
+      ...(recentAppointments as RecentAppointmentRow[]).map((a) => ({
         id: a.id,
-        type: 'appointment',
+        type: 'appointment' as const,
         title: a.user?.fullName || 'משתמש',
         description: 'תור חדש',
         timestamp: a.createdAt,
         meta: { garage: a.garage?.name, date: a.date, status: a.status },
       })),
-      ...recentSosEvents.map((s: any) => ({
+      ...(recentSosEvents as RecentSosEventRow[]).map((s) => ({
         id: s.id,
-        type: 'sos',
+        type: 'sos' as const,
         title: s.user?.fullName || 'משתמש',
         description: 'אירוע SOS',
         timestamp: s.createdAt,
@@ -180,14 +228,14 @@ export async function GET(req: NextRequest) {
         weekAppointments,
         garageApplications,
       },
-      recentUsers: recentUsers.map((u: any) => ({
+      recentUsers: (recentUsers as RecentUserRow[]).map((u) => ({
         id: u.id,
         name: u.fullName,
         email: u.email,
         vehicleCount: u._count.vehicles,
         createdAt: u.createdAt,
       })),
-      recentInspections: recentInspections.map((i: any) => ({
+      recentInspections: (recentInspections as RecentInspectionRow[]).map((i) => ({
         id: i.id,
         vehicle: `${i.vehicle?.nickname || ''} (${i.vehicle?.licensePlate || ''})`,
         garage: i.garage?.name || '',
