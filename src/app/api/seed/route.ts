@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
     // Create garages
     const garage1 = await prisma.garage.create({
-      data: { name: 'מוסך אלטמן', city: 'תל אביב', phone: '03-555-1234', rating: 4.8, reviewCount: 234, isPartner: true, isActive: true, services: '["ROT","טיפול","צמיגים"]' },
+      data: { name: 'מוסך אלטמן', city: 'תל אביב', phone: '03-555-1234', rating: 4.8, reviewCount: 234, isPartner: true, isActive: true, services: '["ROP","טיפול","צמיגיצ"]' },
     });
 
     const garage2 = await prisma.garage.create({
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     // Create inspections
     await prisma.inspection.create({
       data: {
-        vehicleId: vehicle1.id, garageId: garage1.id, mechanicName: 'דוד כהן',
+        vehicleId: vehicle1.id, garageId: garage1.id, mechanicName: 'דוג כהן',
         inspectionType: 'full', date: new Date('2026-03-10'), status: 'completed',
         overallScore: 85, summary: 'הרכב במצב טוב. כמה המלצות לשיפור.',
         items: {
@@ -181,8 +181,9 @@ export async function POST(request: Request) {
         notifications: 2,
       },
     });
-  } catch (error: any) {
-    logger.error('Seed error', { error: error instanceof Error ? error.message : String(error) });
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'שגיאה לא ידועה';
+    logger.error('Seed error', { error: message });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
