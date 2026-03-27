@@ -1,5 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+
+// Security headers applied to all responses
+function addSecurityHeaders(response: NextResponse): NextResponse {
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  return response;
+}
+
 // Decode JWT payload without Node.js crypto (Edge Runtime compatible)
 function decodeJwtPayload(token: string): { userId: string; email: string; role: string; exp?: number } | null {
   try {
@@ -58,7 +69,7 @@ export async function middleware(req: NextRequest) {
 
   // Public routes - no auth required
   if (isPublicRoute(pathname)) {
-    return NextResponse.next();
+    return addSecurityHeaders(NextResponse.next());
   }
 
   // Try to decode the access token
@@ -84,7 +95,7 @@ export async function middleware(req: NextRequest) {
           const setCookieHeaders = refreshRes.headers.getSetCookie?.() || [];
 
           // Create response that continues to the original destination
-          const response = NextResponse.next();
+          const response = addSecurityHeaders(NextResponse.next());
 
           // Forward the new cookies
           for (const cookie of setCookieHeaders) {
