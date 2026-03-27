@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, errorResponse, handleApiError, requireOwnershipOrAdmin } from '@/lib/api-helpers';
-import { checkApiRateLimit } from '@/lib/rate-limit';
+import { requireAuth, jsonResponse, errorResponse, handleApiError, requireOwnershipOrAdmin   enforceRateLimit,
+} from '@/lib/api-helpers';
 import { analyzeInspection } from '@/lib/ai-analysis';
 
 // GET /api/ai/inspection-analysis?inspectionId=xxx
@@ -9,16 +9,14 @@ export async function GET(req: NextRequest) {
   try {
     const payload = requireAuth(req);
 
-    const rateLimit = checkApiRateLimit(payload.userId);
-    if (!rateLimit.allowed) {
-      return errorResponse('יותר מדי בקשות. אנא נסה שוב מאוחר יותר.', 429);
-    }
+    const rateLimitError = enforceRateLimit(payload.userId);
+    if (rateLimitError) return rateLimitError;
 
     const url = new URL(req.url);
     const inspectionId = url.searchParams.get('inspectionId');
 
     if (!inspectionId) {
-      return errorResponse('חסר מזהה בדיקה', 400);
+      return errorResponse('××¡×¨ ×××× ××××§×', 400);
     }
 
     const inspection = await prisma.inspection.findUnique({
@@ -32,7 +30,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!inspection) {
-      return errorResponse('בדיקה לא נמצאה', 404);
+      return errorResponse('××××§× ×× × ××¦××', 404);
     }
 
     requireOwnershipOrAdmin(payload, inspection.vehicle.userId);
