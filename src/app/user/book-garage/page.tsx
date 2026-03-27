@@ -81,6 +81,19 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): nu
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+
+interface GarageListItem {
+  id: string;
+  name: string;
+  city?: string;
+  address?: string;
+  phone?: string;
+  specialties?: string[];
+  rating?: number;
+  isAutoLog?: boolean;
+  [key: string]: unknown;
+}
+
 export default function BookGaragePage() {
   const [garages, setGarages] = useState<Garage[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -160,7 +173,7 @@ export default function BookGaragePage() {
       if (!res.ok) return;
       const data = await res.json();
       if (data.garages) {
-        setGarages(data.garages.map((g: any) => ({
+        setGarages(data.garages.map((g: GarageListItem) => ({
           ...g,
           reviewCount: g.reviewCount || g._count?.reviews || 0,
           services: typeof g.services === 'string' ? (() => { try { return JSON.parse(g.services); } catch { return ['בדיקה']; } })() : g.services || ['בדיקה'],
