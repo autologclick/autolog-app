@@ -101,6 +101,13 @@ export const SUCCESS_MESSAGES = {
   REMINDER_SET: 'התזכורת נקבעה בהצלחה',
   INSPECTION_SAVED: 'הבדיקה נשמרה בהצלחה',
   INSPECTION_COMPLETED: 'הבדיקה הושלמה בהצלחה',
+  TREATMENT_UPDATED: 'הטיפול עודכן בהצלחה',
+  TREATMENT_DELETED: 'הטיפול נמחק בהצלחה',
+  TREATMENT_APPROVED: 'הטיפול אושר בהצלחה!',
+  TREATMENT_REJECTED: 'הטיפול נדחה',
+  DOCUMENT_DELETED: 'המסמך נמחק בהצלחה',
+  DOCUMENT_UPDATED: 'המסמך עודכן בהצלחה',
+  NOTIFICATION_DELETED: 'ההודעה נמחקה בהצלחה',
 } as const;
 
 // ==========================================
@@ -154,6 +161,39 @@ export const APPOINTMENT_ERRORS = {
   ALREADY_COMPLETED: 'התור כבר הושלם',
   VEHICLE_REQUIRED: 'יש לבחור רכב',
   SERVICE_TYPE_REQUIRED: 'יש לבחור סוג טיפול',
+} as const;
+
+// ==========================================
+// Treatment-Specific
+// ==========================================
+export const TREATMENT_ERRORS = {
+  UNAUTHORIZED: 'טיפול לא נמצא או שאין הרשאה',
+  CANNOT_APPROVE: 'לא ניתן לאשר טיפול זה',
+  CANNOT_REJECT: 'לא ניתן לדחות טיפול זה',
+  INVALID_ACTION: 'פעולה לא תקינה',
+} as const;
+
+// ==========================================
+// Notification-Specific
+// ==========================================
+export const NOTIFICATION_ERRORS = {
+  MARK_READ_FAILED: 'שגיאה בסימון הודעות',
+} as const;
+
+// ==========================================
+// Document-Specific  
+// ==========================================
+export const DOCUMENT_ERRORS = {
+  DELETE_FAILED: 'שגיאה במחיקת המסמך',
+} as const;
+
+// ==========================================
+// Garage Application-Specific
+// ==========================================
+export const GARAGE_APP_ERRORS = {
+  INVALID_STATUS: 'סטטוס לא תקין',
+  ALREADY_PROCESSED: 'בקשה זו כבר טופלה',
+  NOT_FOUND: 'בקשה לא נמצאה',
 } as const;
 
 // ==========================================
