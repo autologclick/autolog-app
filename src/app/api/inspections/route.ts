@@ -4,6 +4,13 @@ import { Prisma } from '@prisma/client';
 import { requireAuth, requireGarageOwner, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
 import { comprehensiveInspectionSchema } from '@/lib/validations';
 import { NOT_FOUND } from '@/lib/messages';
+import {
+  TIRE_NAMES_HEB,
+  LIGHT_NAMES_HEB,
+  FLUID_NAMES_HEB,
+  PRE_TEST_NAMES_HEB,
+  INSPECTION_TYPE_HEB,
+} from '@/lib/constants/translations';
 
 // GET /api/inspections - List inspections (user sees their own, garage sees theirs)
 export async function GET(req: NextRequest) {
@@ -184,8 +191,7 @@ export async function POST(req: NextRequest) {
       if (data.tiresData) {
         Object.entries(data.tiresData).forEach(([key, val]) => {
           if (val) {
-            const nameMap: Record<string, string> = { frontLeft: 'צמיג קדמי שמאל', frontRight: 'צמיג קדמי ימין', rearLeft: 'צמיג אחורי שמאל', rearRight: 'צמיג אחורי ימין' };
-            autoItems.push({ inspectionId: newInspection.id, category: 'tires', itemName: nameMap[key] || key, status: val, notes: null, score: null });
+            autoItems.push({ inspectionId: newInspection.id, category: 'tires', itemName: TIRE_NAMES_HEB[key] || key, status: val, notes: null, score: null });
           }
         });
       }
@@ -194,8 +200,7 @@ export async function POST(req: NextRequest) {
       if (data.lightsData) {
         Object.entries(data.lightsData).forEach(([key, val]) => {
           if (val) {
-            const nameMap: Record<string, string> = { brakes: 'אורות בלם', reverse: 'אורות ריוורס', fog: 'אורות ערפל', headlights: 'פנסים ראשיים', frontSignal: 'איתות קדמי', rearSignal: 'איתות אחורי', highBeam: 'אור גבוה', plate: 'תאורת לוחית' };
-            autoItems.push({ inspectionId: newInspection.id, category: 'electrical', itemName: nameMap[key] || key, status: val, notes: null, score: null });
+            autoItems.push({ inspectionId: newInspection.id, category: 'electrical', itemName: LIGHT_NAMES_HEB[key] || key, status: val, notes: null, score: null });
           }
         });
       }
@@ -204,25 +209,17 @@ export async function POST(req: NextRequest) {
       if (data.fluidsData) {
         Object.entries(data.fluidsData).forEach(([key, val]) => {
           if (val) {
-            const nameMap: Record<string, string> = { brakeFluid: 'נוזל בלמים', engineOil: 'שמן מנוע', coolant: 'נוזל קירור' };
-            autoItems.push({ inspectionId: newInspection.id, category: 'fluids', itemName: nameMap[key] || key, status: val, notes: null, score: null });
+            autoItems.push({ inspectionId: newInspection.id, category: 'fluids', itemName: FLUID_NAMES_HEB[key] || key, status: val, notes: null, score: null });
           }
         });
       }
 
       // Auto-generate items from pre-test checklist
       if (data.preTestChecklist) {
-        const preTestNameMap: Record<string, string> = {
-          tires: 'צמיגים (מצב + לחץ)', lights: 'אורות ומחוונים', brakes: 'בלמים',
-          mirrors: 'מראות', wipers: 'מגבים + נוזל', horn: 'צופר',
-          seatbelts: 'חגורות בטיחות', exhaust: 'מערכת פליטה', steering: 'היגוי',
-          suspension: 'מתלים ובולמים', fluids: 'נוזלים', battery: 'מצבר',
-          handbrake: 'בלם יד', speedometer: 'מד מהירות', windows: 'חלונות ושמשות',
-        };
         const preTestItems = Object.entries(data.preTestChecklist).map(([key, passed]) => ({
           inspectionId: newInspection.id,
           category: 'pre_test',
-          itemName: preTestNameMap[key] || key,
+          itemName: PRE_TEST_NAMES_HEB[key] || key,
           status: passed ? 'ok' : 'critical',
           notes: null,
           score: passed ? 100 : 0,
@@ -255,7 +252,7 @@ export async function POST(req: NextRequest) {
           userId: vehicle.userId,
           type: 'system',
           title: 'דוח בדיקה חדש!',
-          message: `דוח בדיקה מסוג ${data.inspectionType === 'full' ? 'בדיקה מלאה' : data.inspectionType === 'pre_test' ? 'הכנה לטסט' : data.inspectionType === 'rot' ? 'בדיקת רקב' : data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
+          message: `דוח בדיקה מסוג ${INSPECTION_TYPE_HEB[data.inspectionType] || data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
           link: `/inspection/${newInspection.id}`,
         },
       });
