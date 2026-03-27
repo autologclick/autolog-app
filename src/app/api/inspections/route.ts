@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
 import { requireAuth, requireGarageOwner, jsonResponse, errorResponse, handleApiError, getPaginationParams, paginationMeta, validationErrorResponse } from '@/lib/api-helpers';
-import { z } from 'zod';
+import { comprehensiveInspectionSchema } from '@/lib/validations';
 import { NOT_FOUND } from '@/lib/messages';
 
 // GET /api/inspections - List inspections (user sees their own, garage sees theirs)
@@ -60,157 +60,7 @@ export async function POST(req: NextRequest) {
     const payload = requireGarageOwner(req);
     const body = await req.json();
 
-    // Comprehensive validation schema matching the 8-step form
-    const comprehensiveSchema = z.object({
-      vehicleId: z.string().optional(),
-      appointmentId: z.string().optional(),
-      // Manual vehicle entry (when vehicleId is not provided)
-      manualVehicle: z.object({
-        licensePlate: z.string().min(5),
-        manufacturer: z.string().optional(),
-        model: z.string().optional(),
-        year: z.number().int().optional(),
-        color: z.string().optional(),
-      }).optional(),
-      inspectionType: z.enum(['full', 'rot', 'engine', 'tires', 'brakes', 'pre_test']),
-      mechanicName: z.string().max(100).optional(),
-      mileage: z.number().int().optional(),
-      engineNumber: z.string().optional(),
-      engineVerified: z.boolean().optional(),
-      overallScore: z.number().int().min(0).max(100).optional(),
-
-      // Photos (JSON objects with base64 strings)
-      exteriorPhotos: z.record(z.string()).optional(),
-      interiorPhotos: z.record(z.string()).optional(),
-
-      // Tires & Lights
-      tiresData: z.object({
-        frontLeft: z.string().optional(),
-        frontRight: z.string().optional(),
-        rearLeft: z.string().optional(),
-        rearRight: z.string().optional(),
-      }).optional(),
-      lightsData: z.object({
-        brakes: z.string().optional(),
-        reverse: z.string().optional(),
-        fog: z.string().optional(),
-        headlights: z.string().optional(),
-        frontSignal: z.string().optional(),
-        rearSignal: z.string().optional(),
-        highBeam: z.string().optional(),
-        plate: z.string().optional(),
-      }).optional(),
-
-      // Mechanical systems
-      frontAxle: z.object({
-        status: z.string().optional(),
-        ballBearings: z.string().optional(),
-        notes: z.string().optional(),
-      }).optional(),
-      steeringData: z.object({
-        status: z.string().optional(),
-        alignment: z.string().optional(),
-        notes: z.string().optional(),
-      }).optional(),
-      shocksData: z.object({
-        frontLeft: z.string().optional(),
-        frontRight: z.string().optional(),
-        rearLeft: z.string().optional(),
-        rearRight: z.string().optional(),
-        notes: z.string().optional(),
-      }).optional(),
-      bodyData: z.object({
-        condition: z.string().optional(),
-        tags: z.array(z.string()).optional(),
-        notes: z.string().optional(),
-      }).optional(),
-      batteryData: z.object({
-        isOriginal: z.boolean().optional(),
-        date: z.string().optional(),
-      }).optional(),
-
-      // Fluids & Interior
-      fluidsData: z.object({
-        brakeFluid: z.string().optional(),
-        engineOil: z.string().optional(),
-        coolant: z.string().optional(),
-      }).optional(),
-      interiorSystems: z.object({
-        acCold: z.string().optional(),
-        acHot: z.string().optional(),
-        audio: z.string().optional(),
-      }).optional(),
-      windowsData: z.object({
-        frontLeft: z.string().optional(),
-        frontRight: z.string().optional(),
-        rearLeft: z.string().optional(),
-        rearRight: z.string().optional(),
-      }).optional(),
-
-      // Engine & Gearbox
-      engineIssues: z.object({
-        issues: z.array(z.string()).optional(),
-        notes: z.string().optional(),
-      }).optional(),
-      gearboxIssues: z.object({
-        notes: z.string().optional(),
-      }).optional(),
-
-      // Braking system percentages
-      brakingSystem: z.object({
-        frontDiscs: z.number().optional(),
-        rearDiscs: z.number().optional(),
-        frontPads: z.number().optional(),
-        rearPads: z.number().optional(),
-      }).optional(),
-
-      // Summary & Notes
-      summary: z.string().optional(),
-      recommendations: z.array(z.object({
-        text: z.string(),
-        urgency: z.string().optional(),
-        estimatedCost: z.string().optional(),
-      })).optional(),
-      notes: z.object({
-        undercarriage: z.string().optional(),
-        engine: z.string().optional(),
-        general: z.string().optional(),
-      }).optional(),
-
-      // Customer signature
-      customerName: z.string().optional(),
-      customerIdNumber: z.string().optional(),
-      customerSignature: z.string().optional(),
-
-      // Legacy support
-      detailedScores: z.record(z.number()).optional(),
-      items: z.array(z.object({
-        category: z.string(),
-        itemName: z.string(),
-        status: z.enum(['ok', 'warning', 'critical']),
-        notes: z.string().optional(),
-        score: z.number().int().min(0).max(100).optional(),
-      })).optional(),
-
-      // Pre-test data
-      preTestChecklist: z.record(z.boolean()).optional(),
-      preTestNotes: z.string().optional(),
-
-      // Service/work items
-      serviceItems: z.array(z.string()).optional(),
-      workPerformed: z.array(z.object({
-        item: z.string(),
-        action: z.enum(['fixed', 'replaced', 'adjusted', 'checked', 'cleaned']),
-        notes: z.string().optional(),
-        cost: z.number().optional(),
-      })).optional(),
-
-      // Photos for non-full types
-      vehiclePhoto: z.string().optional(),
-      invoicePhoto: z.string().optional(),
-    });
-
-    const validation = comprehensiveSchema.safeParse(body);
+    const validation = comprehensiveInspectionSchema.safeParse(body);
     if (!validation.success) {
       return validationErrorResponse(validation.error);
     }
@@ -218,7 +68,7 @@ export async function POST(req: NextRequest) {
     const data = validation.data;
 
     if (!data.vehicleId && !data.manualVehicle) {
-      return errorResponse('\u05d9\u05e9 \u05dc\u05d1\u05d7\u05d5\u05e8 \u05e8\u05db\u05d1 \u05d0\u05d5 \u05dc\u05d4\u05d6\u05d9\u05df \u05de\u05e1\u05e4\u05e8 \u05e8\u05d9\u05e9\u05d5\u05d9', 400);
+      return errorResponse('יש לבחור רכב או להזין מספר רישוי', 400);
     }
 
     const garage = await prisma.garage.findUnique({ where: { ownerId: payload.userId } });
@@ -243,8 +93,8 @@ export async function POST(req: NextRequest) {
           data: {
             userId: payload.userId, // temporary owner - garage
             licensePlate: data.manualVehicle.licensePlate,
-            manufacturer: data.manualVehicle.manufacturer || '\u05dc\u05d0 \u05e6\u05d5\u05d9\u05df',
-            model: data.manualVehicle.model || '\u05dc\u05d0 \u05e6\u05d5\u05d9\u05df',
+            manufacturer: data.manualVehicle.manufacturer || 'לא צוין',
+            model: data.manualVehicle.model || 'לא צוין',
             year: data.manualVehicle.year || 0,
             color: data.manualVehicle.color || null,
             nickname: (data.manualVehicle.manufacturer && data.manualVehicle.model)
@@ -334,7 +184,7 @@ export async function POST(req: NextRequest) {
       if (data.tiresData) {
         Object.entries(data.tiresData).forEach(([key, val]) => {
           if (val) {
-            const nameMap: Record<string, string> = { frontLeft: '\u05e6\u05de\u05d9\u05d2 \u05e7\u05d3\u05de\u05d9 \u05e9\u05de\u05d0\u05dc', frontRight: '\u05e6\u05de\u05d9\u05d2 \u05e7\u05d3\u05de\u05d9 \u05d9\u05de\u05d9\u05df', rearLeft: '\u05e6\u05de\u05d9\u05d2 \u05d0\u05d7\u05d5\u05e8\u05d9 \u05e9\u05de\u05d0\u05dc', rearRight: '\u05e6\u05de\u05d9\u05d2 \u05d0\u05d7\u05d5\u05e8\u05d9 \u05d9\u05de\u05d9\u05df' };
+            const nameMap: Record<string, string> = { frontLeft: 'צמיג קדמי שמאל', frontRight: 'צמיג קדמי ימין', rearLeft: 'צמיג אחורי שמאל', rearRight: 'צמיג אחורי ימין' };
             autoItems.push({ inspectionId: newInspection.id, category: 'tires', itemName: nameMap[key] || key, status: val, notes: null, score: null });
           }
         });
@@ -344,7 +194,7 @@ export async function POST(req: NextRequest) {
       if (data.lightsData) {
         Object.entries(data.lightsData).forEach(([key, val]) => {
           if (val) {
-            const nameMap: Record<string, string> = { brakes: '\u05d0\u05d5\u05e8\u05d5\u05ea \u05d1\u05dc\u05dd', reverse: '\u05d0\u05d5\u05e8\u05d5\u05ea \u05e8\u05d9\u05d5\u05d5\u05e8\u05e1', fog: '\u05d0\u05d5\u05e8\u05d5\u05ea \u05e2\u05e8\u05e4\u05dc', headlights: '\u05e4\u05e0\u05e1\u05d9\u05dd \u05e8\u05d0\u05e9\u05d9\u05d9\u05dd', frontSignal: '\u05d0\u05d9\u05ea\u05d5\u05ea \u05e7\u05d3\u05de\u05d9', rearSignal: '\u05d0\u05d9\u05ea\u05d5\u05ea \u05d0\u05d7\u05d5\u05e8\u05d9', highBeam: '\u05d0\u05d5\u05e8 \u05d2\u05d1\u05d5\u05d4', plate: '\u05ea\u05d0\u05d5\u05e8\u05ea \u05dc\u05d5\u05d7\u05d9\u05ea' };
+            const nameMap: Record<string, string> = { brakes: 'אורות בלם', reverse: 'אורות ריוורס', fog: 'אורות ערפל', headlights: 'פנסים ראשיים', frontSignal: 'איתות קדמי', rearSignal: 'איתות אחורי', highBeam: 'אור גבוה', plate: 'תאורת לוחית' };
             autoItems.push({ inspectionId: newInspection.id, category: 'electrical', itemName: nameMap[key] || key, status: val, notes: null, score: null });
           }
         });
@@ -354,7 +204,7 @@ export async function POST(req: NextRequest) {
       if (data.fluidsData) {
         Object.entries(data.fluidsData).forEach(([key, val]) => {
           if (val) {
-            const nameMap: Record<string, string> = { brakeFluid: '\u05e0\u05d5\u05d6\u05dc \u05d1\u05dc\u05de\u05d9\u05dd', engineOil: '\u05e9\u05de\u05df \u05de\u05e0\u05d5\u05e2', coolant: '\u05e0\u05d5\u05d6\u05dc \u05e7\u05d9\u05e8\u05d5\u05e8' };
+            const nameMap: Record<string, string> = { brakeFluid: 'נוזל בלמים', engineOil: 'שמן מנוע', coolant: 'נוזל קירור' };
             autoItems.push({ inspectionId: newInspection.id, category: 'fluids', itemName: nameMap[key] || key, status: val, notes: null, score: null });
           }
         });
@@ -363,11 +213,11 @@ export async function POST(req: NextRequest) {
       // Auto-generate items from pre-test checklist
       if (data.preTestChecklist) {
         const preTestNameMap: Record<string, string> = {
-          tires: '\u05e6\u05de\u05d9\u05d2\u05d9\u05dd (\u05de\u05e6\u05d1 + \u05dc\u05d7\u05e5)', lights: '\u05d0\u05d5\u05e8\u05d5\u05ea \u05d5\u05de\u05d7\u05d5\u05d5\u05e0\u05d9\u05dd', brakes: '\u05d1\u05dc\u05de\u05d9\u05dd',
-          mirrors: '\u05de\u05e8\u05d0\u05d5\u05ea', wipers: '\u05de\u05d2\u05d1\u05d9\u05dd + \u05e0\u05d5\u05d6\u05dc', horn: '\u05e6\u05d5\u05e4\u05e8',
-          seatbelts: '\u05d7\u05d2\u05d5\u05e8\u05d5\u05ea \u05d1\u05d8\u05d9\u05d7\u05d5\u05ea', exhaust: '\u05de\u05e2\u05e8\u05db\u05ea \u05e4\u05dc\u05d9\u05d8\u05d4', steering: '\u05d4\u05d9\u05d2\u05d5\u05d9',
-          suspension: '\u05de\u05ea\u05dc\u05d9\u05dd \u05d5\u05d1\u05d5\u05dc\u05de\u05d9\u05dd', fluids: '\u05e0\u05d5\u05d6\u05dc\u05d9\u05dd', battery: '\u05de\u05e6\u05d1\u05e8',
-          handbrake: '\u05d1\u05dc\u05dd \u05d9\u05d3', speedometer: '\u05de\u05d3 \u05de\u05d4\u05d9\u05e8\u05d5\u05ea', windows: '\u05d7\u05dc\u05d5\u05e0\u05d5\u05ea \u05d5\u05e9\u05de\u05e9\u05d5\u05ea',
+          tires: 'צמיגים (מצב + לחץ)', lights: 'אורות ומחוונים', brakes: 'בלמים',
+          mirrors: 'מראות', wipers: 'מגבים + נוזל', horn: 'צופר',
+          seatbelts: 'חגורות בטיחות', exhaust: 'מערכת פליטה', steering: 'היגוי',
+          suspension: 'מתלים ובולמים', fluids: 'נוזלים', battery: 'מצבר',
+          handbrake: 'בלם יד', speedometer: 'מד מהירות', windows: 'חלונות ושמשות',
         };
         const preTestItems = Object.entries(data.preTestChecklist).map(([key, passed]) => ({
           inspectionId: newInspection.id,
@@ -404,8 +254,8 @@ export async function POST(req: NextRequest) {
         data: {
           userId: vehicle.userId,
           type: 'system',
-          title: '\u05d3\u05d5\u05d7 \u05d1\u05d3\u05d9\u05e7\u05d4 \u05d7\u05d3\u05e9!',
-          message: `\u05d3\u05d5\u05d7 \u05d1\u05d3\u05d9\u05e7\u05d4 \u05de\u05e1\u05d5\u05d2 ${data.inspectionType === 'full' ? '\u05d1\u05d3\u05d9\u05e7\u05d4 \u05de\u05dc\u05d0\u05d4' : data.inspectionType === 'pre_test' ? '\u05d4\u05db\u05e0\u05d4 \u05dc\u05d8\u05e1\u05d8' : data.inspectionType === 'rot' ? '\u05d1\u05d3\u05d9\u05e7\u05ea \u05e8\u05e7\u05d1' : data.inspectionType} \u05dc\u05e8\u05db\u05d1 ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) \u05d6\u05de\u05d9\u05df \u05dc\u05e6\u05e4\u05d9\u05d9\u05d4.`,
+          title: 'דוח בדיקה חדש!',
+          message: `דוח בדיקה מסוג ${data.inspectionType === 'full' ? 'בדיקה מלאה' : data.inspectionType === 'pre_test' ? 'הכנה לטסט' : data.inspectionType === 'rot' ? 'בדיקת רקב' : data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
           link: `/inspection/${newInspection.id}`,
         },
       });
@@ -420,7 +270,7 @@ export async function POST(req: NextRequest) {
       });
     });
 
-    return jsonResponse({ inspection, message: '\u05d4\u05d1\u05d3\u05d9\u05e7\u05d4 \u05e0\u05d5\u05e6\u05e8\u05d4 \u05d1\u05d4\u05e6\u05dc\u05d7\u05d4' }, 201);
+    return jsonResponse({ inspection, message: 'הבדיקה נוצרה בהצלחה' }, 201);
   } catch (error) {
     return handleApiError(error);
   }
