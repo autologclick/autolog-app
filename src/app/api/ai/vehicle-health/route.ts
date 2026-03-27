@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, errorResponse, handleApiError, requireOwnershipOrAdmin   enforceRateLimit,
+import { requireAuth, jsonResponse, errorResponse, handleApiError, requireOwnershipOrAdmin,
+  enforceRateLimit,
 } from '@/lib/api-helpers';
 import { analyzeVehicleHealth } from '@/lib/ai-analysis';
 import { NOT_FOUND } from '@/lib/messages';
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest) {
     const vehicleId = url.searchParams.get('vehicleId');
 
     if (!vehicleId) {
-      return errorResponse('××¡×¨ ×××× ×¨××', 400);
+      return errorResponse('ÃÂÃÂ¡ÃÂ¨ ÃÂÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂ', 400);
     }
 
     // Fetch vehicle with all related data
