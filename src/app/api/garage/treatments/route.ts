@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { createGarageTreatment, getGarageTreatments } from '@/lib/treatments-db';
 import prisma from '@/lib/db';
-import { NOT_FOUND } from '@/lib/messages';
+import { NOT_FOUND, AUTH_ERRORS } from '@/lib/messages';
 import { z } from 'zod';
 
 const garageTreatmentSchema = z.object({
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   try {
     const payload = requireAuth(req);
     if (payload.role !== 'garage_owner') {
-      return errorResponse('אין הרשאה', 403);
+      return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
     }
 
     const garage = await prisma.garage.findFirst({
@@ -47,13 +47,13 @@ export async function POST(req: NextRequest) {
   try {
     const payload = requireAuth(req);
     if (payload.role !== 'garage_owner') {
-      return errorResponse('אין הרשאה', 403);
+      return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
     }
 
     const body = await req.json();
     const validation = garageTreatmentSchema.safeParse(body);
     if (!validation.success) {
-      return errorResponse(validation.error.errors[0]?.message || 'נתונים לא תקינים', 400);
+      return errorResponse(validation.error.errors[0]?.message || '× ×ª×× ×× ×× ×ª×§×× ××', 400);
     }
 
     const data = validation.data;
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!vehicle) {
-      return errorResponse('רכב לא נמצא במערכת. הלקוח צריך להירשם תחילה.', 404);
+      return errorResponse('×¨×× ×× × ××¦× ×××¢×¨××ª. ×××§×× ×¦×¨×× ××××¨×©× ×ª××××.', 404);
     }
 
     const treatment = await createGarageTreatment({
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
       notes: data.notes,
     });
 
-    return jsonResponse({ treatment, message: 'הטיפול נשלח ללקוח לאישור!' }, 201);
+    return jsonResponse({ treatment, message: '××××¤×× × ×©×× ×××§×× ××××©××¨!' }, 201);
   } catch (error) {
     return handleApiError(error);
   }
