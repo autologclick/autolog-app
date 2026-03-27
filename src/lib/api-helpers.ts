@@ -135,9 +135,9 @@ export function sanitizeObject<T extends Record<string, unknown>>(obj: T): T {
 
   for (const key in sanitized) {
     if (typeof sanitized[key] === 'string') {
-      (sanitized as any)[key] = sanitizeInput(sanitized[key]);
+      (sanitized as Record<string, unknown>)[key] = sanitizeInput(sanitized[key] as string);
     } else if (sanitized[key] && typeof sanitized[key] === 'object') {
-      (sanitized as any)[key] = sanitizeObject(sanitized[key]);
+      (sanitized as Record<string, unknown>)[key] = sanitizeObject(sanitized[key] as Record<string, unknown>);
     }
   }
 
