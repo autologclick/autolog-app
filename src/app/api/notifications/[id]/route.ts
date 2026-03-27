@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, errorResponse, handleApiError, validationErrorResponse, requireOwnership } from '@/lib/api-helpers';
 import { z } from 'zod';
+import { NOT_FOUND, SUCCESS_MESSAGES } from '@/lib/messages';
 
 // PATCH /api/notifications/[id] - Mark single notification as read
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
@@ -23,7 +24,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     // Verify notification exists and belongs to user
     const notification = await prisma.notification.findUnique({ where: { id } });
-    if (!notification) return errorResponse('הודעה לא נמצאה', 404);
+    if (!notification) return errorResponse(NOT_FOUND.NOTIFICATION, 404);
     requireOwnership(payload.userId, notification.userId);
 
     // Update notification
@@ -46,13 +47,13 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
     // Verify notification exists and belongs to user
     const notification = await prisma.notification.findUnique({ where: { id } });
-    if (!notification) return errorResponse('הודעה לא נמצאה', 404);
+    if (!notification) return errorResponse(NOT_FOUND.NOTIFICATION, 404);
     requireOwnership(payload.userId, notification.userId);
 
     // Delete notification
     await prisma.notification.delete({ where: { id } });
 
-    return jsonResponse({ message: 'ההודעה נמחקה בהצלחה' });
+    return jsonResponse({ message: SUCCESS_MESSAGES.NOTIFICATION_DELETED });
   } catch (error) {
     return handleApiError(error);
   }
