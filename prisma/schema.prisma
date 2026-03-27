@@ -57,7 +57,8 @@ model User {
 // VEHICLES
 // ============================================================
 
-model Vehicle { id                String    @id @default(cuid())
+model Vehicle {
+  id                String    @id @default(cuid())
   userId            String
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   nickname          String    // e.g. "ספורטז לבנה"
@@ -128,7 +129,8 @@ model Garage {
   latitude      Float?
   longitude     Float?
   isActive      Boolean   @default(true)
-  isPartner     Boolean   @default(false)  amenities     String?   // JSON array: ["coffee", "shuttle", "wifi", "waiting_room", "tv", "children_area"]
+  isPartner     Boolean   @default(false)
+  amenities     String?   // JSON array: ["coffee", "shuttle", "wifi", "waiting_room", "tv", "children_area"]
   imageUrl      String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -196,4 +198,315 @@ model Inspection {
   inspectionType  String    // full | rot | engine | tires | brakes | pre_test
   date            DateTime
   status          String    @default("pending") // pending | in_progress | completed | cancelled
-  overallScore    Int?      // 0-100\n  // Detailed scores (JSON)\n  detailedScores  String?   // JSON: { engine: 85, brakes: 90, tires: 75, ... }\n\n  // Vehicle info snapshot\n  mileage         Int?\n  engineNumber    String?\n  engineVerified  Boolean   @default(false)\n\n  // Photos (JSON arrays of base64/URL strings)\n  exteriorPhotos  String?   // JSON: { front, rear, right, left, roof }\n  interiorPhotos  String?   // JSON: { frontSeats, rearSeats, dashboard }\n  undercarVideo   String?   // URL or base64 of undercarriage video\n\n  // Detailed system checks (JSON objects)\n  tiresData       String?   // JSON: { frontLeft, frontRight, rearLeft, rearRight } with status\n  lightsData      String?   // JSON: { brakes, reverse, fog, headlights, frontSignal, rearSignal, highBeam, plate }\n  frontAxle       String?   // JSON: { status, ballBearings, notes }\n  steeringData    String?   // JSON: { status, alignment, notes }\n  shocksData      String?   // JSON: { frontLeft, frontRight, rearLeft, rearRight, notes }\n  bodyData        String?   // JSON: { condition, paintRepairs, partsReplaced, notes }\n  batteryData     String?   // JSON: { date, isOriginal }\n  fluidsData      String?   // JSON: { brakeFluid, engineOil, coolant } each with status\n  interiorSystems String?   // JSON: { acCold, acHot, audio } each with status\n  windowsData     String?   // JSON: { rearLeft, rearRight, frontLeft, frontRight } each with status\n  engineIssues    String?   // JSON: { issues: [], notes }\n  gearboxIssues   String?   // JSON: { issues: [], notes }\n  brakingSystem   String?   // JSON: { frontDiscs, rearDiscs, frontPads, rearPads } as percentages\n\n  // Pre-test checklist data\n  preTestChecklist String?   // JSON: { tires: boolean, lights: boolean, ... }\n  preTestNotes    String?\n  serviceItems    String?   // JSON array of service item strings\n  workPerformed   String?   // JSON array of { item: string, action: "fixed"|"replaced"|"adjusted"|"checked"|"cleaned", notes?: string, cost?: number }\n\n  // Results\n  summary         String?\n  recommendations String?   // JSON array with { text, urgency, estimatedCost }\n  notes           String?   // JSON: { undercarriage, engine, general }\n  photos          String?   // JSON array of URLs (legacy)\n  pdfReportUrl    String?\n\n  // Customer signature\n  customerName    String?\n  customerIdNumber String?\n  customerSignature String?  // base64 signature image\n  signedAt        DateTime?\n\n  // AI summary\n  aiSummary       String?   // AI-generated smart summary\n\n  cost            Float?\n  createdAt       DateTime  @default(now())\n  updatedAt       DateTime  @updatedAt\n\n  items           InspectionItem[]\n\n  @@index([vehicleId])\n  @@index([garageId])\n  @@index([status])\n  @@index([createdAt])\n  @@index([date])\n}\n\nmodel InspectionItem {\n  id            String    @id @default(cuid())\n  inspectionId  String\n  inspection    Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)\n  category      String    // engine | brakes | tires | suspension | electrical | body | fluids\n  itemName      String\n  status        String    // ok | warning | critical\n  notes         String?\n  score         Int?      // 0-100\n}\n\n// ============================================================\n// APPOINTMENTS\n// ============================================================\n\nmodel Appointment {\n  id          String    @id @default(cuid())\n  userId      String\n  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  vehicleId   String\n  vehicle     Vehicle   @relation(fields: [vehicleId], references: [id])\n  garageId    String\n  garage      Garage    @relation(fields: [garageId], references: [id])\n  serviceType String    // inspection | maintenance | repair | test_prep\n  date        DateTime\n  time        String\n  status      String    @default("pending") // pending | confirmed | in_progress | completed | cancelled\n  notes       String?\n  completionNotes  String?   // Treatment summary written by garage when completing\n  completedAt      DateTime? // When the appointment was marked as completed\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n\n  @@index([garageId])\n  @@index([userId])\n  @@index([status])\n  @@index([date])\n}\n\n// ============================================================\n// SOS EVENTS\n// ============================================================\n\nmodel SosEvent {\n  id          String    @id @default(cuid())\n  userId      String\n  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  vehicleId   String\n  vehicle     Vehicle   @relation(fields: [vehicleId], references: [id])\n  eventType   String    // accident | breakdown | flat_tire | fuel | electrical | other\n  description String?\n  location    String?\n  latitude    Float?\n  longitude   Float?\n  status      String    @default("open") // open | assigned | in_progress | resolved\n  priority    String    @default("medium") // low | medium | high | critical\n  assignedTo  String?\n  resolvedAt  DateTime?\n  notes       String?   // Updates and notes from user or admin\n  photos      String?   // JSON array\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n\n  @@index([userId])\n  @@index([status])\n}\n\n// ============================================================\n// CLUB & BENEFITS\n// ============================================================\n\nmodel ClubBenefit {\n  id          String    @id @default(cuid())\n  name        String\n  category    String    // fuel | insurance | tires | accessories | services\n  discount    String\n  description String?\n  partnerName String?\n  icon        String?\n  expiryDate  DateTime?\n  isActive    Boolean   @default(true)\n  createdAt   DateTime  @default(now())\n}\n\n// ============================================================\n// EXPENSES\n// ============================================================\n\nmodel Expense {\n  id          String    @id @default(cuid())\n  vehicleId   String\n  vehicle     Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)\n  category    String    // fuel | maintenance | insurance | test | parking | fines | other\n  amount      Float\n  description String?\n  date        DateTime\n  receiptUrl  String?\n  createdAt   DateTime  @default(now())\n\n  @@index([vehicleId])\n  @@index([category])\n  @@index([date])\n}\n\n// ============================================================\n// REVIEWS\n// ============================================================\n\nmodel GarageReview {\n  id          String    @id @default(cuid())\n  garageId    String\n  garage      Garage    @relation(fields: [garageId], references: [id], onDelete: Cascade)\n  userName    String\n  rating      Int       // 1-5\n  comment     String?\n  createdAt   DateTime  @default(now())\n\n  @@index([garageId])\n}\n\n// ============================================================\n// DOCUMENTS\n// ============================================================\n\nmodel Document {\n  id          String    @id @default(cuid())\n  vehicleId   String\n  vehicle     Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)\n  type        String    // insurance_compulsory | insurance_comprehensive | insurance_third_party | license | registration | test_certificate | receipt | photo | other\n  title       String\n  description String?\n  fileUrl     String?   // URL or base64 data\n  fileName    String?\n  fileType    String?   // image/jpeg, application/pdf, etc.\n  expiryDate  DateTime?\n  isActive    Boolean   @default(true)\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n\n  @@index([vehicleId])\n  @@index([type])\n  @@index([expiryDate])\n}\n\n// ============================================================\n// NOTIFICATIONS\n// ============================================================\n\nmodel Notification {\n  id          String    @id @default(cuid())\n  userId      String\n  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  type        String    // test_expiry | insurance_expiry | appointment | sos | benefit | system\n  title       String\n  message     String\n  isRead      Boolean   @default(false)\n  link        String?\n  createdAt   DateTime  @default(now())\n\n  @@index([userId])\n  @@index([isRead])\n  @@index([userId, isRead])\n  @@index([createdAt])\n}\n\n// ============================================================\n// GARAGE APPLICATIONS\n// ============================================================\n\nmodel GarageApplication {\n  id              String    @id @default(cuid())\n  garageName      String\n  ownerName       String\n  email           String\n  phone           String\n  city            String\n  address         String?\n  description     String?\n  services        String?\n  languages       String?\n  yearsExperience Int       @default(0)\n  employeeCount   Int       @default(1)\n  licenseNumber   String?\n  images          String?\n  status          String    @default("pending") // pending | approved | rejected\n  adminNotes      String?\n  reviewedBy      String?\n  reviewedAt      DateTime?\n  createdAt       DateTime  @default(now())\n  updatedAt       DateTime  @updatedAt\n}\n\n// ============================================================\n// TREATMENTS\n// ============================================================\n\nmodel Treatment {\n  id              String    @id @default(cuid())\n  vehicleId       String\n  userId          String\n  garageId        String?\n  garageName      String?\n  mechanicName    String?\n  type            String    @default("maintenance") // maintenance | repair | inspection | other\n  title           String\n  description     String?\n  items           String?   // JSON array of treatment items\n  mileage         Int?\n  cost            Float?\n  date            String\n  status          String    @default("draft") // draft | pending_approval | approved | rejected\n  sentByGarage    Boolean   @default(false)\n  approvedAt      DateTime?\n  rejectedAt      DateTime?\n  rejectionReason String?\n  notes           String?\n  createdAt       DateTime  @default(now())\n  updatedAt       DateTime  @updatedAt\n\n  @@index([vehicleId])\n  @@index([userId])\n  @@index([garageId])\n  @@index([status])\n}\n\n// ============================================================\n// BENEFIT REDEMPTIONS\n// ============================================================\n\nmodel BenefitRedemption {\n  id          String    @id @default(cuid())\n  benefitId   String\n  userId      String\n  code        String    @unique\n  qrData      String?\n  benefitName String\n  partnerName String?\n  discount    String?\n  status      String    @default("active") // active | used | expired\n  usedAt      DateTime?\n  expiresAt   DateTime?\n  createdAt   DateTime  @default(now())\n\n  @@index([userId])\n  @@index([code])\n  @@index([status])\n}
+  overallScore    Int?      // 0-100
+
+  // Detailed scores (JSON)
+  detailedScores  String?   // JSON: { engine: 85, brakes: 90, tires: 75, ... }
+
+  // Vehicle info snapshot
+  mileage         Int?
+  engineNumber    String?
+  engineVerified  Boolean   @default(false)
+
+  // Photos (JSON arrays of base64/URL strings)
+  exteriorPhotos  String?   // JSON: { front, rear, right, left, roof }
+  interiorPhotos  String?   // JSON: { frontSeats, rearSeats, dashboard }
+  undercarVideo   String?   // URL or base64 of undercarriage video
+
+  // Detailed system checks (JSON objects)
+  tiresData       String?   // JSON: { frontLeft, frontRight, rearLeft, rearRight } with status
+  lightsData      String?   // JSON: { brakes, reverse, fog, headlights, frontSignal, rearSignal, highBeam, plate }
+  frontAxle       String?   // JSON: { status, ballBearings, notes }
+  steeringData    String?   // JSON: { status, alignment, notes }
+  shocksData      String?   // JSON: { frontLeft, frontRight, rearLeft, rearRight, notes }
+  bodyData        String?   // JSON: { condition, paintRepairs, partsReplaced, notes }
+  batteryData     String?   // JSON: { date, isOriginal }
+  fluidsData      String?   // JSON: { brakeFluid, engineOil, coolant } each with status
+  interiorSystems String?   // JSON: { acCold, acHot, audio } each with status
+  windowsData     String?   // JSON: { rearLeft, rearRight, frontLeft, frontRight } each with status
+  engineIssues    String?   // JSON: { issues: [], notes }
+  gearboxIssues   String?   // JSON: { issues: [], notes }
+  brakingSystem   String?   // JSON: { frontDiscs, rearDiscs, frontPads, rearPads } as percentages
+
+  // Pre-test checklist data
+  preTestChecklist String?   // JSON: { tires: boolean, lights: boolean, ... }
+  preTestNotes    String?
+  serviceItems    String?   // JSON array of service item strings
+  workPerformed   String?   // JSON array of { item: string, action: 'fixed'|'replaced'|'adjusted'|'checked'|'cleaned', notes?: string, cost?: number }
+
+  // Results
+  summary         String?
+  recommendations String?   // JSON array with { text, urgency, estimatedCost }
+  notes           String?   // JSON: { undercarriage, engine, general }
+  photos          String?   // JSON array of URLs (legacy)
+  pdfReportUrl    String?
+
+  // Customer signature
+  customerName    String?
+  customerIdNumber String?
+  customerSignature String?  // base64 signature image
+  signedAt        DateTime?
+
+  // AI summary
+  aiSummary       String?   // AI-generated smart summary
+
+  cost            Float?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  items           InspectionItem[]
+
+  @@index([vehicleId])
+  @@index([garageId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([date])
+}
+
+model InspectionItem {
+  id            String    @id @default(cuid())
+  inspectionId  String
+  inspection    Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+  category      String    // engine | brakes | tires | suspension | electrical | body | fluids
+  itemName      String
+  status        String    // ok | warning | critical
+  notes         String?
+  score         Int?      // 0-100
+}
+
+// ============================================================
+// APPOINTMENTS
+// ============================================================
+
+model Appointment {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleId   String
+  vehicle     Vehicle   @relation(fields: [vehicleId], references: [id])
+  garageId    String
+  garage      Garage    @relation(fields: [garageId], references: [id])
+  serviceType String    // inspection | maintenance | repair | test_prep
+  date        DateTime
+  time        String
+  status      String    @default("pending") // pending | confirmed | in_progress | completed | cancelled
+  notes       String?
+  completionNotes  String?   // Treatment summary written by garage when completing
+  completedAt      DateTime? // When the appointment was marked as completed
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([garageId])
+  @@index([userId])
+  @@index([status])
+  @@index([date])
+}
+
+// ============================================================
+// SOS EVENTS
+// ============================================================
+
+model SosEvent {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleId   String
+  vehicle     Vehicle   @relation(fields: [vehicleId], references: [id])
+  eventType   String    // accident | breakdown | flat_tire | fuel | electrical | other
+  description String?
+  location    String?
+  latitude    Float?
+  longitude   Float?
+  status      String    @default("open") // open | assigned | in_progress | resolved
+  priority    String    @default("medium") // low | medium | high | critical
+  assignedTo  String?
+  resolvedAt  DateTime?
+  notes       String?   // Updates and notes from user or admin
+  photos      String?   // JSON array
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ============================================================
+// CLUB & BENEFITS
+// ============================================================
+
+model ClubBenefit {
+  id          String    @id @default(cuid())
+  name        String
+  category    String    // fuel | insurance | tires | accessories | services
+  discount    String
+  description String?
+  partnerName String?
+  icon        String?
+  expiryDate  DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+}
+
+// ============================================================
+// EXPENSES
+// ============================================================
+
+model Expense {
+  id          String    @id @default(cuid())
+  vehicleId   String
+  vehicle     Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  category    String    // fuel | maintenance | insurance | test | parking | fines | other
+  amount      Float
+  description String?
+  date        DateTime
+  receiptUrl  String?
+  createdAt   DateTime  @default(now())
+
+  @@index([vehicleId])
+  @@index([category])
+  @@index([date])
+}
+
+// ============================================================
+// REVIEWS
+// ============================================================
+
+model GarageReview {
+  id          String    @id @default(cuid())
+  garageId    String
+  garage      Garage    @relation(fields: [garageId], references: [id], onDelete: Cascade)
+  userName    String
+  rating      Int       // 1-5
+  comment     String?
+  createdAt   DateTime  @default(now())
+
+  @@index([garageId])
+}
+
+// ============================================================
+// DOCUMENTS
+// ============================================================
+
+model Document {
+  id          String    @id @default(cuid())
+  vehicleId   String
+  vehicle     Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  type        String    // insurance_compulsory | insurance_comprehensive | insurance_third_party | license | registration | test_certificate | receipt | photo | other
+  title       String
+  description String?
+  fileUrl     String?   // URL or base64 data
+  fileName    String?
+  fileType    String?   // image/jpeg, application/pdf, etc.
+  expiryDate  DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([vehicleId])
+  @@index([type])
+  @@index([expiryDate])
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+
+model Notification {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String    // test_expiry | insurance_expiry | appointment | sos | benefit | system
+  title       String
+  message     String
+  isRead      Boolean   @default(false)
+  link        String?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
+// ============================================================
+// GARAGE APPLICATIONS
+// ============================================================
+
+model GarageApplication {
+  id              String    @id @default(cuid())
+  garageName      String
+  ownerName       String
+  email           String
+  phone           String
+  city            String
+  address         String?
+  description     String?
+  services        String?
+  languages       String?
+  yearsExperience Int       @default(0)
+  employeeCount   Int       @default(1)
+  licenseNumber   String?
+  images          String?
+  status          String    @default("pending") // pending | approved | rejected
+  adminNotes      String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// ============================================================
+// TREATMENTS
+// ============================================================
+
+model Treatment {
+  id              String    @id @default(cuid())
+  vehicleId       String
+  userId          String
+  garageId        String?
+  garageName      String?
+  mechanicName    String?
+  type            String    @default("maintenance") // maintenance | repair | inspection | other
+  title           String
+  description     String?
+  items           String?   // JSON array of treatment items
+  mileage         Int?
+  cost            Float?
+  date            String
+  status          String    @default("draft") // draft | pending_approval | approved | rejected
+  sentByGarage    Boolean   @default(false)
+  approvedAt      DateTime?
+  rejectedAt      DateTime?
+  rejectionReason String?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([vehicleId])
+  @@index([userId])
+  @@index([garageId])
+  @@index([status])
+}
+
+// ============================================================
+// BENEFIT REDEMPTIONS
+// ============================================================
+
+model BenefitRedemption {
+  id          String    @id @default(cuid())
+  benefitId   String
+  userId      String
+  code        String    @unique
+  qrData      String?
+  benefitName String
+  partnerName String?
+  discount    String?
+  status      String    @default("active") // active | used | expired
+  usedAt      DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
+  @@index([code])
+  @@index([status])
+}
