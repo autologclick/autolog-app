@@ -99,7 +99,7 @@ function getColorCode(level: LogLevel): string {
  * Sanitize context to remove sensitive data
  * Never logs passwords, tokens, or full credit card numbers
  */
-export function sanitizeContext(context: Record<string, any>): Record<string, any> {
+export function sanitizeContext(context: Record<string, unknown>): Record<string, unknown> {
   const sanitized = { ...context };
   const sensitiveKeys = [
     'password',
@@ -142,7 +142,7 @@ class Logger {
     return LOG_LEVELS[level] <= logLevelThreshold;
   }
 
-  private log(level: LogLevel, message: string, context?: Record<string, any>): void {
+  private log(level: LogLevel, message: string, context?: Record<string, unknown>): void {
     if (!this.shouldLog(level)) return;
 
     const entry: LogEntry = {
@@ -164,27 +164,27 @@ class Logger {
     }
   }
 
-  fatal(message: string, context?: Record<string, any>): void {
+  fatal(message: string, context?: Record<string, unknown>): void {
     this.log('fatal', message, context);
   }
 
-  error(message: string, context?: Record<string, any>): void {
+  error(message: string, context?: Record<string, unknown>): void {
     this.log('error', message, context);
   }
 
-  warn(message: string, context?: Record<string, any>): void {
+  warn(message: string, context?: Record<string, unknown>): void {
     this.log('warn', message, context);
   }
 
-  info(message: string, context?: Record<string, any>): void {
+  info(message: string, context?: Record<string, unknown>): void {
     this.log('info', message, context);
   }
 
-  debug(message: string, context?: Record<string, any>): void {
+  debug(message: string, context?: Record<string, unknown>): void {
     this.log('debug', message, context);
   }
 
-  trace(message: string, context?: Record<string, any>): void {
+  trace(message: string, context?: Record<string, unknown>): void {
     this.log('trace', message, context);
   }
 }
@@ -224,31 +224,31 @@ class RequestLogger extends Logger {
     this.baseContext.userId = userId;
   }
 
-  protected getContext(additional?: Record<string, any>): Record<string, any> {
+  protected getContext(additional?: Record<string, unknown>): Record<string, unknown> {
     return { ...this.baseContext, ...additional };
   }
 
-  override fatal(message: string, context?: Record<string, any>): void {
+  override fatal(message: string, context?: Record<string, unknown>): void {
     super.fatal(message, this.getContext(context));
   }
 
-  override error(message: string, context?: Record<string, any>): void {
+  override error(message: string, context?: Record<string, unknown>): void {
     super.error(message, this.getContext(context));
   }
 
-  override warn(message: string, context?: Record<string, any>): void {
+  override warn(message: string, context?: Record<string, unknown>): void {
     super.warn(message, this.getContext(context));
   }
 
-  override info(message: string, context?: Record<string, any>): void {
+  override info(message: string, context?: Record<string, unknown>): void {
     super.info(message, this.getContext(context));
   }
 
-  override debug(message: string, context?: Record<string, any>): void {
+  override debug(message: string, context?: Record<string, unknown>): void {
     super.debug(message, this.getContext(context));
   }
 
-  override trace(message: string, context?: Record<string, any>): void {
+  override trace(message: string, context?: Record<string, unknown>): void {
     super.trace(message, this.getContext(context));
   }
 }
@@ -289,6 +289,6 @@ export function initializeLogger(): void {
   });
 }
 
-function info(message: string, context?: Record<string, any>): void {
+function info(message: string, context?: Record<string, unknown>): void {
   apiLogger.info(message, context);
 }
