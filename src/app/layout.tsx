@@ -1,26 +1,17 @@
 import type { Metadata, Viewport } from 'next';
-import { Heebo } from 'next/font/google';
-
-const heebo = Heebo({
-  subsets: ['hebrew', 'latin'],
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
-  display: 'swap',
-  variable: '--font-heebo',
-});
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://autolog.click'),
   title: {
     default: 'AutoLog - ניהול רכבים חכם',
     template: '%s | AutoLog',
   },
-  description: 'מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד. הצטרפו ל-2,500+ משתמשים שכבר מנהלים את הרכב בצורה חכמה.',
-  keywords: ['ניהול רכבים', 'טסט', 'ביטוח רכב', 'מוסך', 'בדיקת רכב', 'AutoLog', 'תזכורות רכב', 'SOS חירום'],
+  description: 'מערכת ניהול רכבים מקצועit - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד. הצטרפו ל-2,500+ משתמשים שכבר מנהלים את הרכב בצורה חכמה.',
+  keywords: ['ניהול רכבים', 'טסט', 'ביטוח רכב', 'מוסר', 'בדיקת רכב', 'AutoLog', 'תזדורות רכב', 'SOS חירום'],
   authors: [{ name: 'AutoLog' }],
   creator: 'AutoLog',
-  icons: { icon: [{ url: '/favicon-32.png', sizes: '32x32', type: 'image/png' }, { url: '/favicon-16.png', sizes: '16x16', type: 'image/png' }], apple: '/apple-touch-icon.png' },
+  icons: { icon: '/favicon.ico', apple: '/apple-touch-icon.png' },
   manifest: '/manifest.json',
   themeColor: '#1e3a5f',
   appleWebApp: {
@@ -38,50 +29,47 @@ export const metadata: Metadata = {
     url: 'https://autolog.click',
     siteName: 'AutoLog',
     title: 'AutoLog - ניהול רכבים חכם ויעיל',
-    description: 'מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד',
-    images: [
-      {
-        url: '/opengraph-image',
-        width: 1200,
-        height: 630,
-        alt: 'AutoLog - Smart Vehicle Management',
-      },
-    ],
+    description: 'מערכת ניהול רכבים מקצועit - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'AutoLog - ניהול רכבים חכם',
     description: 'נהל את הרכב שלך בצורה חכמה - תזכורות, מסמכים, מוסכים ועוד',
-    images: ['/opengraph-image'],
   },
   robots: {
     index: true,
     follow: true,
-  },
-  alternates: {
-    canonical: '/',
   },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   themeColor: '#1e3a5f',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl">
-      <body className={`${heebo.className} bg-[#fef7ed] text-gray-800 min-h-screen`}>
+      <body className="bg-[#fef7ed] text-gray-800 min-h-screen">
         {children}
         <Toaster
           position="top-center"
+          reverseOrder={false}
+          gutter={8}
           toastOptions={{
             duration: 3000,
             style: {
               direction: 'rtl',
               fontFamily: 'Heebo, sans-serif',
               borderRadius: '12px',
+              padding: '12px 16px',
+              fontSize: '14px',
+              fontWeight: '500',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
+              maxWidth: '420px',
             },
             success: {
               style: {
@@ -95,6 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               },
             },
             error: {
+              duration: 4000,
               style: {
                 background: '#fef2f2',
                 color: '#991b1b',
