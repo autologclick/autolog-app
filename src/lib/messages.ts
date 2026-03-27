@@ -246,3 +246,5 @@ export const UI = {
   SUBMIT: 'שלח',
   RETRY: 'נסה שוב',
 } as const;
+
+// Last verified: 2026-03-27
