@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { verifyPassword, generateToken, generateRefreshToken } from '@/lib/auth';
 import { jsonResponse, errorResponse, validationErrorResponse, getClientIp } from '@/lib/api-helpers';
 import { loginSchema } from '@/lib/validations';
+import { AUTH_ERRORS, SUCCESS_MESSAGES } from '@/lib/messages';
 import {
   checkLoginRateLimit,
   isAccountLocked,
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
         errorMessage: 'User not found',
         req,
       });
-      return errorResponse('מייל או סיסמה שגויים', 401);
+      return errorResponse(AUTH_ERRORS.INVALID_EMAIL_OR_PASSWORD, 401);
     }
 
     if (!user.isActive) {
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
         errorMessage: 'Account inactive',
         req,
       });
-      return errorResponse('החשבון אינו פעיל', 403);
+      return errorResponse(AUTH_ERRORS.ACCOUNT_INACTIVE, 403);
     }
 
     const valid = await verifyPassword(password, user.passwordHash);
@@ -107,7 +108,7 @@ export async function POST(req: NextRequest) {
         errorMessage: 'Invalid password',
         req,
       });
-      return errorResponse('מייל או סיסמה שגויים', 401);
+      return errorResponse(AUTH_ERRORS.INVALID_EMAIL_OR_PASSWORD, 401);
     }
 
     // ========================================================================
@@ -145,7 +146,7 @@ export async function POST(req: NextRequest) {
         role: user.role,
         phone: user.phone,
       },
-      message: 'התחברת בהצלחה!',
+      message: SUCCESS_MESSAGES.LOGIN,
     });
 
     // Set access token (2 hours)
@@ -171,6 +172,6 @@ export async function POST(req: NextRequest) {
     logger.error('Login error', {
       error: error instanceof Error ? error.message : 'Unknown error',
     });
-    return errorResponse('שגיאה בהתחברות. אנא נסה שוב מאוחר יותר.', 500);
+    return errorResponse(AUTH_ERRORS.LOGIN_ERROR, 500);
   }
 }
