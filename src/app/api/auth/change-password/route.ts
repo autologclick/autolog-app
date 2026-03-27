@@ -29,13 +29,13 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user) {
-      return errorResponse('משתמש לא נמצא', 404);
+      return errorResponse(NOT_FOUND.USER, 404);
     }
 
     // Verify current password
     const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
     if (!isValid) {
-      return errorResponse('סיסמה נוכחית שגויה', 401);
+      return errorResponse(AUTH_ERRORS.CURRENT_PASSWORD_WRONG, 401);
     }
 
     // Hash new password
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       data: { passwordHash: newHash },
     });
 
-    return jsonResponse({ message: 'הסיסמה שונתה בהצלחה' });
+    return jsonResponse({ message: SUCCESS_MESSAGES.PASSWORD_CHANGED });
   } catch (error) {
     return handleApiError(error);
   }
