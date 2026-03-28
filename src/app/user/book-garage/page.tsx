@@ -651,7 +651,7 @@ export default function BookGaragePage() {
                 </div>
 
                 <div className="bg-teal-50 border border-teal-200 rounded-xl p-3 text-xs text-teal-700 text-center">
-                  ✓ המוסך יאשר את הזמנתך תוך 24 שעות ותקבל התראה
+                  ✓ המוסך יאשר את הזמנתך תוך 3 דקות ותקבל התראה
                 </div>
 
                 <div className="flex gap-2">
