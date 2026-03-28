@@ -10,6 +10,7 @@ import {
   handleApiError,
 } from '@/lib/api-helpers';
 import { SERVICE_TYPE_HEB, APPOINTMENT_STATUS_HEB } from '@/lib/constants/translations';
+import { sendEmail, buildCustomerStatusEmailHtml } from '@/lib/email';
 
 const updateSchema = z.object({
   status: z.enum(['confirmed', 'rejected', 'in_progress', 'completed', 'cancelled']),
@@ -40,25 +41,25 @@ export async function PUT(
       include: {
         garage: { select: { id: true, ownerId: true, name: true } },
         vehicle: { select: { id: true, nickname: true, licensePlate: true, model: true, manufacturer: true } },
-        user: { select: { id: true, fullName: true } },
+        user: { select: { id: true, fullName: true, email: true } },
       },
     });
 
     if (!appointment) {
-      return errorResponse('××ª××¨ ×× × ××¦×', 404);
+      return errorResponse('התור לא נמצא', 404);
     }
 
     // Verify this garage belongs to the current user
     if (appointment.garage.ownerId !== payload.userId) {
-      return errorResponse('××× ××¨×©××', 403);
+      return errorResponse('אין הרשאה', 403);
     }
 
     // Can't update cancelled, rejected, or already completed appointments
     if (appointment.status === 'cancelled' || appointment.status === 'rejected') {
-      return errorResponse('×× × ××ª× ××¢××× ×ª××¨ ×©×××× ×× × ×××', 400);
+      return errorResponse('לא ניתן לעדכן תור שבוטל או נדחה', 400);
     }
     if (appointment.status === 'completed') {
-      return errorResponse('××ª××¨ ×××¨ ×××©××', 400);
+      return errorResponse('התור כבר הושלם', 400);
     }
 
     // For confirm/reject: check 3-minute response window
@@ -72,7 +73,7 @@ export async function PUT(
           where: { id },
           data: { status: 'rejected' },
         });
-        return errorResponse('×××× ×××× ××××©××¨ (3 ××§××ª) ×××£. ××××× × × ×××ª× ××××××××ª.', 400);
+        return errorResponse('חלון הזמן לאישור (3 דקות) חלף. ההזמנה נדחתה אוטומטית.', 400);
       }
     }
 
@@ -106,10 +107,10 @@ export async function PUT(
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: '××××¤×× ×××©×× ×××¦×××!',
+          title: 'הטיפול הושלם בהצלחה!',
           message: completionNotes
-            ? `${serviceLabel} ××¨×× ${vehicleLabel} (${appointment.vehicle.licensePlate}) ×××©×× ×${appointment.garage.name}. ×¡××××: ${completionNotes}`
-            : `${serviceLabel} ××¨×× ${vehicleLabel} (${appointment.vehicle.licensePlate}) ×××©×× ×××¦××× ×${appointment.garage.name}.`,
+            ? `${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}) הושלם ב${appointment.garage.name}. סיכום: ${completionNotes}`
+            : `${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}) הושלם בהצלחה ב${appointment.garage.name}.`,
           link: '/user/appointments',
         },
       });
@@ -121,8 +122,8 @@ export async function PUT(
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: '××ª××¨ ×××©×¨!',
-          message: `××ª××¨ ×©×× ×${appointment.garage.name} ×××©×¨. × ×ª×¨×× ××ª××¨×× ${new Date(appointment.date).toLocaleDateString('he-IL')} ××©×¢× ${appointment.time}.`,
+          title: 'התור אושר!',
+          message: `התור שלך ב${appointment.garage.name} אושר. נתראה בתאריך ${new Date(appointment.date).toLocaleDateString('he-IL')} בשעה ${appointment.time}.`,
           link: '/user/appointments',
         },
       });
@@ -130,13 +131,13 @@ export async function PUT(
 
     // If rejected by garage, notify the customer
     if (status === 'rejected') {
-      const reason = rejectionReason ? ` ×¡×××: ${rejectionReason}` : '';
+      const reason = rejectionReason ? ` סיבה: ${rejectionReason}` : '';
       await prisma.notification.create({
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: '××××× × × ×××ª×',
-          message: `××××× × ×©×× ×${appointment.garage.name} × ×××ª×.${reason} × ××ª× ×× ×¡××ª ×××¡× ×××¨.`,
+          title: 'ההזמנה נדחתה',
+          message: `ההזמנה שלך ב${appointment.garage.name} נדחתה.${reason} ניתן לנסות מוסך אחר.`,
           link: '/user/appointments',
         },
       });
@@ -148,8 +149,8 @@ export async function PUT(
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: '××ª××¨ ××××',
-          message: `××ª××¨ ×©×× ×${appointment.garage.name} ××××. ×× × ×¦××¨ ×§×©×¨ ×¢× ××××¡× ××¤×¨××× × ××¡×¤××.`,
+          title: 'התור בוטל',
+          message: `התור שלך ב${appointment.garage.name} בוטל. אנא צור קשר עם המוסך לפרטים נוספים.`,
           link: '/user/appointments',
         },
       });
@@ -161,16 +162,50 @@ export async function PUT(
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: '××¨×× × ×× ×¡ ××××¤××',
-          message: `××¨×× ×©×× × ×× ×¡ ××××¤×× ×${appointment.garage.name}.`,
+          title: 'הרכב נכנס לטיפול',
+          message: `הרכב שלך נכנס לטיפול ב${appointment.garage.name}.`,
           link: '/user/appointments',
         },
       });
     }
 
+    // Send email to customer for status changes (fire-and-forget)
+    if (['confirmed', 'rejected', 'in_progress', 'completed', 'cancelled'].includes(status)) {
+      const serviceLabel = SERVICE_TYPE_HEB[appointment.serviceType] || appointment.serviceType;
+      const vehicleLabel = appointment.vehicle.nickname || `${appointment.vehicle.manufacturer} ${appointment.vehicle.model}`;
+      const dateLabel = new Date(appointment.date).toLocaleDateString('he-IL');
+      const customerEmail = appointment.user.email;
+
+      if (customerEmail) {
+        const statusTitles: Record<string, string> = {
+          confirmed: 'התור שלך אושר!',
+          rejected: 'ההזמנה נדחתה',
+          in_progress: 'הרכב נכנס לטיפול',
+          completed: 'הטיפול הושלם!',
+          cancelled: 'התור בוטל',
+        };
+
+        sendEmail({
+          to: customerEmail,
+          subject: `AutoLog — ${statusTitles[status] || 'עדכון תור'}`,
+          html: buildCustomerStatusEmailHtml({
+            customerName: appointment.user.fullName,
+            garageName: appointment.garage.name,
+            vehicleLabel: `${vehicleLabel} (${appointment.vehicle.licensePlate})`,
+            serviceLabel,
+            dateLabel,
+            timeLabel: appointment.time,
+            status: status as 'confirmed' | 'rejected' | 'in_progress' | 'completed' | 'cancelled',
+            completionNotes: completionNotes || null,
+            rejectionReason: rejectionReason || null,
+          }),
+        }).catch(() => { /* silent */ });
+      }
+    }
+
     return jsonResponse({
       appointment: updated,
-      message: `××ª××¨ ×¢×××× ×${APPOINTMENT_STATUS_HEB[status] || status}`,
+      message: `התור עודכן ל${APPOINTMENT_STATUS_HEB[status] || status}`,
     });
   } catch (error) {
     return handleApiError(error);
@@ -196,11 +231,11 @@ export async function GET(
     });
 
     if (!appointment) {
-      return errorResponse('××ª××¨ ×× × ××¦×', 404);
+      return errorResponse('התור לא נמצא', 404);
     }
 
     if (appointment.garage.ownerId !== payload.userId) {
-      return errorResponse('××× ××¨×©××', 403);
+      return errorResponse('אין הרשאה', 403);
     }
 
     return jsonResponse({ appointment });
