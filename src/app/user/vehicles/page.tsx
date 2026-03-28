@@ -29,39 +29,14 @@ interface Vehicle {
   insuranceStatus: string;
   insuranceExpiry?: string;
   isPrimary: boolean;
+  imageUrl?: string;
   _count?: { inspections: number; sosEvents: number; expenses: number };
   drivers?: { id: string; driverName: string }[];
 }
 
 // Vehicle image component with fallback
-function VehicleImage({ vehicleId, size = 'md', className = '' }: { vehicleId: string; size?: 'sm' | 'md' | 'lg'; className?: string }) {
-  const [imgSrc, setImgSrc] = useState<string | null>(null);
+function VehicleImage({ vehicleId, imageUrl, size = 'md', className = '' }: { vehicleId: string; imageUrl?: string; size?: 'sm' | 'md' | 'lg'; className?: string }) {
   const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    // Check if image exists by trying to load it
-    const extensions = ['jpeg', 'png', 'webp'];
-    let found = false;
-    let checked = 0;
-
-    extensions.forEach(ext => {
-      const img = new window.Image();
-      img.onload = () => {
-        if (!found) {
-          found = true;
-          setImgSrc(`/uploads/vehicles/${vehicleId}.${ext}?t=${Date.now()}`);
-          setHasError(false);
-        }
-      };
-      img.onerror = () => {
-        checked++;
-        if (checked === extensions.length && !found) {
-          setHasError(true);
-        }
-      };
-      img.src = `/uploads/vehicles/${vehicleId}.${ext}?t=${Date.now()}`;
-    });
-  }, [vehicleId]);
 
   const sizeClasses = {
     sm: 'w-12 h-12',
@@ -69,7 +44,7 @@ function VehicleImage({ vehicleId, size = 'md', className = '' }: { vehicleId: s
     lg: 'w-20 h-20',
   };
 
-  if (hasError || !imgSrc) {
+  if (!imageUrl || hasError) {
     return (
       <div className={`${sizeClasses[size]} bg-teal-50 rounded-xl flex items-center justify-center flex-shrink-0 ${className}`}>
         <Car size={size === 'sm' ? 20 : size === 'md' ? 28 : 36} className="text-teal-600" />
@@ -79,8 +54,8 @@ function VehicleImage({ vehicleId, size = 'md', className = '' }: { vehicleId: s
 
   return (
     <img
-      src={imgSrc}
-      alt="תמונת רכב"
+      src={imageUrl}
+      alt="\u05EA\u05DE\u05D5\u05E0\u05EA \u05E8\u05DB\u05D1"
       className={`${sizeClasses[size]} rounded-xl object-cover flex-shrink-0 ${className}`}
       onError={() => setHasError(true)}
     />
@@ -305,12 +280,15 @@ export default function VehiclesPage() {
   const uploadImage = async (vehicleId: string) => {
     if (!imageData) return;
     try {
-      await fetch(`/api/vehicles/${vehicleId}/image`, {
+      const res = await fetch(`/api/vehicles/${vehicleId}/image`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: imageData }),
       });
-      setImageVersion(v => v + 1);
+      const respData = await res.json();
+      if (respData.imageUrl) {
+        setVehicles(prev => prev.map(vh => vh.id === vehicleId ? { ...vh, imageUrl: respData.imageUrl } : vh));
+      }
     } catch {
       console.error('Failed to upload vehicle image');
     }
@@ -489,7 +467,7 @@ export default function VehiclesPage() {
             <Card key={v.id} className="overflow-hidden">
               {/* Vehicle Header */}
               <div className="flex items-center gap-4">
-                <VehicleImage vehicleId={v.id} size="md" key={`${v.id}-${imageVersion}`} />
+                <VehicleImage vehicleId={v.id} imageUrl={v.imageUrl} size="md" key={v.id} />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <h3 className="text-lg font-bold text-[#1e3a5f]">{v.nickname}</h3>
