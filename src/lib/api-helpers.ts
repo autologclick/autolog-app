@@ -164,7 +164,7 @@ export function handleApiError(error: unknown) {
     error: error instanceof Error ? error.message : 'Unknown error',
     stack: error instanceof Error ? error.stack : undefined,
   });
-  return errorResponse('×©××××ª ×©×¨×ª ×¤× ××××ª', 500);
+  return errorResponse('שגיאת שרת פנימית', 500);
 }
 
 /**
