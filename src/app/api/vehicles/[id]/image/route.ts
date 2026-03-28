@@ -2,16 +2,8 @@ import { NextRequest } from 'next/server';
 import { requireAuth, handleApiError, errorResponse, jsonResponse } from '@/lib/api-helpers';
 import prisma from '@/lib/db';
 import { NOT_FOUND } from '@/lib/messages';
-import path from 'path';
-import {
-  parseBase64Image,
-  validateImageSize,
-  ensureUploadDir,
-  saveImageFile,
-  deleteMatchingFiles,
-} from '@/lib/services/image-service';
-
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads', 'vehicles');
+import { put, del } from '@vercel/blob';
+import { parseBase64Image, validateImageSize } from '@/lib/services/image-service';
 
 // POST /api/vehicles/[id]/image - Upload vehicle image
 export async function POST(
@@ -24,7 +16,7 @@ export async function POST(
 
     const vehicle = await prisma.vehicle.findFirst({
       where: { id, userId: payload.userId },
-      select: { id: true },
+      select: { id: true, imageUrl: true },
     });
 
     if (!vehicle) {
@@ -44,16 +36,25 @@ export async function POST(
       return errorResponse(sizeError, 400);
     }
 
-    ensureUploadDir(UPLOAD_DIR);
+    // Delete old blob if exists
+    if (vehicle.imageUrl) {
+      try { await del(vehicle.imageUrl); } catch (e) { /* ignore */ }
+    }
 
-    // Remove old images for this vehicle
-    deleteMatchingFiles(UPLOAD_DIR, (f) => f.startsWith(id + '.'));
+    // Upload to Vercel Blob
+    const blob = await put(
+      'vehicles/' + id + '.' + parsed.ext,
+      parsed.buffer,
+      { access: 'public', contentType: 'image/' + parsed.ext }
+    );
 
-    // Save new image
-    const filename = `${id}.${parsed.ext}`;
-    const imageUrl = saveImageFile(UPLOAD_DIR, filename, parsed.buffer, '/uploads/vehicles');
+    // Save URL to database
+    await prisma.vehicle.update({
+      where: { id },
+      data: { imageUrl: blob.url },
+    });
 
-    return jsonResponse({ imageUrl, message: 'התמונה הועלתה בהצלחה' });
+    return jsonResponse({ imageUrl: blob.url, message: 'התמונה הועלתה בהצלחה' });
   } catch (error) {
     return handleApiError(error);
   }
@@ -70,15 +71,22 @@ export async function DELETE(
 
     const vehicle = await prisma.vehicle.findFirst({
       where: { id, userId: payload.userId },
-      select: { id: true },
+      select: { id: true, imageUrl: true },
     });
 
     if (!vehicle) {
       return errorResponse(NOT_FOUND.VEHICLE, 404);
     }
 
-    ensureUploadDir(UPLOAD_DIR);
-    deleteMatchingFiles(UPLOAD_DIR, (f) => f.startsWith(id + '.'));
+    // Delete from Vercel Blob
+    if (vehicle.imageUrl) {
+      try { await del(vehicle.imageUrl); } catch (e) { /* ignore */ }
+    }
+
+    await prisma.vehicle.update({
+      where: { id },
+      data: { imageUrl: null },
+    });
 
     return jsonResponse({ message: 'התמונה נמחקה' });
   } catch (error) {
