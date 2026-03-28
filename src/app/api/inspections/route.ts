@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     const data = validation.data;
 
     if (!data.vehicleId && !data.manualVehicle) {
-      return errorResponse('××© ×××××¨ ×¨×× ×× ××××× ××¡×¤×¨ ×¨××©××', 400);
+      return errorResponse('יש לבחור רכב או להזין מספר רישוי', 400);
     }
 
     const garage = await prisma.garage.findUnique({ where: { ownerId: payload.userId } });
@@ -95,8 +95,8 @@ export async function POST(req: NextRequest) {
           data: {
             userId: payload.userId, // temporary owner - garage
             licensePlate: data.manualVehicle.licensePlate,
-            manufacturer: data.manualVehicle.manufacturer || '×× ×¦×××',
-            model: data.manualVehicle.model || '×× ×¦×××',
+            manufacturer: data.manualVehicle.manufacturer || 'לא צוין',
+            model: data.manualVehicle.model || 'לא צוין',
             year: data.manualVehicle.year || 0,
             color: data.manualVehicle.color || null,
             nickname: (data.manualVehicle.manufacturer && data.manualVehicle.model)
@@ -142,8 +142,8 @@ export async function POST(req: NextRequest) {
         data: {
           userId: vehicle.userId,
           type: 'system',
-          title: '××× ××××§× ×××©!',
-          message: `××× ××××§× ××¡×× ${INSPECTION_TYPE_HEB[data.inspectionType] || data.inspectionType} ××¨×× ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) ×××× ××¦×¤×××.`,
+          title: 'דוח בדיקה חדש!',
+          message: `דוח בדיקה מסוג ${INSPECTION_TYPE_HEB[data.inspectionType] || data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
           link: `/inspection/${newInspection.id}`,
         },
       });
@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
       });
     });
 
-    return jsonResponse({ inspection, message: '×××××§× × ××¦×¨× ×××¦×××' }, 201);
+    return jsonResponse({ inspection, message: 'הבדיקה נוצרה בהצלחה' }, 201);
   } catch (error) {
     return handleApiError(error);
   }
