@@ -44,20 +44,20 @@ async function wasReminderAlreadySent(
  * Format days until expiry into Hebrew text
  */
 function formatDaysHeb(days: number): string {
-  if (days <= 0) return '\u05d4\u05d9\u05d5\u05dd';
-  if (days === 1) return '\u05de\u05d7\u05e8';
-  if (days <= 7) return '\u05ea\u05d5\u05da ' + days + ' \u05d9\u05de\u05d9\u05dd';
-  if (days <= 14) return '\u05ea\u05d5\u05da \u05e9\u05d1\u05d5\u05e2\u05d9\u05d9\u05dd';
-  return '\u05ea\u05d5\u05da ' + days + ' \u05d9\u05d5\u05dd';
+  if (days <= 0) return 'היום';
+  if (days === 1) return 'מחר';
+  if (days <= 7) return 'תוך ' + days + ' ימים';
+  if (days <= 14) return 'תוך שבועיים';
+  return 'תוך ' + days + ' יום';
 }
 
 /**
  * Get urgency emoji based on days remaining
  */
 function getUrgency(days: number): string {
-  if (days <= 1) return '\u26a0\ufe0f';
-  if (days <= 7) return '\u23f0';
-  return '\ud83d\udcc5';
+  if (days <= 1) return '⚠️';
+  if (days <= 7) return '⏰';
+  return '📅';
 }
 
 export async function GET(req: NextRequest) {
@@ -121,8 +121,8 @@ export async function GET(req: NextRequest) {
               await createNotification({
                 userId: vehicle.user.id,
                 type: 'test_expiry',
-                title: urgency + ' \u05ea\u05d6\u05db\u05d5\u05e8\u05ea \u05d8\u05e1\u05d8 - ' + vehicleName,
-                message: '\u05d4\u05d8\u05e1\u05d8 \u05e9\u05dc \u05e8\u05db\u05d1 ' + vehicle.licensePlate + ' \u05e4\u05d2 ' + timeText + '. \u05e7\u05d1\u05e2 \u05ea\u05d5\u05e8 \u05dc\u05d1\u05d3\u05d9\u05e7\u05d4 \u05e2\u05db\u05e9\u05d9\u05d5.',
+                title: urgency + ' תזכורת טסט - ' + vehicleName,
+                message: 'הטסט של רכב ' + vehicle.licensePlate + ' פג ' + timeText + '. קבע תור לבדיקה עכשיו.',
                 link: '/user/vehicles/' + vehicle.id,
               });
               stats.testReminders++;
@@ -159,8 +159,8 @@ export async function GET(req: NextRequest) {
               await createNotification({
                 userId: vehicle.user.id,
                 type: 'insurance_expiry',
-                title: urgency + ' \u05ea\u05d6\u05db\u05d5\u05e8\u05ea \u05d1\u05d9\u05d8\u05d5\u05d7 - ' + vehicleName,
-                message: '\u05d4\u05d1\u05d9\u05d8\u05d5\u05d7 \u05e9\u05dc \u05e8\u05db\u05d1 ' + vehicle.licensePlate + ' \u05e4\u05d2 ' + timeText + '. \u05d7\u05d3\u05e9 \u05d0\u05ea \u05d4\u05e4\u05d5\u05dc\u05d9\u05e1\u05d4 \u05d1\u05d4\u05e7\u05d3\u05dd.',
+                title: urgency + ' תזכורת ביטוח - ' + vehicleName,
+                message: 'הביטוח של רכב ' + vehicle.licensePlate + ' פג ' + timeText + '. חדש את הפוליסה בהקדם.',
                 link: '/user/vehicles/' + vehicle.id,
               });
               stats.insuranceReminders++;
