@@ -123,3 +123,108 @@ export function buildAppointmentEmailHtml({
 </body>
 </html>`.trim();
 }
+
+/**
+ * Build the HTML for a status-update notification email to a customer.
+ */
+export function buildCustomerStatusEmailHtml({
+  customerName,
+  garageName,
+  vehicleLabel,
+  serviceLabel,
+  dateLabel,
+  timeLabel,
+  status,
+  completionNotes,
+  rejectionReason,
+}: {
+  customerName: string;
+  garageName: string;
+  vehicleLabel: string;
+  serviceLabel: string;
+  dateLabel: string;
+  timeLabel: string;
+  status: 'confirmed' | 'rejected' | 'in_progress' | 'completed' | 'cancelled';
+  completionNotes?: string | null;
+  rejectionReason?: string | null;
+}): string {
+  const statusConfig: Record<string, { emoji: string; title: string; color: string; message: string }> = {
+    confirmed: {
+      emoji: '✅',
+      title: 'התור שלך אושר!',
+      color: '#059669',
+      message: `התור שלך ב<strong>${garageName}</strong> אושר. נתראה!`,
+    },
+    rejected: {
+      emoji: '❌',
+      title: 'ההזמנה נדחתה',
+      color: '#dc2626',
+      message: `לצערנו, ההזמנה שלך ב<strong>${garageName}</strong> נדחתה.${rejectionReason ? ` סיבה: ${rejectionReason}` : ''} ניתן לנסות מוסך אחר.`,
+    },
+    in_progress: {
+      emoji: '🔧',
+      title: 'הרכב נכנס לטיפול!',
+      color: '#2563eb',
+      message: `הרכב שלך נכנס לטיפול ב<strong>${garageName}</strong>.`,
+    },
+    completed: {
+      emoji: '🎉',
+      title: 'הטיפול הושלם בהצלחה!',
+      color: '#059669',
+      message: `הטיפול ברכב שלך הושלם ב<strong>${garageName}</strong>.${completionNotes ? ` סיכום: ${completionNotes}` : ''}`,
+    },
+    cancelled: {
+      emoji: '🚫',
+      title: 'התור בוטל',
+      color: '#dc2626',
+      message: `התור שלך ב<strong>${garageName}</strong> בוטל. אנא צור קשר עם המוסך לפרטים.`,
+    },
+  };
+
+  const cfg = statusConfig[status] || statusConfig.confirmed;
+
+  return `
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head><meta charset="utf-8"></head>
+<body style="font-family:Arial,Helvetica,sans-serif;background:#f4f4f7;margin:0;padding:0;direction:rtl">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:32px 0">
+    <tr><td align="center">
+      <table width="520" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06)">
+        <!-- Header -->
+        <tr>
+          <td style="background:${cfg.color};padding:24px 32px;text-align:center">
+            <h1 style="color:#ffffff;margin:0;font-size:22px">${cfg.emoji} ${cfg.title}</h1>
+          </td>
+        </tr>
+        <!-- Body -->
+        <tr>
+          <td style="padding:28px 32px">
+            <p style="font-size:16px;color:#1e293b;margin:0 0 20px">שלום ${customerName},</p>
+            <p style="font-size:16px;color:#1e293b;margin:0 0 20px">${cfg.message}</p>
+
+            <table width="100%" cellpadding="8" cellspacing="0" style="background:#f8fafc;border-radius:8px;margin-bottom:20px;font-size:15px;color:#334155">
+              <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600;width:120px">מוסך</td><td style="border-bottom:1px solid #e2e8f0">${garageName}</td></tr>
+              <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">רכב</td><td style="border-bottom:1px solid #e2e8f0">${vehicleLabel}</td></tr>
+              <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">סוג שירות</td><td style="border-bottom:1px solid #e2e8f0">${serviceLabel}</td></tr>
+              <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">תאריך</td><td style="border-bottom:1px solid #e2e8f0">${dateLabel}</td></tr>
+              <tr><td style="font-weight:600">שעה</td><td>${timeLabel}</td></tr>
+            </table>
+
+            <a href="https://autolog.click/user/appointments" style="display:inline-block;background:${cfg.color};color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:15px;font-weight:600">
+              צפה בתורים שלי
+            </a>
+          </td>
+        </tr>
+        <!-- Footer -->
+        <tr>
+          <td style="padding:16px 32px;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0">
+            AutoLog — ניהול רכבים חכם
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`.trim();
+}
