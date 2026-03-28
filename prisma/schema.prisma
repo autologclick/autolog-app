@@ -80,6 +80,7 @@ model Vehicle {
   isPrimary         Boolean   @default(false)
   mileage           Int?
   fuelType          String?   // petrol | diesel | electric | hybrid
+  imageUrl          String?   // Vehicle photo URL (Vercel Blob)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
