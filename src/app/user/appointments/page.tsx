@@ -522,7 +522,7 @@ export default function AppointmentsPage() {
           <p className="text-gray-400 mb-4">
             {filter === 'all'
               ? 'עדיין לא קבעת תורים. קבע תור כעת!'
-              : `אין תורים ${filter === 'pending' ? 'ממתין לאישור' : filter === 'confirmed' ? 'מאושרים' : filter === 'in_progress' ? 'בטיפול' : filter === 'completed' ? 'שהושלמו' : filter === 'rejected' ? 'שנדחו' : 'שבוטלו'}`}
+              : `אין תורים ${filter === 'pending' ? 'ממתינים לאישור' : filter === 'confirmed' ? 'מאושרים' : filter === 'in_progress' ? 'בטיפול' : filter === 'completed' ? 'שהושלמו' : filter === 'rejected' ? 'שנדחו' : 'שבוטלו'}`}
           </p>
           <Button
             icon={<Plus size={16} />}
@@ -550,7 +550,7 @@ export default function AppointmentsPage() {
                 <div className="flex items-start gap-4">
                   {/* Service Icon */}
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 ${
- �                   isInProgress ? 'bg-blue-50' : 'bg-teal-50'
+                    isInProgress ? 'bg-blue-50' : 'bg-teal-50'
                   }`}>
                     {getServiceIcon(appointment.serviceType)}
                   </div>
@@ -661,7 +661,7 @@ export default function AppointmentsPage() {
                 <span className="font-medium">{selectedAppointment.garage.address || selectedAppointment.garage.city}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">טלפון:</span>
+                <span className="text-gray-600">טלפו��:</span>
                 <a
                   href={`tel:${selectedAppointment.garage.phone}`}
                   className="font-medium text-teal-600 hover:underline flex items-center gap-1"
