@@ -88,7 +88,7 @@ function FeatureCard({ icon: Icon, title, description, delay }: {
       <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center mb-5">
         <Icon className="w-7 h-7 text-teal-600" />
       </div>
-      <h3 className="text-lg font-bold text-[מספר 1e3a5f] mb-3">{title}</h3>
+      <h3 className="text-lg font-bold text-[#1e3a5f] mb-3">{title}</h3>
       <p className="text-gray-500 leading-relaxed text-sm">{description}</p>
     </div>
   );
@@ -183,7 +183,7 @@ export default function Home() {
                     name: 'האם המידע שלי מאובטח?',
                     acceptedAnswer: {
                       '@type': 'Answer',
-                      text: 'פרטיות ואבטחה הם עדיפות מספר 1 שלנו. כל המידע מוצפן בסטנדרטים בנקאיים ומאוחסן בשרתים מאובטחים.',
+                      text: 'פרטיות ואבטחה הם עדיפות #1 שלנו. כל המידע מוצפן בסטנדרטים בנקאיים ומאוחסן בשרתים מאובטחים.',
                     },
                   },
                   {
@@ -212,23 +212,23 @@ export default function Home() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-6">
-            <a href="#features" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[מספר 1e3a5f]' : 'text-white/80 hover:text-white'}`}>
+            <a href="#features" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1e3a5f]' : 'text-white/80 hover:text-white'}`}>
               תכונות
             </a>
-            <a href="#how-it-works" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[מספר 1e3a5f]' : 'text-white/80 hover:text-white'}`}>
+            <a href="#how-it-works" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1e3a5f]' : 'text-white/80 hover:text-white'}`}>
               איך זה עובד
             </a>
-            <a href="#garages" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[מספר 1e3a5f]' : 'text-white/80 hover:text-white'}`}>
+            <a href="#garages" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1e3a5f]' : 'text-white/80 hover:text-white'}`}>
               למוסכים
             </a>
-            <a href="#faq" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[מספר 1e3a5f]' : 'text-white/80 hover:text-white'}`}>
+            <a href="#faq" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1e3a5f]' : 'text-white/80 hover:text-white'}`}>
               שאלות נפוצות
             </a>
             <div className="w-px h-6 bg-gray-300/30 mx-1" />
             <Link
               href="/auth/login"
               className={`px-5 py-2 text-sm font-medium rounded-lg transition ${
-                isScrolled ? 'text-[מספר 1e3a5f] hover:bg-gray-100' : 'text-white hover:bg-white/10'
+                isScrolled ? 'text-[#1e3a5f] hover:bg-gray-100' : 'text-white hover:bg-white/10'
               }`}
             >
               כניסה
@@ -262,7 +262,7 @@ export default function Home() {
               <a href="#garages" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">למוסכים</a>
               <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">שאלות נפוצות</a>
               <hr className="my-2" />
-              <Link href="/auth/login" className="block px-4 py-3 text-[מספר 1e3a5f] font-medium hover:bg-[#fef7ed]/50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/auth/login" className="block px-4 py-3 text-[#1e3a5f] font-medium hover:bg-[#fef7ed]/50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>
                 כניסה
               </Link>
               <Link href="/auth/signup" className="block px-4 py-3 bg-[#0d9488] text-white text-center font-bold rounded-lg" onClick={() => setMobileMenuOpen(false)}>
@@ -276,7 +276,7 @@ export default function Home() {
       {/* ============ HERO ============ */}
       <section className="relative min-h-[85vh] sm:min-h-[100vh] flex items-center overflow-hidden">
         {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0f2b47] via-[מספר 1e3a5f] to-[#0d7377]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0f2b47] via-[#1e3a5f] to-[#0d7377]" />
         <div className="absolute inset-0 opacity-[0.04]" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h60v60H0z' fill='none'/%3E%3Cpath d='M30 5l5 10h10l-8 6 3 10-10-7-10 7 3-10-8-6h10z' fill='white' opacity='.3'/%3E%3C/svg%3E")`,
         }} />
@@ -291,7 +291,7 @@ export default function Home() {
             <div className="text-right">
               <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-teal-200 text-sm font-medium px-4 py-2 rounded-full mb-6 border border-white/10">
                 <Zap size={14} />
-                <span>הפלטפורמה מספר 1 לניהול רכבים בישראל</span>
+                <span>הפלטפורמה #1 לניהול רכבים בישראל</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
@@ -325,7 +325,7 @@ export default function Home() {
               <div className="flex items-center gap-4 text-gray-400 text-sm">
                 <div className="flex -space-x-2 rtl:space-x-reverse">
                   {['bg-blue-400','bg-green-400','bg-purple-400','bg-orange-400'].map((c, i) => (
-                    <div key={i} className={`w-8 h-8 ${c} rounded-full border-2 border-[מספר 1e3a5f] flex items-center justify-center text-white text-xs font-bold`}>
+                    <div key={i} className={`w-8 h-8 ${c} rounded-full border-2 border-[#1e3a5f] flex items-center justify-center text-white text-xs font-bold`}>
                       {['פ','ד','מ','ש'][i]}
                     </div>
                   ))}
@@ -457,7 +457,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="text-teal-600 font-semibold text-sm mb-2 block">למה AutoLog?</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[מספר 1e3a5f] mb-4">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-4">
               הכל שלך — במקום אחד
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto text-lg">
@@ -511,7 +511,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="text-teal-600 font-semibold text-sm mb-2 block">פשוט וקל</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[מספר 1e3a5f] mb-4">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-4">
               מתחילים בשלושה צעדים
             </h2>
             <p className="text-gray-500 max-w-xl mx-auto">
@@ -524,14 +524,14 @@ export default function Home() {
               {
                 num: '01',
                 title: 'הרשמה מהירה',
-                desc: 'נרשמים עם מייל ומספר טלפון. תוך 30 שניות החשבון שלך מוכן.',
+                desc: 'נרשמים עם מייל ו#טלפון. תוך 30 שניות החשבון שלך מוכן.',
                 icon: Smartphone,
                 color: 'from-blue-500 to-blue-600',
               },
               {
                 num: '02',
                 title: 'הוסף את הרכבים שלך',
-                desc: 'מוסיפים את הרכב עם מספר רישוי — המערכת שולפת את כל הפרטים אוטומטית.',
+                desc: 'מוסיפים את הרכב עם #רישוי — המערכת שולפת את כל הפרטים אוטומטית.',
                 icon: Car,
                 color: 'from-teal-500 to-teal-600',
               },
@@ -552,7 +552,7 @@ export default function Home() {
                   <step.icon className="w-9 h-9 text-white" />
                 </div>
                 <div className="text-xs font-bold text-teal-600 mb-2">שלב {step.num}</div>
-                <h3 className="text-xl font-bold text-[מספר 1e3a5f] mb-3">{step.title}</h3>
+                <h3 className="text-xl font-bold text-[#1e3a5f] mb-3">{step.title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
               </div>
             ))}
@@ -561,7 +561,7 @@ export default function Home() {
       </section>
 
       {/* ============ STATS ============ */}
-      <section ref={stats.ref} className="py-16 bg-[מספר 1e3a5f]">
+      <section ref={stats.ref} className="py-16 bg-[#1e3a5f]">
         <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-1000 ${stats.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
             {[
@@ -587,7 +587,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <span className="text-teal-600 font-semibold text-sm mb-2 block">מה אומרים עלינו</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[מספר 1e3a5f]">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f]">
               הלקוחות שלנו מדברים
             </h2>
           </div>
@@ -625,7 +625,7 @@ export default function Home() {
                 </div>
                 <p className="text-gray-600 text-sm leading-relaxed mb-5">"{t.text}"</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[מספר 1e3a5f] to-[#0d9488] rounded-full flex items-center justify-center text-white text-sm font-bold">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#1e3a5f] to-[#0d9488] rounded-full flex items-center justify-center text-white text-sm font-bold">
                     {t.name[0]}
                   </div>
                   <div>
@@ -646,7 +646,7 @@ export default function Home() {
             {/* Content */}
             <div>
               <span className="text-emerald-600 font-semibold text-sm mb-2 block">למוסכים ובעלי עסקים</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-[מספר 1e3a5f] mb-6">
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-6">
                 הפוך את המוסך שלך לדיגיטלי
               </h2>
               <p className="text-gray-500 text-lg leading-relaxed mb-8">
@@ -665,7 +665,7 @@ export default function Home() {
                       <Icon className="w-5 h-5 text-emerald-600" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-[מספר 1e3a5f] text-sm mb-1">{title}</h4>
+                      <h4 className="font-bold text-[#1e3a5f] text-sm mb-1">{title}</h4>
                       <p className="text-gray-500 text-sm">{desc}</p>
                     </div>
                   </div>
@@ -685,12 +685,12 @@ export default function Home() {
             <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-8 border border-emerald-100">
               <div className="bg-white rounded-2xl shadow-lg p-6 mb-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-bold text-[מספר 1e3a5f]"><BarChart3 size={16} className="inline" /> סיכום חודשי</h4>
+                  <h4 className="font-bold text-[#1e3a5f]"><BarChart3 size={16} className="inline" /> סיכום חודשי</h4>
                   <span className="text-xs text-gray-400">מרץ 2026</span>
                 </div>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div className="bg-gray-50 rounded-xl p-3">
-                    <p className="text-2xl font-bold text-[מספר 1e3a5f]">47</p>
+                    <p className="text-2xl font-bold text-[#1e3a5f]">47</p>
                     <p className="text-xs text-gray-500">בדיקות</p>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3">
@@ -698,14 +698,14 @@ export default function Home() {
                     <p className="text-xs text-gray-500">דירוג</p>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3">
-                    <p className="text-2xl font-bold text-[מספר 1e3a5f]">92%</p>
+                    <p className="text-2xl font-bold text-[#1e3a5f]">92%</p>
                     <p className="text-xs text-gray-500">חזרו שוב</p>
                   </div>
                 </div>
               </div>
 
               <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h4 className="font-bold text-[מספר 1e3a5f] mb-3"><Calendar size={16} className="inline" /> תורים להיום</h4>
+                <h4 className="font-bold text-[#1e3a5f] mb-3"><Calendar size={16} className="inline" /> תורים להיום</h4>
                 <div className="space-y-3">
                   {[
                     { time: '09:00', name: 'דני כהן', type: 'טסט שנתי', color: 'bg-blue-100 text-blue-700' },
@@ -732,7 +732,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <span className="text-teal-600 font-semibold text-sm mb-2 block">שאלות נפוצות</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[מספר 1e3a5f] mb-4">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-4">
               תשובות לשאלות הנפוצות שלך
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto">
@@ -756,7 +756,7 @@ export default function Home() {
               },
               {
                 q: 'האם המידע שלי מאובטח?',
-                a: 'פרטיות ואבטחה הם עדיפות מספר 1 שלנו. כל המידע שלך מוצפן בסטנדרטים בנקאיים (SSL/TLS), ומאוחסן בשרתים מאובטחים ומסודרים. אנחנו לעולם לא מוכרים את הנתונים שלך לצד שלישי.',
+                a: 'פרטיות ואבטחה הם עדיפות #1 שלנו. כל המידע שלך מוצפן בסטנדרטים בנקאיים (SSL/TLS), ומאוחסן בשרתים מאובטחים ומסודרים. אנחנו לעולם לא מוכרים את הנתונים שלך לצד שלישי.',
               },
               {
                 q: 'מה קורה אם אני מוכר את הרכב?',
@@ -782,7 +782,7 @@ export default function Home() {
               >
                 <div className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl p-5 transition">
                   <div className="flex items-start justify-between gap-4">
-                    <h3 className="font-bold text-[מספר 1e3a5f] text-base leading-snug">{item.q}</h3>
+                    <h3 className="font-bold text-[#1e3a5f] text-base leading-snug">{item.q}</h3>
                     <ChevronDown
                       size={20}
                       className={`flex-shrink-0 text-teal-600 transition-transform duration-300 ${
@@ -826,7 +826,7 @@ export default function Home() {
       {/* ============ CTA ============ */}
       <section ref={cta.ref} className="py-20 sm:py-24">
         <div className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-1000 ${cta.isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-          <div className="bg-gradient-to-br from-[מספר 1e3a5f] via-[#244b75] to-[#0d7377] rounded-3xl p-6 sm:p-14 text-center text-white relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[#1e3a5f] via-[#244b75] to-[#0d7377] rounded-3xl p-6 sm:p-14 text-center text-white relative overflow-hidden">
             {/* Decorative */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-400/10 rounded-full blur-3xl" />
@@ -841,7 +841,7 @@ export default function Home() {
               </p>
               <Link
                 href="/auth/signup"
-                className="inline-block px-10 py-4 bg-white text-[מספר 1e3a5f] font-bold text-lg rounded-xl hover:bg-gray-100 transition shadow-xl hover:-translate-y-0.5"
+                className="inline-block px-10 py-4 bg-white text-[#1e3a5f] font-bold text-lg rounded-xl hover:bg-gray-100 transition shadow-xl hover:-translate-y-0.5"
               >
                 הרשם עכשיו — בחינם
               </Link>
