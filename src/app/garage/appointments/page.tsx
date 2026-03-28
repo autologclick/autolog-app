@@ -8,7 +8,7 @@ import Modal from '@/components/ui/Modal';
 import {
   Calendar, Clock, Phone, Check, X, Loader2,
   Play, CheckCircle2, AlertCircle, FileText, User, Car, Shield,
-  Brain, TrendingUp, Target, Timer
+  Brain, TrendingUp, Target, Timer, Bell, Volume2
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -65,7 +65,237 @@ export default function AppointmentsPage() {
   // Countdown timer state
   const RESPONSE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
   const [now, setNow] = useState(Date.now());
-  const timerRef = useRef<NodeJS.Timeout | null>(null);W'&÷"†FFæW'&÷"ÇÂ}zy-yyyByz-y=y½y]yòyMzyyy]zr“°¢&WGW&ã°¢Ğ ¢òòWFFRÆö6Â7FFP¢6WDö–çFÖVçG2‡&WbÓà¢&WbæÖ†Óâæ–BÓÓÒö–çFÖVçD–Bò²ââæÂ7FGW2Â6ö×ÆWF–öäæ÷FW3¢æ÷FW2ÇÂæ6ö×ÆWF–öäæ÷FW2Ò¢¢“° ¢6WE7V66W72†FFæÖW76vRÇÂ}yMzyyy]zz-y]y=y½yòyyMzmyÍy}yBr“°¢6WEF–ÖV÷WB‚‚’Óâ6WE7V66W72‚rr’Â3“°¢Ò6F6‚°¢6WDW'&÷"‚}zy-yyz¢y}yyy]z‚r“°¢Òf–æÆÇ’°¢6WEWFF–ær†çVÆÂ“°¢Ğ¢Ó° ¢6öç7B†æFÆT6öæf—&ÒÒ†ö–çFÖVçC¢ö–çFÖVçB’Óâ°¢WFFU7FGW2†ö–çFÖVçBæ–BÂv6öæf—&ÖVBr“°¢Ó° ¢6öç7B†æFÆU7F'Ev÷&²Ò†ö–çFÖVçC¢ö–çFÖVçB’Óâ°¢WFFU7FGW2†ö–çFÖVçBæ–BÂv–å÷&öw&W72r“°¢Ó° ¢6öç7B÷Vä6ö×ÆWFTÖöFÂÒ†ö–çFÖVçC¢ö–çFÖVçB’Óâ°¢6WD6ö×ÆWF–ætö–çFÖVçB†ö–çFÖVçB“°¢6WD6ö×ÆWF–öäæ÷FW2‚rr“°¢6WE6†÷t6ö×ÆWFTÖöFÂ‡G'VR“°¢Ó° ¢6öç7B†æFÆT6ö×ÆWFRÒ‚’Óâ°¢–b‚6ö×ÆWF–ætö–çFÖVçB’&WGW&ã°¢WFFU7FGW2†6ö×ÆWF–ætö–çFÖVçBæ–BÂv6ö×ÆWFVBrÂ6ö×ÆWF–öäæ÷FW2ÇÂVæFVf–æVB“°¢6WE6†÷t6ö×ÆWFTÖöFÂ†fÇ6R“°¢6WD6ö×ÆWF–ætö–çFÖVçB†çVÆÂ“°¢Ó° ¢6öç7B÷Vä6æ6VÄÖöFÂÒ†ö–çFÖVçC¢ö–çFÖVçB’Óâ°¢6WD6æ6VÆÆ–ætö–çFÖVçB†ö–çFÖVçB“°¢6WE6†÷t6æ6VÄÖöFÂ‡G'VR“°¢Ó° ¢6öç7B†æFÆT6æ6VÂÒ‚’Óâ°¢–b‚6æ6VÆÆ–ætö–çFÖVçB’&WGW&ã°¢WFFU7FGW2†6æ6VÆÆ–ætö–çFÖVçBæ–BÂv6æ6VÆÆVBr“°¢6WE6†÷t6æ6VÄÖöFÂ†fÇ6R“°¢6WD6æ6VÆÆ–ætö–çFÖVçB†çVÆÂ“°¢Ó° ¢6öç7B÷Vå&V¦V7DÖöFÂÒ†ö–çFÖVçC¢ö–çFÖVçB’Óâ°¢6WE&V¦V7F–ætö–çFÖVçB†ö–çFÖVçB“°¢6WE&V¦V7F–öå&V6öâ‚rr“°¢6WE6†÷u&V¦V7DÖöFÂ‡G'VR“°¢Ó° ¢6öç7B†æFÆU&V¦V7BÒ‚’Óâ°¢–b‚&V¦V7F–ætö–çFÖVçB’&WGW&ã°¢WFFU7FGW2‡&V¦V7F–ætö–çFÖVçBæ–BÂw&V¦V7FVBrÂVæFVf–æVBÂ&V¦V7F–öå&V6öâÇÂVæFVf–æVB“°¢6WE6†÷u&V¦V7DÖöFÂ†fÇ6R“°¢6WE&V¦V7F–ætö–çFÖVçB†çVÆÂ“°¢Ó° ¢6öç7BFöF’ÒæWrFFR‚’çFô•4õ7G&–ær‚’ç7Æ—B‚uBr•³Ó° ¢6öç7Bf–ÇFW&VDö–çFÖVçG2Òö–çFÖVçG2æf–ÇFW"†Óâ°¢6öç7BDFFRÒæFFRç7Æ—B‚uBr•³Ó°¢–b†f–ÇFW"ÓÓÒwVæF–ærr’&WGW&âç7FGW2ÓÓÒwVæF–ærs°¢–b†f–ÇFW"ÓÓÒv–å÷&öw&W72r’&WGW&âç7FGW2ÓÓÒv–å÷&öw&W72s°¢–b†f–ÇFW"ÓÓÒwFöF’r’&WGW&âDFFRÓÓÒFöF“°¢–b†f–ÇFW"ÓÓÒwW6öÖ–ærr’&WGW&âDFFRâFöF’bbç7FGW2ÓÒv6ö×ÆWFVBrbbç7FGW2ÓÒv6æ6VÆÆVBs°¢–b†f–ÇFW"ÓÓÒv6ö×ÆWFVBr’&WGW&âç7FGW2ÓÓÒv6ö×ÆWFVBs°¢&WGW&âG'VS°¢Ò’ç6÷'B‚†Â"’Óâ°¢òò&–÷&—G’6÷'C¢VæF–ærf—'7BÂF†Vâ–å÷&öw&W72ÂF†Vâ6öæf—&ÖVBÂF†Vâ÷F†W'0¢6öç7B&–÷&—G“¢&V6÷&CÇ7G&–ærÂçVÖ&W#âÒ²VæF–æs¢Â–å÷&öw&W73¢Â6öæf—&ÖVC¢"Â6ö×ÆWFVC¢2Â6æ6VÆÆVC¢BÂ&V¦V7FVC¢RÓ°¢6öç7BÒ&–÷&—G•¶ç7FGW5ÒóòS°¢6öç7B"Ò&–÷&—G•¶"ç7FGW5ÒóòS°¢–b‡ÓÒ"’&WGW&âÒ#°¢òòv—F†–â6ÖR7FGW2Â6÷'B'’FFR66VæF–ær†æV&W7Bf—'7B¢&WGW&âæWrFFR†æFFR’ævWEF–ÖR‚’ÒæWrFFR†"æFFR’ævWEF–ÖR‚“°¢Ò“°
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // New appointment alert
+  const [newAlertCount, setNewAlertCount] = useState(0);
+  const [showNewAlert, setShowNewAlert] = useState(false);
+  const knownIdsRef = useRef<Set<string>>(new Set());
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const initialLoadDone = useRef(false);
+
+  // Filter
+  const [filter, setFilter] = useState<'all' | 'pending' | 'today' | 'in_progress' | 'upcoming' | 'completed'>('all');
+
+  // Play notification sound using Web Audio API
+  const playNotificationSound = useCallback(() => {
+    if (!soundEnabled) return;
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new AudioContext();
+      }
+      const ctx = audioCtxRef.current;
+      const now = ctx.currentTime;
+
+      // Two-tone chime: pleasant notification sound
+      const frequencies = [587.33, 783.99]; // D5, G5
+      frequencies.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, now + i * 0.15);
+        gain.gain.linearRampToValueAtTime(0.3, now + i * 0.15 + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + i * 0.15);
+        osc.stop(now + i * 0.15 + 0.5);
+      });
+    } catch {
+      // Audio not available â€” silent fail
+    }
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    loadAppointments();
+  }, []);
+
+  const loadAppointments = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/garage/appointments?limit=200');
+      if (res.ok) {
+        const data = await res.json();
+        const list: Appointment[] = data.appointments || [];
+        setAppointments(list);
+        // Track known IDs so we only alert on truly new ones
+        list.forEach(a => knownIdsRef.current.add(a.id));
+        initialLoadDone.current = true;
+      }
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error loading appointments:', err);
+      }
+      setError('×©×’×™××” ×‘×˜×¢×™× ×ª ×”×ª×•×¨×™×');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Poll for new appointments every 30 seconds
+  useEffect(() => {
+    if (!initialLoadDone.current) return;
+
+    pollRef.current = setInterval(async () => {
+      try {
+        const res = await fetch('/api/garage/appointments?limit=200');
+        if (!res.ok) return;
+        const data = await res.json();
+        const freshAppointments: Appointment[] = data.appointments || [];
+
+        // Detect new appointments
+        const newOnes = freshAppointments.filter(a => !knownIdsRef.current.has(a.id));
+        if (newOnes.length > 0) {
+          newOnes.forEach(a => knownIdsRef.current.add(a.id));
+          setAppointments(freshAppointments);
+          setNewAlertCount(newOnes.length);
+          setShowNewAlert(true);
+          playNotificationSound();
+
+          // Auto-hide after 10 seconds
+          setTimeout(() => setShowNewAlert(false), 10000);
+        }
+      } catch {
+        // Silent fail for poll
+      }
+    }, 30000);
+
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, [initialLoadDone.current, playNotificationSound]);
+
+  // Timer: update "now" every second when there are pending appointments
+  useEffect(() => {
+    const hasPending = appointments.some(a => a.status === 'pending');
+    if (hasPending) {
+      timerRef.current = setInterval(() => setNow(Date.now()), 1000);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [appointments]);
+
+  // Calculate remaining seconds for a pending appointment
+  const getRemainingSeconds = useCallback((createdAt: string) => {
+    const created = new Date(createdAt).getTime();
+    const elapsed = now - created;
+    const remaining = RESPONSE_TIMEOUT_MS - elapsed;
+    return Math.max(0, Math.ceil(remaining / 1000));
+  }, [now]);
+
+  // Format seconds as M:SS
+  const formatCountdown = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const updateStatus = async (appointmentId: string, status: string, notes?: string, rejReason?: string) => {
+    setUpdating(appointmentId);
+    setError('');
+    setSuccess('');
+
+    try {
+      const body: any = { status };
+      if (notes) body.completionNotes = notes;
+      if (rejReason) body.rejectionReason = rejReason;
+
+      const res = await fetch(`/api/garage/appointments/${appointmentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || '×©×’×™××” ×‘×¢×“×›×•×Ÿ ×”×¡×˜×˜×•×¡');
+        return;
+      }
+
+      // Update local state
+      setAppointments(prev =>
+        prev.map(a => a.id === appointmentId ? { ...a, status, completionNotes: notes || a.completionNotes } : a)
+      );
+
+      setSuccess(data.message || '×”×¡×˜×˜×•×¡ ×¢×•×“×›×Ÿ ×‘×”×¦×œ×—×”');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch {
+      setError('×©×’×™××ª ×—×™×‘×•×¨');
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const handleConfirm = (appointment: Appointment) => {
+    updateStatus(appointment.id, 'confirmed');
+  };
+
+  const handleStartWork = (appointment: Appointment) => {
+    updateStatus(appointment.id, 'in_progress');
+  };
+
+  const openCompleteModal = (appointment: Appointment) => {
+    setCompletingAppointment(appointment);
+    setCompletionNotes('');
+    setShowCompleteModal(true);
+  };
+
+  const handleComplete = () => {
+    if (!completingAppointment) return;
+    updateStatus(completingAppointment.id, 'completed', completionNotes || undefined);
+    setShowCompleteModal(false);
+    setCompletingAppointment(null);
+  };
+
+  const openCancelModal = (appointment: Appointment) => {
+    setCancellingAppointment(appointment);
+    setShowCancelModal(true);
+  };
+
+  const handleCancel = () => {
+    if (!cancellingAppointment) return;
+    updateStatus(cancellingAppointment.id, 'cancelled');
+    setShowCancelModal(false);
+    setCancellingAppointment(null);
+  };
+
+  const openRejectModal = (appointment: Appointment) => {
+    setRejectingAppointment(appointment);
+    setRejectionReason('');
+    setShowRejectModal(true);
+  };
+
+  const handleReject = () => {
+    if (!rejectingAppointment) return;
+    updateStatus(rejectingAppointment.id, 'rejected', undefined, rejectionReason || undefined);
+    setShowRejectModal(false);
+    setRejectingAppointment(null);
+  };
+
+  const today = new Date().toISOString().split('T')[0];
+
+  const filteredAppointments = appointments.filter(a => {
+    const apptDate = a.date.split('T')[0];
+    if (filter === 'pending') return a.status === 'pending';
+    if (filter === 'in_progress') return a.status === 'in_progress';
+    if (filter === 'today') return apptDate === today;
+    if (filter === 'upcoming') return apptDate > today && a.status !== 'completed' && a.status !== 'cancelled';
+    if (filter === 'completed') return a.status === 'completed';
+    return true;
+  }).sort((a, b) => {
+    // Priority sort: pending first, then in_progress, then confirmed, then others
+    const priority: Record<string, number> = { pending: 0, in_progress: 1, confirmed: 2, completed: 3, cancelled: 4, rejected: 5 };
+    const pa = priority[a.status] ?? 5;
+    const pb = priority[b.status] ?? 5;
+    if (pa !== pb) return pa - pb;
+    // Within same status, sort by date ascending (nearest first)
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
 
   const todayCount = appointments.filter(a => a.date.split('T')[0] === today).length;
   const pendingCount = appointments.filter(a => a.status === 'pending').length;
@@ -107,7 +337,7 @@ export default function AppointmentsPage() {
               ? 'bg-amber-100 text-amber-700'
               : 'bg-blue-100 text-blue-700'
           }`}
-          title="×–×—×Ÿ ×©× ×•×ª×¨ ×œ×ª×’×•×‘×”"
+          title="×–××Ÿ ×©× ×•×ª×¨ ×œ×ª×’×•×‘×”"
         >
           <Timer size={14} />
           <span>{isExpired ? '×¤×’ ×ª×•×§×£' : formatCountdown(remaining)}</span>
@@ -189,23 +419,7 @@ export default function AppointmentsPage() {
           key="inspection"
           onClick={() => router.push(`/garage/new-inspection?appointmentId=${appointment.id}`)}
           className="h-8 px-3 rounded-lg bg-teal-100 flex items-center justify-center gap-1 hover:bg-teal-200 transition text-xs font-medium text-teal-700"
-          title="×¦×•×¨ ×“×•×— ×‘×“×™×§×”"
-        >
-          <Shield size={14} />
-          <span>×¦×•×¨ ×‘×“×™×§×”</span>
-        </button>
-      );
-    }
-
-    return buttons;
-  };
-
-  if (loading) {
-    return (
-      <div className="space-y-6 pt-12 lg:pt-0">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] rounded-lg border-2 border-[#1e3a5f] flex items-center justify-center">
-            <Calendar size={20} className="text-[#1e3a5f]" />
+          title="×¦×•×¨#g^O^W^\ƒ^G^O^g^Ÿ^Pˆ(€€€€€€€€ø(€€€€€€€€€€ñM¡¥•±Í¥é”õìÄÑô€¼ø(€€€€€€€€€€ñÍÁ…¸û^›^W^ ƒ^G^O^g^Ÿ^Pğ½ÍÁ…¸ø(€€€€€€€€ğ½‰ÕÑÑ½¸ø(€€€€€€¤ì(€€€ô((€€€É•ÑÕÉ¸‰ÕÑÑ½¹Ìì(€ôì((€¥˜€¡±½…‘¥¹œ¤ì(€€€É•ÑÕÉ¸€ (€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰ÍÁ…”µä´ØÁĞ´ÄÈ±œéÁĞ´Àˆø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰™±•à¥Ñ•µÌµ•¹Ñ•È…À´Ìˆø(€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰Ü´ÄÀ ´ÄÀ‰œµl™•˜İ•‘tÉ½Õ¹‘•µ±œ‰½É‘•È´È‰½É‘•ÈµlŒÅ”Í„Õ™t™±•à¥Ñ•µÌµ•¹Ñ•È©ÕÍÑ¥™äµ•¹Ñ•Èˆø(€€€€€€€€€€€€ñ…±•¹‘…Èize={20} className="text-[#1e3a5f]" />
           </div>
           <h1 className="text-2xl font-bold text-[#1e3a5f]">× ×™×”×•×œ ×ª×•×¨×™×</h1>
         </div>
@@ -223,11 +437,47 @@ export default function AppointmentsPage() {
         <div className="w-10 h-10 bg-[#fef7ed] rounded-lg border-2 border-[#1e3a5f] flex items-center justify-center shadow-sm">
           <Calendar size={20} className="text-[#1e3a5f]" />
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">× ×™×”×•×œ ×ª×•×¨×™×</h1>
           <p className="text-sm text-gray-500">×¦×¤×™×™×” ×•×¢×“×›×•×Ÿ ×ª×•×¨×™×</p>
         </div>
+        <button
+          onClick={() => setSoundEnabled(prev => !prev)}
+          className={`w-9 h-9 rounded-lg flex items-center justify-center transition ${
+            soundEnabled ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+          }`}
+          title={soundEnabled ? '×¦×œ×™×œ ×”×ª×¨××” ×¤×¢×™×œ' : '×¦×œ×™×œ ×”×ª×¨××” ×›×‘×•×™'}
+        >
+          {soundEnabled ? <Volume2 size={18} /> : <Bell size={18} />}
+        </button>
       </div>
+
+      {/* New Appointment Alert Banner */}
+      {showNewAlert && (
+        <div className="animate-pulse bg-gradient-to-r from-emerald-500 to-blue-500 text-white rounded-xl p-4 shadow-lg flex items-center gap-3">
+          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+            <Bell size={22} className="animate-bounce" />
+          </div>
+          <div className="flex-1">
+            <p className="font-bold text-base">
+              {newAlertCount === 1 ? 'ğŸ”” ×ª×•×¨ ×—×“×© ×”×ª×§×‘×œ!' : `ğŸ”” ${newAlertCount} ×ª×•×¨×™× ×—×“×©×™× ×”×ª×§×‘×œ×•!`}
+            </p>
+            <p className="text-sm text-white/90">×œ×—×¥ ×¢×œ &quot;×××ª×™× ×™×&quot; ×›×“×™ ×œ×¦×¤×•×ª ×•×œ××©×¨</p>
+          </div>
+          <button
+            onClick={() => { setShowNewAlert(false); setFilter('pending'); }}
+            className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+          >
+            ×”×¦×’
+          </button>
+          <button
+            onClick={() => setShowNewAlert(false)}
+            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/20 transition"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -268,7 +518,7 @@ export default function AppointmentsPage() {
                 {pendingCount > 3
                   ? `âš ï¸ ${pendingCount} ×ª×•×¨×™× ×××ª×™× ×™× â€” ×™×© 15 ×“×§×•×ª ×œ××©×¨ ×›×œ ×”×–×× ×” ×œ×¤× ×™ ×©×ª×™×“×—×” ××•×˜×•××˜×™×ª!`
                   : pendingCount > 0
-                  ? `ğŸ“‹ ${pendingCount} ×ª×•×¨×™× ×××ª×™× ×™×. ×–×›×¨×•: 15 ×“×§×•×ª ×œ××™×©×•×¨ ×œ×¤× ×™ ×“×—×™×™×” ××•×˜×•××˜×™×ª.`
+                  ? `ğŸ“ ${pendingCount} ×ª×•×¨×™× ×××ª×™× ×™×. ×–×›×¨×•: 15 ×“×§×•×ª ×œ××™×©×•×¨ ×œ×¤× ×™ ×“×—×™×™×” ××•×˜×•××˜×™×ª.`
                   : 'âœ… ×›×œ ×”×ª×•×¨×™× ×××•×©×¨×™× â€” ×¢×‘×•×“×” ××¦×•×™× ×ª!'}
               </p>
             </div>
@@ -281,7 +531,7 @@ export default function AppointmentsPage() {
                 {todayCount >= 5
                   ? `âš¡ ×™×•× ×¢××•×¡! ${todayCount} ×ª×•×¨×™× ×œ×”×™×•×. ×•×“××• ×©×™×© ××¡×¤×™×§ ×¦×•×•×ª.`
                   : todayCount >= 2
-                  ? `ğŸ“… ${todayCount} ×ª×•×¨×™× ×œ×”×™×•× â€” ×§×¦×‘ ×¤×¢×™×œ×•×ª ×˜×•×‘.`
+                  ? `ğŸ“ ${todayCount} ×ª×•×¨×™× ×œ×”×™×•× â€” ×§×¦×‘ ×¤×¢×™×œ×•×ª ×˜×•×‘.`
                   : todayCount === 1
                   ? 'ğŸ“… ×ª×•×¨ ××—×“ ×œ×”×™×•×. ×™×© ××§×•× ×œ×ª×•×¨×™× × ×•×¡×¤×™×.'
                   : 'ğŸ• ××™×Ÿ ×ª×•×¨×™× ×œ×”×™×•×. ×”×–×“×× ×•×ª ×œ×©×™×•×•×§ ×•×¤× ×™×™×” ×œ×œ×§×•×—×•×ª.'}
@@ -490,7 +740,7 @@ export default function AppointmentsPage() {
                 className="w-full bg-teal-600 text-white rounded-xl py-2.5 font-medium hover:bg-teal-700 transition flex items-center justify-center gap-2 text-sm"
               >
                 <Shield size={16} />
-                ×¡×™×™× + ×¦×•×¨ ×“×•×— ×‘×“×™×§×”
+                ×¡×™×™× + ×¤×•×¨ ×“×•×— ×‘×“×™×§×”
               </button>
             </div>
           </div>
