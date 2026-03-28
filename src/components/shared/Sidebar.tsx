@@ -99,37 +99,18 @@ export default function Sidebar({ portal, userName = 'משתמש' }: SidebarProp
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const sidebarRef = useRef<HTMLElement>(null);
 
-  // Prevent sidebar from stealing wheel scroll events.
-  // The layout uses overflow-y-auto on <main>, not on window/body.
-  // Intercept ALL wheel events on the entire sidebar (aside element)
-  // and forward them to the <main> scroll container.
+
+
+
+  // Auto-scroll to active item on initial mount only
+  const initialScrollDone = useRef(false);
   useEffect(() => {
-    const sidebar = sidebarRef.current;
-    if (!sidebar) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      const mainEl = document.querySelector('main');
-      if (!mainEl) return;
-
-      // Prevent sidebar internal scrolling, forward to main content
-      e.preventDefault();
-      e.stopPropagation();
-      mainEl.scrollTop += e.deltaY;
-    };
-
-    // Use capture phase to intercept before any child scroll containers
-    sidebar.addEventListener('wheel', handleWheel, { passive: false, capture: true });
-    return () => sidebar.removeEventListener('wheel', handleWheel, { capture: true });
-  }, []);
-
-  // Auto-scroll sidebar nav to show active item
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      const activeButton = document.querySelector('aside [data-active="true"]');
-      if (activeButton) {
-        activeButton.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      }
-    });
+    if (initialScrollDone.current) return;
+    const activeEl = document.querySelector('nav a[data-active="true"]');
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+      initialScrollDone.current = true;
+    }
   }, [pathname]);
 
   // Lock body scroll when mobile sidebar is open
