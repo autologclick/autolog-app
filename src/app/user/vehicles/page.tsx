@@ -55,7 +55,7 @@ function VehicleImage({ vehicleId, imageUrl, size = 'md', className = '' }: { ve
   return (
     <img
       src={imageUrl}
-      alt="\u05EA\u05DE\u05D5\u05E0\u05EA \u05E8\u05DB\u05D1"
+      alt="תמונת רכב"
       className={`${sizeClasses[size]} rounded-xl object-cover flex-shrink-0 ${className}`}
       onError={() => setHasError(true)}
     />
