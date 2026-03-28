@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Card, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { StatusBadge } from '@/components/ui/Badge';
@@ -8,7 +8,7 @@ import Modal from '@/components/ui/Modal';
 import {
   Calendar, Clock, Phone, Check, X, Loader2,
   Play, CheckCircle2, AlertCircle, FileText, User, Car, Shield,
-  Brain, TrendingUp, Target
+  Brain, TrendingUp, Target, Timer
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -21,6 +21,7 @@ interface Appointment {
   notes?: string;
   completionNotes?: string;
   completedAt?: string;
+  createdAt: string;
   user: {
     fullName: string;
     phone: string | null;
@@ -52,9 +53,19 @@ export default function AppointmentsPage() {
   const [completingAppointment, setCompletingAppointment] = useState<Appointment | null>(null);
   const [completionNotes, setCompletionNotes] = useState('');
 
-  // Cancel confirm modal
+  // Cancel confirm modal (for confirmed/in_progress)
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancellingAppointment, setCancellingAppointment] = useState<Appointment | null>(null);
+
+  // Reject modal (for pending appointments)
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectingAppointment, setRejectingAppointment] = useState<Appointment | null>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
+
+  // Countdown timer state
+  const RESPONSE_TIMEOUT_MS = 3 * 60 * 1000;
+  const [now, setNow] = useState(Date.now());
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Filter
   const [filter, setFilter] = useState<'all' | 'pending' | 'today' | 'in_progress' | 'upcoming' | 'completed'>('all');
@@ -81,7 +92,31 @@ export default function AppointmentsPage() {
     }
   };
 
-  const updateStatus = async (appointmentId: string, status: string, notes?: string) => {
+  // Timer: update every second when there are pending appointments
+  useEffect(() => {
+    const hasPending = appointments.some(a => a.status === 'pending');
+    if (hasPending) {
+      timerRef.current = setInterval(() => setNow(Date.now()), 1000);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [appointments]);
+
+  const getRemainingSeconds = useCallback((createdAt: string) => {
+    const created = new Date(createdAt).getTime();
+    const elapsed = now - created;
+    const remaining = RESPONSE_TIMEOUT_MS - elapsed;
+    return Math.max(0, Math.ceil(remaining / 1000));
+  }, [now]);
+
+  const formatCountdown = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return m + ':' + s.toString().padStart(2, '0');
+  };
+
+  const updateStatus = async (appointmentId: string, status: string, notes?: string, rejReason?: string) => {
     setUpdating(appointmentId);
     setError('');
     setSuccess('');
@@ -152,6 +187,19 @@ export default function AppointmentsPage() {
     setCancellingAppointment(null);
   };
 
+  const openRejectModal = (appointment: Appointment) => {
+    setRejectingAppointment(appointment);
+    setRejectionReason('');
+    setShowRejectModal(true);
+  };
+
+  const handleReject = () => {
+    if (!rejectingAppointment) return;
+    updateStatus(rejectingAppointment.id, 'rejected', undefined, rejectionReason || undefined);
+    setShowRejectModal(false);
+    setRejectingAppointment(null);
+  };
+
   const today = new Date().toISOString().split('T')[0];
 
   const filteredAppointments = appointments.filter(a => {
@@ -164,7 +212,7 @@ export default function AppointmentsPage() {
     return true;
   }).sort((a, b) => {
     // Priority sort: pending first, then in_progress, then confirmed, then others
-    const priority: Record<string, number> = { pending: 0, in_progress: 1, confirmed: 2, completed: 3, cancelled: 4 };
+    const priority: Record<string, number> = { pending: 0, in_progress: 1, confirmed: 2, completed: 3, cancelled: 4, rejected: 5 };
     const pa = priority[a.status] ?? 5;
     const pb = priority[b.status] ?? 5;
     if (pa !== pb) return pa - pb;
@@ -196,28 +244,26 @@ export default function AppointmentsPage() {
     }
 
     if (appointment.status === 'pending') {
+      var remaining = getRemainingSeconds(appointment.createdAt);
+      var isExpired = remaining <= 0;
       buttons.push(
-        <button
-          key="confirm"
-          onClick={() => handleConfirm(appointment)}
-          disabled={isUpdating}
-          className="h-8 px-3 rounded-lg bg-emerald-100 flex items-center justify-center gap-1 hover:bg-emerald-200 transition disabled:opacity-50 text-xs font-medium text-emerald-700"
-          title="אשר תור"
-        >
-          {isUpdating ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-          <span>אשר</span>
-        </button>
+        <div key="timer" className={'h-8 px-2 rounded-lg flex items-center gap-1 text-xs font-bold ' + (isExpired ? 'bg-red-100 text-red-700' : remaining <= 60 ? 'bg-red-100 text-red-600 animate-pulse' : remaining <= 120 ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700')} title="זמן שנותר לתגובה">
+          <Timer size={14} />
+          <span>{isExpired ? 'פג תוקף' : formatCountdown(remaining)}</span>
+        </div>
       );
+      if (!isExpired) {
+        buttons.push(
+          <button key="confirm" onClick={() => handleConfirm(appointment)} disabled={isUpdating} className="h-8 px-3 rounded-lg bg-emerald-100 flex items-center justify-center gap-1 hover:bg-emerald-200 transition disabled:opacity-50 text-xs font-medium text-emerald-700" title="אשר תור">
+            {isUpdating ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+            <span>אשר</span>
+          </button>
+        );
+      }
       buttons.push(
-        <button
-          key="cancel"
-          onClick={() => openCancelModal(appointment)}
-          disabled={isUpdating}
-          className="h-8 px-3 rounded-lg bg-red-100 flex items-center justify-center gap-1 hover:bg-red-200 transition disabled:opacity-50 text-xs font-medium text-red-700"
-          title="דחה תור"
-        >
+        <button key="reject" onClick={() => openRejectModal(appointment)} disabled={isUpdating} className="h-8 px-3 rounded-lg bg-red-100 flex items-center justify-center gap-1 hover:bg-red-200 transition disabled:opacity-50 text-xs font-medium text-red-700" title="דחה הזמנה">
           <X size={14} />
-          <span>דחה</span>
+          <span>{isExpired ? 'דחה (פג תוקף)' : 'דחה'}</span>
         </button>
       );
     }
@@ -346,9 +392,9 @@ export default function AppointmentsPage() {
               </div>
               <p className="text-xs text-gray-600">
                 {pendingCount > 3
-                  ? `⚠️ ${pendingCount} תורים ממתינים לאישור — מומלץ לאשר בהקדם כדי לא לאבד לקוחות.`
+                  ? `⚠️ ${pendingCount} תורים ממתינים — יש 3 דקות לאשר כל הזמנה לפני שתידחה אוטומטית!`
                   : pendingCount > 0
-                  ? `📋 ${pendingCount} תורים ממתינים. אשרו אותם לשיפור חוויית הלקוח.`
+                  ? `📋 ${pendingCount} תורים ממתינים. זכרו: 3 דקות לאישור לפני דחייה אוטומטית.`
                   : '✅ כל התורים מאושרים — עבודה מצוינת!'}
               </p>
             </div>
@@ -577,7 +623,7 @@ export default function AppointmentsPage() {
         )}
       </Modal>
 
-      {/* Cancel Confirmation Modal */}
+      {/* Cancel Confirmation Modal (for confirmed/in_progress) */}
       <Modal
         isOpen={showCancelModal && !!cancellingAppointment}
         onClose={() => setShowCancelModal(false)}
@@ -613,6 +659,47 @@ export default function AppointmentsPage() {
               >
                 כן, בטל
               </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Reject Modal (for pending appointments) */}
+      <Modal
+        isOpen={showRejectModal && !!rejectingAppointment}
+        onClose={() => setShowRejectModal(false)}
+        title="דחיית הזמנה"
+        size="sm"
+      >
+        {rejectingAppointment && (
+          <div className="space-y-4" dir="rtl">
+            <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-red-900">דחה את ההזמנה?</p>
+                <p className="text-sm text-red-700 mt-1">
+                  {'ההזמנה של ' + rejectingAppointment.user.fullName + ' תידחה והלקוח יקבל הודעה.'}
+                </p>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 text-right mb-2">
+                סיבת דחייה (אופציונלי)
+              </label>
+              <textarea
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="לדוגמה: אין תור פנוי בזמן זה, הציוד לא זמין..."
+                className="w-full p-3 border border-gray-300 rounded-xl text-right resize-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                rows={2}
+                maxLength={300}
+                dir="rtl"
+              />
+              <p className="text-xs text-gray-400 text-right mt-1">עד 300 תווים. הסיבה תישלח ללקוח.</p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={() => setShowRejectModal(false)} className="flex-1">חזור</Button>
+              <Button variant="danger" onClick={handleReject} loading={updating === rejectingAppointment.id} className="flex-1">דחה הזמנה</Button>
             </div>
           </div>
         )}
