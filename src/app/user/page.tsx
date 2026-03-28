@@ -31,6 +31,7 @@ interface Vehicle {
   insuranceStatus: string;
   insuranceExpiry?: string;
   isPrimary: boolean;
+  imageUrl?: string;
   mileage?: number;
   overallScore?: number;
   lastInspectionId?: string;
@@ -112,7 +113,6 @@ export default function UserDashboard() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [vehicleImages, setVehicleImages] = useState<Record<string, string>>({});
   const [uploadingImage, setUploadingImage] = useState(false);
   const [aiReport, setAiReport] = useState<AiReport | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
@@ -155,27 +155,7 @@ export default function UserDashboard() {
     });
   }, []);
 
-  // Check for vehicle images
-  useEffect(() => {
-    if (vehicles.length === 0) return;
-    const checkImages = async () => {
-      const images: Record<string, string> = {};
-      for (const v of vehicles) {
-        for (const ext of ['jpeg', 'png', 'webp']) {
-          const url = `/uploads/vehicles/${v.id}.${ext}`;
-          try {
-            const res = await fetch(url, { method: 'HEAD' });
-            if (res.ok) {
-              images[v.id] = `${url}?t=${Date.now()}`;
-              break;
-            }
-          } catch {}
-        }
-      }
-      setVehicleImages(images);
-    };
-    checkImages();
-  }, [vehicles]);
+  // Vehicle images now loaded from database via imageUrl field
 
   // Fetch AI health report for selected vehicle
   useEffect(() => {
@@ -205,7 +185,7 @@ export default function UserDashboard() {
         });
         if (res.ok) {
           const data = await res.json();
-          setVehicleImages(prev => ({ ...prev, [vehicle.id]: `${data.path}?t=${Date.now()}` }));
+          setVehicles(prev => prev.map(v => v.id === vehicle.id ? { ...v, imageUrl: data.imageUrl } : v));
         }
         setUploadingImage(false);
       };
@@ -358,10 +338,10 @@ export default function UserDashboard() {
                   disabled={uploadingImage}
                   className="relative w-24 h-20 rounded-xl overflow-hidden flex-shrink-0 shadow-lg group transition-all hover:shadow-xl"
                 >
-                  {vehicleImages[vehicle.id] ? (
+                  {vehicle.imageUrl ? (
                     <>
                       <img
-                        src={vehicleImages[vehicle.id]}
+                        src={vehicle.imageUrl}
                         alt={vehicle.nickname || vehicle.model}
                         className="w-full h-full object-cover"
                       />
