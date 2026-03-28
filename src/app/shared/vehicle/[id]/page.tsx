@@ -72,7 +72,7 @@ export default function SharedVehicleHistoryPage({ params }: { params: { id: str
       <div dir="rtl" className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-500">\u05d8\u05d5\u05e2\u05df \u05d4\u05d9\u05e1\u05d8\u05d5\u05e8\u05d9\u05d9\u05ea \u05e8\u05db\u05d1...</p>
+          <p className="text-gray-500">טוען היסטוריית רכב...</p>
         </div>
       </div>
     );
@@ -85,8 +85,8 @@ export default function SharedVehicleHistoryPage({ params }: { params: { id: str
           <div className="w-20 h-20 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
             <svg className="w-10 h-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 3a9 9 0 100 18 9 9 0 000-18z" /></svg>
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">\u05e8\u05db\u05d1 \u05dc\u05d0 \u05e0\u05de\u05e6\u05d0</h1>
-          <p className="text-gray-500">\u05d4\u05e7\u05d9\u05e9\u05d5\u05e8 \u05dc\u05d0 \u05ea\u05e7\u05d9\u05df \u05d0\u05d5 \u05e9\u05d4\u05e8\u05db\u05d1 \u05d4\u05d5\u05e1\u05e8</p>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">רכב לא נמצא</h1>
+          <p className="text-gray-500">הקישור לא תקין או שהרכב הוסר</p>
         </div>
       </div>
     );
@@ -104,13 +104,13 @@ export default function SharedVehicleHistoryPage({ params }: { params: { id: str
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-              <span className="text-sm font-medium opacity-90">\u05d4\u05d9\u05e1\u05d8\u05d5\u05e8\u05d9\u05d9\u05ea \u05e8\u05db\u05d1 \u05de\u05d0\u05d5\u05de\u05ea\u05ea</span>
+              <span className="text-sm font-medium opacity-90">היסטוריית רכב מאומתת</span>
             </div>
             <span className="text-xs bg-white/20 px-3 py-1 rounded-full">AutoLog</span>
           </div>
           <h1 className="text-2xl font-bold mb-1">{v.manufacturer} {v.model} {v.year}</h1>
           <p className="text-blue-200 text-lg font-mono">{v.licensePlate}</p>
-          {v.color && <p className="text-blue-200 text-sm mt-1">\u05e6\u05d1\u05e2: {v.color}</p>}
+          {v.color && <p className="text-blue-200 text-sm mt-1">צבע: {v.color}</p>}
         </div>
       </div>
 
@@ -119,39 +119,39 @@ export default function SharedVehicleHistoryPage({ params }: { params: { id: str
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-white rounded-xl border p-4 text-center">
             <p className="text-2xl font-bold text-blue-600">{data.totalInspections}</p>
-            <p className="text-xs text-gray-500">\u05d1\u05d3\u05d9\u05e7\u05d5\u05ea</p>
+            <p className="text-xs text-gray-500">בדיקות</p>
           </div>
           <div className="bg-white rounded-xl border p-4 text-center">
             <p className="text-2xl font-bold text-green-600">{data.totalServices}</p>
-            <p className="text-xs text-gray-500">\u05d8\u05d9\u05e4\u05d5\u05dc\u05d9\u05dd</p>
+            <p className="text-xs text-gray-500">טיפולים</p>
           </div>
           <div className="bg-white rounded-xl border p-4 text-center">
             <p className="text-2xl font-bold text-gray-700">{v.mileage ? v.mileage.toLocaleString() : '-'}</p>
-            <p className="text-xs text-gray-500">\u05e7\"\u05de \u05d0\u05d7\u05e8\u05d5\u05df</p>
+            <p className="text-xs text-gray-500">ק\"מ אחרון</p>
           </div>
         </div>
 
         {/* Status */}
         <div className="bg-white rounded-xl border p-4">
-          <h2 className="font-semibold text-gray-900 mb-3">\u05e1\u05d8\u05d8\u05d5\u05e1 \u05e0\u05d5\u05db\u05d7\u05d9</h2>
+          <h2 className="font-semibold text-gray-900 mb-3">סטטוס נוכחי</h2>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <StatusDot status={v.testStatus} />
-              <span className="text-sm text-gray-700">\u05d8\u05e1\u05d8: {v.testStatus === 'valid' ? '\u05ea\u05e7\u05d9\u05e3' : v.testStatus === 'expiring' ? '\u05e2\u05d5\u05de\u05d3 \u05dc\u05e4\u05d5\u05d2' : '\u05e4\u05d2'}</span>
+              <span className="text-sm text-gray-700">טסט: {v.testStatus === 'valid' ? 'תקיף' : v.testStatus === 'expiring' ? 'עומד לפוג' : 'פג'}</span>
             </div>
             <div className="flex items-center gap-2">
               <StatusDot status={v.insuranceStatus} />
-              <span className="text-sm text-gray-700">\u05d1\u05d9\u05d8\u05d5\u05d7: {v.insuranceStatus === 'valid' ? '\u05ea\u05e7\u05d9\u05e3' : v.insuranceStatus === 'expiring' ? '\u05e2\u05d5\u05de\u05d3 \u05dc\u05e4\u05d5\u05d2' : '\u05e4\u05d2'}</span>
+              <span className="text-sm text-gray-700">ביטוח: {v.insuranceStatus === 'valid' ? 'תקיף' : v.insuranceStatus === 'expiring' ? 'עומד לפוג' : 'פג'}</span>
             </div>
           </div>
         </div>
 
         {/* Timeline */}
         <div>
-          <h2 className="font-semibold text-gray-900 mb-4">\u05d4\u05d9\u05e1\u05d8\u05d5\u05e8\u05d9\u05d9\u05ea \u05d8\u05d9\u05e4\u05d5\u05dc\u05d9\u05dd</h2>
+          <h2 className="font-semibold text-gray-900 mb-4">היסטוריית טיפולים</h2>
           {data.timeline.length === 0 ? (
             <div className="bg-white rounded-xl border p-8 text-center text-gray-400">
-              <p>\u05d0\u05d9\u05df \u05e2\u05d3\u05d9\u05d9\u05df \u05d4\u05d9\u05e1\u05d8\u05d5\u05e8\u05d9\u05d4 \u05dc\u05e8\u05db\u05d1 \u05d6\u05d4</p>
+              <p>אין עדיין היסטוריה לרכב זה</p>
             </div>
           ) : (
             <div className="space-y-0">
@@ -170,10 +170,10 @@ export default function SharedVehicleHistoryPage({ params }: { params: { id: str
                     </div>
                     <p className="text-xs text-gray-400 mb-2">
                       {new Date(item.date).toLocaleDateString('he-IL')}
-                      {item.garage && <span> \u00b7 {item.garage}</span>}
+                      {item.garage && <span> · {item.garage}</span>}
                       {item.city && <span>, {item.city}</span>}
                     </p>
-                    {item.mileage && <p className="text-xs text-gray-500 mb-1">\u05e7\"\u05de: {item.mileage.toLocaleString()}</p>}
+                    {item.mileage && <p className="text-xs text-gray-500 mb-1">ק\"מ: {item.mileage.toLocaleString()}</p>}
                     {item.summary && <p className="text-sm text-gray-600">{item.summary}</p>}
                     {item.notes && <p className="text-sm text-gray-600">{item.notes}</p>}
                     {item.inspectionId && (
@@ -181,7 +181,7 @@ export default function SharedVehicleHistoryPage({ params }: { params: { id: str
                         href={'/inspection/' + item.inspectionId}
                         className="inline-block mt-2 text-xs text-blue-600 hover:text-blue-800 font-medium"
                       >
-                        \u05e6\u05e4\u05d4 \u05d1\u05d3\u05d5\"\u05d7 \u05de\u05dc\u05d0 \u2190
+                        צפה בדו\"ח מלא ←
                       </Link>
                     )}
                   </div>
@@ -193,8 +193,8 @@ export default function SharedVehicleHistoryPage({ params }: { params: { id: str
 
         {/* QR Code & Share */}
         <div className="bg-white rounded-xl border p-6 text-center">
-          <h3 className="font-semibold text-gray-900 mb-3">\u05e9\u05ea\u05e3 \u05d4\u05d9\u05e1\u05d8\u05d5\u05e8\u05d9\u05d4</h3>
-          <p className="text-sm text-gray-500 mb-4">\u05e1\u05e8\u05d5\u05e7 \u05d0\u05ea \u05d4-QR \u05d0\u05d5 \u05d4\u05e2\u05ea\u05e7 \u05d0\u05ea \u05d4\u05e7\u05d9\u05e9\u05d5\u05e8</p>
+          <h3 className="font-semibold text-gray-900 mb-3">שתף היסטוריה</h3>
+          <p className="text-sm text-gray-500 mb-4">סרוק את ה-QR או העתק את הקישור</p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={qrUrl}
@@ -206,24 +206,24 @@ export default function SharedVehicleHistoryPage({ params }: { params: { id: str
           <button
             onClick={() => {
               if (navigator.share) {
-                navigator.share({ title: v.manufacturer + ' ' + v.model + ' - \u05d4\u05d9\u05e1\u05d8\u05d5\u05e8\u05d9\u05d9\u05ea \u05e8\u05db\u05d1', url: shareUrl });
+                navigator.share({ title: v.manufacturer + ' ' + v.model + ' - היסטוריית רכב', url: shareUrl });
               } else {
                 navigator.clipboard.writeText(shareUrl);
               }
             }}
             className="px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
-            \u05e9\u05ea\u05e3 \u05e7\u05d9\u05e9\u05d5\u05e8
+            שתף קישור
           </button>
         </div>
 
         {/* Footer */}
         <div className="text-center py-4">
           <p className="text-xs text-gray-400">
-            \u05d4\u05d5\u05e4\u05e7 \u05e2\"\u05d9 AutoLog \u00b7 {new Date(data.generatedAt).toLocaleDateString('he-IL')}
+            הופק ע\"י AutoLog · {new Date(data.generatedAt).toLocaleDateString('he-IL')}
           </p>
           <Link href="/" className="text-xs text-blue-500 hover:underline">
-            \u05d4\u05d9\u05e8\u05e9\u05dd \u05dc-AutoLog \u05d1\u05d7\u05d9\u05e0\u05dd
+            הירשם ל-AutoLog בחינם
           </Link>
         </div>
       </div>
