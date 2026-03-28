@@ -90,21 +90,21 @@ export default function PWAInstallPrompt() {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-gray-900">\u05d4\u05ea\u05e7\u05df \u05d0\u05ea AutoLog</p>
-          <p className="text-xs text-gray-500">\u05d2\u05d9\u05e9\u05d4 \u05de\u05d4\u05d9\u05e8\u05d4 \u05d9\u05e9\u05d9\u05e8\u05d5\u05ea \u05de\u05d4\u05de\u05e1\u05da \u05e9\u05dc\u05da</p>
+          <p className="text-sm font-semibold text-gray-900">התקן את AutoLog</p>
+          <p className="text-xs text-gray-500">גישה מהירה ישירות מהמסך שלך</p>
         </div>
         <div className="flex flex-col gap-1.5">
           <button
             onClick={handleInstall}
             className="px-4 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
-            \u05d4\u05ea\u05e7\u05df
+            התקן
           </button>
           <button
             onClick={handleDismiss}
             className="px-4 py-1 text-gray-400 text-xs hover:text-gray-600 transition-colors"
           >
-            \u05dc\u05d0 \u05e2\u05db\u05e9\u05d9\u05d5
+            לא עכשיו
           </button>
         </div>
       </div>
