@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
+import PWAInstallPrompt from '@/components/shared/PWAInstallPrompt';
 
 export const metadata: Metadata = {
   title: {
@@ -96,7 +97,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             },
           }}
         />
-      </body>
+              <PWAInstallPrompt />
+        </body>
     </html>
   );
 }
