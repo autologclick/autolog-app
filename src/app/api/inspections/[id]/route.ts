@@ -31,7 +31,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     });
 
     if (!inspection) {
-      return errorResponse('××××§× ×× × ××¦××', 404);
+      return errorResponse('בדיקה לא נמצאה', 404);
     }
 
     // Verify access
@@ -96,7 +96,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     });
 
     if (!inspection) {
-      return errorResponse('××××§× ×× × ××¦××', 404);
+      return errorResponse('בדיקה לא נמצאה', 404);
     }
 
     if (payload.role === 'garage_owner') {
