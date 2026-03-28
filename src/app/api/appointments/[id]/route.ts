@@ -136,7 +136,7 @@ export async function PUT(
 
     return jsonResponse({
       appointment: updated,
-      message: `התור עודכן ל${status === 'confirmed' ? 'מאושר' : status === 'cancelled' ? 'מבוטל' : 'הושלם'}`,
+      message: `××ª××¨ ×¢×××× ×${(status as string) === 'confirmed' ? '××××©×¨' : (status as string) === 'cancelled' ? '×××××' : '×××©××'}`,
     });
   } catch (error) {
     return handleApiError(error);
