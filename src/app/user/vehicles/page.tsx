@@ -410,9 +410,11 @@ export default function VehiclesPage() {
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">הרכבים שלי</h1>
         </div>
-        <Button icon={<Plus size={16} />} onClick={() => setShowAddModal(true)} className="w-full sm:w-auto">
-          הוסף רכב
-        </Button>
+        {vehicles.length > 0 && (
+          <Button icon={<Plus size={16} />} onClick={() => setShowAddModal(true)} className="w-full sm:w-auto">
+            הוסף רכב
+          </Button>
+        )}
       </div>
 
       {error && !showAddModal && !showEditModal && (
