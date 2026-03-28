@@ -320,7 +320,7 @@ export default function InspectionReportPage() {
       return;
     }
     if (!signId || !/^\d{5,9}$/.test(signId)) {
-      setSignError('\u05E0\u05D0 \u05DC\u05D4\u05D6\u05D9\u05DF \u05DE\u05E1\u05E4\u05E8 \u05EA"\u05D6 \u05EA\u05E7\u05D9\u05DF (5-9 \u05E1\u05E4\u05E8\u05D5\u05EA)');
+      setSignError('נא להזין מספר ת"ז תקין (5-9 ספרות)');
       return;
     }
     if (!signatureData || signatureData.length < 100) {
@@ -469,7 +469,7 @@ export default function InspectionReportPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">{"\u05DE\u05E1\u05E4\u05E8 \u05EA\"\u05D6"}</label>
+            <label className="text-sm font-medium text-gray-700">{"מספר ת\"ז"}</label>
             <input
               type="text"
               value={signId}
