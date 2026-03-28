@@ -225,20 +225,28 @@ export default function LicenseScanButton({ onScanResult }: LicenseScanButtonPro
 
       setStatusMessage('טוען מנוע סריקה...');
 
-      // Dynamically import Tesseract.js
-      const Tesseract = await import('tesseract.js');
+      // Dynamically import Tesseract.js v7 (uses createWorker API)
+      const { createWorker } = await import('tesseract.js');
 
-      setStatusMessage('סורק את המסמך...');
+      setStatusMessage('מאתחל סריקה...');
 
-      // Run OCR with Hebrew + English
-      const result = await Tesseract.recognize(imageUrl, 'heb+eng', {
+      // Create worker with Hebrew + English languages
+      const worker = await createWorker('heb+eng', undefined, {
         logger: (m: { status: string; progress: number }) => {
           if (m.status === 'recognizing text') {
             const pct = Math.round(m.progress * 100);
             setStatusMessage(`סורק... ${pct}%`);
+          } else if (m.status === 'loading language traineddata') {
+            const pct = Math.round(m.progress * 100);
+            setStatusMessage(`טוען נתוני שפה... ${pct}%`);
           }
         },
       });
+
+      setStatusMessage('סורק את המסמך...');
+
+      const result = await worker.recognize(imageUrl);
+      await worker.terminate();
 
       URL.revokeObjectURL(imageUrl);
 
