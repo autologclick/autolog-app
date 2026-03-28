@@ -8,7 +8,7 @@ import {
   LogOut, BarChart3, Users, Wrench, ClipboardCheck, FilePlus, Menu, X,
   ChevronRight, Shield, FolderOpen, Receipt, Clock, FileText, CreditCard
 } from 'lucide-react';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LogoIcon } from '@/components/ui/Logo';
 
 interface NavItem {
@@ -99,22 +99,10 @@ export default function Sidebar({ portal, userName = 'משתמש' }: SidebarProp
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const sidebarRef = useRef<HTMLElement>(null);
 
-  // Close mobile sidebar on Escape key
-  useEffect(() => {
-    if (!mobileOpen) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMobileOpen(false);
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [mobileOpen]);
-
-  // Close mobile sidebar on route change
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
-
   // Prevent sidebar from stealing wheel scroll events.
+  // The layout uses overflow-y-auto on <main>, not on window/body.
+  // Intercept ALL wheel events on the entire sidebar (aside element)
+  // and forward them to the <main> scroll container.
   useEffect(() => {
     const sidebar = sidebarRef.current;
     if (!sidebar) return;
@@ -122,11 +110,14 @@ export default function Sidebar({ portal, userName = 'משתמש' }: SidebarProp
     const handleWheel = (e: WheelEvent) => {
       const mainEl = document.querySelector('main');
       if (!mainEl) return;
+
+      // Prevent sidebar internal scrolling, forward to main content
       e.preventDefault();
       e.stopPropagation();
       mainEl.scrollTop += e.deltaY;
     };
 
+    // Use capture phase to intercept before any child scroll containers
     sidebar.addEventListener('wheel', handleWheel, { passive: false, capture: true });
     return () => sidebar.removeEventListener('wheel', handleWheel, { capture: true });
   }, []);
@@ -158,52 +149,100 @@ export default function Sidebar({ portal, userName = 'משתמש' }: SidebarProp
 
   const navItems = portal === 'admin' ? adminNav : portal === 'garage' ? garageNav : userNav;
   const mobileNavItems = portal === 'admin' ? adminMobileNav : portal === 'garage' ? garageMobileNav : userMobileNav;
-tInitials(userName)}
+
+  const portalColors = {
+    user: {
+      bg: 'bg-gradient-to-b from-[#1e3a5f] to-[#2a4a6f]',
+      accent: 'teal-600',
+      accentLight: 'teal-100',
+    },
+    admin: {
+      bg: 'bg-gradient-to-b from-purple-900 to-purple-950',
+      accent: 'purple-500',
+      accentLight: 'purple-100',
+    },
+    garage: {
+      bg: 'bg-gradient-to-b from-emerald-900 to-emerald-950',
+      accent: 'emerald-500',
+      accentLight: 'emerald-100',
+    },
+  };
+
+  const colors = portalColors[portal];
+  const portalLabel = portal === 'admin' ? 'מרכז בקרה' : portal === 'garage' ? 'פורטל מוסך' : 'AutoLog';
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const isActive = (href: string) => {
+    if (href === `/${portal}`) return pathname === href;
+    return pathname.startsWith(href);
+  };
+
+  const NavContent = () => (
+    <>
+      {/* Logo & User Profile */}
+      <div className="relative p-4 border-b border-white/10 backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <Link href="/" className={cn(
+            'flex-shrink-0 w-10 h-10 rounded-xl overflow-hidden transition-all duration-300',
+            'hover:scale-105'
+          )}>
+            <LogoIcon size={40} />
+          </Link>
+          {!collapsed && (
+            <div className="min-w-0 flex-1">
+              <h1 className="text-sm font-bold text-white truncate">{portalLabel}</h1>
+              <p className="text-xs text-white/60 truncate">{userName}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* User Avatar Circle */}
+      {!collapsed && (
+        <div className="px-4 py-3 flex justify-center border-b border-white/10">
+          <div className={`w-12 h-12 rounded-full bg-gradient-to-br from-${colors.accent} to-${colors.accentLight} flex items-center justify-center text-white font-bold text-sm border-2 border-white/20`}>
+            {getInitials(userName)}
           </div>
         </div>
       )}
 
       {/* Nav Items */}
-      <nav className="flex-1 min-h-0 p-3 pb-2 space-y-0.5 overflow-y-auto" role="navigation" aria-label="תפריט ראשי">
+      <nav className="flex-1 min-h-0 p-3 pb-2 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const active = isActive(item.href);
           return (
             <div key={item.href} className="relative group">
               <button
                 data-active={active ? 'true' : undefined}
-                onClick={() => handleNavClick(item.href)}
+                onClick={() => { router.push(item.href); setMobileOpen(false); }}
                 onMouseEnter={() => setHoveredItem(item.href)}
                 onMouseLeave={() => setHoveredItem(null)}
-                aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 relative',
-                  'min-h-[44px]',
-                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50',
+                  'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative',
                   active
-                    ? 'text-white bg-white/15 shadow-sm'
-                    : 'text-white/70 hover:text-white hover:bg-white/5',
+                    ? `text-white bg-white/10 border-r-4 border-${colors.accent}`
+                    : `text-white/70 hover:text-white hover:bg-white/5`,
                   collapsed && 'justify-center px-2'
                 )}
               >
-                {/* Active indicator bar */}
-                {active && (
-                  <span className={cn(
-                    'absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-l-full transition-all duration-300',
-                    portal === 'user' && 'bg-teal-400',
-                    portal === 'admin' && 'bg-purple-400',
-                    portal === 'garage' && 'bg-emerald-400'
-                  )} />
-                )}
                 <span className={cn(
                   'flex-shrink-0 transition-all duration-200',
-                  active && 'scale-110',
+                  active && `text-${colors.accent}`,
                   !active && 'group-hover:text-white/90'
                 )}>
                   {item.icon}
                 </span>
                 {!collapsed && <span className="flex-1 text-right">{item.label}</span>}
                 {!collapsed && item.badge && (
-                  <span className="ms-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold animate-pulse">
+                  <span className="ms-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
                     {item.badge}
                   </span>
                 )}
@@ -211,14 +250,8 @@ tInitials(userName)}
 
               {/* Tooltip when collapsed */}
               {collapsed && (
-                <div className={cn(
-                  'absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-lg',
-                  'pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-200',
-                  'whitespace-nowrap shadow-lg',
-                  'translate-x-1 group-hover:translate-x-0'
-                )}>
+                <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
                   {item.label}
-                  <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-gray-900" />
                 </div>
               )}
             </div>
@@ -231,7 +264,7 @@ tInitials(userName)}
         {portal !== 'user' && (
           <button
             onClick={() => router.push('/user')}
-            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs text-white/50 hover:text-white hover:bg-white/10 transition-all duration-200 min-h-[40px] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-white/50 hover:text-white hover:bg-white/10 transition-all duration-200"
           >
             <Home size={16} className="flex-shrink-0" />
             {!collapsed && 'אפליקציית משתמש'}
@@ -240,7 +273,7 @@ tInitials(userName)}
         {portal !== 'admin' && (
           <button
             onClick={() => router.push('/admin')}
-            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs text-white/50 hover:text-white hover:bg-white/10 transition-all duration-200 min-h-[40px] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-white/50 hover:text-white hover:bg-white/10 transition-all duration-200"
           >
             <BarChart3 size={16} className="flex-shrink-0" />
             {!collapsed && 'מרכז בקרה'}
@@ -249,7 +282,7 @@ tInitials(userName)}
         {portal !== 'garage' && (
           <button
             onClick={() => router.push('/garage')}
-            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs text-white/50 hover:text-white hover:bg-white/10 transition-all duration-200 min-h-[40px] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-white/50 hover:text-white hover:bg-white/10 transition-all duration-200"
           >
             <Wrench size={16} className="flex-shrink-0" />
             {!collapsed && 'פורטל מוסך'}
@@ -260,7 +293,7 @@ tInitials(userName)}
             try { await fetch('/api/auth/logout', { method: 'POST' }); } catch {}
             router.push('/auth/login');
           }}
-          className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs text-red-300 hover:text-red-200 hover:bg-red-500/20 transition-all duration-200 min-h-[40px] focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50"
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-red-300 hover:text-red-200 hover:bg-red-500/20 transition-all duration-200"
         >
           <LogOut size={16} className="flex-shrink-0" />
           {!collapsed && 'התנתקות'}
@@ -273,48 +306,31 @@ tInitials(userName)}
     <>
       {/* Mobile Hamburger Button - top right for RTL Hebrew */}
       <button
-        className={cn(
-          'lg:hidden fixed top-4 right-4 z-50 p-2.5 rounded-xl shadow-lg transition-all duration-200',
-          'min-w-[44px] min-h-[44px] flex items-center justify-center',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2',
-          mobileOpen
-            ? 'bg-white/90 text-gray-900 rotate-90'
-            : 'bg-white text-[#1e3a5f] hover:shadow-xl hover:scale-105 active:scale-95'
-        )}
+        className="lg:hidden fixed top-4 right-4 z-50 bg-white text-[#1e3a5f] p-2 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
         onClick={() => setMobileOpen(!mobileOpen)}
         aria-label={mobileOpen ? 'סגור תפריט' : 'פתח תפריט'}
-        aria-expanded={mobileOpen}
-        aria-controls="mobile-sidebar"
       >
         {mobileOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       {/* Mobile Overlay */}
-      <div
-        className={cn(
-          'lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-all duration-300',
-          mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        )}
-        onClick={() => setMobileOpen(false)}
-        aria-hidden="true"
-      />
+      {mobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-all duration-300"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
 
       {/* Desktop Sidebar - RIGHT side for RTL Hebrew */}
       <aside ref={sidebarRef} className={cn(
-        colors.bg,
-        'hidden lg:flex flex-col h-screen fixed top-0 right-0 z-40 transition-all duration-300 shadow-2xl',
+        `${colors.bg} hidden lg:flex flex-col h-screen fixed top-0 right-0 z-40 transition-all duration-300 shadow-2xl`,
         collapsed ? 'w-16' : 'w-64'
       )}>
         <NavContent />
 
         {/* Collapse Toggle - on LEFT edge of sidebar */}
         <button
-          className={cn(
-            'absolute top-1/2 -left-3 bg-white shadow-lg rounded-full p-1.5',
-            'hover:shadow-xl transition-all duration-200 hover:scale-110 active:scale-95',
-            'focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400',
-            'min-w-[28px] min-h-[28px] flex items-center justify-center'
-          )}
+          className="absolute top-1/2 -left-3 bg-white shadow-lg rounded-full p-1.5 hover:shadow-xl transition-all duration-200 hover:scale-110"
           onClick={() => setCollapsed(!collapsed)}
           aria-label={collapsed ? 'הרחב תפריט' : 'כווץ תפריט'}
         >
@@ -323,17 +339,10 @@ tInitials(userName)}
       </aside>
 
       {/* Mobile Drawer - slides from RIGHT for RTL Hebrew */}
-      <div
-        id="mobile-sidebar"
-        role="dialog"
-        aria-modal="true"
-        aria-label="תפריט ניווט"
-        className={cn(
-          colors.bg,
-          'flex lg:hidden flex-col h-screen fixed top-0 right-0 z-40 w-64 transition-all duration-300 ease-out shadow-2xl',
-          mobileOpen ? 'translate-x-0' : 'translate-x-full'
-        )}
-      >
+      <div className={cn(
+        `${colors.bg} flex lg:hidden flex-col h-screen fixed top-0 right-0 z-40 w-64 transition-all duration-300 shadow-2xl`,
+        mobileOpen ? 'translate-x-0' : 'translate-x-full'
+      )}>
         <NavContent />
       </div>
 
@@ -341,14 +350,10 @@ tInitials(userName)}
       <div className={cn('hidden lg:block transition-all duration-300', collapsed ? 'w-16' : 'w-64')} />
 
       {/* Mobile Bottom Navigation */}
-      <nav
-        className={cn(
-          'lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200',
-          'transition-all duration-300 safe-area-inset-bottom'
-        )}
-        role="navigation"
-        aria-label="ניווט מהיר"
-      >
+      <nav className={cn(
+        'lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 transition-all duration-300',
+        'safe-area-inset-bottom'
+      )}>
         <div className="flex justify-around items-center pb-safe pt-1.5 pb-1.5 px-1">
           {mobileNavItems.map((item) => {
             const active = isActive(item.href);
@@ -356,33 +361,23 @@ tInitials(userName)}
               <button
                 key={item.href}
                 onClick={() => router.push(item.href)}
-                aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all duration-200',
-                  'min-w-[56px] min-h-[48px]',
-                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-1',
+                  'flex flex-col items-center justify-center py-1.5 px-2 rounded-lg transition-all duration-200 min-w-[52px]',
                   active
-                    ? 'text-teal-600 bg-teal-50'
-                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50 active:scale-95'
+                    ? `text-${colors.accent} bg-${colors.accentLight}`
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 )}
                 aria-label={item.label}
               >
                 <div className={cn(
                   'flex-shrink-0 transition-all duration-200 mb-0.5',
-                  active && 'text-teal-600 scale-110'
+                  active && `text-${colors.accent}`
                 )}>
                   {item.icon}
                 </div>
-                <span className={cn(
-                  'text-[10px] text-center font-medium leading-tight',
-                  active && 'font-bold'
-                )}>
+                <span className="text-[10px] text-center font-medium leading-tight">
                   {item.label}
                 </span>
-                {/* Active indicator dot */}
-                {active && (
-                  <span className="w-1 h-1 rounded-full bg-teal-500 mt-0.5" />
-                )}
               </button>
             );
           })}
