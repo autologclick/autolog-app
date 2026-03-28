@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const validation = garageTreatmentSchema.safeParse(body);
     if (!validation.success) {
-      return errorResponse(validation.error.errors[0]?.message || '× ×ª×× ×× ×× ×ª×§×× ××', 400);
+      return errorResponse(validation.error.errors[0]?.message || 'נתונים לא תקינים', 400);
     }
 
     const data = validation.data;
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!vehicle) {
-      return errorResponse('×¨×× ×× × ××¦× ×××¢×¨××ª. ×××§×× ×¦×¨×× ××××¨×©× ×ª××××.', 404);
+      return errorResponse('רכב לא נמצא במערכת. הלקוח צריך להירשם תחילה.', 404);
     }
 
     const treatment = await createGarageTreatment({
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
       notes: data.notes,
     });
 
-    return jsonResponse({ treatment, message: '××××¤×× × ×©×× ×××§×× ××××©××¨!' }, 201);
+    return jsonResponse({ treatment, message: 'הטיפול נשלח ללקוח לאישור!' }, 201);
   } catch (error) {
     return handleApiError(error);
   }
