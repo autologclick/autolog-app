@@ -100,15 +100,6 @@ export default function PrintInspectionPage() {
 
   return (
     <>
-      <style jsx global>{`
-        @media print {
-          body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          .no-print { display: none !important; }
-          @page { margin: 10mm 12mm; size: A4; }
-        }
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; direction: rtl; background: white; }
-        * { box-sizing: border-box; }
-      `}</style>
 
       {/* Print button (hidden when printing) */}
       <div className="no-print" style={{ padding: '12px 20px', background: '#f0fdf4', borderBottom: '1px solid #d1fae5', display: 'flex', justifyContent: 'center', gap: 12 }}>
