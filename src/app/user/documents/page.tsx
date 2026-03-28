@@ -74,7 +74,6 @@ const DOCUMENT_TYPES = {
   insurance_third_party: { label: 'ביטוח צד ג\'', color: 'bg-blue-100 text-blue-700', icon: Shield },
   license: { label: 'רישיון רכב', color: 'bg-green-100 text-green-700', icon: ClipboardList },
   registration: { label: 'רישום רכב', color: 'bg-green-100 text-green-700', icon: ClipboardList },
-  test_certificate: { label: 'תעודת טסט', color: 'bg-purple-100 text-purple-700', icon: CheckCircle2 },
   receipt: { label: 'קבלה', color: 'bg-orange-100 text-orange-700', icon: Receipt },
   photo: { label: 'תמונה', color: 'bg-gray-100 text-gray-700', icon: Camera },
   other: { label: 'אחר', color: 'bg-gray-100 text-gray-700', icon: FileText },
@@ -186,17 +185,7 @@ export default function DocumentsPage() {
             expiryDate: '2026-06-15',
             uploadedAt: '2026-01-15',
           },
-          {
-            id: '2',
-            vehicleId: '1',
-            type: 'test_certificate',
-            title: 'תעודת טסט',
-            description: 'תעודת טסט תקפה עד 2026',
-            fileUrl: '#',
-            expiryDate: '2026-12-20',
-            uploadedAt: '2025-12-01',
-          },
-          {
+                    {
             id: '3',
             vehicleId: '1',
             type: 'receipt',
@@ -318,10 +307,10 @@ export default function DocumentsPage() {
           return doc.type.startsWith('insurance');
         }
         if (activeFilter === 'license') {
-          return ['license', 'registration', 'test', 'test_certificate'].includes(doc.type);
+          return ['license', 'registration'].includes(doc.type);
         }
         if (activeFilter === 'other') {
-          return !['insurance_compulsory', 'insurance_comprehensive', 'insurance_third_party', 'license', 'registration', 'test_certificate'].includes(doc.type);
+          return !['insurance_compulsory', 'insurance_comprehensive', 'insurance_third_party', 'license', 'registration'].includes(doc.type);
         }
         return true;
       });
