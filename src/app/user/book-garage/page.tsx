@@ -366,7 +366,7 @@ export default function BookGaragePage() {
             <div className="space-y-3">
               {sortedGarages.map(g => (
                 <div key={g.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition">
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-3 mb-3">
                     <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center flex-shrink-0">
                       <Building2 size={22} className="text-teal-600" />
                     </div>
@@ -384,42 +384,42 @@ export default function BookGaragePage() {
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center gap-2 mb-2">
                         <StarRating rating={Math.round(g.rating)} size={14} />
                         <span className="text-sm font-bold text-gray-700">{g.rating > 0 ? g.rating.toFixed(1) : '—'}</span>
                         <button onClick={() => openReviewsList(g)} className="text-xs text-teal-600 hover:underline">
                           ({g.reviewCount} ביקורות)
                         </button>
                       </div>
-
-                      {/* Services tags */}
-                      <div className="flex gap-1.5 flex-wrap mb-3">
-                        {(g.services || []).slice(0, 4).map(s => (
-                          <span key={s} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{s}</span>
-                        ))}
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => openBooking(g)}
-                          className="flex-1 bg-teal-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-teal-700 transition flex items-center justify-center gap-1.5"
-                        >
-                          <Calendar size={14} />
-                          קבע תור {serviceValueToLabel[selectedService]}
-                        </button>
-                        <button onClick={() => openReviewModal(g)}
-                          className="px-3 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-[#fef7ed]/50 transition">
-                          <MessageSquare size={14} />
-                        </button>
-                        {g.phone && (
-                          <a href={`tel:${g.phone}`}
-                            className="px-3 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-[#fef7ed]/50 transition">
-                            <Phone size={14} />
-                          </a>
-                        )}
-                      </div>
+                      {(g.services || []).length > 0 && (
+                        <div className="flex gap-1.5 flex-wrap">
+                          {(g.services || []).slice(0, 4).map(s => (
+                            <span key={s} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{s}</span>
+                          ))}
+                        </div>
+                      )}
                     </div>
+                  </div>
+
+                  {/* Action Buttons - full width */}
+                  <div className="flex items-center gap-2">
+                    {g.phone && (
+                      <a href={`tel:${g.phone}`}
+                        className="w-11 h-11 flex items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:bg-[#fef7ed]/50 transition">
+                        <Phone size={16} />
+                      </a>
+                    )}
+                    <button onClick={() => openReviewModal(g)}
+                      className="w-11 h-11 flex items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:bg-[#fef7ed]/50 transition">
+                      <MessageSquare size={16} />
+                    </button>
+                    <button
+                      onClick={() => openBooking(g)}
+                      className="flex-1 bg-teal-600 text-white h-11 rounded-xl text-sm font-bold hover:bg-teal-700 transition flex items-center justify-center gap-1.5"
+                    >
+                      <Calendar size={14} />
+                      קבע תור {serviceValueToLabel[selectedService]}
+                    </button>
                   </div>
                 </div>
               ))}
