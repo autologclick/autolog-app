@@ -19,12 +19,16 @@ export const SERVICE_TYPE_HEB: Record<string, string> = {
 // =============================================
 
 export const APPOINTMENT_STATUS_HEB: Record<string, string> = {
-  pending: 'ממתין',
-  confirmed: 'מאושר',
+  pending: 'ממתין לאישור',
+  confirmed: 'מאזשר',
+  rejected: 'נדחה',
   in_progress: 'בטיפול',
   completed: 'הושלם',
   cancelled: 'מבוטל',
 };
+
+// Time limit for garage to respond to appointment (in minutes)
+export const APPOINTTENT_RESPONSE_TIMEOUT_MINUTES = 3;
 
 // =============================================
 // User roles
