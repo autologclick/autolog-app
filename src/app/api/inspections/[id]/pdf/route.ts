@@ -67,7 +67,7 @@ export async function GET(
     });
 
     if (!inspection) {
-      return errorResponse('××××§× ×× × ××¦××', 404);
+      return errorResponse('בדיקה לא נמצאה', 404);
     }
 
     // Verify access control
@@ -130,11 +130,11 @@ export async function GET(
       });
       pdfBuffer = Buffer.from(result, 'binary');
     } catch (error: unknown) {
-      const errMsg = error instanceof Error ? error.message : '×©×××× ×× ××××¢×';
+      const errMsg = error instanceof Error ? error.message : 'שגיאה לא ידועה';
       const stderr = (error as { stderr?: Buffer })?.stderr?.toString();
       logger.error('PDF generation error', { error: stderr || errMsg });
       return errorResponse(
-        '×©×××× ××××¦××¨ ××× PDF: ' + errMsg,
+        'שגיאה בייצור דוח PDF: ' + errMsg,
         500
       );
     }
