@@ -85,7 +85,6 @@ const FILTER_TABS = [
   { id: 'treatments', label: 'טיפולים' },
   { id: 'insurance', label: 'ביטוח' },
   { id: 'license', label: 'רישיונות' },
-  { id: 'test', label: 'טסט' },
   { id: 'other', label: 'אחר' },
 ];
 
@@ -319,10 +318,7 @@ export default function DocumentsPage() {
           return doc.type.startsWith('insurance');
         }
         if (activeFilter === 'license') {
-          return ['license', 'registration'].includes(doc.type);
-        }
-        if (activeFilter === 'test') {
-          return doc.type === 'test_certificate';
+          return ['license', 'registration', 'test', 'test_certificate'].includes(doc.type);
         }
         if (activeFilter === 'other') {
           return !['insurance_compulsory', 'insurance_comprehensive', 'insurance_third_party', 'license', 'registration', 'test_certificate'].includes(doc.type);
