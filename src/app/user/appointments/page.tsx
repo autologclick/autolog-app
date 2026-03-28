@@ -38,7 +38,7 @@ interface Appointment {
   };
 }
 
-type FilterStatus = 'all' | 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
+type FilterStatus = 'all' | 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'rejected';
 
 const serviceTypeHeb: Record<string, string> = {
   inspection: 'בדיקה',
@@ -67,6 +67,15 @@ function StatusTimeline({ currentStatus }: { currentStatus: string }) {
       <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl">
         <AlertCircle size={16} className="text-red-500" />
         <span className="text-sm font-medium text-red-700">התור בוטל</span>
+      </div>
+    );
+  }
+
+  if (currentStatus === 'rejected') {
+    return (
+      <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl">
+        <X size={16} className="text-red-500" />
+        <span className="text-sm font-medium text-red-700">ההזמנה נדחתה על ידי המוסך</span>
       </div>
     );
   }
@@ -296,6 +305,7 @@ export default function AppointmentsPage() {
           { key: 'confirmed', label: 'מאושר' },
           { key: 'in_progress', label: 'בטיפול' },
           { key: 'completed', label: 'הושלם' },
+          { key: 'rejected', label: 'נדחה' },
           { key: 'cancelled', label: 'מבוטל' },
         ] as { key: FilterStatus; label: string }[]).map(f => (
           <button
@@ -376,7 +386,7 @@ export default function AppointmentsPage() {
           <p className="text-gray-400 mb-4">
             {filter === 'all'
               ? 'עדיין לא קבעת תורים. קבע תור כעת!'
-              : `אין תורים ${filter === 'pending' ? 'ממתינים לאישור' : filter === 'confirmed' ? 'מאושרים' : filter === 'in_progress' ? 'בטיפול' : filter === 'completed' ? 'שהושלמו' : 'שבוטלו'}`}
+              : `אין תורים ${filter === 'pending' ? 'ממתינים לאישור' : filter === 'confirmed' ? 'מאושרים' : filter === 'in_progress' ? 'בטיפול' : filter === 'completed' ? 'שהושלמו' : filter === 'rejected' ? 'שנדחו' : 'שבוטלו'}`}
           </p>
           <Button
             icon={<Plus size={16} />}
@@ -399,7 +409,7 @@ export default function AppointmentsPage() {
                   setSelectedAppointment(appointment);
                   setShowDetailModal(true);
                 }}
-                className={isInProgress ? 'border-blue-300 border-2' : ''}
+                className={isInProgress ? 'border-blue-300 border-2' : appointment.status === 'rejected' ? 'border-red-300 border-2 opacity-75' : ''}
               >
                 <div className="flex items-start gap-4">
                   {/* Service Icon */}
@@ -563,7 +573,18 @@ export default function AppointmentsPage() {
                   <Clock size={16} className="text-amber-600" />
                   <span className="font-bold text-amber-800 text-sm">ממתין לאישור המוסך</span>
                 </div>
-                <p className="text-xs text-amber-700">המוסך יאשר את התור שלך בקרוב ותקבל התראה.</p>
+                <p className="text-xs text-amber-700">למוסך יש 3 דקות לאשר או לדחות את ההזמנה. תקבל התראה.</p>
+              </div>
+            )}
+
+            {/* Rejected message */}
+            {selectedAppointment.status === 'rejected' && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <X size={16} className="text-red-600" />
+                  <span className="font-bold text-red-800 text-sm">ההזמנה נדחתה</span>
+                </div>
+                <p className="text-xs text-red-700">המוסך דחה את ההזמנה. ניתן לנסות מוסך אחר או לבחור זמן אחר.</p>
               </div>
             )}
 
