@@ -371,8 +371,12 @@ export default function DocumentsPage() {
   };
 
   const handleAddDocument = async () => {
-    if (!formData.vehicleId || !formData.type || !formData.title) {
-      setError('נא למלא את כל השדות הנדרשים');
+    const missingFields = [];
+      if (!formData.vehicleId) missingFields.push('רכב');
+      if (!formData.type) missingFields.push('סוג מסמך');
+      if (!formData.title) missingFields.push('כותרת');
+      if (missingFields.length > 0) {
+      setError('נא למלא: ' + missingFields.join(', '));
       return;
     }
 
@@ -1038,20 +1042,42 @@ export default function DocumentsPage() {
 
           {/* File Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 text-right">קובץ (אופציונלי)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2 text-right">קובץ או צילום (אופציונלי)</label>
             <div className="relative">
               <input
+                id="fileUpload"
                 type="file"
-                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.doc,.docx"
                 onChange={handleFileSelect}
-                className="absolute inset-0 opacity-0 cursor-pointer"
+                className="hidden"
               />
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-teal-400 transition">
-                <Upload size={24} className="text-gray-400 mx-auto mb-2" />
-                <p className="text-sm font-medium text-gray-700">
-                  {formData.file ? formData.file.name : 'לחץ להעלאת קובץ'}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">PDF, תמונה או מסמך עד 10MB</p>
+              <input
+                id="cameraCapture"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => document.getElementById("fileUpload")?.click()}
+                  className="flex-1 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-teal-400 transition cursor-pointer"
+                >
+                  <Upload size={24} className="text-gray-400 mx-auto mb-2" />
+                  <p className="text-sm text-gray-500">העלאת קובץ</p>
+                  <p className="text-xs text-gray-400 mt-1">PDF, תמונה או מסמך עד 10MB</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => document.getElementById("cameraCapture")?.click()}
+                  className="flex-1 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-teal-400 transition cursor-pointer"
+                >
+                  <Camera size={24} className="text-gray-400 mx-auto mb-2" />
+                  <p className="text-sm text-gray-500">צילום מצלמה</p>
+                  <p className="text-xs text-gray-400 mt-1">צלם מסמך ישירות</p>
+                </button>
               </div>
             </div>
           </div>
