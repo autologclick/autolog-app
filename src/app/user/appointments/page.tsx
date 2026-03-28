@@ -661,7 +661,7 @@ export default function AppointmentsPage() {
                 <span className="font-medium">{selectedAppointment.garage.address || selectedAppointment.garage.city}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">טלפו��:</span>
+                <span className="text-gray-600">טלפון:</span>
                 <a
                   href={`tel:${selectedAppointment.garage.phone}`}
                   className="font-medium text-teal-600 hover:underline flex items-center gap-1"
