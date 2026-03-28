@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import prisma from 'A/lib/db';
+import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
 import {
   requireGarageOwner,
@@ -45,20 +45,20 @@ export async function PUT(
     });
 
     if (!appointment) {
-      return errorResponse('התור לא נמצא', 404);
+      return errorResponse('××ª××¨ ×× × ××¦×', 404);
     }
 
     // Verify this garage belongs to the current user
     if (appointment.garage.ownerId !== payload.userId) {
-      return errorResponse('אין הרשאה', 403);
+      return errorResponse('××× ××¨×©××', 403);
     }
 
     // Can't update cancelled, rejected, or already completed appointments
     if (appointment.status === 'cancelled' || appointment.status === 'rejected') {
-      return errorResponse('לא ניתן לעדכן תור שבוטל או נדחה', 400);
+      return errorResponse('×× × ××ª× ××¢××× ×ª××¨ ×©×××× ×× × ×××', 400);
     }
     if (appointment.status === 'completed') {
-      return errorResponse('התור כבר הושלם', 400);
+      return errorResponse('××ª××¨ ×××¨ ×××©××', 400);
     }
 
     // For confirm/reject: check 3-minute response window
@@ -72,7 +72,7 @@ export async function PUT(
           where: { id },
           data: { status: 'rejected' },
         });
-        return errorResponse('חלון הזמן לאישור (3 דקות) חלף. ההזמנה נדחתה אוטומטית.', 400);
+        return errorResponse('×××× ×××× ××××©××¨ (3 ××§××ª) ×××£. ××××× × × ×××ª× ××××××××ª.', 400);
       }
     }
 
@@ -106,10 +106,10 @@ export async function PUT(
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: 'הטיפול הושלם בהצלחה!',
+          title: '××××¤×× ×××©×× ×××¦×××!',
           message: completionNotes
-            ? `${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}) הושלם ב${appointment.garage.name}. סיכום: ${completionNotes}`
-            : `${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}) הושלם בהצלחה ב${appointment.garage.name}.`,
+            ? `${serviceLabel} ××¨×× ${vehicleLabel} (${appointment.vehicle.licensePlate}) ×××©×× ×${appointment.garage.name}. ×¡××××: ${completionNotes}`
+            : `${serviceLabel} ××¨×× ${vehicleLabel} (${appointment.vehicle.licensePlate}) ×××©×× ×××¦××× ×${appointment.garage.name}.`,
           link: '/user/appointments',
         },
       });
@@ -121,8 +121,8 @@ export async function PUT(
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: 'התור אושר!',
-          message: `התור שלך ב${appointment.garage.name} אושר. נתראה בתאריך ${new Date(appointment.date).toLocaleDateString('he-IL')} בשעה ${appointment.time}.`,
+          title: '××ª××¨ ×××©×¨!',
+          message: `××ª××¨ ×©×× ×${appointment.garage.name} ×××©×¨. × ×ª×¨×× ××ª××¨×× ${new Date(appointment.date).toLocaleDateString('he-IL')} ××©×¢× ${appointment.time}.`,
           link: '/user/appointments',
         },
       });
@@ -130,13 +130,13 @@ export async function PUT(
 
     // If rejected by garage, notify the customer
     if (status === 'rejected') {
-      const reason = rejectionReason ? ` סיבה: ${rejectionReason}` : '';
+      const reason = rejectionReason ? ` ×¡×××: ${rejectionReason}` : '';
       await prisma.notification.create({
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: 'ההזמנה נדחתה',
-          message: `ההזמנה שלך ב${appointment.garage.name} נדחתה.${reason} ניתן לנסות מוסך אחר.`,
+          title: '××××× × × ×××ª×',
+          message: `××××× × ×©×× ×${appointment.garage.name} × ×××ª×.${reason} × ××ª× ×× ×¡××ª ×××¡× ×××¨.`,
           link: '/user/appointments',
         },
       });
@@ -148,8 +148,8 @@ export async function PUT(
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: 'התור בוטל',
-          message: `התור שלך ב${appointment.garage.name} בוטל. אנא צור קשר עם המוסך לפרטים נוספים.`,
+          title: '××ª××¨ ××××',
+          message: `××ª××¨ ×©×× ×${appointment.garage.name} ××××. ×× × ×¦××¨ ×§×©×¨ ×¢× ××××¡× ××¤×¨××× × ××¡×¤××.`,
           link: '/user/appointments',
         },
       });
@@ -161,8 +161,8 @@ export async function PUT(
         data: {
           userId: appointment.user.id,
           type: 'appointment',
-          title: 'הרכב נכנס לטיפול',
-          message: `הרכב שלך נכנס לטיפול ב${appointment.garage.name}.`,
+          title: '××¨×× × ×× ×¡ ××××¤××',
+          message: `××¨×× ×©×× × ×× ×¡ ××××¤×× ×${appointment.garage.name}.`,
           link: '/user/appointments',
         },
       });
@@ -170,7 +170,7 @@ export async function PUT(
 
     return jsonResponse({
       appointment: updated,
-      message: `התור עודכן ל${APPOINTMENT_STATUS_HEB[status] || status}`,
+      message: `××ª××¨ ×¢×××× ×${APPOINTMENT_STATUS_HEB[status] || status}`,
     });
   } catch (error) {
     return handleApiError(error);
@@ -196,11 +196,11 @@ export async function GET(
     });
 
     if (!appointment) {
-      return errorResponse('התור לא נמצא', 404);
+      return errorResponse('××ª××¨ ×× × ××¦×', 404);
     }
 
     if (appointment.garage.ownerId !== payload.userId) {
-      return errorResponse('אין הרשאה', 403);
+      return errorResponse('××× ××¨×©××', 403);
     }
 
     return jsonResponse({ appointment });
