@@ -759,7 +759,12 @@ export default function NewInspectionPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || 'שגיאה בשמירת הבדיקה');
+        if (data.details) {
+          const fieldErrors = Object.values(data.details).join(', ');
+          setError(fieldErrors || data.error || 'שגיאה בשמירת הבדיקה');
+        } else {
+          setError(data.error || 'שגיאה בשמירת הבדיקה');
+        }
         return;
       }
 
@@ -1877,7 +1882,7 @@ export default function NewInspectionPage() {
 
       {/* Navigation */}
       {step > 0 && (
-        <div className="flex gap-2 sticky bottom-20 lg:bottom-4 px-1 z-30">
+        <div className="flex gap-3 sticky bottom-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 p-3 -mx-4 mb-20 lg:mb-0 z-30 shadow-lg">
           {step > 1 && (
             <Button variant="outline" className="flex-1" icon={<ArrowRight size={16} />}
               onClick={() => setStep((step - 1) as Step)}>חזור</Button>
@@ -1907,7 +1912,7 @@ export default function NewInspectionPage() {
               loading={loading} onClick={handleSubmit}>שמור</Button>
           )}
           {/* Cancel button */}
-          <Button variant="outline" className="px-3 text-red-500 border-red-200 hover:bg-red-50" icon={<X size={16} />}
+          <Button variant="outline" className="px-2 min-w-[40px] text-red-400 border-red-200 hover:bg-red-50 hover:text-red-600" icon={<X size={16} />}
             onClick={() => setShowCancelModal(true)} />
         </div>
       )}
