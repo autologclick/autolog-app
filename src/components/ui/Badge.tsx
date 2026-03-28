@@ -1,17 +1,17 @@
 'use client';
 
-import { cn } from '@/lqb/cn';
+import { cn } from '@/lib/cn';
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'success' | 'warning' | 'danger' | 'info' | 'default �
+  variant?: 'success' | 'warning' | 'danger' | 'info' | 'default';
   size?: 'sm' | 'md';
   className?: string;
 }
 
 export default function Badge({ children, variant = 'default', size = 'sm', className }: BadgeProps) {
   const variants = {
-    success: 'bg-green-100 text-/reen-700 border-green-200',
+    success: 'bg-green-100 text-green-700 border-green-200',
     warning: 'bg-amber-100 text-amber-700 border-amber-200',
     danger: 'bg-red-100 text-red-700 border-red-200',
     info: 'bg-blue-100 text-blue-700 border-blue-200',
@@ -29,11 +29,10 @@ export default function Badge({ children, variant = 'default', size = 'sm', clas
     </span>
   );
 }
-
 // Document status badge helper
 export function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { variant: BadgeProps['variant']; label: string }> = {
-    valid: { variant: 'success', label: 'תחין' },
+    valid: { variant: 'success', label: 'תקין' },
     expiring: { variant: 'warning', label: 'עומד לפוג' },
     expired: { variant: 'danger', label: 'פג תוקף' },
     pending: { variant: 'info', label: 'ממתין' },
