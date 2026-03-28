@@ -827,7 +827,7 @@ export default function NewInspectionPage() {
         <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 flex items-start gap-2.5">
           <Info size={18} className="text-amber-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-amber-800 leading-relaxed">
-            <strong>\u05EA\u05D6\u05DB\u05D5\u05E8\u05EA:</strong> \u05D1\u05D3\u05D9\u05E7\u05D4 \u05D6\u05D5 \u05DE\u05D4\u05D5\u05D5\u05D4 \u05D7\u05D5\u05D5\u05EA \u05D3\u05E2\u05EA \u05DE\u05E7\u05E6\u05D5\u05E2\u05D9\u05EA \u05D1\u05DC\u05D1\u05D3 \u05D5\u05D0\u05D9\u05E0\u05D4 \u05DE\u05D4\u05D5\u05D5\u05D4 \u05D1\u05D3\u05D9\u05E7\u05EA \u05DE\u05DB\u05D5\u05DF \u05E8\u05D9\u05E9\u05D5\u05D9 \u05DE\u05D5\u05E8\u05E9\u05D4. \u05D0\u05D9\u05DF \u05DC\u05D4 \u05EA\u05D5\u05E7\u05E3 \u05DE\u05E9\u05E4\u05D8\u05D9 \u05DE\u05D7\u05D9\u05D9\u05D1 \u05D5\u05D4\u05D9\u05D0 \u05D0\u05D9\u05E0\u05D4 \u05DE\u05D7\u05DC\u05D9\u05E4\u05D4 \u05D1\u05D3\u05D9\u05E7\u05D4 \u05D4\u05E0\u05D3\u05E8\u05E9\u05EA \u05E2\u05DC \u05E4\u05D9 \u05D7\u05D5\u05E7. \u05D9\u05E9 \u05DC\u05D4\u05D1\u05D4\u05D9\u05E8 \u05D6\u05D0\u05EA \u05DC\u05DC\u05E7\u05D5\u05D7.
+            <strong>תזכורת:</strong> בדיקה זו מהווה חוות דעת מקצועית בלבד ואינה מהווה בדיקת מכון רישוי מורשה. אין לה תוקף משפטי מחייב והיא אינה מחליפה בדיקה הנדרשת על פי חוק. יש להבהיר זאת ללקוח.
           </p>
         </div>
       )}
