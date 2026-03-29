@@ -168,7 +168,7 @@ export default function GarageInspectionsPage() {
       )}
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      <div className="flex flex-wrap justify-center gap-2 py-3 px-2 bg-white rounded-xl border border-gray-100 shadow-sm">
         {FILTER_TABS.map(tab => {
           const count = tab.key === 'all' ? inspections.length : (typeCounts[tab.key] || 0);
           if (tab.key !== 'all' && count === 0) return null;
@@ -177,10 +177,10 @@ export default function GarageInspectionsPage() {
             <button
               key={tab.key}
               onClick={() => setFilterType(tab.key)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-all duration-200 text-sm flex items-center gap-1.5 ${
                 filterType === tab.key
-                  ? 'bg-emerald-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200'
+                  : 'bg-gray-50 text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 border border-gray-200'
               }`}
             >
               <IconComponent size={14} />
@@ -191,9 +191,7 @@ export default function GarageInspectionsPage() {
             </button>
           );
         })}
-      </div>
-
-      {/* AI Insights */}
+      </div>  {/* AI Insights */}
       {!loading && inspections.length > 0 && (
         <div className="bg-gradient-to-r from-[#fef7ed] to-white border border-emerald-200 rounded-xl p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
