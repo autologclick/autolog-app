@@ -164,11 +164,24 @@ export default function VehicleReportPage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || 'שגיאה בטעינת הדוח');
       }
-      const handleDownloadPdf = () => {
+      const data = await res.json();
+      setReport(data);
+    } catch (err: any) {
+      setError(err.message || 'שגיאה בטעינת הדוח');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function toggleSection(key: SectionKey) {
+    setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  const handleDownloadPdf = () => {
     window.print();
   };
 
-    function handleShareWhatsApp() {
+  function handleShareWhatsApp() {
     const text = `דוח היסטוריית רכב - ${report?.vehicle.manufacturer} ${report?.vehicle.model} ${report?.vehicle.year}\n` +
       `לוחית רישוי: ${report?.vehicle.licensePlate}\n` +
       `סה"כ טיפולים: ${report?.summary.totalTreatments}\n` +
@@ -229,17 +242,7 @@ export default function VehicleReportPage() {
   const { vehicle, summary } = report;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white" dir="rtl" id="report-content">
-      <style jsx global>{`
-        @media print {
-          body * { visibility: hidden; }
-          #report-content, #report-content * { visibility: visible; }
-          #report-content { position: absolute; left: 0; top: 0; width: 100%; }
-          .no-print { display: none !important; }
-          @page { margin: 1cm; size: A4; }
-        }
-      `}</style>
-      
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white" dir="rtl">
       {/* Print-only styles */}
       <style jsx global>{`
         @media print {
