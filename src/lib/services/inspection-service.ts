@@ -57,8 +57,29 @@ export interface ValidatedInspectionInput {
   preTestChecklist?: Record<string, boolean>;
   preTestNotes?: string;
   serviceItems?: unknown;
-  workPerformed?: Array<{ item: string; action: string; notes?: string }>;
+  workPerformed?: Array<{ item: string; action: string; notes?: string; cost?: number }>;
   items?: Array<{ category: string; itemName: string; status: string; notes?: string; score?: number }>;
+
+  // Non-full type photos
+  vehiclePhoto?: string;
+  invoicePhoto?: string;
+
+  // Periodic service fields
+  serviceNotes?: string;
+  serviceRecommendations?: string;
+  servicePhotos?: string[];
+
+  // Troubleshoot fields
+  troubleshootData?: {
+    problem?: string;
+    diagnosis?: string;
+    fix?: string;
+    parts?: string;
+    notes?: string;
+  };
+
+  // Pre-test item-level notes
+  preTestItemNotes?: Record<string, string>;
 }
 
 export interface InspectionItemInput {
@@ -136,6 +157,43 @@ export function buildInspectionData(
     preTestNotes: data.preTestNotes || null,
     serviceItems: jsonOrNull(data.serviceItems),
     workPerformed: jsonOrNull(data.workPerformed),
+
+    // Store vehiclePhoto/invoicePhoto in exteriorPhotos if not already set
+    ...(data.vehiclePhoto && !data.exteriorPhotos
+      ? { exteriorPhotos: JSON.stringify({ vehicle: data.vehiclePhoto }) }
+      : {}),
+    // Store invoicePhoto in photos (legacy field)
+    ...(data.invoicePhoto ? { photos: JSON.stringify({ invoice: data.invoicePhoto }) } : {}),
+
+    // Periodic service: store serviceNotes/serviceRecommendations
+    ...(data.serviceNotes ? {
+      notes: JSON.stringify({
+        ...(data.notes && typeof data.notes === 'object' ? data.notes : {}),
+        service: data.serviceNotes,
+      }),
+    } : {}),
+    ...(data.serviceRecommendations ? {
+      recommendations: JSON.stringify({ text: data.serviceRecommendations }),
+    } : {}),
+    ...(data.servicePhotos && data.servicePhotos.length > 0 ? {
+      interiorPhotos: JSON.stringify({ servicePhotos: data.servicePhotos }),
+    } : {}),
+
+    // Troubleshoot data in notes
+    ...(data.troubleshootData ? {
+      notes: JSON.stringify({
+        ...(data.serviceNotes ? { service: data.serviceNotes } : {}),
+        troubleshoot: data.troubleshootData,
+      }),
+    } : {}),
+
+    // Pre-test item notes
+    ...(data.preTestItemNotes ? {
+      notes: jsonOrNull({
+        ...(data.notes && typeof data.notes === 'object' ? data.notes : {}),
+        itemNotes: data.preTestItemNotes,
+      }),
+    } : {}),
   };
 }
 
