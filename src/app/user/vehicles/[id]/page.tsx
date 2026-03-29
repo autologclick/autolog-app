@@ -321,7 +321,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
         <Card className="p-4">
           <div className="flex items-center gap-2 mb-2">
             <Gauge size={16} className="text-[#1e3a5f]" />
-            <span className="text-xs text-gray-500">ע�ם</span>
+            <span className="text-xs text-gray-500">ע�מ</span>
           </div>
           <p className="text-lg font-bold text-[#1e3a5f]">
             {vehicle.mileage?.toLocaleString('he-IL') || '—'}
@@ -378,7 +378,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
           בדיקות אחרונות
         </CardTitle>
         {vehicle.inspections.length === 0 ? (
-          <p className="text-gray-500 text-sm">אין בדיקות עדיין</p>
+          <p className="text-gray-500 text-sm">אין בדיקות עדיים</p>
         ) : (
           <div className="space-y-3">
             {vehicle.inspections.map(inspection => (
