@@ -164,41 +164,11 @@ export default function VehicleReportPage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || 'שגיאה בטעינת הדוח');
       }
-      const data = await res.json();
-      setReport(data);
-    } catch (err: any) {
-      setError(err.message || 'שגיאה בטעינת הדוח');
-    } finally {
-      setLoading(false);
-    }
-  }
+      const handleDownloadPdf = () => {
+    window.print();
+  };
 
-  function toggleSection(key: SectionKey) {
-    setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
-  }
-
-  async function handleDownloadPdf() {
-    setGeneratingPdf(true);
-    try {
-      const res = await fetch(`/api/vehicles/${vehicleId}/report/pdf`);
-      if (!res.ok) throw new Error('שגיאה ביצירת PDF');
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `דוח_היסטוריית_רכב_${report?.vehicle.licensePlate || ''}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch {
-      alert('שגיאה ביצירת PDF. נסה שוב.');
-    } finally {
-      setGeneratingPdf(false);
-    }
-  }
-
-  function handleShareWhatsApp() {
+    function handleShareWhatsApp() {
     const text = `דוח היסטוריית רכב - ${report?.vehicle.manufacturer} ${report?.vehicle.model} ${report?.vehicle.year}\n` +
       `לוחית רישוי: ${report?.vehicle.licensePlate}\n` +
       `סה"כ טיפולים: ${report?.summary.totalTreatments}\n` +
@@ -259,7 +229,17 @@ export default function VehicleReportPage() {
   const { vehicle, summary } = report;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white" dir="rtl" id="report-content">
+      <style jsx global>{`
+        @media print {
+          body * { visibility: hidden; }
+          #report-content, #report-content * { visibility: visible; }
+          #report-content { position: absolute; left: 0; top: 0; width: 100%; }
+          .no-print { display: none !important; }
+          @page { margin: 1cm; size: A4; }
+        }
+      `}</style>
+      
       {/* Print-only styles */}
       <style jsx global>{`
         @media print {
