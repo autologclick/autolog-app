@@ -28,10 +28,10 @@ interface Application {
   createdAt: string;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
-  pending: { label: '×××ª×× ××××©××¨', color: 'bg-amber-100 text-amber-700', icon: Clock },
-  approved: { label: '×××©×¨', color: 'bg-green-100 text-green-700', icon: CheckCircle2 },
-  rejected: { label: '× ×××', color: 'bg-red-100 text-red-700', icon: XCircle },
+const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+  pending: { label: 'ממתין לאישור', color: 'bg-amber-100 text-amber-700', icon: Clock },
+  approved: { label: 'אושר', color: 'bg-green-100 text-green-700', icon: CheckCircle2 },
+  rejected: { label: 'נדחה', color: 'bg-red-100 text-red-700', icon: XCircle },
 };
 
 export default function AdminApplicationsPage() {
@@ -50,12 +50,12 @@ export default function AdminApplicationsPage() {
         ? `/api/admin/garage-applications?status=${filter}`
         : '/api/admin/garage-applications';
       const res = await fetch(url);
-      if (!res.ok) throw new Error('×©×××× ×××¢×× ×ª ×××§×©××ª');
+      if (!res.ok) throw new Error('שגיאה בטעינת הבקשות');
       const data = await res.json();
       setApplications(data.applications || []);
       setCounts({ total: data.total, pending: data.pending });
     } catch {
-      setError('×©×××× ×××¢×× ×ª ×× ×ª×× ××');
+      setError('שגיאה בטעינת הנתונים');
     } finally {
       setLoading(false);
     }
@@ -76,20 +76,20 @@ export default function AdminApplicationsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || '×©××××');
+        setError(data.error || 'שגיאה');
         return;
       }
 
       // Show temp password if new user was created
       if (data.tempPassword) {
-        alert(`××××¡× ×××©×¨!\n\n×¡××¡×× ××× ××ª ××××¡×: ${data.tempPassword}\n× × ×××¢×××¨ ××ª ××¡××¡×× ×××¢× ××××¡×.`);
+        alert(`המוסך אושר!\n\nסיסמה זמנית למוסך: ${data.tempPassword}\nנא להעביר את הסיסמה לבעל המוסך.`);
       }
 
       setNoteText('');
       setExpandedId(null);
       fetchApplications();
     } catch {
-      setError('×©××××ª ×××××¨');
+      setError('שגיאת חיבור');
     } finally {
       setActionLoading(null);
     }
@@ -111,14 +111,14 @@ export default function AdminApplicationsPage() {
   };
 
   const SERVICE_LABELS: Record<string, string> = {
-    inspection: '××××§××ª ×¨××',
-    maintenance: '×××¤×××× ×©×××¤××',
-    repair: '×ª××§×× ××',
-    test_prep: '××× × ×××¡×',
-    tires: '×¦×××××',
-    bodywork: '×¤××××ª ××¦××¢',
-    electrical: '××©×× ×¨××',
-    ac: '××××× ×××××¨',
+    inspection: 'בדיקות רכב',
+    maintenance: 'טיפולים שוטפים',
+    repair: 'תיקונים',
+    test_prep: 'הכנה לטסט',
+    tires: 'צמיגים',
+    bodywork: 'פחחות וצבע',
+    electrical: 'חשמל רכב',
+    ac: 'מיזוג אוויר',
   };
 
   if (loading) {
@@ -138,11 +138,11 @@ export default function AdminApplicationsPage() {
             <Building2 size={20} className="text-[#1e3a5f]" />
           </div>
           <div>
-          <h1 className="text-2xl font-bold text-[#1e3a5f]">××§×©××ª ××¦××¨×¤××ª ×××¡×××</h1>
+          <h1 className="text-2xl font-bold text-[#1e3a5f]">בקשות הצטרפות מוסכים</h1>
           <p className="text-sm text-gray-500 mt-1">
             {counts.pending > 0
-              ? `${counts.pending} ××§×©××ª ×××ª×× ××ª ××××©××¨ ××ª×× ${counts.total}`
-              : `${counts.total} ××§×©××ª ×¡×"×`
+              ? `${counts.pending} בקשות ממתינות לאישור מתוך ${counts.total}`
+              : `${counts.total} בקשות סה"כ`
             }
           </p>
           </div>
@@ -152,10 +152,10 @@ export default function AdminApplicationsPage() {
       {/* Filters */}
       <div className="flex gap-2 flex-wrap">
         {[
-          { value: '', label: '×××', count: counts.total },
-          { value: 'pending', label: '×××ª×× ××ª', count: counts.pending },
-          { value: 'approved', label: '×××©×¨×', count: null },
-          { value: 'rejected', label: '× ×××', count: null },
+          { value: '', label: 'הכל', count: counts.total },
+          { value: 'pending', label: 'ממתינות', count: counts.pending },
+          { value: 'approved', label: 'אושרו', count: null },
+          { value: 'rejected', label: 'נדחו', count: null },
         ].map(f => (
           <button
             key={f.value}
@@ -191,7 +191,7 @@ export default function AdminApplicationsPage() {
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
           <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500">
-            {filter === 'pending' ? '××× ××§×©××ª ×××ª×× ××ª' : '××× ××§×©××ª'}
+            {filter === 'pending' ? 'אין בקשות ממתינות' : 'אין בקשות'}
           </p>
         </div>
       ) : (
@@ -251,18 +251,18 @@ export default function AdminApplicationsPage() {
                         {app.licenseNumber && (
                           <div className="flex items-center gap-2 text-sm">
                             <Building2 size={14} className="text-gray-400" />
-                            <span className="text-gray-700">×¨××©×××: {app.licenseNumber}</span>
+                            <span className="text-gray-700">רישיון: {app.licenseNumber}</span>
                           </div>
                         )}
                       </div>
                       <div className="space-y-2.5">
                         <div className="flex items-center gap-2 text-sm">
                           <Clock size={14} className="text-gray-400" />
-                          <span className="text-gray-700">{app.yearsExperience} ×©× ××ª × ××¡×××</span>
+                          <span className="text-gray-700">{app.yearsExperience} שנות ניסיון</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                           <User size={14} className="text-gray-400" />
-                          <span className="text-gray-700">{app.employeeCount} ×¢×××××</span>
+                          <span className="text-gray-700">{app.employeeCount} עובדים</span>
                         </div>
                       </div>
                     </div>
@@ -275,7 +275,7 @@ export default function AdminApplicationsPage() {
 
                     {services.length > 0 && (
                       <div className="mb-4">
-                        <p className="text-xs text-gray-500 mb-2 flex items-center gap-1"><Wrench size={12} /> ×©××¨××ª××:</p>
+                        <p className="text-xs text-gray-500 mb-2 flex items-center gap-1"><Wrench size={12} /> שירותים:</p>
                         <div className="flex flex-wrap gap-1.5">
                           {services.map(s => (
                             <span key={s} className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs rounded-full">
@@ -293,11 +293,11 @@ export default function AdminApplicationsPage() {
                         if (imgs.length === 0) return null;
                         return (
                           <div className="mb-4">
-                            <p className="text-xs text-gray-500 mb-2 flex items-center gap-1"><Image size={12} /> ×ª××× ××ª ×××××¡×:</p>
+                            <p className="text-xs text-gray-500 mb-2 flex items-center gap-1"><Image size={12} /> תמונות מהמוסך:</p>
                             <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                               {imgs.map((url, idx) => (
                                 <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="aspect-square rounded-lg overflow-hidden border border-gray-200 hover:border-emerald-400 transition">
-                                  <img src={url} alt={`×ª××× ×ª ×××¡× ${idx + 1}`} className="w-full h-full object-cover" />
+                                  <img src={url} alt={`תמונת מוסך ${idx + 1}`} className="w-full h-full object-cover" />
                                 </a>
                               ))}
                             </div>
@@ -309,7 +309,7 @@ export default function AdminApplicationsPage() {
                     {/* Admin Notes (for already reviewed) */}
                     {app.adminNotes && app.status !== 'pending' && (
                       <div className="mb-4 p-3 bg-blue-50 rounded-xl">
-                        <p className="text-xs text-blue-500 mb-1 flex items-center gap-1"><MessageSquare size={12} /> ××¢×¨××ª ×× ××:</p>
+                        <p className="text-xs text-blue-500 mb-1 flex items-center gap-1"><MessageSquare size={12} /> הערות מנהל:</p>
                         <p className="text-sm text-blue-700">{app.adminNotes}</p>
                       </div>
                     )}
@@ -318,11 +318,11 @@ export default function AdminApplicationsPage() {
                     {app.status === 'pending' && (
                       <div className="border-t border-gray-100 pt-4 mt-4">
                         <div className="mb-3">
-                          <label className="text-xs text-gray-500 mb-1 block">××¢×¨××ª (×××¤×¦××× ××)</label>
+                          <label className="text-xs text-gray-500 mb-1 block">הערות (אופציונלי)</label>
                           <textarea
                             value={noteText}
                             onChange={e => setNoteText(e.target.value)}
-                            placeholder="×××¡×£ ××¢×¨× ×××× ×××§×©×..."
+                            placeholder="הוסף הערה לגבי הבקשה..."
                             rows={2}
                             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-400"
                           />
@@ -338,7 +338,7 @@ export default function AdminApplicationsPage() {
                             ) : (
                               <CheckCircle2 size={16} />
                             )}
-                            ××©×¨ ×××¡×
+                            אשר מוסך
                           </button>
                           <button
                             onClick={() => handleAction(app.id, 'rejected')}
@@ -346,7 +346,7 @@ export default function AdminApplicationsPage() {
                             className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition border border-red-200 disabled:opacity-60"
                           >
                             <XCircle size={16} />
-                            ×××
+                            דחה
                           </button>
                         </div>
                       </div>
