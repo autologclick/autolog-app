@@ -434,26 +434,26 @@ export default function AppointmentsPage() {
       )}
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap justify-center gap-2 py-3 px-2 bg-white rounded-xl border border-gray-100 shadow-sm">
+      <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
         {([
-          { key: 'all', label: 'הכל', icon: '📋' },
-          { key: 'pending', label: 'ממתין', icon: '⏳' },
-          { key: 'confirmed', label: 'מאושר', icon: '✅' },
-          { key: 'in_progress', label: 'בטיפול', icon: '🔧' },
-          { key: 'completed', label: 'הושלם', icon: '🏁' },
-          { key: 'rejected', label: 'נדחה', icon: '❌' },
-          { key: 'cancelled', label: 'מבוטל', icon: '🚫' },
-        ] as { key: FilterStatus; label: string; icon: string }[]).map(f => (
+          { key: 'all', label: 'הכל', color: '' },
+          { key: 'pending', label: 'ממתין', color: 'bg-amber-400' },
+          { key: 'confirmed', label: 'מאושר', color: 'bg-emerald-400' },
+          { key: 'in_progress', label: 'בטיפול', color: 'bg-blue-400' },
+          { key: 'completed', label: 'הושלם', color: 'bg-teal-400' },
+          { key: 'rejected', label: 'נדחה', color: 'bg-red-400' },
+          { key: 'cancelled', label: 'מבוטל', color: 'bg-gray-400' },
+        ] as { key: FilterStatus; label: string; color: string }[]).map(f => (
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-all duration-200 text-sm flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 ${
               filter === f.key
-                ? 'bg-teal-600 text-white shadow-md shadow-teal-200'
-                : 'bg-gray-50 text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200'
+                ? 'bg-[#1e3a5f] text-white shadow-sm'
+                : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
             }`}
           >
-            <span className="text-xs">{f.icon}</span>
+            {f.color && <span className={`w-1.5 h-1.5 rounded-full ${filter === f.key ? 'bg-white' : f.color}`} />}
             {f.label}
           </button>
         ))}
