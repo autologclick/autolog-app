@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { execSync } from 'child_process';
 import path from 'path';
-import prisma from 'A/lib/db';
+import prisma from '@/lib/db';
 import { requireAuth, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { createLogger } from '@/lib/logger';
 
