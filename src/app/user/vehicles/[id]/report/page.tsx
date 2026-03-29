@@ -177,8 +177,61 @@ export default function VehicleReportPage() {
     setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
   }
 
-  const handleDownloadPdf = () => {
-    window.print();
+  const handleDownloadPdf = async () => {
+    setGeneratingPdf(true);
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const jsPDF = (await import('jspdf')).default;
+      
+      const element = document.getElementById('report-content');
+      if (!element) return;
+
+      // Hide buttons during capture
+      const noPrintEls = element.querySelectorAll('.no-print');
+      noPrintEls.forEach(el => (el as HTMLElement).style.display = 'none');
+
+      // Open all collapsible sections for PDF
+      const hiddenSections = element.querySelectorAll('[data-collapsed="true"]');
+      hiddenSections.forEach(el => el.setAttribute('data-collapsed', 'false'));
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#f8fafc',
+        windowWidth: 800,
+      });
+
+      // Restore buttons
+      noPrintEls.forEach(el => (el as HTMLElement).style.display = '');
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pdfWidth - 16;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      let heightLeft = imgHeight;
+      let position = 8;
+
+      pdf.addImage(imgData, 'JPEG', 8, position, imgWidth, imgHeight);
+      heightLeft -= (pdfHeight - 16);
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight + 8;
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 8, position, imgWidth, imgHeight);
+        heightLeft -= (pdfHeight - 16);
+      }
+
+      const plateNum = data?.vehicle?.licensePlate || 'vehicle';
+      pdf.save(`vehicle-report-${plateNum}.pdf`);
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      alert('\u05e9\u05d2\u05d9\u05d0\u05d4 \u05d1\u05d9\u05e6\u05d9\u05e8\u05ea PDF');
+    } finally {
+      setGeneratingPdf(false);
+    }
   };
 
   function handleShareWhatsApp() {
@@ -242,7 +295,7 @@ export default function VehicleReportPage() {
   const { vehicle, summary } = report;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white" dir="rtl">
+    <div id="report-content" className="min-h-screen bg-gradient-to-b from-slate-50 to-white" dir="rtl">
       {/* Print-only styles */}
       <style jsx global>{`
         @media print {
