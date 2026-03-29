@@ -10,8 +10,7 @@ import Modal from '@/components/ui/Modal';
 import {
   Edit, Trash2, Shield, Calendar, Fuel, Gauge, Clock,
   Loader2, ChevronRight, AlertCircle, CheckCircle2, MapPin,
-  RefreshCw, Star, Settings, ArrowRight, Car,
-, FileText } from 'lucide-react';
+  RefreshCw, Star, Settings, ArrowRight, Car, FileText } from 'lucide-react';
 
 interface Inspection {
   id: string;
