@@ -8,6 +8,7 @@ interface RateLimitEntry {
 interface AccountLockoutEntry {
   lockedUntil: number; // Timestamp
   failedAttempts: number;
+  lockCount: number; // Number of times account was locked
 }
 
 interface IpSuspiciousActivityEntry {
@@ -33,7 +34,9 @@ const apiCallsPerUser: RateLimitStore = new Map();
 const accountLockouts: AccountLockoutStore = new Map();
 
 const LOCKOUT_THRESHOLD = 5; // Lock after 5 failed attempts
-const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+const LOCKOUT_DURATION_MS = 30 * 1000; // 30 seconds
+const EXTENDED_LOCKOUT_DURATION_MS = 60 * 60 * 1000; // 1 hour
+const EXTENDED_LOCKOUT_AFTER = 4; // Extended lockout after 4 lockouts
 
 /**
  * Check if an account (by email) is currently locked
@@ -78,17 +81,28 @@ export function recordFailedAttempt(email: string): void {
       // Already locked, increment counter (for logging purposes)
       lockout.failedAttempts++;
     } else {
-      // Lockout expired, reset
-      accountLockouts.set(key, {
-        lockedUntil: now + LOCKOUT_DURATION_MS,
-        failedAttempts: 1,
-      });
+      // Lockout expired, start new attempt cycle but keep lockCount
+      const prevLockCount = lockout.lockCount || 0;
+      lockout.failedAttempts = 1;
+      lockout.lockCount = prevLockCount;
+      lockout.lockedUntil = 0; // Reset lock until threshold is reached again
+    }
+
+    // Check if we need to lock
+    if (lockout.failedAttempts >= LOCKOUT_THRESHOLD && now >= lockout.lockedUntil) {
+      lockout.lockCount = (lockout.lockCount || 0) + 1;
+      // Use extended lockout after N lockouts
+      const duration = lockout.lockCount >= EXTENDED_LOCKOUT_AFTER
+        ? EXTENDED_LOCKOUT_DURATION_MS
+        : LOCKOUT_DURATION_MS;
+      lockout.lockedUntil = now + duration;
     }
   } else {
     // First failed attempt
     accountLockouts.set(key, {
-      lockedUntil: now + LOCKOUT_DURATION_MS,
+      lockedUntil: 0,
       failedAttempts: 1,
+      lockCount: 0,
     });
   }
 }
