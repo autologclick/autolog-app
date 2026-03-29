@@ -80,11 +80,12 @@ const DOCUMENT_TYPES = {
 };
 
 const FILTER_TABS = [
-  { id: 'all', label: 'הכל' },
-  { id: 'treatments', label: 'טיפולים' },
-  { id: 'insurance', label: 'ביטוח' },
-  { id: 'license', label: 'רישיונות' },
-  { id: 'other', label: 'אחר' },
+  { id: 'all', label: 'הכל', icon: '📋' },
+  { id: 'treatments', label: 'טיפולים', icon: '🔧' },
+  { id: 'insurance', label: 'ביטוח', icon: '🛡️' },
+  { id: 'license', label: 'רישיונות', icon: '📄' },
+  { id: 'test', label: 'טסט', icon: '✅' },
+  { id: 'other', label: 'אחר', icon: '📂' },
 ];
 
 export default function DocumentsPage() {
@@ -523,23 +524,22 @@ export default function DocumentsPage() {
       )}
 
       {/* Filter Tabs */}
-      <div className="px-3 sm:px-0">
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="flex flex-wrap justify-center gap-2 py-3 px-2 bg-white rounded-xl border border-gray-100 shadow-sm">
           {FILTER_TABS.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveFilter(tab.id)}
-              className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition ${
+              className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-all duration-200 text-sm flex items-center gap-1.5 ${
                 activeFilter === tab.id
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-teal-600 text-white shadow-md shadow-teal-200'
+                  : 'bg-gray-50 text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200'
               }`}
             >
+              <span className="text-xs">{tab.icon}</span>
               {tab.label}
             </button>
           ))}
         </div>
-      </div>
 
       {/* AI Insights */}
       {!loading && documents.length > 0 && (
