@@ -77,6 +77,8 @@ export const INSPECTION_TYPE_HEB: Record<string, string> = {
   full: 'בדיקה מלאה',
   pre_test: 'הכנה לטסט',
   rot: 'בדיקת רקב',
+  periodic: 'טיפול תקופתי',
+  troubleshoot: 'אבחון תקלה',
 };
 
 // =============================================
