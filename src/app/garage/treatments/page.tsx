@@ -275,27 +275,27 @@ export default function GarageTreatmentsPage() {
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex gap-2 overflow-x-auto pb-1 flex-1">
+        <div className="flex flex-wrap gap-2 flex-1">
           {[
-            { key: 'all', label: 'הכל' },
-            { key: 'pending_approval', label: 'ממתינים' },
-            { key: 'approved', label: 'אושרו' },
-            { key: 'rejected', label: 'נדחו' },
+            { key: 'all', label: 'הכל', icon: '📋' },
+            { key: 'pending_approval', label: 'ממתינים', icon: '⏳' },
+            { key: 'approved', label: 'אושרו', icon: '✅' },
+            { key: 'rejected', label: 'נדחו', icon: '❌' },
           ].map(tab => (
             <button
               key={tab.key}
               onClick={() => setFilterStatus(tab.key)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition ${
+              className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-all duration-200 text-sm flex items-center gap-1.5 ${
                 filterStatus === tab.key
-                  ? 'bg-emerald-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200'
+                  : 'bg-gray-50 text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 border border-gray-200'
               }`}
             >
+              <span className="text-xs">{tab.icon}</span>
               {tab.label}
             </button>
           ))}
-        </div>
-        <div className="relative">
+        </div>   <div className="relative">
           <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
