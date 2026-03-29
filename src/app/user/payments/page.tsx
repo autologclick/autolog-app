@@ -240,22 +240,23 @@ export default function PaymentsPage() {
       )}
 
       {/* Quick Status Filters */}
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      <div className="flex flex-wrap justify-center gap-2 py-3 px-2 bg-white rounded-xl border border-gray-100 shadow-sm">
         {[
-          { key: 'all', label: 'הכל', count: data?.payments.length || 0 },
-          { key: 'paid', label: 'שולם', count: data?.payments.filter(p => p.status === 'paid').length || 0 },
-          { key: 'pending', label: 'ממתין', count: pendingCount },
-          { key: 'overdue', label: 'באיחור', count: overdueCount },
+          { key: 'all', label: 'הכל', icon: '📋', count: data?.payments.length || 0 },
+          { key: 'paid', label: 'שולם', icon: '✅', count: data?.payments.filter(p => p.status === 'paid').length || 0 },
+          { key: 'pending', label: 'ממתין', icon: '⏳', count: pendingCount },
+          { key: 'overdue', label: 'באיחור', icon: '⚠️', count: overdueCount },
         ].map(tab => (
           <button
             key={tab.key}
             onClick={() => setSelectedStatus(tab.key)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition flex items-center gap-2 ${
+            className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-all duration-200 text-sm flex items-center gap-1.5 ${
               selectedStatus === tab.key
-                ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-teal-600 text-white shadow-md shadow-teal-200'
+                : 'bg-gray-50 text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200'
             }`}
           >
+            <span className="text-xs">{tab.icon}</span>
             {tab.label}
             <span className={`text-xs px-1.5 py-0.5 rounded-full ${
               selectedStatus === tab.key ? 'bg-white/20' : 'bg-gray-200'
@@ -264,9 +265,7 @@ export default function PaymentsPage() {
             </span>
           </button>
         ))}
-      </div>
-
-      {/* Advanced Filters + Sort */}
+      </div>  {/* Advanced Filters + Sort */}
       <div className="flex items-center justify-between gap-3">
         <button
           onClick={() => setShowFilters(!showFilters)}
