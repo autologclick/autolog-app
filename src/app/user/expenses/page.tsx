@@ -469,36 +469,35 @@ export default function ExpensesPage() {
       )}
 
       {/* Category Filter Tabs */}
-      <div>
-        <h3 className="text-sm font-semibold text-gray-700 mb-3 text-right">סנן לפי קטגוריה</h3>
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition ${
-              selectedCategory === 'all'
-                ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            הכל
-          </button>
-          {CATEGORY_KEYS.map(cat => {
-            const catData = CATEGORIES[cat];
-            return (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition ${
-                  selectedCategory === cat
-                    ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {catData.label}
-              </button>
-            );
-          })}
-        </div>
+      <div className="flex flex-wrap justify-center gap-2 py-3 px-2 bg-white rounded-xl border border-gray-100 shadow-sm">
+        <button
+          onClick={() => setSelectedCategory('all')}
+          className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-all duration-200 text-sm flex items-center gap-1.5 ${
+            selectedCategory === 'all'
+              ? 'bg-teal-600 text-white shadow-md shadow-teal-200'
+              : 'bg-gray-50 text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200'
+          }`}
+        >
+          <span className="text-xs">📋</span>
+          הכל
+        </button>
+        {CATEGORY_KEYS.map(cat => {
+          const catData = CATEGORIES[cat];
+          return (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-all duration-200 text-sm flex items-center gap-1.5 ${
+                selectedCategory === cat
+                  ? 'bg-teal-600 text-white shadow-md shadow-teal-200'
+                  : 'bg-gray-50 text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200'
+              }`}
+            >
+              <span className="text-xs">{catData.icon && <catData.icon size={14} />}</span>
+              {catData.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Expenses List */}
