@@ -26,6 +26,7 @@ const userNav: NavItem[] = [
   { label: 'הוצאות', href: '/user/expenses', icon: <Receipt size={20} /> },
   { label: 'תשלומים', href: '/user/payments', icon: <CreditCard size={20} /> },
   { label: 'היסטוריה', href: '/user/history', icon: <Clock size={20} /> },
+  { label: 'טיפולים', href: '/user/treatments', icon: <Wrench size={20} /> },
   { label: 'הזמנת מוסך', href: '/user/book-garage', icon: <MapPin size={20} /> },
   { label: 'תורים שלי', href: '/user/appointments', icon: <Calendar size={20} /> },
   { label: 'הטבות מועדון', href: '/user/benefits', icon: <Star size={20} /> },
