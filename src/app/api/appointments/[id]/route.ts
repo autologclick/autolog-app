@@ -96,7 +96,7 @@ export async function PUT(
     requireOwnership(payload.userId, appointment.userId);
 
     // Can't update cancelled appointments
-    if (appointment.(status as string) === 'cancelled') {
+    if (appointment.status === 'cancelled') {
       return jsonResponse(
         { error: APPOINTMENT_ERRORS.CANNOT_UPDATE_CANCELLED },
         400
