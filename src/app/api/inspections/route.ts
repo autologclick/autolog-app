@@ -148,6 +148,48 @@ export async function POST(req: NextRequest) {
         },
       });
 
+
+      // For periodic/troubleshoot: auto-create a Treatment pending customer approval
+      if (['periodic', 'troubleshoot'].includes(data.inspectionType)) {
+        const totalCost = data.workPerformed?.reduce((sum, w) => sum + (w.cost || 0), 0) || 0;
+        const treatmentTitle = data.inspectionType === 'periodic'
+          ? `טיפול תקופתי - ${vehicle.nickname || vehicle.licensePlate}`
+          : `אבחון תקלה - ${vehicle.nickname || vehicle.licensePlate}`;
+        const treatmentType = data.inspectionType === 'periodic' ? 'maintenance' : 'repair';
+
+        await tx.treatment.create({
+          data: {
+            vehicleId: vehicle.id,
+            userId: vehicle.userId,
+            garageId: garage.id,
+            garageName: garage.name,
+            mechanicName: data.mechanicName || null,
+            type: treatmentType,
+            title: treatmentTitle,
+            description: data.summary || null,
+            items: data.serviceItems ? JSON.stringify(data.serviceItems) :
+                   data.workPerformed ? JSON.stringify(data.workPerformed) : null,
+            mileage: data.mileage || null,
+            cost: totalCost > 0 ? totalCost : null,
+            date: new Date().toISOString().split('T')[0],
+            status: 'pending_approval',
+            sentByGarage: true,
+            notes: JSON.stringify({ inspectionId: newInspection.id }),
+          },
+        });
+
+        // Send approval notification to customer
+        await tx.notification.create({
+          data: {
+            userId: vehicle.userId,
+            type: 'system',
+            title: 'טיפול חדש ממתין לאישורך',
+            message: `${garage.name} שלח/ה טיפול מסוג ${treatmentType === 'maintenance' ? 'תחזוקה' : 'תיקון'} לרכב ${vehicle.nickname || vehicle.licensePlate}. לחץ כאן לאישור או דחייה.`,
+            link: '/user/treatments',
+          },
+        });
+      }
+
       return await tx.inspection.findUnique({
         where: { id: newInspection.id },
         include: {
