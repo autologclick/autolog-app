@@ -11,7 +11,7 @@ import {
   Edit, Trash2, Shield, Calendar, Fuel, Gauge, Clock,
   Loader2, ChevronRight, AlertCircle, CheckCircle2, MapPin,
   RefreshCw, Star, Settings, ArrowRight, Car,
-} from 'lucide-react';
+, FileText } from 'lucide-react';
 
 interface Inspection {
   id: string;
@@ -256,6 +256,14 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
           </p>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            icon={<FileText size={16} />}
+            onClick={() => router.push(`/user/vehicles/${id}/report`)}
+          >
+            דוח למכירה
+          </Button>
           <Button
             variant="outline"
             size="sm"
