@@ -40,12 +40,12 @@ interface Garage {
 }
 
 const amenityLabels: Record<string, { label: string; icon: typeof Coffee }> = {
-  coffee: { label: '×§×¤×', icon: Coffee },
-  shuttle: { label: '××¡×¢××ª', icon: Car },
+  coffee: { label: 'קפה', icon: Coffee },
+  shuttle: { label: 'הסעות', icon: Car },
   wifi: { label: 'WiFi', icon: Wifi },
-  waiting_room: { label: '×××¨ ×××ª× ×', icon: Armchair },
-  tv: { label: '×××××××', icon: Monitor },
-  children_area: { label: '×¤×× ×ª ×××××', icon: Heart },
+  waiting_room: { label: 'חדר המתנה', icon: Armchair },
+  tv: { label: 'טלויזיה', icon: Monitor },
+  children_area: { label: 'פינת ילדים', icon: Heart },
 };
 
 interface Vehicle {
@@ -59,14 +59,14 @@ interface Vehicle {
 
 // Service types with Hebrew labels, English values, and icons
 const serviceOptions = [
-  { value: 'inspection', label: '××××§×', icon: <ClipboardCheck size={28} />, description: '××××§×ª ×¨×× ××§××¤×' },
-  { value: 'maintenance', label: '×××¤××', icon: <Wrench size={28} />, description: '×××¤×× ×©×××£ ××ª××××§×' },
-  { value: 'repair', label: '×ª××§××', icon: <Settings2 size={28} />, description: '×ª××§×× ×ª×§×× ×¡×¤×¦××¤××ª' },
-  { value: 'test_prep', label: '××× × ×××¡×', icon: <Car size={28} />, description: '××× ×ª ××¨×× ×××¡× ×©× ×ª×' },
+  { value: 'inspection', label: 'בדיקה', icon: <ClipboardCheck size={28} />, description: 'בדיקת רכב מקיפה' },
+  { value: 'maintenance', label: 'טיפול', icon: <Wrench size={28} />, description: 'טיפול שוטף ותחזוקה' },
+  { value: 'repair', label: 'תיקון', icon: <Settings2 size={28} />, description: 'תיקון תקלה ספציפית' },
+  { value: 'test_prep', label: 'הכנה לטסט', icon: <Car size={28} />, description: 'הכנת הרכב לטסט שנתי' },
 ];
 
 const serviceValueToLabel: Record<string, string> = {
-  inspection: '××××§×', maintenance: '×××¤××', repair: '×ª××§××', test_prep: '××× × ×××¡×',
+  inspection: 'בדיקה', maintenance: 'טיפול', repair: 'תיקון', test_prep: 'הכנה לטסט',
 };
 
 const timeSlots = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
@@ -114,7 +114,7 @@ export default function BookGaragePage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Flow state: service â garages â booking details
+  // Flow state: service → garages → booking details
   const [selectedService, setSelectedService] = useState<string>('');
   const [selectedGarageId, setSelectedGarageId] = useState<string>('');
   const [showBookingModal, setShowBookingModal] = useState(false);
@@ -144,9 +144,9 @@ export default function BookGaragePage() {
     let list = [...garages];
     if (userLocation) {
       const cityDefaults: Record<string, { lat: number; lon: number }> = {
-        '×ª× ××××': { lat: 32.0853, lon: 34.7818 }, '×××¤×': { lat: 32.7940, lon: 34.9896 },
-        '××¨××©×××': { lat: 31.7683, lon: 35.2137 }, '×××¨ ×©××¢': { lat: 31.2530, lon: 34.7915 },
-        '×¨××ª ××': { lat: 32.0680, lon: 34.8241 }, '×¤×ª× ×ª×§×××': { lat: 32.0841, lon: 34.8878 },
+        'תל אביב': { lat: 32.0853, lon: 34.7818 }, 'חיפה': { lat: 32.7940, lon: 34.9896 },
+        'ירושלים': { lat: 31.7683, lon: 35.2137 }, 'באר שבע': { lat: 31.2530, lon: 34.7915 },
+        'רמת גן': { lat: 32.0680, lon: 34.8241 }, 'פתח תקווה': { lat: 32.0841, lon: 34.8878 },
       };
       list = list.map(g => {
         if (g.latitude && g.longitude) return { ...g, distance: haversineKm(userLocation.lat, userLocation.lon, g.latitude, g.longitude) };
@@ -176,7 +176,7 @@ export default function BookGaragePage() {
         setGarages(data.garages.map((g: GarageListItem) => ({
           ...g,
           reviewCount: g.reviewCount || g._count?.reviews || 0,
-          services: typeof g.services === 'string' ? (() => { try { return JSON.parse(g.services); } catch { return ['××××§×']; } })() : g.services || ['××××§×'],
+          services: typeof g.services === 'string' ? (() => { try { return JSON.parse(g.services); } catch { return ['בדיקה']; } })() : g.services || ['בדיקה'],
           amenities: typeof g.amenities === 'string' ? (() => { try { return JSON.parse(g.amenities); } catch { return []; } })() : g.amenities || [],
         })));
       }
@@ -201,7 +201,7 @@ export default function BookGaragePage() {
 
   const handleSubmitBooking = async () => {
     if (!selectedGarageId || !selectedService || !bookingData.vehicleId || !bookingData.date || !bookingData.time) {
-      setError('× × ×××©××× ××ª ×× ××©×××ª');
+      setError('נא להשלים את כל השדות');
       return;
     }
     setSubmitting(true);
@@ -221,10 +221,10 @@ export default function BookGaragePage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || '×©×××× ××××× ×ª ××ª××¨'); setSubmitting(false); return; }
+      if (!res.ok) { setError(data.error || 'שגיאה בהזמנת התור'); setSubmitting(false); return; }
       setBookingStep('success');
       setSubmitting(false);
-    } catch { setError('×©××××ª ×××××¨'); setSubmitting(false); }
+    } catch { setError('שגיאת חיבור'); setSubmitting(false); }
   };
 
   // Review handlers
@@ -245,7 +245,7 @@ export default function BookGaragePage() {
 
   const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
   const minDate = tomorrow.toISOString().split('T')[0];
-  const sortLabels: Record<SortOption, string> = { nearest: '××§×¨×× ××××ª×¨', rating: '×××¨×× ××××', reviewCount: '××× ××××¨×××', name: '×©× (×-×ª)' };
+  const sortLabels: Record<SortOption, string> = { nearest: 'הקרוב ביותר', rating: 'דירוג גבוה', reviewCount: 'הכי מדורגים', name: 'שם (א-ת)' };
 
   const StarRating = ({ rating, size = 16, interactive = false, onChange }: {
     rating: number; size?: number; interactive?: boolean; onChange?: (r: number) => void;
@@ -272,8 +272,8 @@ export default function BookGaragePage() {
           <Calendar size={20} className="text-[#1e3a5f]" />
         </div>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">×××× ×ª ×ª××¨</h1>
-          <p className="text-sm text-gray-500">×××¨ ×©××¨××ª, ×××¡× ××§××¢ ×ª××¨ ××§×××ª</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">הזמנת תור</h1>
+          <p className="text-sm text-gray-500">בחר שירות, מוסך וקבע תור בקלות</p>
         </div>
       </div>
 
@@ -281,8 +281,8 @@ export default function BookGaragePage() {
       {!selectedService && (
         <div className="space-y-4">
           <div className="bg-gradient-to-l from-teal-50 to-white rounded-2xl p-5 border border-teal-100">
-            <h2 className="text-lg font-bold text-gray-800 mb-1">××××× ×©××¨××ª ××ª× ××¢×× ×××?</h2>
-            <p className="text-sm text-gray-500 mb-4">×××¨ ××ª ×¡×× ××©××¨××ª ×× ×¦×× ×× ×××¡××× ××ª×××××</p>
+            <h2 className="text-lg font-bold text-gray-800 mb-1">באיזה שירות אתה מעוניין?</h2>
+            <p className="text-sm text-gray-500 mb-4">בחר את סוג השירות ונציג לך מוסכים מתאימים</p>
             <div className="grid grid-cols-2 gap-3">
               {serviceOptions.map(service => (
                 <button
@@ -310,21 +310,21 @@ export default function BookGaragePage() {
             <div className="flex items-center gap-2">
               <CheckCircle2 size={18} className="text-teal-600" />
               <span className="text-sm font-medium text-teal-800">
-                ×©××¨××ª: <span className="font-bold">{serviceValueToLabel[selectedService]}</span>
+                שירות: <span className="font-bold">{serviceValueToLabel[selectedService]}</span>
               </span>
             </div>
             <button
               onClick={() => setSelectedService('')}
               className="text-xs text-teal-600 hover:text-teal-800 font-medium flex items-center gap-1"
             >
-              <X size={14} /> ×©× ×
+              <X size={14} /> שנה
             </button>
           </div>
 
           {/* Search + filters */}
           <div className="flex gap-2">
             <div className="flex-1">
-              <Input placeholder="××¤×© ×××¡× ××¤× ×©× ×× ×¢××¨..." icon={<Search size={16} />}
+              <Input placeholder="חפש מוסך לפי שם או עיר..." icon={<Search size={16} />}
                 value={search} onChange={e => setSearch(e.target.value)} />
             </div>
             <div className="flex gap-1">
@@ -345,7 +345,7 @@ export default function BookGaragePage() {
               <button onClick={() => setFilterCity('')}
                 className={`px-3 py-1 rounded-full text-xs font-medium transition ${
                   !filterCity ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-teal-50'
-                }`}>×××</button>
+                }`}>הכל</button>
               {cities.map(city => (
                 <button key={city} onClick={() => setFilterCity(city)}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition ${
@@ -359,8 +359,8 @@ export default function BookGaragePage() {
           {sortedGarages.length === 0 ? (
             <div className="text-center py-12">
               <Building2 size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 text-lg">×× × ××¦×× ×××¡×××</p>
-              <p className="text-gray-400 text-sm">× ×¡× ××©× ××ª ××ª ××××¤××©</p>
+              <p className="text-gray-500 text-lg">לא נמצאו מוסכים</p>
+              <p className="text-gray-400 text-sm">נסה לשנות את החיפוש</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -373,22 +373,22 @@ export default function BookGaragePage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <h3 className="font-bold text-[#1e3a5f]">{g.name}</h3>
-                        {g.isPartner && <Badge variant="success" size="sm">×©××ª×£</Badge>}
+                        {g.isPartner && <Badge variant="success" size="sm">שותף</Badge>}
                       </div>
                       <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
                         <MapPin size={13} />
                         <span>{g.address ? `${g.address}, ${g.city}` : g.city}</span>
                         {g.distance != null && g.distance < 900 && (
                           <span className="text-teal-600 font-medium mr-1">
-                            â¢ {g.distance < 1 ? `${Math.round(g.distance * 1000)} ××³` : `${g.distance.toFixed(1)} ×§×´×`}
+                            • {g.distance < 1 ? `${Math.round(g.distance * 1000)} מ׳` : `${g.distance.toFixed(1)} ק״מ`}
                           </span>
                         )}
                       </div>
                       <div className="flex items-center gap-2 mb-2">
                         <StarRating rating={Math.round(g.rating)} size={14} />
-                        <span className="text-sm font-bold text-gray-700">{g.rating > 0 ? g.rating.toFixed(1) : 'â'}</span>
+                        <span className="text-sm font-bold text-gray-700">{g.rating > 0 ? g.rating.toFixed(1) : '—'}</span>
                         <button onClick={() => openReviewsList(g)} className="text-xs text-teal-600 hover:underline">
-                          ({g.reviewCount} ×××§××¨××ª)
+                          ({g.reviewCount} ביקורות)
                         </button>
                       </div>
                       {(g.services || []).length > 0 && (
@@ -418,7 +418,7 @@ export default function BookGaragePage() {
                       className="flex-1 bg-teal-600 text-white h-11 rounded-xl text-sm font-bold hover:bg-teal-700 transition flex items-center justify-center gap-1.5"
                     >
                       <Calendar size={14} />
-                      ×§××¢ ×ª××¨ {serviceValueToLabel[selectedService]}
+                      קבע תור {serviceValueToLabel[selectedService]}
                     </button>
                   </div>
                 </div>
@@ -428,30 +428,30 @@ export default function BookGaragePage() {
         </>
       )}
 
-      {/* === BOOKING MODAL (Service â Vehicle â DateTime â Review â Success) === */}
+      {/* === BOOKING MODAL (Service → Vehicle → DateTime → Review → Success) === */}
       <Modal isOpen={showBookingModal} onClose={() => { setShowBookingModal(false); setBookingStep('vehicle'); }}
-        title={bookingStep === 'success' ? '××ª××¨ × ×§××¢ ×××¦×××!' : `×××× ×ª ×ª××¨ â ${selectedGarage?.name || ''}`} size="lg">
+        title={bookingStep === 'success' ? 'התור נקבע בהצלחה!' : `הזמנת תור — ${selectedGarage?.name || ''}`} size="lg">
 
         {bookingStep === 'success' ? (
           <div className="text-center py-6">
             <CheckCircle2 size={64} className="mx-auto text-green-600 mb-4" />
-            <h3 className="text-xl font-bold text-green-700 mb-2">××ª××¨ × ×§××¢ ×××¦×××!</h3>
-            <p className="text-gray-500 text-sm mb-4">××××¡× ×××©×¨ ××ª ××ª××¨ ××§×¨×× ××ª×§×× ××ª×¨××</p>
+            <h3 className="text-xl font-bold text-green-700 mb-2">התור נקבע בהצלחה!</h3>
+            <p className="text-gray-500 text-sm mb-4">המוסך יאשר את התור בקרוב ותקבל התראה</p>
             <div className="bg-teal-50 rounded-xl p-4 space-y-2 text-sm text-right">
-              <div className="flex justify-between"><span className="text-gray-600">×××¡×:</span><span className="font-medium">{selectedGarage?.name}</span></div>
-              <div className="flex justify-between"><span className="text-gray-600">×©××¨××ª:</span><span className="font-medium">{serviceValueToLabel[selectedService]}</span></div>
-              <div className="flex justify-between"><span className="text-gray-600">×¨××:</span><span className="font-medium">{selectedVehicle?.nickname}</span></div>
-              <div className="flex justify-between"><span className="text-gray-600">×ª××¨××:</span><span className="font-medium">{bookingData.date ? new Date(bookingData.date).toLocaleDateString('he-IL') : ''}</span></div>
-              <div className="flex justify-between"><span className="text-gray-600">×©×¢×:</span><span className="font-medium">{bookingData.time}</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">מוסך:</span><span className="font-medium">{selectedGarage?.name}</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">שירות:</span><span className="font-medium">{serviceValueToLabel[selectedService]}</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">רכב:</span><span className="font-medium">{selectedVehicle?.nickname}</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">תאריך:</span><span className="font-medium">{bookingData.date ? new Date(bookingData.date).toLocaleDateString('he-IL') : ''}</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">שעה:</span><span className="font-medium">{bookingData.time}</span></div>
             </div>
-            <Button onClick={() => { setShowBookingModal(false); setBookingStep('vehicle'); }} className="mt-4 w-full">×¡×××¨</Button>
+            <Button onClick={() => { setShowBookingModal(false); setBookingStep('service'); setSelectedService(''); }} className="mt-4 w-full">סגור</Button>
           </div>
         ) : (
           <div className="space-y-5">
             {/* Step indicator - 4 steps */}
             <div className="flex items-center gap-1 text-sm justify-between w-full px-1">
               {(['service', 'vehicle', 'datetime', 'review'] as const).map((step, idx) => {
-                const labels = ['××××¨×ª ×©××¨××ª', '××××¨×ª ×¨××', '×ª××¨×× ××©×¢×', '×××©××¨'];
+                const labels = ['בחירת שירות', 'בחירת רכב', 'תאריך ושעה', 'אישור'];
                 const order: Record<string, number> = { service: 0, vehicle: 1, datetime: 2, review: 3 };
                 const isActive = order[step] === order[bookingStep];
                 const isPast = order[step] < order[bookingStep];
@@ -481,7 +481,7 @@ export default function BookGaragePage() {
             {bookingStep === 'service' && (
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-sm font-bold text-gray-800 mb-3">××××× ×©××¨××ª ××ª× ××§××§?</h3>
+                  <h3 className="text-sm font-bold text-gray-800 mb-3">באיזה שירות אתה זקוק?</h3>
                   <div className="grid grid-cols-2 gap-2">
                     {serviceOptions.map(service => (
                       <button
@@ -509,12 +509,12 @@ export default function BookGaragePage() {
             {bookingStep === 'vehicle' && (
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-sm font-bold text-gray-800 mb-3">×××¨ ××ª ××¨×× ×©××:</h3>
+                  <h3 className="text-sm font-bold text-gray-800 mb-3">בחר את הרכב שלך:</h3>
                   {vehicles.length === 0 ? (
                     <div className="text-center py-6 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
                       <Car size={32} className="mx-auto text-gray-300 mb-2" />
-                      <p className="text-gray-500 text-sm">××× ×¨××××</p>
-                      <p className="text-gray-400 text-xs mt-1">×××¡×£ ×¨×× ×§××× ××¤× × ×××× ×ª ×ª××¨</p>
+                      <p className="text-gray-500 text-sm">אין רכבים</p>
+                      <p className="text-gray-400 text-xs mt-1">הוסף רכב קודם לפני הזמנת תור</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -532,7 +532,7 @@ export default function BookGaragePage() {
                           </div>
                           <div className="flex-1 text-right">
                             <div className="font-bold text-gray-800">{v.nickname}</div>
-                            <div className="text-xs text-gray-500 mt-0.5">{v.manufacturer} {v.model} â¢ {v.licensePlate}</div>
+                            <div className="text-xs text-gray-500 mt-0.5">{v.manufacturer} {v.model} • {v.licensePlate}</div>
                           </div>
                         </button>
                       ))}
@@ -540,7 +540,7 @@ export default function BookGaragePage() {
                   )}
                 </div>
                 <div className="flex gap-2 pt-2">
-                  <Button variant="ghost" onClick={() => setBookingStep('service')} className="flex-1">â ××××¨</Button>
+                  <Button variant="ghost" onClick={() => setBookingStep('service')} className="flex-1">← חזור</Button>
                 </div>
               </div>
             )}
@@ -551,7 +551,7 @@ export default function BookGaragePage() {
                 <div>
                   <label className="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
                     <Calendar size={16} className="text-teal-600" />
-                    ×××¨ ×ª××¨××
+                    בחר תאריך
                   </label>
                   <Input type="date" min={minDate} value={bookingData.date}
                     onChange={e => setBookingData({ ...bookingData, date: e.target.value })} />
@@ -560,7 +560,7 @@ export default function BookGaragePage() {
                   <div>
                     <label className="block text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
                       <Clock size={16} className="text-teal-600" />
-                      ×××¨ ×©×¢×
+                      בחר שעה
                     </label>
                     <div className="grid grid-cols-4 gap-2">
                       {timeSlots.map(time => (
@@ -576,9 +576,9 @@ export default function BookGaragePage() {
                   </div>
                 )}
                 <div className="flex gap-2 pt-2">
-                  <Button variant="ghost" onClick={() => setBookingStep('vehicle')} className="flex-1">â ××××¨</Button>
+                  <Button variant="ghost" onClick={() => setBookingStep('vehicle')} className="flex-1">← חזור</Button>
                   <Button disabled={!bookingData.date || !bookingData.time}
-                    onClick={() => setBookingStep('review')} className="flex-1">×××©× â</Button>
+                    onClick={() => setBookingStep('review')} className="flex-1">המשך ←</Button>
                 </div>
               </div>
             )}
@@ -586,7 +586,7 @@ export default function BookGaragePage() {
             {/* Review/Confirmation Step */}
             {bookingStep === 'review' && (
               <div className="space-y-4">
-                <h3 className="text-sm font-bold text-gray-800">××××§ ××ª ×¤×¨×× ××××× ×:</h3>
+                <h3 className="text-sm font-bold text-gray-800">בדוק את פרטי ההזמנה:</h3>
 
                 {/* Summary Cards */}
                 <div className="space-y-2">
@@ -596,7 +596,7 @@ export default function BookGaragePage() {
                       <ClipboardCheck size={20} className="text-teal-600" />
                     </div>
                     <div className="flex-1 text-right">
-                      <p className="text-xs text-gray-600">×©××¨××ª</p>
+                      <p className="text-xs text-gray-600">שירות</p>
                       <p className="font-bold text-gray-800">{serviceValueToLabel[selectedService]}</p>
                     </div>
                   </div>
@@ -607,7 +607,7 @@ export default function BookGaragePage() {
                       <Building2 size={20} className="text-teal-600" />
                     </div>
                     <div className="flex-1 text-right">
-                      <p className="text-xs text-gray-600">×××¡×</p>
+                      <p className="text-xs text-gray-600">מוסך</p>
                       <p className="font-bold text-gray-800">{selectedGarage?.name}</p>
                     </div>
                   </div>
@@ -618,7 +618,7 @@ export default function BookGaragePage() {
                       <Car size={20} className="text-teal-600" />
                     </div>
                     <div className="flex-1 text-right">
-                      <p className="text-xs text-gray-600">×¨××</p>
+                      <p className="text-xs text-gray-600">רכב</p>
                       <p className="font-bold text-gray-800">{selectedVehicle?.nickname}</p>
                     </div>
                   </div>
@@ -629,8 +629,8 @@ export default function BookGaragePage() {
                       <Calendar size={20} className="text-teal-600" />
                     </div>
                     <div className="flex-1 text-right">
-                      <p className="text-xs text-gray-600">×ª××¨×× ××©×¢×</p>
-                      <p className="font-bold text-gray-800">{bookingData.date ? new Date(bookingData.date).toLocaleDateString('he-IL') : ''} â¢ {bookingData.time}</p>
+                      <p className="text-xs text-gray-600">תאריך ושעה</p>
+                      <p className="font-bold text-gray-800">{bookingData.date ? new Date(bookingData.date).toLocaleDateString('he-IL') : ''} • {bookingData.time}</p>
                     </div>
                   </div>
                 </div>
@@ -639,10 +639,10 @@ export default function BookGaragePage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                     <FileText size={14} className="text-gray-600" />
-                    ××¢×¨××ª × ××¡×¤××ª (×××¤×¦××× ××)
+                    הערות נוספות (אופציונלי)
                   </label>
                   <textarea
-                    placeholder="×¡×¤×¨ ××××¡× ×¢× ×ª×§×××ª ×× ××§×©××ª ×××××××ª..."
+                    placeholder="ספר למוסך על תקלות או בקשות מיוחדות..."
                     value={bookingData.notes}
                     onChange={e => setBookingData({ ...bookingData, notes: e.target.value })}
                     className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 transition resize-none"
@@ -651,12 +651,12 @@ export default function BookGaragePage() {
                 </div>
 
                 <div className="bg-teal-50 border border-teal-200 rounded-xl p-3 text-xs text-teal-700 text-center">
-                  â ××××¡× ×××©×¨ ××ª ×××× ×ª× ×ª×× 3 ××§××ª ××ª×§×× ××ª×¨××
+                  ✓ המוסך יאשר את הזמנתך תוך 3 דקות ותקבל התראה
                 </div>
 
                 <div className="flex gap-2">
-                  <Button variant="ghost" onClick={() => setBookingStep('datetime')} className="flex-1">â ××××¨</Button>
-                  <Button onClick={handleSubmitBooking} loading={submitting} icon={<Check size={16} />} className="flex-1">×××©××¨ ×××× ×</Button>
+                  <Button variant="ghost" onClick={() => setBookingStep('datetime')} className="flex-1">← חזור</Button>
+                  <Button onClick={handleSubmitBooking} loading={submitting} icon={<Check size={16} />} className="flex-1">אישור הזמנה</Button>
                 </div>
               </div>
             )}
@@ -665,34 +665,34 @@ export default function BookGaragePage() {
       </Modal>
 
       {/* Review Modal */}
-      <Modal isOpen={showReviewModal} onClose={() => setShowReviewModal(false)} title={`××¨× ××ª ${reviewGarage?.name || ''}`} size="sm">
+      <Modal isOpen={showReviewModal} onClose={() => setShowReviewModal(false)} title={`דרג את ${reviewGarage?.name || ''}`} size="sm">
         <div className="space-y-4 text-center">
-          <p className="text-gray-600 text-sm">××× ××× ××©××¨××ª?</p>
+          <p className="text-gray-600 text-sm">איך היה השירות?</p>
           <div className="flex justify-center"><StarRating rating={reviewRating} size={32} interactive onChange={setReviewRating} /></div>
           {reviewRating > 0 && (
             <p className="text-sm font-medium text-amber-600">
-              {reviewRating === 1 ? '××¨××¢' : reviewRating === 2 ? '×× ×××' : reviewRating === 3 ? '×¡×××¨' : reviewRating === 4 ? '×××' : '××¢×××!'}
+              {reviewRating === 1 ? 'גרוע' : reviewRating === 2 ? 'לא טוב' : reviewRating === 3 ? 'סביר' : reviewRating === 4 ? 'טוב' : 'מעולה!'}
             </p>
           )}
           <div className="text-right">
-            <label className="block text-sm font-medium text-gray-700 mb-1">×ª×××× (×××¤×¦××× ××)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">תגובה (אופציונלי)</label>
             <textarea className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              rows={3} placeholder="×¡×¤×¨ ×¢× ×××××× ×©××..." value={reviewComment} onChange={e => setReviewComment(e.target.value)} />
+              rows={3} placeholder="ספר על החוויה שלך..." value={reviewComment} onChange={e => setReviewComment(e.target.value)} />
           </div>
           <div className="flex gap-2">
-            <Button variant="ghost" onClick={() => setShowReviewModal(false)} className="flex-1">×××××</Button>
-            <Button onClick={handleSubmitReview} loading={reviewSubmitting} disabled={reviewRating < 1} className="flex-1" icon={<Star size={16} />}>×©×× ×××§××¨×ª</Button>
+            <Button variant="ghost" onClick={() => setShowReviewModal(false)} className="flex-1">ביטול</Button>
+            <Button onClick={handleSubmitReview} loading={reviewSubmitting} disabled={reviewRating < 1} className="flex-1" icon={<Star size={16} />}>שלח ביקורת</Button>
           </div>
         </div>
       </Modal>
 
       {/* Reviews List Modal */}
-      <Modal isOpen={showReviewsModal} onClose={() => setShowReviewsModal(false)} title={`×××§××¨××ª â ${reviewGarage?.name || ''}`} size="lg">
+      <Modal isOpen={showReviewsModal} onClose={() => setShowReviewsModal(false)} title={`ביקורות — ${reviewGarage?.name || ''}`} size="lg">
         <div className="space-y-3">
           {reviewGarage && (
             <div className="flex items-center justify-between bg-teal-50 rounded-xl p-3">
               <button onClick={() => { setShowReviewsModal(false); openReviewModal(reviewGarage); }}
-                className="text-sm text-teal-700 font-medium hover:underline">+ ××ª×× ×××§××¨×ª</button>
+                className="text-sm text-teal-700 font-medium hover:underline">+ כתוב ביקורת</button>
               <div className="flex items-center gap-2">
                 <StarRating rating={Math.round(reviewGarage.rating)} size={16} />
                 <span className="font-bold text-teal-700">{reviewGarage.rating.toFixed(1)}</span>
@@ -700,7 +700,7 @@ export default function BookGaragePage() {
             </div>
           )}
           {garageReviews.length === 0 ? (
-            <div className="text-center py-8"><MessageSquare size={32} className="mx-auto text-gray-300 mb-2" /><p className="text-gray-500">××× ×××§××¨××ª ×¢××××</p></div>
+            <div className="text-center py-8"><MessageSquare size={32} className="mx-auto text-gray-300 mb-2" /><p className="text-gray-500">אין ביקורות עדיין</p></div>
           ) : (
             garageReviews.map(r => (
               <div key={r.id} className="border border-gray-100 rounded-xl p-3">
