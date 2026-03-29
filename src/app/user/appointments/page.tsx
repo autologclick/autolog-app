@@ -434,25 +434,26 @@ export default function AppointmentsPage() {
       )}
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="flex flex-wrap justify-center gap-2 py-3 px-2 bg-white rounded-xl border border-gray-100 shadow-sm">
         {([
-          { key: 'all', label: 'הכל' },
-          { key: 'pending', label: 'ממתין לאישור' },
-          { key: 'confirmed', label: 'מאושר' },
-          { key: 'in_progress', label: 'בטיפול' },
-          { key: 'completed', label: 'הושלם' },
-          { key: 'rejected', label: 'נדחה' },
-          { key: 'cancelled', label: 'מבוטל' },
-        ] as { key: FilterStatus; label: string }[]).map(f => (
+          { key: 'all', label: 'הכל', icon: '📋' },
+          { key: 'pending', label: 'ממתין', icon: '⏳' },
+          { key: 'confirmed', label: 'מאושר', icon: '✅' },
+          { key: 'in_progress', label: 'בטיפול', icon: '🔧' },
+          { key: 'completed', label: 'הושלם', icon: '🏁' },
+          { key: 'rejected', label: 'נדחה', icon: '❌' },
+          { key: 'cancelled', label: 'מבוטל', icon: '🚫' },
+        ] as { key: FilterStatus; label: string; icon: string }[]).map(f => (
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className={`px-4 py-2 rounded-full font-medium whitespace-nowrap transition text-sm ${
+            className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-all duration-200 text-sm flex items-center gap-1.5 ${
               filter === f.key
-                ? 'bg-teal-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-teal-600 text-white shadow-md shadow-teal-200'
+                : 'bg-gray-50 text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200'
             }`}
           >
+            <span className="text-xs">{f.icon}</span>
             {f.label}
           </button>
         ))}
