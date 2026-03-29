@@ -10,7 +10,7 @@ import Modal from '@/components/ui/Modal';
 import {
   Edit, Trash2, Shield, Calendar, Fuel, Gauge, Clock,
   Loader2, ChevronRight, AlertCircle, CheckCircle2, MapPin,
-  RefreshCw, Star, Settings, ArrowRight, Car,
+  RefreshCw, Star, Settings, ArrowRight, Car, FileText,
 } from 'lucide-react';
 
 interface Inspection {
@@ -259,6 +259,14 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
           <Button
             variant="outline"
             size="sm"
+            icon={<FileText size={16} />}
+            onClick={() => router.push(`/user/vehicles/${id}/report`)}
+          >
+            דוח למכירה
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             icon={<Edit size={16} />}
             onClick={() => setShowEditModal(true)}
           >
@@ -313,7 +321,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
         <Card className="p-4">
           <div className="flex items-center gap-2 mb-2">
             <Gauge size={16} className="text-[#1e3a5f]" />
-            <span className="text-xs text-gray-500">ק"מ</span>
+            <span className="text-xs text-gray-500">ע�ם</span>
           </div>
           <p className="text-lg font-bold text-[#1e3a5f]">
             {vehicle.mileage?.toLocaleString('he-IL') || '—'}
@@ -490,7 +498,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
 
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="ק״מ"
+              label="ק׵מ"
               type="number"
               value={editData.mileage}
               onChange={e => setEditData({ ...editData, mileage: e.target.value })}
