@@ -74,14 +74,14 @@ function getRelativeDate(date: Date | string): string {
   const diffHours = Math.ceil(diffMinutes / 60);
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  if (diffSeconds < 60) return '×¢××©××';
-  if (diffMinutes < 60) return `××¤× × ${diffMinutes} ××§×³`;
-  if (diffHours < 24) return `××¤× × ${diffHours} ×©×¢×³`;
-  if (diffDays === 1) return '××ª×××';
-  if (diffDays === 2) return '××¤× × ××××××';
-  if (diffDays <= 7) return `××¤× × ${diffDays} ××××`;
-  if (diffDays <= 30) return `××¤× × ${Math.floor(diffDays / 7)} ×©×××¢××ª`;
-  return `××¤× × ${Math.floor(diffDays / 30)} ××××©××`;
+  if (diffSeconds < 60) return 'עכשיו';
+  if (diffMinutes < 60) return `לפני ${diffMinutes} דק׳`;
+  if (diffHours < 24) return `לפני ${diffHours} שע׳`;
+  if (diffDays === 1) return 'אתמול';
+  if (diffDays === 2) return 'לפני יומיים';
+  if (diffDays <= 7) return `לפני ${diffDays} ימים`;
+  if (diffDays <= 30) return `לפני ${Math.floor(diffDays / 7)} שבועות`;
+  return `לפני ${Math.floor(diffDays / 30)} חודשים`;
 }
 
 function getActivityIcon(type: string) {
@@ -124,7 +124,7 @@ export default function AdminDashboard() {
     async function fetchDashboard() {
       try {
         const res = await fetch('/api/admin/dashboard');
-        if (!res.ok) throw new Error('×©×××× ×××¢×× ×ª ×××©×××¨×');
+        if (!res.ok) throw new Error('שגיאה בטעינת הדשבורד');
         const json = await res.json();
         setData(json);
       } catch (err) {
@@ -142,9 +142,9 @@ export default function AdminDashboard() {
       {error && (
         <div className="text-center py-16 px-4">
           <BarChart3 size={40} className="mx-auto mb-3 text-gray-300" />
-          <p className="text-gray-500 mb-2">×× × ××ª× ×××¢×× ××ª ×××©×××¨×</p>
-          <p className="text-gray-400 text-sm mb-4">×××¨×¢× ×©×××× ×××¢×× ×ª ×× ×ª×× ××</p>
-          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#1e3a5f] text-white rounded-lg text-sm hover:bg-opacity-90 transition">× ×¡× ×©××</button>
+          <p className="text-gray-500 mb-2">לא ניתן לטעון את הדשבורד</p>
+          <p className="text-gray-400 text-sm mb-4">אירעה שגיאה בטעינת הנתונים</p>
+          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#1e3a5f] text-white rounded-lg text-sm hover:bg-opacity-90 transition">נסה שוב</button>
         </div>
       )}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -153,11 +153,11 @@ export default function AdminDashboard() {
             <BarChart3 size={22} className="text-[#1e3a5f]" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">××¨×× ××§×¨×</h1>
-            <p className="text-sm text-gray-500">××©×××¨× × ×××× ××¢×¨××ª</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">מרכז בקרה</h1>
+            <p className="text-sm text-gray-500">דשבורד ניהול מערכת</p>
           </div>
         </div>
-        <Badge variant="info" size="md">×××××</Badge>
+        <Badge variant="info" size="md">אדמין</Badge>
       </div>
 
       {/* Live Statistics Cards - 6 Main Stats */}
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
               )}
             </div>
             <div className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">{data?.stats.totalUsers.toLocaleString('he-IL') ?? '0'}</div>
-            <div className="text-xs sm:text-sm text-gray-600 mt-1">×¡××´× ××©×ª××©××</div>
+            <div className="text-xs sm:text-sm text-gray-600 mt-1">סה״כ משתמשים</div>
           </div>
         </Card>
 
@@ -194,7 +194,7 @@ export default function AdminDashboard() {
               )}
             </div>
             <div className="text-2xl sm:text-3xl font-bold text-[#0d9488]">{data?.stats.activeGarages.toLocaleString('he-IL') ?? '0'}</div>
-            <div className="text-xs sm:text-sm text-gray-600 mt-1">×××¡××× ×¤×¢××××</div>
+            <div className="text-xs sm:text-sm text-gray-600 mt-1">מוסכים פעילים</div>
           </div>
         </Card>
 
@@ -213,7 +213,7 @@ export default function AdminDashboard() {
               )}
             </div>
             <div className="text-2xl sm:text-3xl font-bold text-blue-600">{data?.stats.monthlyInspections.toLocaleString('he-IL') ?? '0'}</div>
-            <div className="text-xs sm:text-sm text-gray-600 mt-1">××××§××ª ×××××©</div>
+            <div className="text-xs sm:text-sm text-gray-600 mt-1">בדיקות החודש</div>
           </div>
         </Card>
 
@@ -231,7 +231,7 @@ export default function AdminDashboard() {
               )}
             </div>
             <div className="text-2xl sm:text-3xl font-bold text-amber-600">{data?.stats.todayAppointments ?? '0'}</div>
-            <div className="text-xs sm:text-sm text-gray-600 mt-1">×ª××¨×× ××××</div>
+            <div className="text-xs sm:text-sm text-gray-600 mt-1">תורים היום</div>
           </div>
         </Card>
 
@@ -249,7 +249,7 @@ export default function AdminDashboard() {
               )}
             </div>
             <div className={`text-2xl sm:text-3xl font-bold ${data?.stats.openSos ? 'text-red-600' : 'text-gray-600'}`}>{data?.stats.openSos ?? '0'}</div>
-            <div className="text-xs sm:text-sm text-gray-600 mt-1">×××¨××¢× SOS ×¤×ª××××</div>
+            <div className="text-xs sm:text-sm text-gray-600 mt-1">אירועי SOS פתוחים</div>
           </div>
         </Card>
 
@@ -267,8 +267,8 @@ export default function AdminDashboard() {
                 </div>
               )}
             </div>
-            <div className="text-xl sm:text-2xl font-bold text-green-600">âª{(data?.stats.monthlyRevenue ?? 0).toLocaleString('he-IL')}</div>
-            <div className="text-xs sm:text-sm text-gray-600 mt-1">××× ×¡××ª ×××××©</div>
+            <div className="text-xl sm:text-2xl font-bold text-green-600">₪{(data?.stats.monthlyRevenue ?? 0).toLocaleString('he-IL')}</div>
+            <div className="text-xs sm:text-sm text-gray-600 mt-1">הכנסות החודש</div>
           </div>
         </Card>
       </div>
@@ -280,7 +280,7 @@ export default function AdminDashboard() {
           <div className="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
             <Activity size={18} />
           </div>
-          <h2 className="text-lg font-bold">×¤×¢××××ª ××××¨××ª</h2>
+          <h2 className="text-lg font-bold">פעולות מהירות</h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <Button
@@ -288,28 +288,28 @@ export default function AdminDashboard() {
             className="flex flex-col items-center justify-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 h-auto py-4 transition"
           >
             <Users size={22} />
-            <span className="text-xs font-medium text-center">× ×××× ××©×ª××©××</span>
+            <span className="text-xs font-medium text-center">ניהול משתמשים</span>
           </Button>
           <Button
             onClick={() => router.push('/admin/garages')}
             className="flex flex-col items-center justify-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 h-auto py-4 transition"
           >
             <Wrench size={22} />
-            <span className="text-xs font-medium text-center">× ×××× ×××¡×××</span>
+            <span className="text-xs font-medium text-center">ניהול מוסכים</span>
           </Button>
           <Button
             onClick={() => router.push('/admin/inspections')}
             className="flex flex-col items-center justify-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 h-auto py-4 transition"
           >
             <Shield size={22} />
-            <span className="text-xs font-medium text-center">××××§××ª</span>
+            <span className="text-xs font-medium text-center">בדיקות</span>
           </Button>
           <Button
             onClick={() => router.push('/admin/applications')}
             className="flex flex-col items-center justify-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 h-auto py-4 transition"
           >
             <FileText size={22} />
-            <span className="text-xs font-medium text-center">××§×©××ª ×××¡×××</span>
+            <span className="text-xs font-medium text-center">בקשות מוסכים</span>
           </Button>
         </div>
       </Card>
@@ -321,15 +321,15 @@ export default function AdminDashboard() {
             <div className="w-8 h-8 bg-[#0d9488] bg-opacity-10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-[#0d9488]" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">×ª××× ××ª AI ×××¢×¨××ª</h2>
+            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI למערכת</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {data.stats.openSos > 0 && (
               <div className="flex items-start gap-3 p-3 bg-red-50 rounded-xl border border-red-200">
                 <AlertTriangle size={18} className="text-red-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-bold text-red-800">×××¨××¢× SOS ×¤×ª××××</p>
-                  <p className="text-xs text-red-600 mt-0.5">{data.stats.openSos} ×××¨××¢× ×××¨×× ×××ª×× ×× ××××¤×× ××××£</p>
+                  <p className="text-sm font-bold text-red-800">אירועי SOS פתוחים</p>
+                  <p className="text-xs text-red-600 mt-0.5">{data.stats.openSos} אירועי חירום ממתינים לטיפול דחוף</p>
                 </div>
               </div>
             )}
@@ -337,8 +337,8 @@ export default function AdminDashboard() {
               <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-xl border border-blue-200">
                 <FileText size={18} className="text-blue-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-bold text-blue-800">××§×©××ª ××¦××¨×¤××ª</p>
-                  <p className="text-xs text-blue-600 mt-0.5">{data.stats.garageApplications} ×××¡××× ×××ª×× ×× ××××©××¨ ××¦××¨×¤××ª</p>
+                  <p className="text-sm font-bold text-blue-800">בקשות הצטרפות</p>
+                  <p className="text-xs text-blue-600 mt-0.5">{data.stats.garageApplications} מוסכים ממתינים לאישור הצטרפות</p>
                 </div>
               </div>
             )}
@@ -346,21 +346,21 @@ export default function AdminDashboard() {
               <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl border border-amber-200">
                 <Clock size={18} className="text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-bold text-amber-800">××¡×××× ×©×¤××</p>
-                  <p className="text-xs text-amber-600 mt-0.5">{data.stats.expiredDocuments} ××¡×××× ×©×ª××§×¤× ×¤× ×××¨×©×× ×¢××××</p>
+                  <p className="text-sm font-bold text-amber-800">מסמכים שפגו</p>
+                  <p className="text-xs text-amber-600 mt-0.5">{data.stats.expiredDocuments} מסמכים שתוקפם פג דורשים עדכון</p>
                 </div>
               </div>
             )}
             <div className="flex items-start gap-3 p-3 bg-teal-50 rounded-xl border border-teal-200">
               <Target size={18} className="text-teal-600 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-sm font-bold text-teal-800">××××ª ×¦××××</p>
+                <p className="text-sm font-bold text-teal-800">מגמת צמיחה</p>
                 <p className="text-xs text-teal-600 mt-0.5">
                   {data.stats.inspectionTrend > 0
-                    ? `×¢×××× ×©× ${data.stats.inspectionTrend}% ×××××§××ª ××¢×××ª ××××© ×§×××`
+                    ? `עלייה של ${data.stats.inspectionTrend}% בבדיקות לעומת חודש קודם`
                     : data.stats.inspectionTrend < 0
-                    ? `××¨××× ×©× ${Math.abs(data.stats.inspectionTrend)}% ×××××§××ª - ×××××¥ ×××××§`
-                    : '×§×¦× ××××§××ª ××¦×× ××¢×××ª ××××© ×§×××'
+                    ? `ירידה של ${Math.abs(data.stats.inspectionTrend)}% בבדיקות - מומלץ לבדוק`
+                    : 'קצב בדיקות יציב לעומת חודש קודם'
                   }
                 </p>
               </div>
@@ -369,8 +369,8 @@ export default function AdminDashboard() {
               <div className="flex items-start gap-3 p-3 bg-indigo-50 rounded-xl border border-indigo-200">
                 <Zap size={18} className="text-indigo-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-bold text-indigo-800">×¢×××¡ ×ª××¨××</p>
-                  <p className="text-xs text-indigo-600 mt-0.5">{data.stats.pendingAppointments} ×ª××¨×× ×××ª×× ×× - ×©×§×× ×××¡×¤×ª ×××¡×××</p>
+                  <p className="text-sm font-bold text-indigo-800">עומס תורים</p>
+                  <p className="text-xs text-indigo-600 mt-0.5">{data.stats.pendingAppointments} תורים ממתינים - שקול הוספת מוסכים</p>
                 </div>
               </div>
             )}
@@ -378,8 +378,8 @@ export default function AdminDashboard() {
               <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
                 <Wrench size={18} className="text-gray-500 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-bold text-gray-700">×××¡××× ×× ×¤×¢××××</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{data.stats.inactiveGarages} ×××¡××× ×××©××ª×× - ××××§ ×¡×××</p>
+                  <p className="text-sm font-bold text-gray-700">מוסכים לא פעילים</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{data.stats.inactiveGarages} מוסכים מושבתים - בדוק סיבה</p>
                 </div>
               </div>
             )}
@@ -389,10 +389,10 @@ export default function AdminDashboard() {
 
       {/* Recent Activity Feed - Unified */}
       <Card>
-        <CardTitle icon={<Activity className="text-[#0d9488]" />}>×¤×¢××××ª ×××¨×× × (×¢×××× ×××× ×××ª)</CardTitle>
+        <CardTitle icon={<Activity className="text-[#0d9488]" />}>פעילות אחרונה (עדכון בזמן אמת)</CardTitle>
         <div className="space-y-0 mt-4">
           {loading ? (
-            <div className="text-gray-500 text-sm py-8 text-center">×××¢× × ×ª×× ××...</div>
+            <div className="text-gray-500 text-sm py-8 text-center">טוען נתונים...</div>
           ) : data?.recentActivity && data.recentActivity.length > 0 ? (
             data.recentActivity.map((activity, idx) => (
               <div
@@ -410,17 +410,17 @@ export default function AdminDashboard() {
                     </span>
                   </div>
                   <div className="text-xs text-gray-500">
-                    {activity.type === 'user' && `${activity.meta.email} â¢ ${activity.meta.vehicles} ×¨××××`}
-                    {activity.type === 'inspection' && `${activity.meta.garage} â¢ × ××§××: ${activity.meta.score ?? 'â'}`}
-                    {activity.type === 'appointment' && `${activity.meta.garage} â¢ ${{ pending: '×××ª××', confirmed: '××××©×¨', completed: '×××©××', cancelled: '××××', in_progress: '××××¦××¢' }[activity.meta.status as string] || activity.meta.status}`}
-                    {activity.type === 'sos' && `${activity.meta.vehicle} â¢ ${{ open: '×¤×ª××', resolved: '×××¤×', closed: '×¡×××¨', pending: '×××ª××' }[activity.meta.status as string] || activity.meta.status}`}
+                    {activity.type === 'user' && `${activity.meta.email} • ${activity.meta.vehicles} רכבים`}
+                    {activity.type === 'inspection' && `${activity.meta.garage} • ניקוד: ${activity.meta.score ?? '—'}`}
+                    {activity.type === 'appointment' && `${activity.meta.garage} • ${{ pending: 'ממתין', confirmed: 'מאושר', completed: 'הושלם', cancelled: 'בוטל', in_progress: 'בביצוע' }[activity.meta.status as string] || activity.meta.status}`}
+                    {activity.type === 'sos' && `${activity.meta.vehicle} • ${{ open: 'פתוח', resolved: 'טופל', closed: 'סגור', pending: 'ממתין' }[activity.meta.status as string] || activity.meta.status}`}
                   </div>
                 </div>
                 <span className="text-xs text-gray-400 whitespace-nowrap ms-2 flex-shrink-0">{getRelativeDate(activity.timestamp)}</span>
               </div>
             ))
           ) : (
-            <div className="text-gray-500 text-sm py-8 text-center">××× ×¤×¢××××ª ×××¨×× ×</div>
+            <div className="text-gray-500 text-sm py-8 text-center">אין פעילות אחרונה</div>
           )}
         </div>
       </Card>
@@ -428,31 +428,31 @@ export default function AdminDashboard() {
       {/* Garages Overview */}
       <Card>
         <div className="flex items-center justify-between mb-4">
-          <CardTitle icon={<Wrench className="text-[#0d9488]" />}>×××¡××× ×××××××</CardTitle>
+          <CardTitle icon={<Wrench className="text-[#0d9488]" />}>מוסכים מובילים</CardTitle>
           <Button
             variant="outline"
             size="sm"
             onClick={() => router.push('/admin/garages')}
             className="text-[#0d9488] border-[#0d9488] hover:bg-[#0d9488] hover:bg-opacity-5"
           >
-            ×¦×¤× ××××
+            צפה בהכל
           </Button>
         </div>
         <div className="overflow-x-auto mt-0">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="text-right py-3 px-3 font-semibold text-gray-700">×××¡×</th>
-                <th className="text-right py-3 px-3 font-semibold text-gray-700">×¢××¨</th>
-                <th className="text-center py-3 px-3 font-semibold text-gray-700">×××¨××</th>
-                <th className="text-center py-3 px-3 font-semibold text-gray-700">××××§××ª</th>
-                <th className="text-center py-3 px-3 font-semibold text-gray-700">×¡××××¡</th>
+                <th className="text-right py-3 px-3 font-semibold text-gray-700">מוסך</th>
+                <th className="text-right py-3 px-3 font-semibold text-gray-700">עיר</th>
+                <th className="text-center py-3 px-3 font-semibold text-gray-700">דירוג</th>
+                <th className="text-center py-3 px-3 font-semibold text-gray-700">בדיקות</th>
+                <th className="text-center py-3 px-3 font-semibold text-gray-700">סטטוס</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="py-6 px-3 text-center text-gray-500">×××¢×...</td>
+                  <td colSpan={5} className="py-6 px-3 text-center text-gray-500">טוען...</td>
                 </tr>
               ) : data?.topGarages && data.topGarages.length > 0 ? (
                 data.topGarages.map((g, idx) => (
@@ -471,13 +471,13 @@ export default function AdminDashboard() {
                       </span>
                     </td>
                     <td className="py-3 px-3 text-center">
-                      <Badge variant={g.isActive ? 'success' : 'warning'}>{g.isActive ? '×¤×¢××' : '×××©××'}</Badge>
+                      <Badge variant={g.isActive ? 'success' : 'warning'}>{g.isActive ? 'פעיל' : 'מושהה'}</Badge>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="py-6 px-3 text-center text-gray-500">××× ×××¡×××</td>
+                  <td colSpan={5} className="py-6 px-3 text-center text-gray-500">אין מוסכים</td>
                 </tr>
               )}
             </tbody>
