@@ -48,18 +48,22 @@ export async function POST(req: NextRequest) {
     // ========================================================================
     if (isAccountLocked(normalizedEmail)) {
       const remainingMs = getLockoutTimeRemaining(normalizedEmail);
-      const secondsRemaining = Math.ceil(remainingMs / 1000);
+    const secondsRemaining = Math.ceil(remainingMs / 1000);
+    const minutesRemaining = Math.ceil(secondsRemaining / 60);
+    const timeMessage = secondsRemaining > 120
+      ? `${minutesRemaining} דקות`
+      : `${secondsRemaining} שניות`;
 
-      logger.warn('Login failed: account locked', {
-        email: normalizedEmail,
-        secondsRemaining,
-      });
-      recordIpSuspiciousActivity(clientIp);
+    logger.warn('Login failed: account locked', {
+      email: normalizedEmail,
+      secondsRemaining,
+    });
+    recordIpSuspiciousActivity(clientIp);
 
-      return errorResponse(
-        `החשבון נעול עקב מספר ניסיונות כושלים. אנא נסה שוב ב-${secondsRemaining} שניות.`,
-        403
-      );
+    return errorResponse(
+      `החשבון נעול עקב מספר ניסיונות כושלים. אנא נסה שוב ב-${timeMessage}.`,
+      403
+    );
     }
 
     // ========================================================================
