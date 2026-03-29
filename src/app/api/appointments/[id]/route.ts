@@ -96,7 +96,7 @@ export async function PUT(
     requireOwnership(payload.userId, appointment.userId);
 
     // Can't update cancelled appointments
-    if (appointment.status === 'cancelled') {
+    if (appointment.(status as string) === 'cancelled') {
       return jsonResponse(
         { error: APPOINTMENT_ERRORS.CANNOT_UPDATE_CANCELLED },
         400
@@ -136,7 +136,7 @@ export async function PUT(
 
     return jsonResponse({
       appointment: updated,
-      message: `××ª××¨ ×¢×××× ×${(status as string) === 'confirmed' ? '××××©×¨' : (status as string) === 'cancelled' ? '×××××' : '×××©××'}`,
+      message: `התור עודכן ל${(status as string) === 'confirmed' ? 'מאושר' : (status as string) === 'cancelled' ? 'מבוטל' : 'הושלם'}`,
     });
   } catch (error) {
     return handleApiError(error);
