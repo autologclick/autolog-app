@@ -714,16 +714,20 @@ export default function DocumentsPage() {
                     setSelectedCategory(key);
                     if (!uploadTitle || uploadTitle === CATEGORY_MAP[selectedCategory]?.label) setUploadTitle(cat.label);
                   }}
-                  className={`flex items-center gap-2 p-3 rounded-xl border-2 transition text-right ${
+                  className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition min-h-[90px] justify-center ${
                     selectedCategory === key
-                      ? 'border-teal-500 bg-teal-50'
+                      ? 'border-teal-500 bg-teal-50 shadow-md shadow-teal-100'
                       : 'border-gray-200 hover:border-teal-300'
                   }`}
                 >
-                  <span className="text-lg">{cat.icon}</span>
-                  <span className="text-sm font-medium text-gray-700">{cat.label}</span>
+                  {selectedCategory === key && uploadPreview ? (
+                    <img src={uploadPreview} alt={cat.label} className="w-12 h-12 object-cover rounded-lg border border-teal-200" />
+                  ) : (
+                    <span className="text-2xl">{cat.icon}</span>
+                  )}
+                  <span className={`text-sm font-bold ${selectedCategory === key ? 'text-teal-700' : 'text-gray-700'}`}>{cat.label}</span>
                   {detectedCategory === key && (
-                    <Scan size={14} className="text-teal-500 mr-auto" />
+                    <span className="text-[10px] text-teal-500 flex items-center gap-0.5"><Scan size={10} /> זוהה</span>
                   )}
                 </button>
               ))}
