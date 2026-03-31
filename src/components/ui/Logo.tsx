@@ -12,7 +12,7 @@ interface LogoIconProps {
 export function LogoIcon({ size = 40, className = '' }: LogoIconProps) {
   return (
     <Image
-      src="/images/logo-icon.png"
+      src="/logo-icon.png"
       alt="AutoLog"
       width={size}
       height={size}
