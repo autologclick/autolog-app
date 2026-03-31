@@ -117,7 +117,7 @@ export async function middleware(req: NextRequest) {
   // No valid token at all
   if (!payload) {
     if (pathname.startsWith('/api')) {
-      return NextResponse.json({ error: '×¤× ×ª××§×£ ×××ª×××¨××ª. ××© ×××ª×××¨ ××××©.', code: 'UNAUTHORIZED' }, { status: 401 });
+      return NextResponse.json({ error: 'ÃÂ¤ÃÂ ÃÂªÃÂÃÂ§ÃÂ£ ÃÂÃÂÃÂªÃÂÃÂÃÂ¨ÃÂÃÂª. ÃÂÃÂ© ÃÂÃÂÃÂªÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ©.', code: 'UNAUTHORIZED' }, { status: 401 });
     }
     const loginUrl = new URL('/auth/login', req.url);
     return NextResponse.redirect(loginUrl);
@@ -170,6 +170,6 @@ function applyRoleChecks(
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|images/|fonts/|.*\\.png$|.*\\.svg$|.*\\.ico$|manifest.json|robots.txt|sitemap.xml|sw.js).*)',
+    '/((?!_next/static|_next/image|favicon.ico|logo-icon\\.png|images/|fonts/|.*\\.png$|.*\\.svg$|.*\\.ico$|manifest.json|robots.txt|sitemap.xml|sw.js).*)',
   ],
 };
