@@ -126,7 +126,7 @@ export default function Home() {
                 '@id': 'https://autolog.click/#organization',
                 name: 'AutoLog',
                 url: 'https://autolog.click',
-                logo: 'https://autolog.click/logo.svg',
+                logo: 'https://autolog.click/logo.png',
                 description: 'הפלטפורמה המובילה בישראל לניהול רכבים חכם',
                 sameAs: [],
                 contactPoint: {
@@ -893,26 +893,4 @@ export default function Home() {
                   <Mail size={14} />
                   <span>info@autolog.click</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <Phone size={14} />
-                  <span dir="ltr">+972-2-999-9999</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <MapPin size={14} />
-                  <span>ישראל</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-gray-500 text-sm">&copy; 2026 AutoLog. כל הזכויות שמורות.</p>
-            <p className="text-gray-600 text-xs">נבנה באהבה בישראל</p>
-          </div>
-        </div>
-      </footer>
-
-      {/* Custom CSS for animations */}
-    </div>
-  );
-                      }
+                <li className="flex 
