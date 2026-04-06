@@ -81,6 +81,7 @@ export async function POST(req: NextRequest) {
       type,
       title,
       description,
+      fileData,
       fileUrl,
       fileName,
       fileType,
@@ -109,6 +110,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Use fileData (base64) as fileUrl if no explicit fileUrl provided
+    const resolvedFileUrl = fileUrl || fileData || null;
+
     // Create document
     const document = await prisma.document.create({
       data: {
@@ -116,7 +120,7 @@ export async function POST(req: NextRequest) {
         type,
         title,
         description: description || null,
-        fileUrl: fileUrl || null,
+        fileUrl: resolvedFileUrl,
         fileName: fileName || null,
         fileType: fileType || null,
         expiryDate: parsedExpiryDate,

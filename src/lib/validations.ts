@@ -362,6 +362,9 @@ export const garageSchema = z.object({
 export const documentSchema = z.object({
   vehicleId: z.string().min(1, 'בחר רכב'),
   type: z.enum([
+    'vehicle_license',
+    'driving_license',
+    'insurance',
     'insurance_compulsory',
     'insurance_comprehensive',
     'insurance_third_party',
@@ -379,6 +382,9 @@ export const documentSchema = z.object({
     .max(200, 'כותרת ארוכה מדי'),
   description: z.string()
     .max(1000, 'תיאור ארוך מדי')
+    .optional()
+    .or(z.literal('')),
+  fileData: z.string()
     .optional()
     .or(z.literal('')),
   fileUrl: z.string()
@@ -399,6 +405,9 @@ export const documentSchema = z.object({
 
 export const updateDocumentSchema = z.object({
   type: z.enum([
+    'vehicle_license',
+    'driving_license',
+    'insurance',
     'insurance_compulsory',
     'insurance_comprehensive',
     'insurance_third_party',
