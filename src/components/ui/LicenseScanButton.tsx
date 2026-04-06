@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Camera, Scan, Loader2, CheckCircle2, AlertCircle, Upload, FileText } from 'lucide-react';
+import { Camera, Loader2, CheckCircle2, AlertCircle, Upload, Scan, Search } from 'lucide-react';
 
 export interface ScanResult {
   licensePlate?: string;
@@ -12,273 +12,190 @@ export interface ScanResult {
   fuelType?: string;
   chassisNumber?: string;
   ownerName?: string;
+  nickname?: string;
+  testExpiryDate?: string;
+  // New fields from MOT API
+  trimLevel?: string;
+  engineModel?: string;
 }
 
 interface LicenseScanButtonProps {
   onScanResult: (result: ScanResult) => void;
+  /** If true, shows a compact version for inline use */
+  compact?: boolean;
 }
 
-// Israeli vehicle registration (רישיון רכב) parser
-// Common patterns in Israeli vehicle license documents
-const HEBREW_MANUFACTURERS: Record<string, string> = {
-  'טויוטה': 'טויוטה', 'toyota': 'טויוטה',
-  'יונדאי': 'יונדאי', 'hyundai': 'יונדאי',
-  'קיה': 'קיה', 'kia': 'קיה',
-  'מאזדה': 'מאזדה', 'mazda': 'מאזדה',
-  'סוזוקי': 'סוזוקי', 'suzuki': 'סוזוקי',
-  'מיצובישי': 'מיצובישי', 'mitsubishi': 'מיצובישי',
-  'ניסאן': 'ניסאן', 'nissan': 'ניסאן',
-  'הונדה': 'הונדה', 'honda': 'הונדה',
-  'סובארו': 'סובארו', 'subaru': 'סובארו',
-  'פורד': 'פורד', 'ford': 'פורד',
-  'שברולט': 'שברולט', 'chevrolet': 'שברולט',
-  'פולקסווגן': 'פולקסווגן', 'volkswagen': 'פולקסווגן',
-  'סקודה': 'סקודה', 'skoda': 'סקודה',
-  'פיאט': 'פיאט', 'fiat': 'פיאט',
-  'סיטרואן': 'סיטרואן', 'citroen': 'סיטרואן',
-  'פז\'ו': 'פז\'ו', 'peugeot': 'פז\'ו',
-  'רנו': 'רנו', 'renault': 'רנו',
-  'אופל': 'אופל', 'opel': 'אופל',
-  'BMW': 'BMW', 'bmw': 'BMW',
-  'מרצדס': 'מרצדס', 'mercedes': 'מרצדס',
-  'אאודי': 'אאודי', 'audi': 'אאודי',
-  'וולוו': 'וולוו', 'volvo': 'וולוו',
-  'סיאט': 'סיאט', 'seat': 'סיאט',
-  'דאצ\'יה': 'דאצ\'יה', 'dacia': 'דאצ\'יה',
-  'ג\'יפ': 'ג\'יפ', 'jeep': 'ג\'יפ',
-  'לנד רובר': 'לנד רובר',
-  'טסלה': 'טסלה', 'tesla': 'טסלה',
-  'BYD': 'BYD', 'byd': 'BYD',
-};
+/**
+ * Resize image for OCR processing — large phone photos can crash Tesseract.
+ */
+function resizeImageForOCR(file: File, maxWidth = 1600): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      if (img.width <= maxWidth && img.height <= maxWidth) {
+        resolve(URL.createObjectURL(file));
+        return;
+      }
+      const canvas = document.createElement('canvas');
+      const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+      canvas.width = Math.round(img.width * ratio);
+      canvas.height = Math.round(img.height * ratio);
+      const ctx = canvas.getContext('2d');
+      if (!ctx) { reject(new Error('Canvas not supported')); return; }
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((blob) => {
+        if (!blob) { reject(new Error('Failed to resize')); return; }
+        resolve(URL.createObjectURL(blob));
+      }, 'image/jpeg', 0.85);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load image')); };
+    img.src = url;
+  });
+}
 
-const COLORS: Record<string, string> = {
-  'לבן': 'לבן', 'white': 'לבן',
-  'שחור': 'שחור', 'black': 'שחור',
-  'אפור': 'אפור', 'gray': 'אפור', 'grey': 'אפור',
-  'כסוף': 'כסוף', 'silver': 'כסוף', 'כסף': 'כסוף',
-  'אדום': 'אדום', 'red': 'אדום',
-  'כחול': 'כחול', 'blue': 'כחול',
-  'ירוק': 'ירוק', 'green': 'ירוק',
-  'חום': 'חום', 'brown': 'חום',
-  'בז\'': 'בז\'', 'beige': 'בז\'',
-  'זהב': 'זהב', 'gold': 'זהב',
-  'תכלת': 'תכלת',
-  'בורדו': 'בורדו',
-  'כתום': 'כתום', 'orange': 'כתום',
-};
-
-const FUEL_TYPES: Record<string, string> = {
-  'בנזין': 'בנזין', 'petrol': 'בנזין', 'gasoline': 'בנזין',
-  'דיזל': 'דיזל', 'סולר': 'דיזל', 'diesel': 'דיזל',
-  'חשמלי': 'חשמלי', 'electric': 'חשמלי',
-  'היברידי': 'היברידי', 'hybrid': 'היברידי',
-  'גז': 'גז',
-};
-
-function parseVehicleLicense(text: string): ScanResult {
-  const result: ScanResult = {};
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  const fullText = text.toLowerCase();
-
-  // 1. License plate: 7-8 digit number (Israeli plates)
-  const platePatterns = [
-    /(\d{2,3}[-\s]?\d{2,3}[-\s]?\d{2,3})/,   // 12-345-67 or 123-45-678
-    /(\d{7,8})/,                                 // 1234567 or 12345678
+/**
+ * Extract license plate number from OCR text.
+ * Israeli plates are 7-8 digits, possibly with dashes or spaces.
+ */
+function extractLicensePlate(text: string): string | null {
+  // Try multiple patterns for Israeli license plates
+  const patterns = [
+    /(\d{2,3}[-–\s]?\d{2,3}[-–\s]?\d{2,3})/g,  // 12-345-67 or 123-45-678
+    /(\d{7,8})/g,                                   // 1234567 or 12345678
   ];
-  for (const pattern of platePatterns) {
-    const match = text.match(pattern);
-    if (match) {
-      const plate = match[1].replace(/[-\s]/g, '');
+
+  for (const pattern of patterns) {
+    const matches = text.matchAll(pattern);
+    for (const match of matches) {
+      const plate = match[1].replace(/[-–\s]/g, '');
       if (plate.length >= 7 && plate.length <= 8) {
-        result.licensePlate = plate;
-        break;
+        return plate;
       }
     }
   }
-
-  // 2. Year: 4-digit number starting with 19 or 20
-  const yearMatch = text.match(/\b((?:19|20)\d{2})\b/);
-  if (yearMatch) {
-    const year = parseInt(yearMatch[1]);
-    if (year >= 1990 && year <= 2027) {
-      result.year = yearMatch[1];
-    }
-  }
-
-  // 3. Manufacturer
-  for (const [key, value] of Object.entries(HEBREW_MANUFACTURERS)) {
-    if (fullText.includes(key.toLowerCase()) || text.includes(key)) {
-      result.manufacturer = value;
-      break;
-    }
-  }
-
-  // 4. Color
-  for (const [key, value] of Object.entries(COLORS)) {
-    if (fullText.includes(key.toLowerCase()) || text.includes(key)) {
-      result.color = value;
-      break;
-    }
-  }
-
-  // 5. Fuel type
-  for (const [key, value] of Object.entries(FUEL_TYPES)) {
-    if (fullText.includes(key.toLowerCase()) || text.includes(key)) {
-      result.fuelType = value;
-      break;
-    }
-  }
-
-  // 6. Model: try to find known model patterns
-  const commonModels = [
-    'קורולה', 'corolla', 'יאריס', 'yaris', 'קאמרי', 'camry', 'rav4', 'rav 4',
-    'i10', 'i20', 'i30', 'i35', 'טוסון', 'tucson', 'סנטה פה',
-    'ספורטז\'', 'sportage', 'פיקנטו', 'picanto', 'סיד', 'ceed', 'ניירו', 'niro', 'ev6',
-    'מאזדה 3', 'mazda3', 'cx-5', 'cx5', 'cx-30', 'cx-3',
-    'סוויפט', 'swift', 'ויטרה', 'vitara', 'ג\'ימני', 'jimny',
-    'אאוטלנדר', 'outlander', 'לנסר', 'lancer', 'אטראז\'',
-    'קשקאי', 'qashqai', 'ג\'וק', 'juke', 'לייף', 'leaf', 'מיקרה',
-    'סיוויק', 'civic', 'ג\'אז', 'jazz', 'hr-v', 'cr-v',
-    'אימפרזה', 'impreza', 'פורסטר', 'forester', 'XV',
-    'פוקוס', 'focus', 'פיאסטה', 'fiesta', 'קוגה', 'kuga',
-    'ספארק', 'spark', 'אוונאו', 'aveo', 'קרוז', 'cruze',
-    'גולף', 'golf', 'פולו', 'polo', 'טיגואן', 'tiguan', 'פאסאט', 'passat',
-    'אוקטביה', 'octavia', 'פביה', 'fabia', 'קארוק', 'karoq',
-    'פנדה', 'panda', '500', 'טיפו', 'tipo',
-    'C3', 'C4', 'C5', 'ברלינגו', 'berlingo',
-    '208', '308', '2008', '3008', '5008',
-    'קליאו', 'clio', 'מגאן', 'megane', 'קפטור', 'captur',
-    'קורסה', 'corsa', 'אסטרה', 'astra', 'מוקה', 'mokka',
-    'סדרה 3', '320', '325', '330', 'X1', 'X3', 'X5',
-    'A class', 'C class', 'E class', 'GLC', 'GLA',
-    'A3', 'A4', 'A5', 'Q3', 'Q5',
-    'V40', 'V60', 'XC40', 'XC60', 'XC90',
-    'לאון', 'leon', 'איביזה', 'ibiza', 'ארונה', 'arona',
-    'סנדרו', 'sandero', 'דאסטר', 'duster',
-    'רנגייד', 'renegade', 'קומפס', 'compass', 'גרנד צ\'ירוקי',
-    'מודל 3', 'model 3', 'מודל y', 'model y',
-  ];
-
-  for (const model of commonModels) {
-    if (fullText.includes(model.toLowerCase()) || text.includes(model)) {
-      result.model = model.charAt(0).toUpperCase() + model.slice(1);
-      break;
-    }
-  }
-
-  // 7. Chassis number (VIN): 17-char alphanumeric
-  const vinMatch = text.match(/[A-HJ-NPR-Z0-9]{17}/i);
-  if (vinMatch) {
-    result.chassisNumber = vinMatch[0].toUpperCase();
-  }
-
-  return result;
+  return null;
 }
 
-export default function LicenseScanButton({ onScanResult }: LicenseScanButtonProps) {
+/**
+ * Lookup vehicle data from Ministry of Transport API.
+ */
+async function lookupVehicleByPlate(plate: string): Promise<ScanResult | null> {
+  try {
+    const res = await fetch(`/api/vehicles/lookup?plate=${encodeURIComponent(plate)}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.vehicle) return null;
+
+    const v = data.vehicle;
+    return {
+      licensePlate: v.licensePlate || plate,
+      manufacturer: v.manufacturer || undefined,
+      model: v.model || undefined,
+      year: v.year ? String(v.year) : undefined,
+      color: v.color || undefined,
+      fuelType: v.fuelType || undefined,
+      chassisNumber: v.vin || undefined,
+      testExpiryDate: v.testExpiryDate || undefined,
+      trimLevel: v.trimLevel || undefined,
+      engineModel: v.engineModel || undefined,
+      nickname: v.manufacturer && v.model ? `${v.manufacturer} ${v.model}` : undefined,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export default function LicenseScanButton({ onScanResult, compact = false }: LicenseScanButtonProps) {
   const [scanning, setScanning] = useState(false);
   const [scanStatus, setScanStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [statusMessage, setStatusMessage] = useState('');
+  const [scanProgress, setScanProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
-
-  // Resize image for mobile OCR - large phone photos crash Tesseract
-  const resizeImageForOCR = (file: File, maxWidth = 1600): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const url = URL.createObjectURL(file);
-      img.onload = () => {
-        URL.revokeObjectURL(url);
-        // If image is small enough, just return the object URL
-        if (img.width <= maxWidth && img.height <= maxWidth) {
-          const newUrl = URL.createObjectURL(file);
-          resolve(newUrl);
-          return;
-        }
-        // Resize using canvas
-        const canvas = document.createElement('canvas');
-        const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
-        canvas.width = Math.round(img.width * ratio);
-        canvas.height = Math.round(img.height * ratio);
-        const ctx = canvas.getContext('2d');
-        if (!ctx) { reject(new Error('Canvas not supported')); return; }
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob((blob) => {
-          if (!blob) { reject(new Error('Failed to resize')); return; }
-          resolve(URL.createObjectURL(blob));
-        }, 'image/jpeg', 0.85);
-      };
-      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load image')); };
-      img.src = url;
-    });
-  };
 
   const processImage = async (file: File) => {
     setScanning(true);
     setScanStatus('loading');
+    setScanProgress(10);
     setStatusMessage('מכין תמונה לסריקה...');
 
     let imageUrl = '';
     try {
-      // Resize image first to prevent memory issues on mobile
+      // Step 1: Resize image
       imageUrl = await resizeImageForOCR(file);
+      setScanProgress(20);
+      setStatusMessage('טוען מנוע זיהוי...');
 
-      setStatusMessage('טוען מנוע סריקה...');
-
-      // Dynamically import Tesseract.js v7 (uses createWorker API)
+      // Step 2: Load Tesseract.js and run OCR
       const { createWorker } = await import('tesseract.js');
-
+      setScanProgress(30);
       setStatusMessage('מאתחל סריקה...');
 
-      // Create worker with Hebrew + English languages
       const worker = await createWorker('heb+eng', undefined, {
         logger: (m: { status: string; progress: number }) => {
           if (m.status === 'recognizing text') {
-            const pct = Math.round(m.progress * 100);
-            setStatusMessage(`סורק... ${pct}%`);
+            const pct = 30 + Math.round(m.progress * 40);
+            setScanProgress(pct);
+            setStatusMessage(`סורק מסמך... ${Math.round(m.progress * 100)}%`);
           } else if (m.status === 'loading language traineddata') {
-            const pct = Math.round(m.progress * 100);
-            setStatusMessage(`טוען נתוני שפה... ${pct}%`);
+            setScanProgress(25 + Math.round(m.progress * 5));
+            setStatusMessage('טוען נתוני שפה...');
           }
         },
       });
 
-      setStatusMessage('סורק את המסמך...');
-
       const result = await worker.recognize(imageUrl);
       await worker.terminate();
-
       URL.revokeObjectURL(imageUrl);
+      imageUrl = '';
 
       const ocrText = result.data.text;
+      setScanProgress(75);
 
-      if (!ocrText || ocrText.trim().length < 10) {
+      if (!ocrText || ocrText.trim().length < 5) {
         setScanStatus('error');
-        setStatusMessage('לא זוהה טקסט בתמונה. נסה תמונה ברורה יותר.');
+        setStatusMessage('לא זוהה טקסט בתמונה. נסה לצלם שוב עם תאורה טובה.');
         setScanning(false);
         return;
       }
 
-      // Parse the OCR text
-      const parsed = parseVehicleLicense(ocrText);
-      const fieldsFound = Object.values(parsed).filter(Boolean).length;
+      // Step 3: Extract license plate from OCR text
+      const plate = extractLicensePlate(ocrText);
 
-      if (fieldsFound === 0) {
+      if (!plate) {
         setScanStatus('error');
-        setStatusMessage('לא הצלחנו לזהות פרטי רכב. נסה תמונה ברורה יותר של הרישיון.');
+        setStatusMessage('לא זוהה מספר רכב בתמונה. נסה לצלם את החלק עם מספר הרכב.');
         setScanning(false);
         return;
       }
 
-      setScanStatus('success');
-      setStatusMessage(`זוהו ${fieldsFound} שדות בהצלחה!`);
-      onScanResult(parsed);
+      setScanProgress(80);
+      setStatusMessage(`זוהה מספר רכב: ${plate}. מחפש פרטים במשרד התחבורה...`);
 
-      // Reset status after delay
+      // Step 4: Lookup full vehicle data from MOT API
+      const vehicleData = await lookupVehicleByPlate(plate);
+      setScanProgress(100);
+
+      if (vehicleData) {
+        const fieldsFound = Object.values(vehicleData).filter(Boolean).length;
+        setScanStatus('success');
+        setStatusMessage(`נמצאו ${fieldsFound} פרטים! הנתונים מולאו אוטומטית.`);
+        onScanResult(vehicleData);
+      } else {
+        // Even if MOT lookup fails, return the plate number
+        setScanStatus('success');
+        setStatusMessage(`זוהה מספר רכב: ${plate}. לא נמצאו פרטים נוספים במשרד התחבורה.`);
+        onScanResult({ licensePlate: plate });
+      }
+
+      // Reset after delay
       setTimeout(() => {
         setScanStatus('idle');
         setStatusMessage('');
-      }, 4000);
+        setScanProgress(0);
+      }, 5000);
 
     } catch (err) {
       console.error('OCR Error:', err);
@@ -286,11 +203,11 @@ export default function LicenseScanButton({ onScanResult }: LicenseScanButtonPro
       setScanStatus('error');
       const errMsg = err instanceof Error ? err.message : '';
       if (errMsg.includes('memory') || errMsg.includes('allocation')) {
-        setStatusMessage('התמונה גדולה מדי. נסה לצלם מקרוב יותר או לבחור תמונה קטנה יותר.');
+        setStatusMessage('התמונה גדולה מדי. נסה לצלם מקרוב יותר.');
       } else if (errMsg.includes('network') || errMsg.includes('fetch') || errMsg.includes('load')) {
         setStatusMessage('שגיאת רשת. ודא שיש חיבור אינטרנט ונסה שוב.');
       } else {
-        setStatusMessage('שגיאה בסריקה. נסה לצלם את הרישיון שוב עם תאורה טובה.');
+        setStatusMessage('שגיאה בסריקה. נסה לצלם שוב עם תאורה טובה.');
       }
     }
 
@@ -309,9 +226,66 @@ export default function LicenseScanButton({ onScanResult }: LicenseScanButtonPro
     e.target.value = '';
   };
 
+  // Compact version for inline use (e.g. onboarding wizard)
+  if (compact) {
+    return (
+      <div className="space-y-2">
+        <div className={`rounded-xl border-2 border-dashed p-3 transition-all ${
+          scanStatus === 'loading' ? 'border-teal-400 bg-teal-50' :
+          scanStatus === 'success' ? 'border-green-400 bg-green-50' :
+          scanStatus === 'error' ? 'border-red-300 bg-red-50' :
+          'border-blue-300 bg-blue-50'
+        }`}>
+          <div className="flex items-center gap-2 mb-2">
+            {scanStatus === 'loading' ? (
+              <Loader2 size={16} className="text-teal-600 animate-spin" />
+            ) : scanStatus === 'success' ? (
+              <CheckCircle2 size={16} className="text-green-600" />
+            ) : scanStatus === 'error' ? (
+              <AlertCircle size={16} className="text-red-500" />
+            ) : (
+              <Scan size={16} className="text-blue-600" />
+            )}
+            <span className={`text-xs font-medium ${
+              scanStatus === 'success' ? 'text-green-700' :
+              scanStatus === 'error' ? 'text-red-700' :
+              scanStatus === 'loading' ? 'text-teal-700' :
+              'text-blue-700'
+            }`}>
+              {statusMessage || 'צלם רישיון רכב למילוי אוטומטי'}
+            </span>
+          </div>
+
+          {scanStatus === 'loading' && (
+            <div className="w-full bg-teal-200 rounded-full h-1.5 mb-2 overflow-hidden">
+              <div className="bg-teal-600 h-full rounded-full transition-all duration-500"
+                style={{ width: `${scanProgress}%` }} />
+            </div>
+          )}
+
+          {scanStatus !== 'loading' && (
+            <div className="flex gap-2">
+              <button type="button" onClick={() => cameraInputRef.current?.click()} disabled={scanning}
+                className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition disabled:opacity-50">
+                <Camera size={14} /> צלם
+              </button>
+              <button type="button" onClick={() => fileInputRef.current?.click()} disabled={scanning}
+                className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 bg-white text-blue-700 border border-blue-300 rounded-lg text-xs font-semibold hover:bg-blue-50 transition disabled:opacity-50">
+                <Upload size={14} /> העלה
+              </button>
+            </div>
+          )}
+        </div>
+
+        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+        <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
+      </div>
+    );
+  }
+
+  // Full version
   return (
     <div className="space-y-3">
-      {/* Scan Banner */}
       <div className={`rounded-2xl border-2 border-dashed p-4 transition-all ${
         scanStatus === 'loading' ? 'border-teal-400 bg-teal-50' :
         scanStatus === 'success' ? 'border-green-400 bg-green-50' :
@@ -353,59 +327,37 @@ export default function LicenseScanButton({ onScanResult }: LicenseScanButtonPro
               scanStatus === 'loading' ? 'text-teal-600' :
               'text-blue-600'
             }`}>
-              {statusMessage || 'צלם או העלה תמונה של רישיון הרכב - הפרטים ימולאו אוטומטית'}
+              {statusMessage || 'צלם או העלה תמונה של רישיון הרכב — מספר הרכב יזוהה והפרטים ימולאו ממשרד התחבורה'}
             </p>
           </div>
         </div>
 
-        {/* Progress bar during scanning */}
+        {/* Progress bar */}
         {scanStatus === 'loading' && (
           <div className="w-full bg-teal-200 rounded-full h-1.5 mb-3 overflow-hidden">
-            <div className="bg-teal-600 h-full rounded-full animate-pulse" style={{ width: '100%' }} />
+            <div className="bg-teal-600 h-full rounded-full transition-all duration-500"
+              style={{ width: `${scanProgress}%` }} />
           </div>
         )}
 
         {/* Action buttons */}
         {scanStatus !== 'loading' && (
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => cameraInputRef.current?.click()}
-              disabled={scanning}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition disabled:opacity-50 shadow-sm"
-            >
-              <Camera size={16} />
-              צלם רישיון
+            <button type="button" onClick={() => cameraInputRef.current?.click()} disabled={scanning}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition disabled:opacity-50 shadow-sm">
+              <Camera size={16} /> צלם רישיון
             </button>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={scanning}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-white text-blue-700 border border-blue-300 rounded-xl text-sm font-semibold hover:bg-blue-50 transition disabled:opacity-50"
-            >
-              <Upload size={16} />
-              העלה תמונה
+            <button type="button" onClick={() => fileInputRef.current?.click()} disabled={scanning}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-white text-blue-700 border border-blue-300 rounded-xl text-sm font-semibold hover:bg-blue-50 transition disabled:opacity-50">
+              <Upload size={16} /> העלה תמונה
             </button>
           </div>
         )}
       </div>
 
       {/* Hidden file inputs */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleFileChange}
-      />
-      <input
-        ref={cameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        className="hidden"
-        onChange={handleFileChange}
-      />
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+      <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
     </div>
   );
 }

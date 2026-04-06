@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronRight, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { ChevronRight, CheckCircle2, Loader2, AlertCircle, Search } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import LicenseScanButton, { type ScanResult } from '@/components/ui/LicenseScanButton';
 
 interface OnboardingWizardProps {
   isOpen: boolean;
@@ -13,9 +14,10 @@ interface OnboardingWizardProps {
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
 const manufacturers = [
-  'טויוטה', 'הונדה', 'ניסן', 'מאזדה', 'סוזוקי', 'היונדאי', 'קיה', 'סקודה',
-  'סקיא', 'פולקסווגן', 'אאודי', 'בי.מ.וו', 'מרצדס', 'פיאט', 'סיטרואן',
-  'לנץ', 'אלפא רומיאו', 'פיג׳ו', 'שברולט', 'פורד', 'בי.וואי.די', 'גיילי', 'גרייט וואל'
+  'טויוטה', 'הונדה', 'ניסאן', 'מאזדה', 'סוזוקי', 'יונדאי', 'קיה', 'סקודה',
+  'פולקסווגן', 'אאודי', 'BMW', 'מרצדס', 'פיאט', 'סיטרואן',
+  'פז\'ו', 'שברולט', 'פורד', 'רנו', 'אופל', 'וולוו', 'סיאט',
+  'BYD', 'טסלה', 'דאצ\'יה', 'ג\'יפ', 'סובארו', 'מיצובישי',
 ];
 
 export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizardProps) {
@@ -26,9 +28,14 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
     manufacturer: '',
     model: '',
     year: currentYear.toString(),
+    color: '',
+    fuelType: '',
+    testExpiryDate: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [lookingUp, setLookingUp] = useState(false);
+  const [lookupMessage, setLookupMessage] = useState('');
 
   if (!isOpen) return null;
 
@@ -37,10 +44,62 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
     setError('');
   };
 
-  const handleNextStep = () => {
-    if (step < 3) {
-      setStep(step + 1);
+  // Handle scan result from LicenseScanButton
+  const handleScanResult = (result: ScanResult) => {
+    setFormData(prev => ({
+      ...prev,
+      licensePlate: result.licensePlate || prev.licensePlate,
+      manufacturer: result.manufacturer || prev.manufacturer,
+      model: result.model || prev.model,
+      year: result.year || prev.year,
+      color: result.color || prev.color,
+      fuelType: result.fuelType || prev.fuelType,
+      testExpiryDate: result.testExpiryDate || prev.testExpiryDate,
+      nickname: result.nickname || prev.nickname,
+    }));
+    setError('');
+  };
+
+  // Manual lookup by plate number
+  const handleManualLookup = async () => {
+    const plate = formData.licensePlate.replace(/[-\s]/g, '');
+    if (!plate || plate.length < 7) {
+      setError('נא להזין מספר רכב תקין (7-8 ספרות)');
+      return;
     }
+
+    setLookingUp(true);
+    setLookupMessage('מחפש פרטים במשרד התחבורה...');
+    setError('');
+
+    try {
+      const res = await fetch(`/api/vehicles/lookup?plate=${encodeURIComponent(plate)}`);
+      const data = await res.json();
+
+      if (res.ok && data.vehicle) {
+        const v = data.vehicle;
+        setFormData(prev => ({
+          ...prev,
+          manufacturer: v.manufacturer || prev.manufacturer,
+          model: v.model || prev.model,
+          year: v.year ? String(v.year) : prev.year,
+          color: v.color || prev.color,
+          fuelType: v.fuelType || prev.fuelType,
+          testExpiryDate: v.testExpiryDate || prev.testExpiryDate,
+          nickname: v.manufacturer && v.model ? `${v.manufacturer} ${v.model}` : prev.nickname,
+        }));
+        setLookupMessage('הפרטים נטענו בהצלחה!');
+        setTimeout(() => setLookupMessage(''), 3000);
+      } else {
+        setLookupMessage('לא נמצאו פרטים לרכב זה');
+        setTimeout(() => setLookupMessage(''), 3000);
+      }
+    } catch {
+      setLookupMessage('שגיאה בחיפוש. נסה שוב.');
+      setTimeout(() => setLookupMessage(''), 3000);
+    }
+
+    setLookingUp(false);
   };
 
   const handleSubmit = async () => {
@@ -58,10 +117,13 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           nickname: formData.nickname,
-          licensePlate: formData.licensePlate.toUpperCase(),
+          licensePlate: formData.licensePlate.replace(/[-\s]/g, '').toUpperCase(),
           manufacturer: formData.manufacturer,
           model: formData.model,
           year: parseInt(formData.year),
+          color: formData.color || undefined,
+          fuelType: formData.fuelType || undefined,
+          testExpiryDate: formData.testExpiryDate || undefined,
         }),
       });
 
@@ -77,7 +139,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
       setTimeout(() => {
         onComplete();
       }, 2000);
-    } catch (err) {
+    } catch {
       setError('שגיאת חיבור. אנא נסה שוב.');
       setLoading(false);
     }
@@ -85,10 +147,10 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" dir="rtl">
-      <div className="bg-white w-full max-w-md mx-4 rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4">
+      <div className="bg-white w-full max-w-md mx-4 rounded-3xl shadow-2xl overflow-hidden max-h-[95vh] overflow-y-auto">
         {/* Step 1: Welcome */}
         {step === 1 && (
-          <div className="p-8 space-y-6 text-center min-h-screen flex flex-col justify-center">
+          <div className="p-8 space-y-6 text-center">
             <div className="space-y-4">
               <div className="text-6xl">🚗</div>
               <h1 className="text-3xl font-bold text-[#1e3a5f]">ברוכים הבאים ל-AutoLog!</h1>
@@ -128,7 +190,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
             </div>
 
             <Button
-              onClick={handleNextStep}
+              onClick={() => setStep(2)}
               className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
             >
               בוא נתחיל
@@ -139,14 +201,17 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
 
         {/* Step 2: Add Vehicle */}
         {step === 2 && (
-          <div className="p-8 space-y-6 min-h-screen flex flex-col justify-center">
-            <div className="space-y-2">
+          <div className="p-6 space-y-4">
+            <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-[#1e3a5f]">הוסף את הרכב שלך</h2>
-                <div className="text-3xl">🔧</div>
+                <h2 className="text-xl font-bold text-[#1e3a5f]">הוסף את הרכב שלך</h2>
+                <div className="text-2xl">🔧</div>
               </div>
-              <p className="text-sm text-gray-600">מידע בסיסי כדי להתחיל</p>
+              <p className="text-sm text-gray-500">צלם רישיון רכב או הזן פרטים ידנית</p>
             </div>
+
+            {/* License Scan Button */}
+            <LicenseScanButton onScanResult={handleScanResult} compact />
 
             {error && (
               <div className="flex gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
@@ -155,68 +220,105 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
               </div>
             )}
 
-            <div className="space-y-4">
+            {lookupMessage && (
+              <div className={`text-center text-sm py-2 px-3 rounded-lg ${
+                lookupMessage.includes('בהצלחה') ? 'bg-green-50 text-green-700' :
+                lookupMessage.includes('שגיאה') || lookupMessage.includes('לא נמצאו') ? 'bg-amber-50 text-amber-700' :
+                'bg-blue-50 text-blue-700'
+              }`}>
+                {lookupMessage}
+              </div>
+            )}
+
+            <div className="space-y-3">
+              {/* License plate with lookup button */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">כינוי הרכב</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">מספר רכב</label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="למשל: 1234567"
+                    value={formData.licensePlate}
+                    onChange={(e) => handleInputChange('licensePlate', e.target.value)}
+                    disabled={loading}
+                    className="flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleManualLookup}
+                    disabled={loading || lookingUp || formData.licensePlate.replace(/[-\s]/g, '').length < 7}
+                    className="px-3 py-2 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition disabled:opacity-50 flex items-center gap-1.5 flex-shrink-0"
+                  >
+                    {lookingUp ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
+                    חפש
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">כינוי הרכב</label>
                 <Input
-                  placeholder="למשל: הרכב שלי, בי.מ.וו שחור..."
+                  placeholder="למשל: הרכב שלי, הטויוטה..."
                   value={formData.nickname}
                   onChange={(e) => handleInputChange('nickname', e.target.value)}
                   disabled={loading}
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">מספר רישוי</label>
-                <Input
-                  placeholder="למשל: 12-345-67"
-                  value={formData.licensePlate}
-                  onChange={(e) => handleInputChange('licensePlate', e.target.value.toUpperCase())}
-                  disabled={loading}
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">יצרן</label>
+                  <select
+                    value={formData.manufacturer}
+                    onChange={(e) => handleInputChange('manufacturer', e.target.value)}
+                    disabled={loading}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+                  >
+                    <option value="">בחר יצרן</option>
+                    {manufacturers.map(m => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">דגם</label>
+                  <Input
+                    placeholder="למשל: Corolla"
+                    value={formData.model}
+                    onChange={(e) => handleInputChange('model', e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">יצרן</label>
-                <select
-                  value={formData.manufacturer}
-                  onChange={(e) => handleInputChange('manufacturer', e.target.value)}
-                  disabled={loading}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800"
-                >
-                  <option value="">בחר יצרן</option>
-                  {manufacturers.map(m => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">שנה</label>
+                  <select
+                    value={formData.year}
+                    onChange={(e) => handleInputChange('year', e.target.value)}
+                    disabled={loading}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+                  >
+                    {years.map(y => (
+                      <option key={y} value={y.toString()}>{y}</option>
+                    ))}
+                  </select>
+                </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">דגם</label>
-                <Input
-                  placeholder="למשל: X5, Accord, Altima..."
-                  value={formData.model}
-                  onChange={(e) => handleInputChange('model', e.target.value)}
-                  disabled={loading}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">שנה</label>
-                <select
-                  value={formData.year}
-                  onChange={(e) => handleInputChange('year', e.target.value)}
-                  disabled={loading}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800"
-                >
-                  {years.map(y => (
-                    <option key={y} value={y.toString()}>{y}</option>
-                  ))}
-                </select>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">צבע</label>
+                  <Input
+                    placeholder="למשל: לבן"
+                    value={formData.color}
+                    onChange={(e) => handleInputChange('color', e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4">
+            <div className="flex gap-3 pt-2">
               <Button
                 onClick={() => setStep(1)}
                 disabled={loading}
@@ -247,28 +349,23 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
 
         {/* Step 3: Success */}
         {step === 3 && (
-          <div className="p-8 space-y-6 text-center min-h-screen flex flex-col justify-center">
-            <div className="space-y-4 animate-in fade-in">
+          <div className="p-8 space-y-6 text-center">
+            <div className="space-y-4">
               <div className="text-7xl animate-bounce">🎉</div>
               <h2 className="text-3xl font-bold text-teal-600">מעולה!</h2>
               <p className="text-xl font-semibold text-gray-800">הרכב נוסף בהצלחה</p>
               <p className="text-gray-600">
-                {formData.nickname} • {formData.manufacturer} {formData.model}
+                {formData.nickname} {formData.manufacturer && `• ${formData.manufacturer} ${formData.model}`}
               </p>
 
-              <div className="grid grid-cols-3 gap-2 pt-4 text-center">
+              <div className="flex justify-center gap-2 pt-4">
                 {[...Array(3)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-2 h-2 bg-teal-400 rounded-full mx-auto animate-pulse"
-                    style={{ animationDelay: `${i * 0.2}s` }}
-                  />
+                  <div key={i} className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"
+                    style={{ animationDelay: `${i * 0.2}s` }} />
                 ))}
               </div>
 
-              <p className="text-sm text-gray-500 pt-4">
-                מעביר אתך לדשבורד בעוד לחץ...
-              </p>
+              <p className="text-sm text-gray-500 pt-4">מעביר אותך לדשבורד...</p>
             </div>
           </div>
         )}
