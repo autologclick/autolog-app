@@ -48,6 +48,7 @@ const adminNav: NavItem[] = [
   { label: 'דשבורד', href: '/admin', icon: <BarChart3 size={20} /> },
   { label: 'ניהול משתמשים', href: '/admin/users', icon: <Users size={20} /> },
   { label: 'ניהול מוסכים', href: '/admin/garages', icon: <Wrench size={20} /> },
+  { label: 'ניהול תורים', href: '/admin/appointments', icon: <Calendar size={20} /> },
   { label: 'בדיקות', href: '/admin/inspections', icon: <ClipboardCheck size={20} /> },
   { label: 'חיוב מוסכים', href: '/admin/billing', icon: <Receipt size={20} /> },
   { label: 'מסמכים', href: '/admin/documents', icon: <FolderOpen size={20} /> },

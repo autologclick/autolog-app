@@ -20,7 +20,7 @@ export const SERVICE_TYPE_HEB: Record<string, string> = {
 
 export const APPOINTMENT_STATUS_HEB: Record<string, string> = {
   pending: 'ממתין לאישור',
-  confirmed: 'מאזשר',
+  confirmed: 'מאושר',
   rejected: 'נדחה',
   in_progress: 'בטיפול',
   completed: 'הושלם',
