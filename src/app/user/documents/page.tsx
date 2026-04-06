@@ -1,16 +1,17 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Card } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
-import Modal from '@/components/ui/Modal';
 import {
   FileText, Trash2, AlertTriangle, Calendar, ChevronDown,
-  Loader2, Shield, Upload, X, Camera, Eye, Car, CreditCard,
-  ScanLine, CheckCircle, AlertCircle, Scan
+  Loader2, Upload, X, Camera, Eye, Car,
+  CheckCircle, AlertCircle, Scan
 } from 'lucide-react';
+
+// =============================================
+// Types & Constants
+// =============================================
 
 interface Vehicle {
   id: string;
@@ -56,18 +57,20 @@ function mapOldType(type: string): string {
   return 'receipt';
 }
 
-// Parse scanned document text - extract dates, category, license plate
+// =============================================
+// OCR Helpers
+// =============================================
+
 function parseDocumentText(text: string) {
-  const result: { expiryDate?: string; category?: string; licensePlate?: string; ownerName?: string } = {};
+  const result: { expiryDate?: string; category?: string; licensePlate?: string } = {};
   const lower = text.toLowerCase();
 
-  // 1. Find expiry date - look for labeled dates first
+  // Labeled dates
   const labeledDatePatterns = [
-    /תוקף[\s:]*(?:עד)?[\s:]*(ד{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{2,4})/,
-    /בתוקף[\s:]*(?:עד)?[\s:]*(ד{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{2,4})/,
-    /valid[\s]*(?:until|to|thru)?[\s:]*(ד{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{2,4})/i,
+    /תוקף[\s:]*(?:עד)?[\s:]*(\d{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{2,4})/,
+    /בתוקף[\s:]*(?:עד)?[\s:]*(\d{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{2,4})/,
+    /valid[\s]*(?:until|to|thru)?[\s:]*(\d{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{2,4})/i,
   ];
-
   for (const pattern of labeledDatePatterns) {
     const match = text.match(pattern);
     if (match) {
@@ -78,7 +81,7 @@ function parseDocumentText(text: string) {
     }
   }
 
-  // If no labeled date, find latest future date in text
+  // Latest future date fallback
   if (!result.expiryDate) {
     const allDates = [...text.matchAll(/(\d{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{2,4})/g)];
     const today = new Date();
@@ -90,15 +93,13 @@ function parseDocumentText(text: string) {
       if (m >= 1 && m <= 12 && d >= 1 && d <= 31 && y >= 2024 && y <= 2035) {
         const dateStr = year + '-' + month.padStart(2, '0') + '-' + day.padStart(2, '0');
         const date = new Date(dateStr);
-        if (date > today && (!latestFuture || dateStr > latestFuture)) {
-          latestFuture = dateStr;
-        }
+        if (date > today && (!latestFuture || dateStr > latestFuture)) latestFuture = dateStr;
       }
     }
     if (latestFuture) result.expiryDate = latestFuture;
   }
 
-  // 2. Categorize by content
+  // Category
   if (lower.includes('רישיון נהיגה') || lower.includes('driving license') || lower.includes('driver')) {
     result.category = 'driving_license';
   } else if (lower.includes('ביטוח') || lower.includes('פוליס') || lower.includes('insurance') || lower.includes('חובה') || lower.includes('מקיף')) {
@@ -109,7 +110,6 @@ function parseDocumentText(text: string) {
     result.category = 'vehicle_license';
   }
 
-  // 3. License plate (7-8 digits)
   const plateMatch = text.match(/(\d{2,3}[-\s]?\d{2,3}[-\s]?\d{2,3})/);
   if (plateMatch) {
     const plate = plateMatch[1].replace(/[-\s]/g, '');
@@ -119,7 +119,15 @@ function parseDocumentText(text: string) {
   return result;
 }
 
-// Resize image for OCR (same as LicenseScanButton)
+function classifyByFilename(fileName: string): string {
+  const name = fileName.toLowerCase();
+  if ((name.includes('רישיון') && name.includes('נהיגה')) || (name.includes('driving') && name.includes('license'))) return 'driving_license';
+  if (name.includes('רישיון') || name.includes('רכב') || name.includes('vehicle') || name.includes('license')) return 'vehicle_license';
+  if (name.includes('ביטוח') || name.includes('insurance') || name.includes('פוליס')) return 'insurance';
+  if (name.includes('קבלה') || name.includes('receipt') || name.includes('חשבונית')) return 'receipt';
+  return '';
+}
+
 function resizeImageForOCR(file: File, maxWidth = 1600): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -147,6 +155,10 @@ function resizeImageForOCR(file: File, maxWidth = 1600): Promise<string> {
   });
 }
 
+// =============================================
+// Main Page Component
+// =============================================
+
 export default function DocumentsPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -154,7 +166,6 @@ export default function DocumentsPage() {
   const [selectedVehicle, setSelectedVehicle] = useState<string>('');
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [showVehicleDropdown, setShowVehicleDropdown] = useState(false);
-  const [showUploadModal, setShowUploadModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -163,6 +174,7 @@ export default function DocumentsPage() {
   const [scanProgress, setScanProgress] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   // Upload form state
   const [uploadFile, setUploadFile] = useState<File | null>(null);
@@ -173,6 +185,9 @@ export default function DocumentsPage() {
   const [uploadExpiry, setUploadExpiry] = useState<string>('');
   const [uploadDescription, setUploadDescription] = useState<string>('');
   const [scanResults, setScanResults] = useState<{ licensePlate?: string; expiryDate?: string } | null>(null);
+
+  // Derived: is upload form visible?
+  const isUploading = !!uploadFile || scanning;
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -203,6 +218,13 @@ export default function DocumentsPage() {
     if (selectedVehicle) fetchDocuments();
   }, [selectedVehicle]);
 
+  // Scroll to form when file selected
+  useEffect(() => {
+    if (isUploading && formRef.current) {
+      setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }, [isUploading]);
+
   const handleFileSelected = async (file: File) => {
     if (file.size > 10 * 1024 * 1024) {
       setError('גודל הקובץ חייב להיות קטן מ-10MB');
@@ -211,8 +233,13 @@ export default function DocumentsPage() {
     setUploadFile(file);
     setError('');
     setScanResults(null);
+    setDetectedCategory('');
+    setSelectedCategory('');
+    setUploadTitle('');
+    setUploadExpiry('');
+    setUploadDescription('');
 
-    // Create preview for images
+    // Preview
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = (e) => setUploadPreview(e.target?.result as string);
@@ -221,110 +248,59 @@ export default function DocumentsPage() {
       setUploadPreview('');
     }
 
-    // If it's an image, run OCR scanning
+    // OCR for images
     if (file.type.startsWith('image/')) {
       setScanning(true);
       setScanProgress('מכין תמונה לסריקה...');
-
       let imageUrl = '';
       try {
         imageUrl = await resizeImageForOCR(file);
         setScanProgress('טוען מנוע סריקה...');
-
         const { createWorker } = await import('tesseract.js');
         setScanProgress('מאתחל סריקה...');
-
         const worker = await createWorker('heb+eng', undefined, {
           logger: (m: { status: string; progress: number }) => {
-            if (m.status === 'recognizing text') {
-              setScanProgress(`סורק... ${Math.round(m.progress * 100)}%`);
-            } else if (m.status === 'loading language traineddata') {
-              setScanProgress(`טוען נתוני שפה... ${Math.round(m.progress * 100)}%`);
-            }
+            if (m.status === 'recognizing text') setScanProgress(`סורק... ${Math.round(m.progress * 100)}%`);
+            else if (m.status === 'loading language traineddata') setScanProgress(`טוען נתוני שפה... ${Math.round(m.progress * 100)}%`);
           },
         });
-
         setScanProgress('סורק את המסמך...');
         const ocrResult = await worker.recognize(imageUrl);
         await worker.terminate();
         URL.revokeObjectURL(imageUrl);
-
         const ocrText = ocrResult.data.text;
 
         if (ocrText && ocrText.trim().length >= 5) {
-          // Parse the OCR text
           const parsed = parseDocumentText(ocrText);
-
-          // Auto-fill category
           if (parsed.category) {
             setDetectedCategory(parsed.category);
             setSelectedCategory(parsed.category);
-            if (CATEGORY_MAP[parsed.category]) {
-              setUploadTitle(CATEGORY_MAP[parsed.category].label);
-            }
+            if (CATEGORY_MAP[parsed.category]) setUploadTitle(CATEGORY_MAP[parsed.category].label);
           } else {
-            // Fallback: classify by filename
             const byName = classifyByFilename(file.name);
-            if (byName) {
-              setDetectedCategory(byName);
-              setSelectedCategory(byName);
-              if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label);
-            }
+            if (byName) { setDetectedCategory(byName); setSelectedCategory(byName); if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label); }
           }
-
-          // Auto-fill expiry date
-          if (parsed.expiryDate) {
-            setUploadExpiry(parsed.expiryDate);
-          }
-
-          // Store scan results for display
+          if (parsed.expiryDate) setUploadExpiry(parsed.expiryDate);
           setScanResults({ licensePlate: parsed.licensePlate, expiryDate: parsed.expiryDate });
-
           setScanProgress('הסריקה הושלמה!');
         } else {
-          // Fallback to filename classification
           const byName = classifyByFilename(file.name);
-          if (byName) {
-            setDetectedCategory(byName);
-            setSelectedCategory(byName);
-            if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label);
-          }
+          if (byName) { setDetectedCategory(byName); setSelectedCategory(byName); if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label); }
           setScanProgress('לא זוהה טקסט, נא לבחור קטגוריה ידנית');
         }
       } catch (err) {
         console.error('OCR Error:', err);
         if (imageUrl) URL.revokeObjectURL(imageUrl);
-        // Fallback to filename
         const byName = classifyByFilename(file.name);
-        if (byName) {
-          setDetectedCategory(byName);
-          setSelectedCategory(byName);
-          if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label);
-        }
+        if (byName) { setDetectedCategory(byName); setSelectedCategory(byName); if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label); }
         setScanProgress('שגיאה בסריקה, נא לבחור קטגוריה ידנית');
       }
       setScanning(false);
-      setShowUploadModal(true);
     } else {
-      // Non-image file: classify by filename only
       const byName = classifyByFilename(file.name);
-      if (byName) {
-        setDetectedCategory(byName);
-        setSelectedCategory(byName);
-        if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label);
-      }
-      setShowUploadModal(true);
+      if (byName) { setDetectedCategory(byName); setSelectedCategory(byName); if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label); }
     }
   };
-
-  function classifyByFilename(fileName: string): string {
-    const name = fileName.toLowerCase();
-    if ((name.includes('רישיון') && name.includes('נהיגה')) || (name.includes('driving') && name.includes('license'))) return 'driving_license';
-    if (name.includes('רישיון') || name.includes('רכב') || name.includes('vehicle') || name.includes('license')) return 'vehicle_license';
-    if (name.includes('ביטוח') || name.includes('insurance') || name.includes('פוליס')) return 'insurance';
-    if (name.includes('קבלה') || name.includes('receipt') || name.includes('חשבונית')) return 'receipt';
-    return '';
-  }
 
   const handleUploadSubmit = async () => {
     if (!selectedCategory || !selectedVehicle) {
@@ -357,6 +333,7 @@ export default function DocumentsPage() {
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'שגיאה בהעלאת מסמך'); setSaving(false); return; }
       resetUploadForm();
+      // Refresh documents list
       const fetchRes = await fetch(`/api/documents?vehicleId=${selectedVehicle}`);
       const fetchData = await fetchRes.json();
       setDocuments(fetchData.documents || []);
@@ -367,7 +344,6 @@ export default function DocumentsPage() {
   };
 
   const resetUploadForm = () => {
-    setShowUploadModal(false);
     setUploadFile(null);
     setUploadPreview('');
     setDetectedCategory('');
@@ -429,7 +405,13 @@ export default function DocumentsPage() {
   }
 
   return (
-    <div className="space-y-4 pt-12 lg:pt-0" dir="rtl">
+    <div className="space-y-4 pt-12 lg:pt-0 pb-24" dir="rtl">
+      {/* Hidden file inputs */}
+      <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+        onChange={(e) => { if (e.target.files?.[0]) handleFileSelected(e.target.files[0]); e.target.value = ''; }} className="hidden" />
+      <input ref={cameraInputRef} type="file" accept="image/*" capture="environment"
+        onChange={(e) => { if (e.target.files?.[0]) handleFileSelected(e.target.files[0]); e.target.value = ''; }} className="hidden" />
+
       {/* Header */}
       <div className="flex items-center justify-between px-3 sm:px-0">
         <div className="flex items-center gap-3">
@@ -485,79 +467,211 @@ export default function DocumentsPage() {
         </div>
       )}
 
-      {/* Filter Tabs */}
-      <div className="px-3 sm:px-0">
-        <div className="flex flex-wrap justify-center gap-2 py-3 px-2 bg-white rounded-xl border border-gray-100 shadow-sm">
-          {CATEGORIES.map(cat => {
-            const count = getCategoryCount(cat.id);
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setActiveFilter(cat.id)}
-                className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-all duration-200 text-sm flex items-center gap-1.5 ${
-                  activeFilter === cat.id
-                    ? 'bg-teal-600 text-white shadow-md shadow-teal-200'
-                    : 'bg-gray-50 text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200'
-                }`}
-              >
-                <span className="text-xs">{cat.icon}</span>
-                {cat.label}
-                {count > 0 && cat.id !== 'all' && (
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                    activeFilter === cat.id ? 'bg-white/20' : 'bg-gray-200 text-gray-500'
-                  }`}>{count}</span>
+      {/* ================================================ */}
+      {/* UPLOAD SECTION - always visible, expands on file  */}
+      {/* ================================================ */}
+      <div ref={formRef} className="px-3 sm:px-0">
+        <div className={`rounded-2xl border-2 transition-all duration-300 overflow-hidden ${
+          isUploading
+            ? 'border-teal-400 bg-white shadow-lg shadow-teal-100/50'
+            : 'border-dashed border-teal-300 bg-teal-50/30'
+        }`}>
+
+          {/* Upload trigger area - always visible */}
+          {!isUploading && (
+            <div className="p-5">
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => cameraInputRef.current?.click()}
+                  className="flex flex-col items-center gap-2 p-5 rounded-xl bg-white border border-teal-200 hover:border-teal-400 hover:shadow-md transition group"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center group-hover:bg-teal-100 transition">
+                    <Camera size={24} className="text-teal-600" />
+                  </div>
+                  <span className="text-sm font-bold text-teal-800">צלם מסמך</span>
+                  <span className="text-xs text-teal-500">צלם והמערכת תזהה</span>
+                </button>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex flex-col items-center gap-2 p-5 rounded-xl bg-white border border-teal-200 hover:border-teal-400 hover:shadow-md transition group"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center group-hover:bg-teal-100 transition">
+                    <Upload size={24} className="text-teal-600" />
+                  </div>
+                  <span className="text-sm font-bold text-teal-800">העלה קובץ</span>
+                  <span className="text-xs text-teal-500">PDF, תמונה, מסמך</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Scanning progress */}
+          {scanning && (
+            <div className="p-5">
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <Loader2 size={24} className="text-teal-600 animate-spin" />
+                <span className="text-sm font-bold text-teal-800">סורק את המסמך...</span>
+              </div>
+              <div className="w-full bg-teal-200 rounded-full h-1.5 overflow-hidden mb-2">
+                <div className="bg-teal-600 h-full rounded-full animate-pulse" style={{ width: '100%' }} />
+              </div>
+              <p className="text-xs text-teal-600 text-center">{scanProgress}</p>
+            </div>
+          )}
+
+          {/* Inline upload form - appears when file is selected */}
+          {uploadFile && !scanning && (
+            <div className="p-5 space-y-4">
+              {/* File preview + cancel */}
+              <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
+                {uploadPreview ? (
+                  <img src={uploadPreview} alt="תצוגה מקדימה" className="w-14 h-14 object-cover rounded-lg border" />
+                ) : (
+                  <div className="w-14 h-14 bg-white rounded-lg border flex items-center justify-center">
+                    <FileText size={22} className="text-gray-400" />
+                  </div>
                 )}
-              </button>
-            );
-          })}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-800 truncate">{uploadFile.name}</p>
+                  <p className="text-xs text-gray-400">{(uploadFile.size / 1024).toFixed(0)} KB</p>
+                </div>
+                <button onClick={resetUploadForm}
+                  className="p-2 rounded-lg hover:bg-gray-200 text-gray-400 transition">
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Scan results banner */}
+              {(detectedCategory || scanResults?.expiryDate) && (
+                <div className="bg-teal-50 border border-teal-200 rounded-xl p-3 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle size={16} className="text-teal-600" />
+                    <span className="text-sm font-bold text-teal-800">תוצאות סריקה:</span>
+                  </div>
+                  {detectedCategory && (
+                    <p className="text-sm text-teal-700 mr-6">
+                      סוג מסמך: <strong>{CATEGORY_MAP[detectedCategory]?.label}</strong>
+                    </p>
+                  )}
+                  {scanResults?.expiryDate && (
+                    <p className="text-sm text-teal-700 mr-6">
+                      תוקף: <strong>{new Date(scanResults.expiryDate).toLocaleDateString('he-IL')}</strong>
+                    </p>
+                  )}
+                  {scanResults?.licensePlate && (
+                    <p className="text-sm text-teal-700 mr-6">
+                      מספר רכב: <strong>{scanResults.licensePlate}</strong>
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Category selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 text-right">קטגוריה</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(CATEGORY_MAP).map(([key, cat]) => (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        setSelectedCategory(key);
+                        if (!uploadTitle || uploadTitle === CATEGORY_MAP[selectedCategory]?.label) setUploadTitle(cat.label);
+                      }}
+                      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition min-h-[80px] justify-center ${
+                        selectedCategory === key
+                          ? 'border-teal-500 bg-teal-50 shadow-md shadow-teal-100'
+                          : 'border-gray-200 hover:border-teal-300 bg-white'
+                      }`}
+                    >
+                      <span className="text-2xl">{cat.icon}</span>
+                      <span className={`text-sm font-bold ${selectedCategory === key ? 'text-teal-700' : 'text-gray-700'}`}>{cat.label}</span>
+                      {detectedCategory === key && (
+                        <span className="text-[10px] text-teal-500 flex items-center gap-0.5"><Scan size={10} /> זוהה</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Title */}
+              <Input label="כותרת" placeholder="למשל: רישיון רכב 2026"
+                value={uploadTitle} onChange={(e) => setUploadTitle(e.target.value)} dir="rtl" />
+
+              {/* Expiry Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+                  תאריך תוקף
+                  {scanResults?.expiryDate && (
+                    <span className="text-teal-600 text-xs mr-2">(זוהה אוטומטית)</span>
+                  )}
+                </label>
+                <Input type="date" value={uploadExpiry} onChange={(e) => setUploadExpiry(e.target.value)} />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 text-right">הערות (אופציונלי)</label>
+                <textarea placeholder="הערות נוספות..."
+                  value={uploadDescription} onChange={(e) => setUploadDescription(e.target.value)}
+                  className="w-full p-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-right text-sm"
+                  rows={2} dir="rtl" />
+              </div>
+
+              {/* Error */}
+              {error && (
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200">
+                  <AlertCircle size={16} className="text-red-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-1">
+                <Button variant="ghost" onClick={resetUploadForm} className="flex-1">ביטול</Button>
+                <Button loading={saving} onClick={handleUploadSubmit} className="flex-1">
+                  שמור מסמך
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Upload Buttons */}
-      <div className="px-3 sm:px-0">
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={scanning}
-            className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-teal-300 bg-teal-50/50 hover:bg-teal-50 hover:border-teal-400 transition disabled:opacity-50"
-          >
-            <Upload size={24} className="text-teal-600" />
-            <span className="text-sm font-medium text-teal-700">העלה קובץ</span>
-            <span className="text-xs text-teal-500">PDF, תמונה, מסמך</span>
-          </button>
-          <button
-            onClick={() => cameraInputRef.current?.click()}
-            disabled={scanning}
-            className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-teal-300 bg-teal-50/50 hover:bg-teal-50 hover:border-teal-400 transition disabled:opacity-50"
-          >
-            <Camera size={24} className="text-teal-600" />
-            <span className="text-sm font-medium text-teal-700">צלם מסמך</span>
-            <span className="text-xs text-teal-500">צלם והמערכת תזהה</span>
-          </button>
-        </div>
-        <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-          onChange={(e) => { if (e.target.files?.[0]) handleFileSelected(e.target.files[0]); e.target.value = ''; }} className="hidden" />
-        <input ref={cameraInputRef} type="file" accept="image/*" capture="environment"
-          onChange={(e) => { if (e.target.files?.[0]) handleFileSelected(e.target.files[0]); e.target.value = ''; }} className="hidden" />
-      </div>
+      {/* ================================================ */}
+      {/* DOCUMENTS LIST                                    */}
+      {/* ================================================ */}
 
-      {/* Scanning Progress */}
-      {scanning && (
+      {/* Filter Tabs */}
+      {documents.length > 0 && (
         <div className="px-3 sm:px-0">
-          <div className="bg-teal-50 border border-teal-200 rounded-xl p-5">
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <Loader2 size={24} className="text-teal-600 animate-spin" />
-              <span className="text-sm font-bold text-teal-800">סורק את המסמך...</span>
-            </div>
-            <div className="w-full bg-teal-200 rounded-full h-1.5 overflow-hidden mb-2">
-              <div className="bg-teal-600 h-full rounded-full animate-pulse" style={{ width: '100%' }} />
-            </div>
-            <p className="text-xs text-teal-600 text-center">{scanProgress}</p>
+          <div className="flex flex-wrap justify-center gap-2 py-3 px-2 bg-white rounded-xl border border-gray-100 shadow-sm">
+            {CATEGORIES.map(cat => {
+              const count = getCategoryCount(cat.id);
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveFilter(cat.id)}
+                  className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-all duration-200 text-sm flex items-center gap-1.5 ${
+                    activeFilter === cat.id
+                      ? 'bg-teal-600 text-white shadow-md shadow-teal-200'
+                      : 'bg-gray-50 text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200'
+                  }`}
+                >
+                  <span className="text-xs">{cat.icon}</span>
+                  {cat.label}
+                  {count > 0 && cat.id !== 'all' && (
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                      activeFilter === cat.id ? 'bg-white/20' : 'bg-gray-200 text-gray-500'
+                    }`}>{count}</span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
 
-      {/* Documents List */}
+      {/* Documents */}
       <div className="px-3 sm:px-0">
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -626,6 +740,8 @@ export default function DocumentsPage() {
                       </button>
                     </div>
                   </div>
+
+                  {/* Delete confirm overlay */}
                   {showDeleteConfirm === doc.id && (
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 z-10">
                       <div className="bg-white rounded-xl p-4 text-center shadow-lg">
@@ -648,131 +764,6 @@ export default function DocumentsPage() {
           </div>
         )}
       </div>
-
-      {/* Upload Modal */}
-      <Modal
-        isOpen={showUploadModal}
-        onClose={resetUploadForm}
-        title="העלאת מסמך"
-        size="lg"
-      >
-        <div className="space-y-4">
-          {/* File Preview */}
-          {uploadFile && (
-            <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3">
-              {uploadPreview ? (
-                <img src={uploadPreview} alt="תצוגה מקדימה" className="w-16 h-16 object-cover rounded-lg border" />
-              ) : (
-                <div className="w-16 h-16 bg-white rounded-lg border flex items-center justify-center">
-                  <FileText size={24} className="text-gray-400" />
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">{uploadFile.name}</p>
-                <p className="text-xs text-gray-400">{(uploadFile.size / 1024).toFixed(0)} KB</p>
-              </div>
-              <button onClick={() => { setUploadFile(null); setUploadPreview(''); }}
-                className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-400">
-                <X size={16} />
-              </button>
-            </div>
-          )}
-
-          {/* Scan Results Banner */}
-          {(detectedCategory || scanResults?.expiryDate) && (
-            <div className="bg-teal-50 border border-teal-200 rounded-xl p-3 space-y-1">
-              <div className="flex items-center gap-2">
-                <CheckCircle size={16} className="text-teal-600" />
-                <span className="text-sm font-bold text-teal-800">תוצאות סריקה:</span>
-              </div>
-              {detectedCategory && (
-                <p className="text-sm text-teal-700 mr-6">
-                  סוג מסמך: <strong>{CATEGORY_MAP[detectedCategory]?.label}</strong>
-                </p>
-              )}
-              {scanResults?.expiryDate && (
-                <p className="text-sm text-teal-700 mr-6">
-                  תוקף: <strong>{new Date(scanResults.expiryDate).toLocaleDateString('he-IL')}</strong>
-                </p>
-              )}
-              {scanResults?.licensePlate && (
-                <p className="text-sm text-teal-700 mr-6">
-                  מספר רכב: <strong>{scanResults.licensePlate}</strong>
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Category Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 text-right">קטגוריה</label>
-            <div className="grid grid-cols-2 gap-2">
-              {Object.entries(CATEGORY_MAP).map(([key, cat]) => (
-                <button
-                  key={key}
-                  onClick={() => {
-                    setSelectedCategory(key);
-                    if (!uploadTitle || uploadTitle === CATEGORY_MAP[selectedCategory]?.label) setUploadTitle(cat.label);
-                  }}
-                  className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition min-h-[90px] justify-center ${
-                    selectedCategory === key
-                      ? 'border-teal-500 bg-teal-50 shadow-md shadow-teal-100'
-                      : 'border-gray-200 hover:border-teal-300'
-                  }`}
-                >
-                  {selectedCategory === key && uploadPreview ? (
-                    <img src={uploadPreview} alt={cat.label} className="w-12 h-12 object-cover rounded-lg border border-teal-200" />
-                  ) : (
-                    <span className="text-2xl">{cat.icon}</span>
-                  )}
-                  <span className={`text-sm font-bold ${selectedCategory === key ? 'text-teal-700' : 'text-gray-700'}`}>{cat.label}</span>
-                  {detectedCategory === key && (
-                    <span className="text-[10px] text-teal-500 flex items-center gap-0.5"><Scan size={10} /> זוהה</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Title */}
-          <Input label="כותרת" placeholder="למשל: רישיון רכב 2026"
-            value={uploadTitle} onChange={(e) => setUploadTitle(e.target.value)} dir="rtl" />
-
-          {/* Expiry Date */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
-              תאריך תוקף
-              {scanResults?.expiryDate && (
-                <span className="text-teal-600 text-xs mr-2">(זוהה אוטומטית)</span>
-              )}
-            </label>
-            <Input type="date" value={uploadExpiry} onChange={(e) => setUploadExpiry(e.target.value)} />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 text-right">הערות (אופציונלי)</label>
-            <textarea placeholder="הערות נוספות..."
-              value={uploadDescription} onChange={(e) => setUploadDescription(e.target.value)}
-              className="w-full p-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-right text-sm"
-              rows={2} dir="rtl" />
-          </div>
-
-          {error && (
-            <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200">
-              <AlertCircle size={16} className="text-red-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          )}
-
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Button variant="ghost" onClick={resetUploadForm} className="w-full sm:w-auto">ביטול</Button>
-            <Button loading={saving} onClick={handleUploadSubmit} className="w-full sm:w-auto">
-              שמור מסמך
-            </Button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }
