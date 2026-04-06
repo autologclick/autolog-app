@@ -10,6 +10,11 @@ interface SkeletonProps {
   count?: number;
 }
 
+/**
+ * Base Skeleton component with shimmer pulse animation
+ * Supports multiple variants for different use cases
+ * RTL compatible - uses Tailwind classes
+ */
 export default function Skeleton({
   className,
   variant = 'rectangular',
@@ -75,6 +80,75 @@ export default function Skeleton({
   );
 }
 
+/**
+ * SkeletonCard - Card-shaped skeleton
+ * Used for loading card components with rounded corners
+ */
+export function SkeletonCard() {
+  return (
+    <div className="skeleton h-48 rounded-xl w-full" />
+  );
+}
+
+/**
+ * SkeletonText - Text lines skeleton
+ * Generates multiple lines with varying widths for natural look
+ * @param lines - Number of text lines (default: 3)
+ */
+interface SkeletonTextProps {
+  lines?: number;
+  className?: string;
+}
+
+export function SkeletonText({ lines = 3, className }: SkeletonTextProps) {
+  const lineWidths = ['w-full', 'w-5/6', 'w-4/5', 'w-3/4', 'w-2/3'];
+
+  return (
+    <div className={cn('space-y-3', className)}>
+      {Array.from({ length: lines }).map((_, i) => (
+        <div
+          key={i}
+          className={cn(
+            'skeleton h-4 rounded',
+            lineWidths[i % lineWidths.length]
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
+/**
+ * SkeletonAvatar - Circular skeleton for avatar images
+ * Available sizes: sm (32px), md (48px), lg (64px)
+ */
+interface SkeletonAvatarProps {
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}
+
+export function SkeletonAvatar({ size = 'md', className }: SkeletonAvatarProps) {
+  const sizeClasses = {
+    sm: 'w-8 h-8',
+    md: 'w-12 h-12',
+    lg: 'w-16 h-16',
+  };
+
+  return (
+    <div
+      className={cn(
+        'skeleton rounded-full',
+        sizeClasses[size],
+        className
+      )}
+    />
+  );
+}
+
+/**
+ * DashboardSkeleton - Loading skeleton for main dashboard
+ * Shows greeting, vehicle selector, quick actions, appointments, and AI insights
+ */
 export function DashboardSkeleton() {
   return (
     <div className="space-y-6 p-4 animate-fade-in">
@@ -97,6 +171,10 @@ export function DashboardSkeleton() {
   );
 }
 
+/**
+ * TableSkeleton - Loading skeleton for table components
+ * @param rows - Number of table rows to display (default: 5)
+ */
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div className="space-y-3 p-4 animate-fade-in">
@@ -119,6 +197,10 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   );
 }
 
+/**
+ * CardSkeleton - Loading skeleton for card components
+ * Shows header, content lines, and action buttons
+ */
 export function CardSkeleton() {
   return (
     <div className="space-y-4 p-6 bg-white rounded-xl border border-slate-200 animate-fade-in">

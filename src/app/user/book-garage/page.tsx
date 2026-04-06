@@ -11,7 +11,7 @@ import {
   Loader2, Check, AlertCircle, CheckCircle2, Building2,
   ArrowUpDown, SlidersHorizontal, X, MessageSquare,
   Wrench, ClipboardCheck, Car, Settings2, ArrowRight,
-  Clock, MapIcon, FileText, Coffee, Wifi, Monitor, Heart, Armchair
+  Clock, MapIcon, FileText, Coffee, Wifi, Monitor, Heart, Armchair, ChevronDown
 } from 'lucide-react';
 
 interface GarageReview {
@@ -118,8 +118,9 @@ export default function BookGaragePage() {
   const [selectedService, setSelectedService] = useState<string>('');
   const [selectedGarageId, setSelectedGarageId] = useState<string>('');
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [bookingStep, setBookingStep] = useState<'service' | 'vehicle' | 'datetime' | 'review' | 'success'>('service');
+  const [bookingStep, setBookingStep] = useState<'details' | 'success'>('details');
   const [bookingData, setBookingData] = useState({ vehicleId: '', date: '', time: '', notes: '' });
+  const [showNotesInput, setShowNotesInput] = useState(false);
 
   const selectedGarage = garages.find(g => g.id === selectedGarageId);
   const selectedVehicle = vehicles.find(v => v.id === bookingData.vehicleId);
@@ -194,8 +195,9 @@ export default function BookGaragePage() {
   const openBooking = (garage: Garage) => {
     setSelectedGarageId(garage.id);
     setBookingData({ vehicleId: '', date: '', time: '', notes: '' });
-    setBookingStep(selectedService ? 'vehicle' : 'service');
+    setShowNotesInput(false);
     setError('');
+    setBookingStep('details');
     setShowBookingModal(true);
   };
 
@@ -428,8 +430,8 @@ export default function BookGaragePage() {
         </>
       )}
 
-      {/* === BOOKING MODAL (Service → Vehicle → DateTime → Review → Success) === */}
-      <Modal isOpen={showBookingModal} onClose={() => { setShowBookingModal(false); setBookingStep('vehicle'); }}
+      {/* === BOOKING MODAL (UNIFIED: Vehicle + Date + Time + Notes + Confirm) === */}
+      <Modal isOpen={showBookingModal} onClose={() => { setShowBookingModal(false); setBookingStep('details'); }}
         title={bookingStep === 'success' ? 'התור נקבע בהצלחה!' : `הזמנת תור — ${selectedGarage?.name || ''}`} size="lg">
 
         {bookingStep === 'success' ? (
@@ -444,222 +446,150 @@ export default function BookGaragePage() {
               <div className="flex justify-between"><span className="text-gray-600">תאריך:</span><span className="font-medium">{bookingData.date ? new Date(bookingData.date).toLocaleDateString('he-IL') : ''}</span></div>
               <div className="flex justify-between"><span className="text-gray-600">שעה:</span><span className="font-medium">{bookingData.time}</span></div>
             </div>
-            <Button onClick={() => { setShowBookingModal(false); setBookingStep('service'); setSelectedService(''); }} className="mt-4 w-full">סגור</Button>
+            <Button onClick={() => { setShowBookingModal(false); setBookingStep('details'); setSelectedService(''); }} className="mt-4 w-full">סגור</Button>
           </div>
         ) : (
-          <div className="space-y-5">
-            {/* Step indicator - 4 steps */}
-            <div className="flex items-center gap-1 text-sm justify-between w-full px-1">
-              {(['service', 'vehicle', 'datetime', 'review'] as const).map((step, idx) => {
-                const labels = ['בחירת שירות', 'בחירת רכב', 'תאריך ושעה', 'אישור'];
-                const order: Record<string, number> = { service: 0, vehicle: 1, datetime: 2, review: 3 };
-                const isActive = order[step] === order[bookingStep];
-                const isPast = order[step] < order[bookingStep];
-                return (
-                  <div key={step} className="flex items-center gap-1 flex-1">
-                    <div className="flex flex-col items-center w-full">
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition flex-shrink-0 ${
-                        isActive ? 'bg-teal-600 text-white' : isPast ? 'bg-teal-100 text-teal-600' : 'bg-gray-100 text-gray-400'
-                      }`}>{idx + 1}</div>
-                      <span className={`text-[9px] mt-1 text-center leading-tight max-w-[70px] ${isActive ? 'text-teal-600 font-semibold' : isPast ? 'text-teal-600' : 'text-gray-400'}`}>{labels[idx]}</span>
-                    </div>
-                    {idx < 3 && (
-                      <div className={`h-0.5 flex-1 transition ${isPast || isActive ? 'bg-teal-600' : 'bg-gray-200'}`} />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
+          <div className="space-y-4">
             {error && (
               <div className="flex gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                 <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />{error}
               </div>
             )}
 
-            {/* Service Selection Step */}
-            {bookingStep === 'service' && (
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-bold text-gray-800 mb-3">באיזה שירות אתה זקוק?</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {serviceOptions.map(service => (
-                      <button
-                        key={service.value}
-                        onClick={() => { setSelectedService(service.value); setBookingStep('vehicle'); }}
-                        className={`p-3 rounded-xl border-2 transition text-center flex flex-col items-center gap-2 ${
-                          selectedService === service.value
-                            ? 'border-teal-600 bg-teal-50'
-                            : 'border-gray-200 bg-white hover:border-teal-300 hover:bg-teal-50'
-                        }`}
-                      >
-                        <div className="text-teal-600">{service.icon}</div>
-                        <div>
-                          <div className="font-bold text-gray-800 text-sm">{service.label}</div>
-                          <div className="text-xs text-gray-500 mt-0.5">{service.description}</div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+            {/* Info Banner: Garage + Service */}
+            <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 space-y-2">
+              <div className="flex items-center gap-2 text-sm">
+                <Building2 size={16} className="text-teal-600 flex-shrink-0" />
+                <span className="text-gray-600">מוסך:</span>
+                <span className="font-bold text-gray-800">{selectedGarage?.name}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <ClipboardCheck size={16} className="text-teal-600 flex-shrink-0" />
+                <span className="text-gray-600">שירות:</span>
+                <span className="font-bold text-gray-800">{serviceValueToLabel[selectedService]}</span>
+              </div>
+            </div>
+
+            {/* Vehicle Selection - Horizontal Scrollable Cards */}
+            <div>
+              <label className="block text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <Car size={16} className="text-teal-600" />
+                בחר את הרכב שלך
+              </label>
+              {vehicles.length === 0 ? (
+                <div className="text-center py-6 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                  <Car size={32} className="mx-auto text-gray-300 mb-2" />
+                  <p className="text-gray-500 text-sm">אין רכבים</p>
+                  <p className="text-gray-400 text-xs mt-1">הוסף רכב קודם לפני הזמנת תור</p>
+                </div>
+              ) : (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {vehicles.map(v => (
+                    <button
+                      key={v.id}
+                      onClick={() => setBookingData({ ...bookingData, vehicleId: v.id })}
+                      className={`flex-shrink-0 w-32 p-3 rounded-xl border-2 transition text-center flex flex-col items-center gap-2 ${
+                        bookingData.vehicleId === v.id
+                          ? 'border-teal-600 bg-teal-50'
+                          : 'border-gray-200 bg-white hover:border-teal-500 hover:bg-teal-50'
+                      }`}
+                    >
+                      <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Car size={16} className="text-gray-600" />
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-gray-800 text-xs">{v.nickname}</div>
+                        <div className="text-xs text-gray-500 mt-0.5">{v.manufacturer} {v.model}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Date Selection */}
+            <div>
+              <label className="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <Calendar size={16} className="text-teal-600" />
+                בחר תאריך
+              </label>
+              <Input type="date" min={minDate} value={bookingData.date}
+                onChange={e => setBookingData({ ...bookingData, date: e.target.value })} />
+            </div>
+
+            {/* Time Selection - Only show after date is selected */}
+            {bookingData.date && (
+              <div>
+                <label className="block text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                  <Clock size={16} className="text-teal-600" />
+                  בחר שעה
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {timeSlots.map(time => (
+                    <button key={time}
+                      onClick={() => setBookingData({ ...bookingData, time })}
+                      className={`py-2.5 px-2 rounded-lg text-sm font-medium text-center transition ${
+                        bookingData.time === time
+                          ? 'bg-teal-600 text-white shadow-md'
+                          : 'bg-gray-100 text-gray-700 hover:bg-teal-50'
+                      }`}>{time}</button>
+                  ))}
                 </div>
               </div>
             )}
 
-            {/* Vehicle Step */}
-            {bookingStep === 'vehicle' && (
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-bold text-gray-800 mb-3">בחר את הרכב שלך:</h3>
-                  {vehicles.length === 0 ? (
-                    <div className="text-center py-6 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                      <Car size={32} className="mx-auto text-gray-300 mb-2" />
-                      <p className="text-gray-500 text-sm">אין רכבים</p>
-                      <p className="text-gray-400 text-xs mt-1">הוסף רכב קודם לפני הזמנת תור</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {vehicles.map(v => (
-                        <button key={v.id}
-                          onClick={() => { setBookingData({ ...bookingData, vehicleId: v.id }); setBookingStep('datetime'); }}
-                          className={`w-full p-4 rounded-xl text-right border-2 transition flex items-center gap-3 ${
-                            bookingData.vehicleId === v.id
-                              ? 'border-teal-600 bg-teal-50'
-                              : 'border-gray-200 bg-white hover:border-teal-500 hover:bg-teal-50'
-                          }`}
-                        >
-                          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Car size={20} className="text-gray-600" />
-                          </div>
-                          <div className="flex-1 text-right">
-                            <div className="font-bold text-gray-800">{v.nickname}</div>
-                            <div className="text-xs text-gray-500 mt-0.5">{v.manufacturer} {v.model} • {v.licensePlate}</div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-2 pt-2">
-                  <Button variant="ghost" onClick={() => setBookingStep('service')} className="flex-1">← חזור</Button>
-                </div>
-              </div>
-            )}
-
-            {/* DateTime Step */}
-            {bookingStep === 'datetime' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
-                    <Calendar size={16} className="text-teal-600" />
-                    בחר תאריך
-                  </label>
-                  <Input type="date" min={minDate} value={bookingData.date}
-                    onChange={e => setBookingData({ ...bookingData, date: e.target.value })} />
-                </div>
-                {bookingData.date && (
-                  <div>
-                    <label className="block text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                      <Clock size={16} className="text-teal-600" />
-                      בחר שעה
-                    </label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {timeSlots.map(time => (
-                        <button key={time}
-                          onClick={() => setBookingData({ ...bookingData, time })}
-                          className={`py-2.5 px-2 rounded-lg text-sm font-medium text-center transition ${
-                            bookingData.time === time
-                              ? 'bg-teal-600 text-white shadow-md'
-                              : 'bg-gray-100 text-gray-700 hover:bg-teal-50'
-                          }`}>{time}</button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <div className="flex gap-2 pt-2">
-                  <Button variant="ghost" onClick={() => setBookingStep('vehicle')} className="flex-1">← חזור</Button>
-                  <Button disabled={!bookingData.date || !bookingData.time}
-                    onClick={() => setBookingStep('review')} className="flex-1">המשך ←</Button>
-                </div>
-              </div>
-            )}
-
-            {/* Review/Confirmation Step */}
-            {bookingStep === 'review' && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-gray-800">בדוק את פרטי ההזמנה:</h3>
-
-                {/* Summary Cards */}
-                <div className="space-y-2">
-                  {/* Service */}
-                  <div className="bg-white border-2 border-teal-100 rounded-xl p-3 flex gap-3">
-                    <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <ClipboardCheck size={20} className="text-teal-600" />
-                    </div>
-                    <div className="flex-1 text-right">
-                      <p className="text-xs text-gray-600">שירות</p>
-                      <p className="font-bold text-gray-800">{serviceValueToLabel[selectedService]}</p>
-                    </div>
-                  </div>
-
-                  {/* Garage */}
-                  <div className="bg-white border-2 border-teal-100 rounded-xl p-3 flex gap-3">
-                    <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Building2 size={20} className="text-teal-600" />
-                    </div>
-                    <div className="flex-1 text-right">
-                      <p className="text-xs text-gray-600">מוסך</p>
-                      <p className="font-bold text-gray-800">{selectedGarage?.name}</p>
-                    </div>
-                  </div>
-
-                  {/* Vehicle */}
-                  <div className="bg-white border-2 border-teal-100 rounded-xl p-3 flex gap-3">
-                    <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Car size={20} className="text-teal-600" />
-                    </div>
-                    <div className="flex-1 text-right">
-                      <p className="text-xs text-gray-600">רכב</p>
-                      <p className="font-bold text-gray-800">{selectedVehicle?.nickname}</p>
-                    </div>
-                  </div>
-
-                  {/* Date & Time */}
-                  <div className="bg-white border-2 border-teal-100 rounded-xl p-3 flex gap-3">
-                    <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Calendar size={20} className="text-teal-600" />
-                    </div>
-                    <div className="flex-1 text-right">
-                      <p className="text-xs text-gray-600">תאריך ושעה</p>
-                      <p className="font-bold text-gray-800">{bookingData.date ? new Date(bookingData.date).toLocaleDateString('he-IL') : ''} • {bookingData.time}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Notes Field */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    <FileText size={14} className="text-gray-600" />
-                    הערות נוספות (אופציונלי)
-                  </label>
+            {/* Notes Section - Collapsed by default */}
+            <div>
+              <button
+                onClick={() => setShowNotesInput(!showNotesInput)}
+                className="w-full flex items-center justify-between text-sm font-bold text-gray-800 p-3 rounded-xl border border-gray-200 hover:bg-gray-50 transition"
+              >
+                <ChevronDown size={16} className={`text-gray-600 transition-transform ${showNotesInput ? 'rotate-180' : ''}`} />
+                <span>הוסף הערות</span>
+              </button>
+              {showNotesInput && (
+                <div className="mt-2">
                   <textarea
                     placeholder="ספר למוסך על תקלות או בקשות מיוחדות..."
                     value={bookingData.notes}
                     onChange={e => setBookingData({ ...bookingData, notes: e.target.value })}
                     className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 transition resize-none"
-                    rows={2}
+                    rows={3}
                   />
                 </div>
+              )}
+            </div>
 
-                <div className="bg-teal-50 border border-teal-200 rounded-xl p-3 text-xs text-teal-700 text-center">
-                  ✓ המוסך יאשר את הזמנתך תוך 3 דקות ותקבל התראה
+            {/* Summary Line at Bottom */}
+            {bookingData.vehicleId && bookingData.date && bookingData.time && (
+              <div className="bg-teal-50 border border-teal-200 rounded-xl p-3 text-sm text-right space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-teal-600 font-bold">{selectedVehicle?.nickname}</span>
+                  <span className="text-gray-600">רכב:</span>
                 </div>
-
-                <div className="flex gap-2">
-                  <Button variant="ghost" onClick={() => setBookingStep('datetime')} className="flex-1">← חזור</Button>
-                  <Button onClick={handleSubmitBooking} loading={submitting} icon={<Check size={16} />} className="flex-1">אישור הזמנה</Button>
+                <div className="flex justify-between">
+                  <span className="text-teal-600 font-bold">{new Date(bookingData.date).toLocaleDateString('he-IL')} • {bookingData.time}</span>
+                  <span className="text-gray-600">תאריך ושעה:</span>
                 </div>
               </div>
             )}
+
+            {/* Confirm Button */}
+            <div className="flex gap-2 pt-2">
+              <Button
+                disabled={!bookingData.vehicleId || !bookingData.date || !bookingData.time}
+                onClick={handleSubmitBooking}
+                loading={submitting}
+                icon={<Check size={16} />}
+                className="w-full"
+              >
+                אשר תור
+              </Button>
+            </div>
+
+            <div className="bg-teal-50 border border-teal-200 rounded-xl p-3 text-xs text-teal-700 text-center">
+              ✓ המוסך יאשר את הזמנתך תוך 3 דקות ותקבל התראה
+            </div>
           </div>
         )}
       </Modal>

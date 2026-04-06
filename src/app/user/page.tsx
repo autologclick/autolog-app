@@ -9,6 +9,8 @@ import {
   Brain, TrendingUp, TrendingDown, Minus, Lightbulb, Target, Zap, Activity, PenLine
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton';
+import OnboardingWizard from '@/components/shared/OnboardingWizard';
 
 const serviceTypeLabel = (t: string) => {
   const map: Record<string, string> = {
@@ -118,6 +120,7 @@ export default function UserDashboard() {
   const [aiLoading, setAiLoading] = useState(false);
   const [awaitingSignature, setAwaitingSignature] = useState<Array<{id: string; vehicle: string}>>([]);
   const [showAiDetails, setShowAiDetails] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
@@ -144,7 +147,12 @@ export default function UserDashboard() {
       fetch('/api/appointments?limit=3').then(r => r.json()).catch(() => ({ appointments: [] })),
       fetch('/api/inspections?status=awaiting_signature&limit=10').then(r => r.json()).catch(() => ({ inspections: [] })),
     ]).then(([vData, uData, nData, aData, iData]) => {
-      if (vData.vehicles?.length > 0) setVehicles(vData.vehicles);
+      if (vData.vehicles?.length > 0) {
+        setVehicles(vData.vehicles);
+      } else {
+        // New user with no vehicles — show onboarding
+        setShowOnboarding(true);
+      }
       if (uData.user) setUser(uData.user);
       if (nData.notifications) {
         setNotifications(nData.notifications);
@@ -233,12 +241,17 @@ export default function UserDashboard() {
   const vehicle = vehicles[selectedVehicle];
   const userName = user?.fullName?.split(' ')[0] || 'משתמש';
 
+  // Onboarding completion handler
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    // Reload vehicles after onboarding
+    fetch('/api/vehicles').then(r => r.json()).then(d => {
+      if (d.vehicles?.length > 0) setVehicles(d.vehicles);
+    }).catch(() => {});
+  };
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 size={32} className="animate-spin text-teal-600" />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   const allDocsValid = vehicle
@@ -273,6 +286,9 @@ export default function UserDashboard() {
 
   return (
     <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
+      {/* Onboarding Wizard for new users */}
+      <OnboardingWizard isOpen={showOnboarding} onComplete={handleOnboardingComplete} />
+
       {/* Welcome Banner */}
       <div className="bg-gradient-to-l from-[#1a3a5c] to-[#0d7377] rounded-2xl mx-3 sm:mx-0 p-5 sm:p-6 mb-6 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
