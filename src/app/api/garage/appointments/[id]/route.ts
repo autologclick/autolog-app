@@ -92,7 +92,7 @@ export async function PUT(
       where: { id },
       data: updateData,
       include: {
-        garage: { select: { name: true } },
+        garage: { select: { name: true, phone: true, address: true, city: true } },
         vehicle: { select: { nickname: true, licensePlate: true } },
         user: { select: { id: true, fullName: true } },
       },
@@ -185,6 +185,12 @@ export async function PUT(
           cancelled: 'התור בוטל',
         };
 
+        // Fetch garage contact details for confirmed emails
+        const garageDetails = await prisma.garage.findUnique({
+          where: { id: appointment.garage.id },
+          select: { phone: true, address: true, city: true },
+        });
+
         sendEmail({
           to: customerEmail,
           subject: `AutoLog — ${statusTitles[status] || 'עדכון תור'}`,
@@ -198,6 +204,9 @@ export async function PUT(
             status: status as 'confirmed' | 'rejected' | 'in_progress' | 'completed' | 'cancelled',
             completionNotes: completionNotes || null,
             rejectionReason: rejectionReason || null,
+            garagePhone: garageDetails?.phone || null,
+            garageAddress: garageDetails?.address || null,
+            garageCity: garageDetails?.city || null,
           }),
         }).catch(() => { /* silent */ });
       }

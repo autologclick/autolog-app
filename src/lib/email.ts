@@ -164,24 +164,34 @@ export function buildGarageWelcomeEmailHtml({
 
 /**
  * Build the HTML for a new-appointment notification email to a garage owner.
+ * Includes direct approve/reject action links.
  */
 export function buildAppointmentEmailHtml({
   garageName,
   customerName,
+  customerPhone,
+  customerEmail,
   vehicleLabel,
   serviceLabel,
   dateLabel,
   timeLabel,
   notes,
+  appointmentId,
 }: {
   garageName: string;
   customerName: string;
+  customerPhone?: string | null;
+  customerEmail?: string | null;
   vehicleLabel: string;
   serviceLabel: string;
   dateLabel: string;
   timeLabel: string;
   notes?: string | null;
+  appointmentId?: string;
 }): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+  const appointmentsUrl = `${baseUrl}/garage/appointments`;
+
   return `
 <!DOCTYPE html>
 <html dir="rtl" lang="he">
@@ -204,6 +214,8 @@ export function buildAppointmentEmailHtml({
 
             <table width="100%" cellpadding="8" cellspacing="0" style="background:#f8fafc;border-radius:8px;margin-bottom:20px;font-size:15px;color:#334155">
               <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600;width:120px">לקוח</td><td style="border-bottom:1px solid #e2e8f0">${customerName}</td></tr>
+              ${customerPhone ? `<tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">טלפון</td><td style="border-bottom:1px solid #e2e8f0"><a href="tel:${customerPhone}" style="color:#2563eb;text-decoration:none">${customerPhone}</a></td></tr>` : ''}
+              ${customerEmail ? `<tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">אימייל</td><td style="border-bottom:1px solid #e2e8f0"><a href="mailto:${customerEmail}" style="color:#2563eb;text-decoration:none">${customerEmail}</a></td></tr>` : ''}
               <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">רכב</td><td style="border-bottom:1px solid #e2e8f0">${vehicleLabel}</td></tr>
               <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">סוג שירות</td><td style="border-bottom:1px solid #e2e8f0">${serviceLabel}</td></tr>
               <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">תאריך</td><td style="border-bottom:1px solid #e2e8f0">${dateLabel}</td></tr>
@@ -211,9 +223,18 @@ export function buildAppointmentEmailHtml({
               ${notes ? `<tr><td style="border-top:1px solid #e2e8f0;font-weight:600">הערות</td><td style="border-top:1px solid #e2e8f0">${notes}</td></tr>` : ''}
             </table>
 
-            <a href="https://autolog.click/garage/appointments" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:15px;font-weight:600">
-              צפה בתורים
-            </a>
+            <p style="font-size:14px;color:#dc2626;background:#fef2f2;padding:10px 14px;border-radius:8px;margin:0 0 20px">⏱️ יש לך 3 דקות לאשר או לדחות את התור לפני שהוא נדחה אוטומטית.</p>
+
+            <div style="text-align:center;margin:24px 0">
+              <a href="${appointmentsUrl}" style="display:inline-block;background:#059669;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:700;margin-left:12px">
+                ✅ אשר תור
+              </a>
+              <a href="${appointmentsUrl}" style="display:inline-block;background:#dc2626;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:700">
+                ❌ דחה תור
+              </a>
+            </div>
+
+            <p style="font-size:13px;color:#94a3b8;text-align:center;margin:0">לחיצה תפתח את מערכת ניהול התורים</p>
           </td>
         </tr>
         <!-- Footer -->
@@ -230,7 +251,84 @@ export function buildAppointmentEmailHtml({
 }
 
 /**
+ * Build the HTML for admin notification about a new appointment.
+ */
+export function buildAdminAppointmentEmailHtml({
+  garageName,
+  customerName,
+  customerPhone,
+  customerEmail,
+  vehicleLabel,
+  serviceLabel,
+  dateLabel,
+  timeLabel,
+  notes,
+}: {
+  garageName: string;
+  customerName: string;
+  customerPhone?: string | null;
+  customerEmail?: string | null;
+  vehicleLabel: string;
+  serviceLabel: string;
+  dateLabel: string;
+  timeLabel: string;
+  notes?: string | null;
+}): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+
+  return `
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head><meta charset="utf-8"></head>
+<body style="font-family:Arial,Helvetica,sans-serif;background:#f4f4f7;margin:0;padding:0;direction:rtl">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:32px 0">
+    <tr><td align="center">
+      <table width="520" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06)">
+        <tr>
+          <td style="background:linear-gradient(135deg,#7c3aed,#6d28d9);padding:24px 32px;text-align:center">
+            <h1 style="color:#ffffff;margin:0;font-size:22px">📋 תור חדש במערכת</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px 32px">
+            <p style="font-size:16px;color:#1e293b;margin:0 0 20px">שלום מנהל,</p>
+            <p style="font-size:16px;color:#1e293b;margin:0 0 20px">תור חדש נקבע במערכת:</p>
+
+            <table width="100%" cellpadding="8" cellspacing="0" style="background:#f8fafc;border-radius:8px;margin-bottom:20px;font-size:15px;color:#334155">
+              <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600;width:120px">מוסך</td><td style="border-bottom:1px solid #e2e8f0">${garageName}</td></tr>
+              <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">לקוח</td><td style="border-bottom:1px solid #e2e8f0">${customerName}</td></tr>
+              ${customerPhone ? `<tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">טלפון</td><td style="border-bottom:1px solid #e2e8f0">${customerPhone}</td></tr>` : ''}
+              ${customerEmail ? `<tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">אימייל</td><td style="border-bottom:1px solid #e2e8f0">${customerEmail}</td></tr>` : ''}
+              <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">רכב</td><td style="border-bottom:1px solid #e2e8f0">${vehicleLabel}</td></tr>
+              <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">סוג שירות</td><td style="border-bottom:1px solid #e2e8f0">${serviceLabel}</td></tr>
+              <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">תאריך</td><td style="border-bottom:1px solid #e2e8f0">${dateLabel}</td></tr>
+              <tr><td style="font-weight:600">שעה</td><td>${timeLabel}</td></tr>
+              ${notes ? `<tr><td style="border-top:1px solid #e2e8f0;font-weight:600">הערות</td><td style="border-top:1px solid #e2e8f0">${notes}</td></tr>` : ''}
+            </table>
+
+            <div style="text-align:center">
+              <a href="${baseUrl}/admin/appointments" style="display:inline-block;background:#7c3aed;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:15px;font-weight:600">
+                צפה בפאנל ניהול
+              </a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 32px;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0">
+            AutoLog — ניהול רכבים חכם
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`.trim();
+}
+
+/**
  * Build the HTML for a status-update notification email to a customer.
+ * Enhanced: confirmed status includes garage contact details,
+ * rejected status includes recommendation to try another garage.
  */
 export function buildCustomerStatusEmailHtml({
   customerName,
@@ -242,6 +340,9 @@ export function buildCustomerStatusEmailHtml({
   status,
   completionNotes,
   rejectionReason,
+  garagePhone,
+  garageAddress,
+  garageCity,
 }: {
   customerName: string;
   garageName: string;
@@ -252,6 +353,9 @@ export function buildCustomerStatusEmailHtml({
   status: 'confirmed' | 'rejected' | 'in_progress' | 'completed' | 'cancelled';
   completionNotes?: string | null;
   rejectionReason?: string | null;
+  garagePhone?: string | null;
+  garageAddress?: string | null;
+  garageCity?: string | null;
 }): string {
   const statusConfig: Record<string, { emoji: string; title: string; color: string; message: string }> = {
     confirmed: {
@@ -264,7 +368,7 @@ export function buildCustomerStatusEmailHtml({
       emoji: '❌',
       title: 'ההזמנה נדחתה',
       color: '#dc2626',
-      message: `לצערנו, ההזמנה שלך ב<strong>${garageName}</strong> נדחתה.${rejectionReason ? ` סיבה: ${rejectionReason}` : ''} ניתן לנסות מוסך אחר.`,
+      message: `לצערנו, ההזמנה שלך ב<strong>${garageName}</strong> נדחתה.${rejectionReason ? ` סיבה: ${rejectionReason}` : ''}`,
     },
     in_progress: {
       emoji: '🔧',
@@ -287,6 +391,41 @@ export function buildCustomerStatusEmailHtml({
   };
 
   const cfg = statusConfig[status] || statusConfig.confirmed;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+
+  // Build garage contact section for confirmed appointments
+  let garageContactHtml = '';
+  if (status === 'confirmed' && (garagePhone || garageAddress)) {
+    const contactRows: string[] = [];
+    if (garageAddress && garageCity) {
+      contactRows.push(`<tr><td style="border-bottom:1px solid #bbf7d0;font-weight:600;width:80px">כתובת</td><td style="border-bottom:1px solid #bbf7d0">${garageAddress}, ${garageCity}</td></tr>`);
+    } else if (garageAddress) {
+      contactRows.push(`<tr><td style="border-bottom:1px solid #bbf7d0;font-weight:600;width:80px">כתובת</td><td style="border-bottom:1px solid #bbf7d0">${garageAddress}</td></tr>`);
+    }
+    if (garagePhone) {
+      contactRows.push(`<tr><td style="font-weight:600;width:80px">טלפון</td><td><a href="tel:${garagePhone}" style="color:#059669;text-decoration:none;font-weight:600">${garagePhone}</a></td></tr>`);
+    }
+    garageContactHtml = `
+            <p style="font-size:15px;color:#1e293b;font-weight:600;margin:20px 0 8px">📍 פרטי התקשרות עם המוסך:</p>
+            <table width="100%" cellpadding="8" cellspacing="0" style="background:#f0fdf4;border-radius:8px;margin-bottom:20px;font-size:15px;color:#334155;border:1px solid #bbf7d0">
+              ${contactRows.join('')}
+            </table>`;
+  }
+
+  // Build recommendation section for rejected appointments
+  let rejectionRecommendationHtml = '';
+  if (status === 'rejected') {
+    rejectionRecommendationHtml = `
+            <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:16px;margin:20px 0">
+              <p style="font-size:15px;color:#92400e;margin:0 0 8px;font-weight:600">💡 מה עכשיו?</p>
+              <p style="font-size:14px;color:#92400e;margin:0">מומלץ לנסות לקבוע תור במוסך אחר. במערכת AutoLog ישנם מוסכים נוספים שישמחו לעזור לך.</p>
+            </div>
+            <div style="text-align:center;margin:20px 0">
+              <a href="${baseUrl}/user/garages" style="display:inline-block;background:#f59e0b;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:15px;font-weight:600">
+                🔍 חפש מוסך אחר
+              </a>
+            </div>`;
+  }
 
   return `
 <!DOCTYPE html>
@@ -315,12 +454,25 @@ export function buildCustomerStatusEmailHtml({
               <tr><td style="border-bottom:1px solid #e2e8f0;font-weight:600">תאריך</td><td style="border-bottom:1px solid #e2e8f0">${dateLabel}</td></tr>
               <tr><td style="font-weight:600">שעה</td><td>${timeLabel}</td></tr>
             </table>
+            ${garageContactHtml}
+            ${rejectionRecommendationHtml}
 
-            <a href="https://autolog.click/user/appointments" style="display:inline-block;background:${cfg.color};color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:15px;font-weight:600">
-              צפה בתורים שלי
-            </a>
+            <div style="text-align:center${status === 'rejected' ? '' : ';margin-top:8px'}">
+              <a href="${baseUrl}/user/appointments" style="display:inline-block;background:${cfg.color};color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:15px;font-weight:600">
+                צפה בתורים שלי
+              </a>
+            </div>
           </td>
         </tr>
         <!-- Footer -->
         <tr>
-          <td style="padding:16px 32px;text-alig
+          <td style="padding:16px 32px;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0">
+            AutoLog — ניהול רכבים חכם
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`.trim();
+}
