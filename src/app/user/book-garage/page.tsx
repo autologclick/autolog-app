@@ -67,6 +67,9 @@ const serviceOptions = [
 
 const serviceValueToLabel: Record<string, string> = {
   inspection: 'בדיקה', maintenance: 'טיפול', repair: 'תיקון', test_prep: 'הכנה לטסט',
+  oil_change: 'החלפת שמן', tires: 'צמיגים', brakes: 'בלמים', diagnostics: 'אבחון',
+  bodywork: 'פחחות', electrical: 'חשמל', ac: 'מיזוג', lights_mirrors: 'פנסים ומראות',
+  spare_parts: 'חלקי חילוף',
 };
 
 const timeSlots = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
@@ -396,7 +399,7 @@ export default function BookGaragePage() {
                       {(g.services || []).length > 0 && (
                         <div className="flex gap-1.5 flex-wrap">
                           {(g.services || []).slice(0, 4).map(s => (
-                            <span key={s} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{s}</span>
+                            <span key={s} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{serviceValueToLabel[s] || s}</span>
                           ))}
                         </div>
                       )}
