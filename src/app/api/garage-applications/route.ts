@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { sanitizeInput } from '@/lib/security';
 import { createApplication, checkDuplicateEmail } from '@/lib/garage-applications-db';
+import { notifyAdmins } from '@/lib/services/notification-service';
 import { createLogger } from '@/lib/logger';
 import { VALIDATION_ERRORS, GARAGE_MESSAGES, API_ERRORS } from '@/lib/messages';
 
@@ -90,13 +91,24 @@ export async function POST(req: NextRequest) {
 
     const id = await createApplication(sanitized);
 
+    // Notify all admins of the new garage application
+    try {
+      await notifyAdmins(
+        'system',
+        'בקשת הצטרפות מוסך חדשה',
+        `${sanitized.garageName} (${sanitized.ownerName}) הגיש/ה בקשה להצטרפות מ${sanitized.city}`,
+        '/admin/applications',
+      );
+    } catch (notifyErr) {
+      logger.warn('Failed to notify admins about new application', {
+        error: notifyErr instanceof Error ? notifyErr.message : String(notifyErr),
+      });
+    }
+
     return jsonResponse({
       id,
       message: GARAGE_MESSAGES.APPLICATION_SENT,
     }, 201);
   } catch (error) {
     logger.error('garage-applications POST error', { error: error instanceof Error ? error.message : String(error) });
-    const errMsg = error instanceof Error ? error.message : 'שגיאת שרת פנימית';
-    return NextResponse.json({ error: errMsg }, { status: 500 });
-  }
-}
+    const errMsg = error instanceof Error ? error.message : 'שגיא�

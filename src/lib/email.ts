@@ -58,6 +58,111 @@ export async function sendEmail({ to, subject, html }: SendEmailParams): Promise
 }
 
 /**
+ * Build the HTML for a password-reset email.
+ */
+export function buildPasswordResetEmailHtml({
+  fullName,
+  resetUrl,
+}: {
+  fullName: string;
+  resetUrl: string;
+}): string {
+  return `
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head><meta charset="utf-8"></head>
+<body style="font-family:Arial,Helvetica,sans-serif;background:#f4f4f7;margin:0;padding:0;direction:rtl">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:32px 0">
+    <tr><td align="center">
+      <table width="520" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06)">
+        <tr>
+          <td style="background:linear-gradient(135deg,#1e3a5f,#2d5a8e);padding:24px 32px;text-align:center">
+            <h1 style="color:#ffffff;margin:0;font-size:22px">🔑 איפוס סיסמה</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px 32px">
+            <p style="font-size:16px;color:#1e293b;margin:0 0 20px">שלום ${fullName},</p>
+            <p style="font-size:16px;color:#1e293b;margin:0 0 20px">קיבלנו בקשה לאיפוס הסיסמה שלך ב-AutoLog. לחץ על הכפתור למטה כדי לבחור סיסמה חדשה:</p>
+            <div style="text-align:center;margin:28px 0">
+              <a href="${resetUrl}" style="display:inline-block;background:#10b981;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:16px;font-weight:700">
+                איפוס סיסמה
+              </a>
+            </div>
+            <p style="font-size:14px;color:#64748b;margin:0 0 12px">הקישור תקף לשעה אחת בלבד.</p>
+            <p style="font-size:14px;color:#64748b;margin:0">אם לא ביקשת איפוס סיסמה, ניתן להתעלם מהודעה זו.</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 32px;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0">
+            AutoLog — ניהול רכבים חכם
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`.trim();
+}
+
+/**
+ * Build the HTML for welcome email with credentials for new garage owners.
+ */
+export function buildGarageWelcomeEmailHtml({
+  ownerName,
+  garageName,
+  email,
+  tempPassword,
+  loginUrl,
+}: {
+  ownerName: string;
+  garageName: string;
+  email: string;
+  tempPassword: string;
+  loginUrl: string;
+}): string {
+  return `
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head><meta charset="utf-8"></head>
+<body style="font-family:Arial,Helvetica,sans-serif;background:#f4f4f7;margin:0;padding:0;direction:rtl">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:32px 0">
+    <tr><td align="center">
+      <table width="520" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06)">
+        <tr>
+          <td style="background:linear-gradient(135deg,#059669,#10b981);padding:24px 32px;text-align:center">
+            <h1 style="color:#ffffff;margin:0;font-size:22px">🎉 ברוכים הבאים ל-AutoLog!</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px 32px">
+            <p style="font-size:16px;color:#1e293b;margin:0 0 20px">שלום ${ownerName},</p>
+            <p style="font-size:16px;color:#1e293b;margin:0 0 20px">בקשת ההצטרפות של <strong>${garageName}</strong> אושרה! להלן פרטי ההתחברות שלך:</p>
+            <table width="100%" cellpadding="10" cellspacing="0" style="background:#f0fdf4;border-radius:8px;margin-bottom:20px;font-size:15px;color:#334155;border:1px solid #bbf7d0">
+              <tr><td style="border-bottom:1px solid #bbf7d0;font-weight:600;width:120px">אימייל</td><td style="border-bottom:1px solid #bbf7d0;font-family:monospace">${email}</td></tr>
+              <tr><td style="font-weight:600">סיסמה זמנית</td><td style="font-family:monospace;font-weight:700;color:#059669">${tempPassword}</td></tr>
+            </table>
+            <p style="font-size:14px;color:#dc2626;background:#fef2f2;padding:12px;border-radius:8px;margin:0 0 20px">⚠️ מומלץ לשנות את הסיסמה מיד לאחר ההתחברות הראשונה.</p>
+            <div style="text-align:center;margin:20px 0">
+              <a href="${loginUrl}" style="display:inline-block;background:#059669;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:16px;font-weight:700">
+                כניסה למערכת
+              </a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 32px;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0">
+            AutoLog — ניהול רכבים חכם
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`.trim();
+}
+
+/**
  * Build the HTML for a new-appointment notification email to a garage owner.
  */
 export function buildAppointmentEmailHtml({
@@ -218,13 +323,4 @@ export function buildCustomerStatusEmailHtml({
         </tr>
         <!-- Footer -->
         <tr>
-          <td style="padding:16px 32px;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0">
-            AutoLog — ניהול רכבים חכם
-          </td>
-        </tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`.trim();
-}
+          <td style="padding:16px 32px;text-alig

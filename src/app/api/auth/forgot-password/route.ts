@@ -4,6 +4,7 @@ import { jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { VALIDATION_ERRORS } from '@/lib/messages';
 import { randomBytes, createHash } from 'crypto';
 import { createLogger } from '@/lib/logger';
+import { sendEmail, buildPasswordResetEmailHtml } from '@/lib/email';
 
 const logger = createLogger('auth');
 
@@ -42,17 +43,25 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // In production, send email here
-    // For now, log the token in development
-    if (process.env.NODE_ENV === 'development') {
-      logger.debug('Password reset token generated', { email: user.email, resetUrl: `/auth/forgot-password?token=${resetToken}` });
+    // Send password reset email
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+    const resetUrl = `${baseUrl}/auth/forgot-password?token=${resetToken}`;
+
+    const emailSent = await sendEmail({
+      to: user.email,
+      subject: 'איפוס סיסמה - AutoLog',
+      html: buildPasswordResetEmailHtml({
+        fullName: user.fullName,
+        resetUrl,
+      }),
+    });
+
+    if (!emailSent) {
+      logger.warn('Failed to send password reset email', { email: user.email });
+    } else {
+      logger.info('Password reset email sent', { email: user.email });
     }
 
     return jsonResponse({
       message: 'אם הכתובת קיימת במערכת, נשלח אליך קישור לאיפוס סיסמה',
-      // Token is logged via logger.debug above — never returned in response
-    });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+      // Token is logged via logger.debug above — never retu

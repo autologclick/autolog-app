@@ -4,6 +4,10 @@ import { getApplicationById, updateApplicationStatus } from '@/lib/garage-applic
 import prisma from '@/lib/db';
 import { hashPassword } from '@/lib/auth';
 import { GARAGE_APP_ERRORS } from '@/lib/messages';
+import { sendEmail, buildGarageWelcomeEmailHtml } from '@/lib/email';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('garage-applications');
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -57,18 +61,25 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         });
         userId = existingUser.id;
       } else {
-        // Create new user with garage_owner role
-        const tempPassword = await hashPassword('AutoLog2026!');
+        // Create new user with garage_owner role and random temp password
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+        let tempPass = '';
+        for (let i = 0; i < 10; i++) {
+          tempPass += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        const hashedPass = await hashPassword(tempPass);
         const newUser = await prisma.user.create({
           data: {
             email: application.email,
             fullName: application.ownerName,
             phone: application.phone,
-            passwordHash: tempPassword,
+            passwordHash: hashedPass,
             role: 'garage_owner',
           },
         });
         userId = newUser.id;
+        // Store temp password to return to admin
+        (application as any)._tempPassword = tempPass;
       }
 
       // Check if garage already exists for this owner
@@ -94,17 +105,37 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         });
       }
 
+      const tempPass = (application as any)._tempPassword;
+
+      // Send welcome email with credentials to new garage owner
+      if (tempPass) {
+        try {
+          const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+          await sendEmail({
+            to: application.email,
+            subject: 'ברוכים הבאים ל-AutoLog! פרטי ההתחברות שלך',
+            html: buildGarageWelcomeEmailHtml({
+              ownerName: application.ownerName,
+              garageName: application.garageName,
+              email: application.email,
+              tempPassword: tempPass,
+              loginUrl: `${baseUrl}/auth/login`,
+            }),
+          });
+        } catch (emailErr) {
+          logger.warn('Failed to send welcome email to garage owner', {
+            email: application.email,
+            error: emailErr instanceof Error ? emailErr.message : String(emailErr),
+          });
+        }
+      }
+
       return jsonResponse({
         message: 'הבקשה אושרה! המוסך נוסף למערכת בהצלחה.',
         userCreated: !existingUser,
-        passwordInfo: !existingUser ? 'סיסמה נשלחה למייל' : undefined,
+        tempPassword: tempPass || undefined,
+        loginEmail: application.email,
       });
     }
 
-    return jsonResponse({
-      message: status === 'rejected' ? 'הבקשה נדחתה.' : 'הסטטוס עודכן.',
-    });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+    return jsonResponse

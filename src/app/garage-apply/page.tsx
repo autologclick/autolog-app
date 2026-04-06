@@ -30,6 +30,8 @@ const SERVICE_OPTIONS = [
   { id: 'glass', label: 'שמשות וזגוגית' },
   { id: 'locksmith', label: 'מנעולנות רכב' },
   { id: 'towing', label: 'גרירה וחילוץ' },
+  { id: 'lights_mirrors', label: 'פנסים ומראות' },
+  { id: 'spare_parts', label: 'חלקי חילוף' },
 ];
 
 const LANGUAGE_OPTIONS = [
@@ -44,10 +46,11 @@ const LANGUAGE_OPTIONS = [
 ];
 
 const CITIES = [
-  'תל אביב', 'ירושלים', 'חיפה', 'באר שבע', 'ראשון לציון',
-  'פתח תקווה', 'אשדוד', 'נתניה', 'חולון', 'בני ברק',
-  'רמת גן', 'אשקלון', 'הרצליה', 'כפר סבא', 'רעננה',
-  'מודיעין', 'לוד', 'רמלה', 'נהריה', 'עכו', 'אילת', 'אחר',
+  'אילת', 'אשדוד', 'אשקלון', 'באר שבע', 'בני ברק',
+  'הרצליה', 'חולון', 'חיפה', 'ירושלים', 'כפר סבא',
+  'לוד', 'מודיעין', 'נהריה', 'נתניה', 'עכו',
+  'פתח תקווה', 'ראשון לציון', 'רמלה', 'רמת גן', 'רעננה',
+  'תל אביב', 'אחר',
 ];
 
 export default function GarageApplyPage() {
@@ -131,6 +134,8 @@ export default function GarageApplyPage() {
     if (!form.email.trim()) return 'נא להזין כתובת אימייל';
     if (!form.phone.trim()) return 'נא להזין מספר טלפון';
     if (!form.city) return 'נא לבחור עיר';
+    if (!form.address.trim()) return 'נא להזין כתובת מדויקת (רחוב ומספר)';
+    if (!/\d/.test(form.address)) return 'נא להזין כתובת מדויקת עם מספר בית (לדוגמה: ז׳בוטינסקי 25)';
     return null;
   };
 
@@ -365,12 +370,12 @@ export default function GarageApplyPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     <MapPin size={14} className="inline ml-1" />
-                    כתובת
+                    כתובת מדויקת *
                   </label>
                   <input
                     value={form.address}
                     onChange={e => updateField('address', e.target.value)}
-                    placeholder="רחוב ומספר"
+                    placeholder="רחוב ומספר בית (לדוגמה: ז׳בוטינסקי 25)"
                     className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400"
                   />
                 </div>
@@ -565,19 +570,4 @@ export default function GarageApplyPage() {
         </div>
 
         {/* Benefits footer */}
-        <div className="mt-8 grid grid-cols-3 gap-4 text-center">
-          {[
-            { icon: CheckCircle2, text: 'הצטרפות חינמית' },
-            { icon: Clock, text: 'אישור תוך 1-3 ימים' },
-            { icon: Wrench, text: 'כלים מתקדמים' },
-          ].map(({ icon: Icon, text }) => (
-            <div key={text} className="text-gray-400 text-xs flex flex-col items-center gap-1.5">
-              <Icon size={18} />
-              <span>{text}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+     

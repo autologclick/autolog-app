@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
-import { Users, Search, Filter, Eye, Edit, Loader2, AlertCircle, Building2, Shield, UserCheck, UserX } from 'lucide-react';
+import { Users, Search, Filter, Eye, Edit, Loader2, AlertCircle, Building2, Shield, UserCheck, UserX, Key, Mail, CheckCircle2 } from 'lucide-react';
 
 interface User {
   id: string;
@@ -31,6 +31,10 @@ export default function AdminUsersPage() {
   const [editModal, setEditModal] = useState(false);
   const [editData, setEditData] = useState({ fullName: '', phone: '', role: '', isActive: true });
   const [updating, setUpdating] = useState(false);
+  const [credentialsInfo, setCredentialsInfo] = useState<{ email: string; password: string } | null>(null);
+  const [copied, setCopied] = useState('');
+  const [actionMsg, setActionMsg] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -86,6 +90,46 @@ export default function AdminUsersPage() {
       setError(err instanceof Error ? err.message : 'שגיאה בעדכון משתמש');
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleResetPassword = async (userId: string) => {
+    setPasswordLoading(true);
+    setActionMsg('');
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reset_password' }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'שגיאה באיפוס סיסמה');
+      setCredentialsInfo({ email: data.email, password: data.tempPassword });
+      setEditModal(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'שגיאה באיפוס סיסמה');
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  const handleSendResetEmail = async (userId: string) => {
+    setPasswordLoading(true);
+    setActionMsg('');
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'send_reset_email' }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'שגיאה בשליחת מייל');
+      setActionMsg(data.message);
+      setEditModal(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'שגיאה בשליחת מייל');
+    } finally {
+      setPasswordLoading(false);
     }
   };
 
@@ -325,6 +369,32 @@ export default function AdminUsersPage() {
             </label>
           </div>
 
+          {/* Password Management Section */}
+          <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+            <h4 className="text-sm font-bold text-amber-800 mb-3 flex items-center gap-2">
+              <Key size={14} />
+              ניהול סיסמה
+            </h4>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                onClick={() => editingUser && handleResetPassword(editingUser.id)}
+                disabled={passwordLoading}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium bg-white border border-amber-300 text-amber-700 rounded-lg hover:bg-amber-100 transition disabled:opacity-50"
+              >
+                {passwordLoading ? <Loader2 size={14} className="animate-spin" /> : <Key size={14} />}
+                איפוס סיסמה ידני
+              </button>
+              <button
+                onClick={() => editingUser && handleSendResetEmail(editingUser.id)}
+                disabled={passwordLoading}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium bg-white border border-teal-300 text-teal-700 rounded-lg hover:bg-teal-50 transition disabled:opacity-50"
+              >
+                {passwordLoading ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
+                שלח קישור איפוס במייל
+              </button>
+            </div>
+          </div>
+
           <div className="flex gap-3 pt-4 border-t">
             <Button
               variant="primary"
@@ -348,6 +418,65 @@ export default function AdminUsersPage() {
           </div>
         </div>
       </Modal>
+
+      {/* Credentials Modal */}
+      {credentialsInfo && (
+        <div className="fixed inset-0 bg-black/50 z-[200] flex items-center justify-center p-4" onClick={() => setCredentialsInfo(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4" dir="rtl" onClick={e => e.stopPropagation()}>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <CheckCircle2 size={28} className="text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800">הסיסמה אופסה בהצלחה!</h3>
+              <p className="text-sm text-gray-500 mt-1">פרטי ההתחברות החדשים:</p>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">אימייל</label>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-sm flex-1 bg-white rounded-lg px-3 py-2 border">{credentialsInfo.email}</span>
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(credentialsInfo.email); setCopied('email'); setTimeout(() => setCopied(''), 2000); }}
+                    className="px-3 py-2 text-xs bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+                  >
+                    {copied === 'email' ? '\u2713' : 'העתק'}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">סיסמה חדשה</label>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-sm flex-1 bg-white rounded-lg px-3 py-2 border font-bold text-teal-700">{credentialsInfo.password}</span>
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(credentialsInfo.password); setCopied('pass'); setTimeout(() => setCopied(''), 2000); }}
+                    className="px-3 py-2 text-xs bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+                  >
+                    {copied === 'pass' ? '\u2713' : 'העתק'}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-amber-600 bg-amber-50 rounded-lg p-3 text-center">
+              שלח פרטים אלו למשתמש. מומלץ שישנה את הסיסמה בכניסה הראשונה.
+            </p>
+            <button
+              onClick={() => setCredentialsInfo(null)}
+              className="w-full py-2.5 bg-[#1e3a5f] text-white font-bold rounded-xl hover:bg-[#162d4a] transition"
+            >
+              סגור
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Success Action Message */}
+      {actionMsg && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 z-[100]" dir="rtl">
+          <CheckCircle2 size={18} />
+          <span className="font-medium">{actionMsg}</span>
+          <button onClick={() => setActionMsg('')} className="mr-2 text-white/80 hover:text-white">&times;</button>
+        </div>
+      )}
     </div>
   );
 }

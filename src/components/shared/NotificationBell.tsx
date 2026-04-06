@@ -126,7 +126,7 @@ export default function NotificationBell() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative z-[60]" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-lg hover:bg-gray-100 transition"
@@ -140,7 +140,7 @@ export default function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute end-0 top-full mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50">
+        <div className="absolute start-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-xl border border-gray-200 z-[100]">
           {/* Header */}
           <div className="border-b border-gray-200 p-4">
             <h3 className="font-bold text-gray-800 text-right">התראות</h3>

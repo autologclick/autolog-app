@@ -43,6 +43,8 @@ export default function AdminApplicationsPage() {
   const [noteText, setNoteText] = useState('');
   const [counts, setCounts] = useState({ total: 0, pending: 0 });
   const [error, setError] = useState('');
+  const [credentialsInfo, setCredentialsInfo] = useState<{ email: string; password: string } | null>(null);
+  const [copied, setCopied] = useState('');
 
   const fetchApplications = async () => {
     try {
@@ -82,7 +84,10 @@ export default function AdminApplicationsPage() {
 
       // Show temp password if new user was created
       if (data.tempPassword) {
-        alert(`המוסך אושר!\n\nסיסמה זמנית למוסך: ${data.tempPassword}\nנא להעביר את הסיסמה לבעל המוסך.`);
+        setCredentialsInfo({
+          email: data.loginEmail,
+          password: data.tempPassword,
+        });
       }
 
       setNoteText('');
@@ -131,6 +136,56 @@ export default function AdminApplicationsPage() {
 
   return (
     <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
+      {/* Credentials Modal */}
+      {credentialsInfo && (
+        <div className="fixed inset-0 bg-black/50 z-[200] flex items-center justify-center p-4" onClick={() => setCredentialsInfo(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4" onClick={e => e.stopPropagation()}>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <CheckCircle2 size={28} className="text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800">המוסך אושר בהצלחה!</h3>
+              <p className="text-sm text-gray-500 mt-1">פרטי ההתחברות של בעל המוסך:</p>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">אימייל</label>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-sm flex-1 bg-white rounded-lg px-3 py-2 border">{credentialsInfo.email}</span>
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(credentialsInfo.email); setCopied('email'); setTimeout(() => setCopied(''), 2000); }}
+                    className="px-3 py-2 text-xs bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+                  >
+                    {copied === 'email' ? '✓' : 'העתק'}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">סיסמה זמנית</label>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-sm flex-1 bg-white rounded-lg px-3 py-2 border font-bold text-teal-700">{credentialsInfo.password}</span>
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(credentialsInfo.password); setCopied('pass'); setTimeout(() => setCopied(''), 2000); }}
+                    className="px-3 py-2 text-xs bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+                  >
+                    {copied === 'pass' ? '✓' : 'העתק'}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-amber-600 bg-amber-50 rounded-lg p-3 text-center">
+              ⚠️ שלח פרטים אלו לבעל המוסך. מומלץ שישנה את הסיסמה בכניסה הראשונה.
+            </p>
+            <button
+              onClick={() => setCredentialsInfo(null)}
+              className="w-full py-2.5 bg-[#1e3a5f] text-white font-bold rounded-xl hover:bg-[#162d4a] transition"
+            >
+              סגור
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
@@ -343,21 +398,4 @@ export default function AdminApplicationsPage() {
                           <button
                             onClick={() => handleAction(app.id, 'rejected')}
                             disabled={!!actionLoading}
-                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition border border-red-200 disabled:opacity-60"
-                          >
-                            <XCircle size={16} />
-                            דחה
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition border border-red-200 disab

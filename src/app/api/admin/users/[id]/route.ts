@@ -3,6 +3,12 @@ import { z } from 'zod';
 import prisma from '@/lib/db';
 import { requireAdmin, jsonResponse, errorResponse, handleApiError, validationErrorResponse } from '@/lib/api-helpers';
 import { NOT_FOUND } from '@/lib/messages';
+import { hashPassword } from '@/lib/auth';
+import { sendEmail, buildPasswordResetEmailHtml } from '@/lib/email';
+import { randomBytes, createHash } from 'crypto';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('admin-users');
 
 const updateUserSchema = z.object({
   fullName: z.string().min(2, 'שם חייב להכיל לפחות 2 תווים').max(100).optional(),
@@ -129,3 +135,86 @@ export async function PUT(
     return handleApiError(error);
   }
 }
+
+// POST /api/admin/users/[id] - Admin actions: reset password, send reset email
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    requireAdmin(req);
+    const body = await req.json();
+    const { action } = body;
+
+    const user = await prisma.user.findUnique({
+      where: { id: params.id },
+      select: { id: true, email: true, fullName: true },
+    });
+
+    if (!user) {
+      return errorResponse(NOT_FOUND.USER, 404);
+    }
+
+    if (action === 'reset_password') {
+      // Generate random password
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+      let tempPass = '';
+      for (let i = 0; i < 10; i++) {
+        tempPass += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      const hashed = await hashPassword(tempPass);
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { passwordHash: hashed },
+      });
+
+      return jsonResponse({
+        message: 'הסיסמה אופסה בהצלחה',
+        tempPassword: tempPass,
+        email: user.email,
+      });
+    }
+
+    if (action === 'send_reset_email') {
+      // Generate reset token and send email
+      const resetToken = randomBytes(32).toString('hex');
+      const hashedToken = createHash('sha256').update(resetToken).digest('hex');
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          resetToken: hashedToken,
+          resetTokenExpiry: expiresAt,
+        },
+      });
+
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+      const resetUrl = `${baseUrl}/auth/forgot-password?token=${resetToken}`;
+
+      const emailSent = await sendEmail({
+        to: user.email,
+        subject: 'איפוס סיסמה - AutoLog',
+        html: buildPasswordResetEmailHtml({
+          fullName: user.fullName,
+          resetUrl,
+        }),
+      });
+
+      if (!emailSent) {
+        logger.warn('Failed to send admin-triggered reset email', { email: user.email });
+        return errorResponse('שליחת המייל נכשלה. בדוק הגדרות RESEND_API_KEY.', 500);
+      }
+
+      return jsonResponse({
+        message: `קישור איפוס סיסמה נשלח ל-${user.email}`,
+        emailSent: true,
+      });
+    }
+
+    return errorResponse('פעולה לא חוקית', 400);
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+    
