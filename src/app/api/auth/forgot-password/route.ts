@@ -64,4 +64,8 @@ export async function POST(req: NextRequest) {
 
     return jsonResponse({
       message: 'אם הכתובת קיימת במערכת, נשלח אליך קישור לאיפוס סיסמה',
-      // Token is logged via logger.debug above — never retu
+    });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}

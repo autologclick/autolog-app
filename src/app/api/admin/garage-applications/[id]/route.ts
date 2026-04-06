@@ -138,4 +138,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       });
     }
 
-    return jsonResponse
+    return jsonResponse({
+      message: 'הבקשה נדחתה בהצלחה.',
+    });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}

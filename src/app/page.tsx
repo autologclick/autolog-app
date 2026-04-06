@@ -893,4 +893,38 @@ export default function Home() {
                   <Mail size={14} />
                   <span>info@autolog.click</span>
                 </li>
-                <li className="flex 
+                <li className="flex items-center gap-2">
+                  <Phone size={14} />
+                  <a href="tel:+972299999999" className="hover:text-white transition">+972 2 999 9999</a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <MapPin size={14} />
+                  <span>תל אביב, ישראל</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-700 pt-8">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
+              <p className="text-gray-400 text-sm">
+                © 2026 AutoLog. כל הזכויות שמורות.
+              </p>
+              <div className="flex gap-4">
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition">
+                  פייסבוק
+                </a>
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition">
+                  X
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition">
+                  LinkedIn
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}

@@ -398,4 +398,25 @@ export default function AdminApplicationsPage() {
                           <button
                             onClick={() => handleAction(app.id, 'rejected')}
                             disabled={!!actionLoading}
-                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition border border-red-200 disab
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition border border-red-200 disabled:opacity-60"
+                          >
+                            {actionLoading === app.id ? (
+                              <Loader2 size={16} className="animate-spin" />
+                            ) : (
+                              <XCircle size={16} />
+                            )}
+                            דחה מוסך
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+    </div>
+  );
+}

@@ -9,7 +9,7 @@ import {
   Brain, TrendingUp, TrendingDown, Minus, Lightbulb, Target, Zap, Activity, PenLine
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton';
+import DashboardSkeleton from '@/components/ui/DashboardSkeleton';
 import OnboardingWizard from '@/components/shared/OnboardingWizard';
 
 const serviceTypeLabel = (t: string) => {

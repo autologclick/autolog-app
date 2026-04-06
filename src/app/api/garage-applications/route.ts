@@ -111,4 +111,7 @@ export async function POST(req: NextRequest) {
     }, 201);
   } catch (error) {
     logger.error('garage-applications POST error', { error: error instanceof Error ? error.message : String(error) });
-    const errMsg = error instanceof Error ? error.message : 'שגיא�
+    const errMsg = error instanceof Error ? error.message : 'שגיאה בעת הגשת הבקשה';
+    return errorResponse(errMsg, 500);
+  }
+}

@@ -428,7 +428,7 @@ export default function AdminAppointmentsPage() {
                               <div className="text-xs text-gray-400">{appt.vehicle.licensePlate}</div>
                             </td>
                             <td className="px-4 py-3">
-                              <Badge variant="outline">{SERVICE_TYPE_HEB[appt.serviceType] || appt.serviceType}</Badge>
+                              <Badge variant="info">{SERVICE_TYPE_HEB[appt.serviceType] || appt.serviceType}</Badge>
                             </td>
                             <td className="px-4 py-3">
                               <StatusBadge status={appt.status} />
@@ -619,7 +619,7 @@ function MobileAppointmentCard({
               {appointment.garage.name} • {formatDate(appointment.date)} {appointment.time}
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <Badge variant="outline">{SERVICE_TYPE_HEB[appointment.serviceType] || appointment.serviceType}</Badge>
+              <Badge variant="info">{SERVICE_TYPE_HEB[appointment.serviceType] || appointment.serviceType}</Badge>
               <StatusBadge status={appointment.status} />
             </div>
           </div>
