@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Card, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
+import PageHeader from '@/components/ui/PageHeader';
+import PageSkeleton from '@/components/ui/PageSkeleton';
 import {
   MessageCircle, Phone, Mail, Clock, Send, CheckCircle2, HelpCircle,
   FileText, AlertTriangle, ChevronDown, Headphones, MessageSquare, Zap, Car, Calendar, Lightbulb, Lock, Search
@@ -96,20 +98,12 @@ export default function SupportPage() {
   };
 
   return (
-    <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-[#fef7ed] border-2 border-[#1e3a5f] rounded-lg flex items-center justify-center">
-          <Headphones size={20} className="text-[#1e3a5f]" />
-        </div>
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">מרכז תמיכה</h1>
-          <p className="text-sm text-gray-500">אנחנו כאן בשבילך</p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#fef7ed] pb-24 pt-12 lg:pt-0" dir="rtl">
+      <div className="space-y-6">
+        <PageHeader title="תמיכה" backUrl="/user/profile" />
 
-      {/* Contact Methods - Horizontal cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* Contact Methods - Horizontal cards */}
+        <div className="mx-4 lg:mx-0 grid grid-cols-1 sm:grid-cols-3 gap-3">
         {contactMethods.map((m, i) => (
           <a
             key={i}
@@ -139,10 +133,11 @@ export default function SupportPage() {
             </div>
           </a>
         ))}
-      </div>
+        </div>
 
-      {/* Send Message Form */}
-      <Card>
+        {/* Send Message Form */}
+        <div className="mx-4 lg:mx-0">
+          <Card className="bg-white rounded-2xl">
         <CardTitle icon={<MessageSquare className="text-teal-600" />}>שלח הודעה</CardTitle>
 
         {submitted ? (
@@ -207,10 +202,12 @@ export default function SupportPage() {
             </Button>
           </div>
         )}
-      </Card>
+          </Card>
+        </div>
 
-      {/* FAQ */}
-      <Card>
+        {/* FAQ */}
+        <div className="mx-4 lg:mx-0">
+          <Card className="bg-white rounded-2xl">
         <CardTitle icon={<HelpCircle className="text-amber-500" />}>שאלות נפוצות</CardTitle>
         <div className="space-y-2 mt-4">
           {faqItems.map((faq, i) => {
@@ -238,11 +235,12 @@ export default function SupportPage() {
             </div>
             );
           })}
+          </div>
+          </Card>
         </div>
-      </Card>
 
-      {/* Emergency Banner */}
-      <div className="bg-gradient-to-l from-red-500 to-red-600 rounded-2xl p-4 flex items-center gap-3 text-white shadow-lg">
+        {/* Emergency Banner */}
+        <div className="mx-4 lg:mx-0 bg-gradient-to-l from-red-500 to-red-600 rounded-2xl p-4 flex items-center gap-3 text-white shadow-lg">
         <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
           <AlertTriangle size={24} />
         </div>
@@ -253,6 +251,7 @@ export default function SupportPage() {
         <a href="/user/sos" className="px-4 py-2 bg-white text-red-600 rounded-xl text-sm font-bold hover:bg-red-50 transition flex-shrink-0 shadow">
           SOS
         </a>
+        </div>
       </div>
     </div>
   );

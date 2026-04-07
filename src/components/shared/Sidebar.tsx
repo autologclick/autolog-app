@@ -294,19 +294,24 @@ export default function Sidebar({ portal, userName = 'משתמש' }: SidebarProp
     </>
   );
 
+  // User portal: no hamburger/drawer on mobile — only bottom tabs
+  const hideHamburger = portal === 'user';
+
   return (
     <>
-      {/* Mobile Hamburger Button - top right for RTL Hebrew */}
-      <button
-        className="lg:hidden fixed top-4 right-4 z-50 bg-white text-[#1e3a5f] p-2 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
-        onClick={() => setMobileOpen(!mobileOpen)}
-        aria-label={mobileOpen ? 'סגור תפריט' : 'פתח תפריט'}
-      >
-        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
+      {/* Mobile Hamburger Button — hidden for user portal */}
+      {!hideHamburger && (
+        <button
+          className="lg:hidden fixed top-4 right-4 z-50 bg-white text-[#1e3a5f] p-2 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label={mobileOpen ? 'סגור תפריט' : 'פתח תפריט'}
+        >
+          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      )}
 
-      {/* Mobile Overlay */}
-      {mobileOpen && (
+      {/* Mobile Overlay — hidden for user portal */}
+      {!hideHamburger && mobileOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-all duration-300"
           onClick={() => setMobileOpen(false)}
@@ -330,13 +335,15 @@ export default function Sidebar({ portal, userName = 'משתמש' }: SidebarProp
         </button>
       </aside>
 
-      {/* Mobile Drawer - slides from RIGHT for RTL Hebrew */}
-      <div className={cn(
-        `${colors.bg} flex lg:hidden flex-col h-screen fixed top-0 right-0 z-40 w-64 transition-all duration-300 shadow-2xl`,
-        mobileOpen ? 'translate-x-0' : 'translate-x-full'
-      )}>
-        <NavContent />
-      </div>
+      {/* Mobile Drawer — hidden for user portal */}
+      {!hideHamburger && (
+        <div className={cn(
+          `${colors.bg} flex lg:hidden flex-col h-screen fixed top-0 right-0 z-40 w-64 transition-all duration-300 shadow-2xl`,
+          mobileOpen ? 'translate-x-0' : 'translate-x-full'
+        )}>
+          <NavContent />
+        </div>
+      )}
 
       {/* Desktop Spacer - on RIGHT side matching sidebar */}
       <div className={cn('hidden lg:block transition-all duration-300', collapsed ? 'w-16' : 'w-64')} />

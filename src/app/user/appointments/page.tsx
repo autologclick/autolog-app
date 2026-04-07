@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card } from '@/components/ui/Card';
+import PageHeader from '@/components/ui/PageHeader';
+import PageSkeleton from '@/components/ui/PageSkeleton';
 import Button from '@/components/ui/Button';
 import Badge, { StatusBadge } from '@/components/ui/Badge';
 import Modal from '@/components/ui/Modal';
@@ -345,300 +346,375 @@ export default function AppointmentsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+      <div className="min-h-screen bg-[#fef7ed] pb-24">
+        <PageHeader title="התורים שלי" backUrl="/user/service" />
+        <PageSkeleton />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
-      {/* Status Change Alert Banner */}
-      {showNewAlert && (
-        <div className="animate-pulse bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-xl p-4 shadow-lg flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <Bell size={20} className="text-white" />
-            </div>
-            <div>
-              <p className="font-bold text-lg">{alertMessage || `${newAlertCount} עדכונים חדשים`}</p>
-              <p className="text-sm text-white/80">התקבל עדכון סטטוס לתורים שלך</p>
-            </div>
-          </div>
-          <button
-            onClick={() => setShowNewAlert(false)}
-            className="text-white/80 hover:text-white transition-colors"
-          >
-            <X size={20} />
-          </button>
-        </div>
-      )}
+    <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+      <PageHeader title="התורים שלי" backUrl="/user/service" />
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] rounded-lg border-2 border-[#1e3a5f] flex items-center justify-center">
-            <Calendar size={20} className="text-[#1e3a5f]" />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 space-y-4">
+        {/* Status Change Alert Banner */}
+        {showNewAlert && (
+          <div className="animate-pulse bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-2xl p-4 shadow-md flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <Bell size={20} className="text-white" />
+              </div>
+              <div>
+                <p className="font-bold text-lg">{alertMessage || `${newAlertCount} עדכונים חדשים`}</p>
+                <p className="text-sm text-white/80">התקבל עדכון סטטוס לתורים שלך</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowNewAlert(false)}
+              className="text-white/80 hover:text-white transition-colors"
+            >
+              <X size={20} />
+            </button>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">התורים שלי</h1>
-        </div>
-        <div className="flex items-center gap-2">
+        )}
+
+        {/* Sound Control */}
+        <div className="flex justify-end">
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`p-2 rounded-lg transition-colors ${
-              soundEnabled ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-400'
+            className={`p-2 rounded-full transition-colors ${
+              soundEnabled ? 'bg-white text-teal-700 shadow-sm' : 'bg-white text-gray-400 shadow-sm'
             }`}
             title={soundEnabled ? 'השתק התראות' : 'הפעל התראות'}
           >
             {soundEnabled ? <Volume2 size={18} /> : <Bell size={18} />}
           </button>
-          <Button
-            icon={<Plus size={16} />}
-            onClick={() => router.push('/user/book-garage')}
-            className="w-full sm:w-auto"
-          >
-            קבע תור חדש
-          </Button>
         </div>
-      </div>
 
-      {/* Quick Stats */}
-      {(pendingCount > 0 || inProgressCount > 0 || confirmedCount > 0) && (
-        <div className="flex gap-3 overflow-x-auto pb-1">
-          {pendingCount > 0 && (
-            <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 flex-shrink-0">
-              <Clock size={16} className="text-amber-600" />
-              <span className="text-sm font-medium text-amber-800">{pendingCount} ממתינים לאישור</span>
-            </div>
-          )}
-          {confirmedCount > 0 && (
-            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 flex-shrink-0">
-              <CheckCircle2 size={16} className="text-emerald-600" />
-              <span className="text-sm font-medium text-emerald-800">{confirmedCount} מאושרים</span>
-            </div>
-          )}
-          {inProgressCount > 0 && (
-            <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5 flex-shrink-0">
-              <Play size={16} className="text-blue-600" />
-              <span className="text-sm font-medium text-blue-800">{inProgressCount} בטיפול כרגע</span>
-            </div>
-          )}
+        {/* Filter Chips - Horizontal Scrollable */}
+        <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4">
+          {([
+            { key: 'all', label: 'הכל', color: '' },
+            { key: 'pending', label: 'ממתין', color: 'bg-amber-400' },
+            { key: 'confirmed', label: 'מאושר', color: 'bg-emerald-400' },
+            { key: 'in_progress', label: 'בטיפול', color: 'bg-blue-400' },
+            { key: 'completed', label: 'הושלם', color: 'bg-teal-400' },
+            { key: 'rejected', label: 'נדחה', color: 'bg-red-400' },
+            { key: 'cancelled', label: 'מבוטל', color: 'bg-gray-400' },
+          ] as { key: FilterStatus; label: string; color: string }[]).map(f => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 flex-shrink-0 ${
+                filter === f.key
+                  ? 'bg-white text-teal-700 shadow-sm font-semibold'
+                  : 'bg-white/60 text-gray-600 hover:bg-white/80'
+              }`}
+            >
+              {f.color && <span className={`w-1.5 h-1.5 rounded-full ${filter === f.key ? 'bg-teal-600' : f.color}`} />}
+              {f.label}
+            </button>
+          ))}
         </div>
-      )}
 
-      {error && (
-        <div className="flex gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-          <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
-          {error}
-        </div>
-      )}
-
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
-        {([
-          { key: 'all', label: 'הכל', color: '' },
-          { key: 'pending', label: 'ממתין', color: 'bg-amber-400' },
-          { key: 'confirmed', label: 'מאושר', color: 'bg-emerald-400' },
-          { key: 'in_progress', label: 'בטיפול', color: 'bg-blue-400' },
-          { key: 'completed', label: 'הושלם', color: 'bg-teal-400' },
-          { key: 'rejected', label: 'נדחה', color: 'bg-red-400' },
-          { key: 'cancelled', label: 'מבוטל', color: 'bg-gray-400' },
-        ] as { key: FilterStatus; label: string; color: string }[]).map(f => (
-          <button
-            key={f.key}
-            onClick={() => setFilter(f.key)}
-            className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 ${
-              filter === f.key
-                ? 'bg-[#1e3a5f] text-white shadow-sm'
-                : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
-            }`}
-          >
-            {f.color && <span className={`w-1.5 h-1.5 rounded-full ${filter === f.key ? 'bg-white' : f.color}`} />}
-            {f.label}
-          </button>
-        ))}
-      </div>
-
-      {/* AI Insights */}
-      {!loading && appointments.length > 0 && (
-        <div className="bg-gradient-to-r from-[#fef7ed] to-white border border-teal-200 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-teal-500/10 rounded-lg flex items-center justify-center">
-              <Brain size={18} className="text-teal-600" />
-            </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לתורים</h2>
+        {error && (
+          <div className="flex gap-2 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm">
+            <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+            {error}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Next Appointment */}
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
-              <div className="flex items-center gap-2 mb-2">
-                <Target size={14} className="text-teal-600" />
-                <span className="text-xs font-bold text-gray-700">תור הבא</span>
-              </div>
-              {nextAppt ? (
-                <p className="text-xs text-gray-600">
-                  🗓️ {new Date(nextAppt.date).toLocaleDateString('he-IL')} בשעה {nextAppt.time} ב{nextAppt.garage.name}
-                </p>
-              ) : (
-                <p className="text-xs text-gray-600">אין תור קרוב</p>
-              )}
-            </div>
+        )}
 
-            {/* Appointments Status Overview */}
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp size={14} className="text-teal-600" />
-                <span className="text-xs font-bold text-gray-700">סטטוס תורים</span>
+        {/* AI Insights */}
+        {!loading && appointments.length > 0 && (
+          <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 bg-teal-500/10 rounded-lg flex items-center justify-center">
+                <Brain size={18} className="text-teal-600" />
               </div>
-              <p className="text-xs text-gray-600">
-                📊 {pendingCount} ממתינים, {confirmedCount} מאושרים, {completedCount} הושלמו
+              <h2 className="text-sm font-bold text-gray-800">תובנות AI לתורים</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Next Appointment */}
+              <div className="bg-[#fef7ed] rounded-xl p-3 border border-gray-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <Target size={14} className="text-teal-600" />
+                  <span className="text-xs font-bold text-gray-700">תור הבא</span>
+                </div>
+                {nextAppt ? (
+                  <p className="text-xs text-gray-600">
+                    {new Date(nextAppt.date).toLocaleDateString('he-IL')} בשעה {nextAppt.time} ב{nextAppt.garage.name}
+                  </p>
+                ) : (
+                  <p className="text-xs text-gray-600">אין תור קרוב</p>
+                )}
+              </div>
+
+              {/* Appointments Status Overview */}
+              <div className="bg-[#fef7ed] rounded-xl p-3 border border-gray-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp size={14} className="text-teal-600" />
+                  <span className="text-xs font-bold text-gray-700">סטטוס תורים</span>
+                </div>
+                <p className="text-xs text-gray-600">
+                  {pendingCount} ממתינים, {confirmedCount} מאושרים, {completedCount} הושלמו
+                </p>
+              </div>
+
+              {/* Most Visited Garage */}
+              <div className="bg-[#fef7ed] rounded-xl p-3 border border-gray-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <Target size={14} className="text-teal-600" />
+                  <span className="text-xs font-bold text-gray-700">מוסך מועדף</span>
+                </div>
+                {mostVisited ? (
+                  <p className="text-xs text-gray-600">
+                    {mostVisited.name} ({mostVisited.count} תורים)
+                  </p>
+                ) : (
+                  <p className="text-xs text-gray-600">אין מוסך מועדף</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Appointments List */}
+        {filteredAppointments.length === 0 ? (
+          <div className="text-center py-12 px-4">
+            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+              <Calendar size={32} className="text-teal-600" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">אין תורים</h3>
+            <p className="text-gray-500 mb-6">
+              {filter === 'all'
+                ? 'עדיין לא קבעת תורים. קבע תור כעת!'
+                : `אין תורים ${filter === 'pending' ? 'ממתינים לאישור' : filter === 'confirmed' ? 'מאושרים' : filter === 'in_progress' ? 'בטיפול' : filter === 'completed' ? 'שהושלמו' : filter === 'rejected' ? 'שנדחו' : 'שבוטלו'}`}
+            </p>
+            <Button
+              icon={<Plus size={16} />}
+              onClick={() => router.push('/user/book-garage')}
+            >
+              קבע תור חדש
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {/* Separate upcoming and past appointments */}
+            {filteredAppointments
+              .filter(a => a.status !== 'completed' && a.status !== 'cancelled' && a.status !== 'rejected')
+              .map(appointment => (
+                <AppointmentCard
+                  key={appointment.id}
+                  appointment={appointment}
+                  onSelect={() => {
+                    setSelectedAppointment(appointment);
+                    setShowDetailModal(true);
+                  }}
+                  getServiceLabel={getServiceLabel}
+                  getServiceIcon={getServiceIcon}
+                />
+              ))}
+
+            {/* Past appointments section */}
+            {filteredAppointments.some(a => a.status === 'completed' || a.status === 'cancelled' || a.status === 'rejected') && (
+              <div className="mt-8">
+                <h3 className="text-sm font-bold text-gray-600 mb-3 px-1">תורים קודמים</h3>
+                <div className="space-y-3 opacity-60">
+                  {filteredAppointments
+                    .filter(a => a.status === 'completed' || a.status === 'cancelled' || a.status === 'rejected')
+                    .map(appointment => (
+                      <AppointmentCard
+                        key={appointment.id}
+                        appointment={appointment}
+                        onSelect={() => {
+                          setSelectedAppointment(appointment);
+                          setShowDetailModal(true);
+                        }}
+                        getServiceLabel={getServiceLabel}
+                        getServiceIcon={getServiceIcon}
+                      />
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Modals */}
+        <DetailAndCancelModals
+          showDetailModal={showDetailModal}
+          selectedAppointment={selectedAppointment}
+          setShowDetailModal={setShowDetailModal}
+          showCancelModal={showCancelModal}
+          setShowCancelModal={setShowCancelModal}
+          cancelling={cancelling}
+          canCancel={canCancel}
+          handleCancelAppointment={handleCancelAppointment}
+          getServiceLabel={getServiceLabel}
+        />
+      </div>
+    </div>
+  );
+}
+
+// Appointment Card Component
+function AppointmentCard({
+  appointment,
+  onSelect,
+  getServiceLabel,
+  getServiceIcon,
+}: {
+  appointment: Appointment;
+  onSelect: () => void;
+  getServiceLabel: (type: string) => string;
+  getServiceIcon: (type: string) => React.ReactNode;
+}) {
+  const appointmentDate = new Date(appointment.date);
+  const isInProgress = appointment.status === 'in_progress';
+
+  return (
+    <div
+      onClick={onSelect}
+      className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-gray-200"
+    >
+      <div className="flex items-start gap-4">
+        {/* Service Icon */}
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 ${
+          isInProgress ? 'bg-blue-50' : 'bg-teal-50'
+        }`}>
+          {getServiceIcon(appointment.serviceType)}
+        </div>
+
+        {/* Details */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2 mb-1">
+            <div>
+              <h3 className="font-bold text-gray-900 text-base">
+                {appointment.garage.name}
+              </h3>
+              <p className="text-xs text-gray-500 mt-0.5">
+                {getServiceLabel(appointment.serviceType)}
               </p>
             </div>
+            <StatusBadge status={appointment.status} />
+          </div>
 
-            {/* Most Visited Garage */}
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
-              <div className="flex items-center gap-2 mb-2">
-                <Target size={14} className="text-teal-600" />
-                <span className="text-xs font-bold text-gray-700">מוסך מועדף</span>
-              </div>
-              {mostVisited ? (
-                <p className="text-xs text-gray-600">
-                  🔧 {mostVisited.name} ({mostVisited.count} תורים)
-                </p>
-              ) : (
-                <p className="text-xs text-gray-600">אין מוסך מועדף</p>
-              )}
+          {/* Vehicle Info */}
+          <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
+            <Car size={12} className="text-gray-400" />
+            <span className="bg-gray-100 px-2 py-0.5 rounded text-xs font-medium">
+              {appointment.vehicle.nickname}
+            </span>
+            <span className="text-gray-400">•</span>
+            <span>{appointment.vehicle.licensePlate}</span>
+          </div>
+
+          {/* Time & Location */}
+          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 mb-2">
+            <div className="flex items-center gap-1">
+              <Calendar size={12} className="text-teal-600" />
+              {appointmentDate.toLocaleDateString('he-IL')}
+            </div>
+            <div className="flex items-center gap-1">
+              <Clock size={12} className="text-teal-600" />
+              {appointment.time}
+            </div>
+            <div className="flex items-center gap-1">
+              <MapPin size={12} className="text-teal-600" />
+              {appointment.garage.city}
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Appointments List */}
-      {filteredAppointments.length === 0 ? (
-        <Card className="text-center py-12">
-          <div className="w-12 h-12 bg-[#fef7ed] rounded-xl flex items-center justify-center mx-auto mb-4">
-            <Calendar size={24} className="text-[#1e3a5f]" />
+          {/* Timeline dots indicator */}
+          <div className="flex items-center gap-1 mt-2">
+            <TimelineIndicator status={appointment.status} />
           </div>
-          <h3 className="text-lg font-bold text-gray-600 mb-2">אין תורים</h3>
-          <p className="text-gray-400 mb-4">
-            {filter === 'all'
-              ? 'עדיין לא קבעת תורים. קבע תור כעת!'
-              : `אין תורים ${filter === 'pending' ? 'ממתינים לאישור' : filter === 'confirmed' ? 'מאושרים' : filter === 'in_progress' ? 'בטיפול' : filter === 'completed' ? 'שהושלמו' : filter === 'rejected' ? 'שנדחו' : 'שבוטלו'}`}
-          </p>
-          <Button
-            icon={<Plus size={16} />}
-            onClick={() => router.push('/user/book-garage')}
-          >
-            קבע תור חדש
-          </Button>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {filteredAppointments.map(appointment => {
-            const appointmentDate = new Date(appointment.date);
-            const isInProgress = appointment.status === 'in_progress';
 
-            return (
-              <Card
-                key={appointment.id}
-                hover
-                onClick={() => {
-                  setSelectedAppointment(appointment);
-                  setShowDetailModal(true);
-                }}
-                className={isInProgress ? 'border-blue-300 border-2' : appointment.status === 'rejected' ? 'border-red-300 border-2 opacity-75' : ''}
-              >
-                <div className="flex items-start gap-4">
-                  {/* Service Icon */}
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 ${
-                    isInProgress ? 'bg-blue-50' : 'bg-teal-50'
-                  }`}>
-                    {getServiceIcon(appointment.serviceType)}
-                  </div>
+          {/* In-progress indicator */}
+          {isInProgress && (
+            <div className="mt-2 flex items-center gap-2 text-blue-700 bg-blue-50 rounded-lg px-3 py-1.5">
+              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+              <span className="text-xs font-medium">הרכב בטיפול כרגע</span>
+            </div>
+          )}
 
-                  {/* Details */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div>
-                        <h3 className="font-bold text-[#1e3a5f] text-lg">
-                          {appointment.garage.name}
-                        </h3>
-                        <p className="text-sm text-gray-500 mt-0.5">
-                          {getServiceLabel(appointment.serviceType)}
-                        </p>
-                      </div>
-                      <StatusBadge status={appointment.status} />
-                    </div>
-
-                    {/* Vehicle Info */}
-                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                      <Car size={14} className="text-gray-400" />
-                      <span className="bg-gray-100 px-2 py-0.5 rounded text-xs font-medium">
-                        {appointment.vehicle.nickname}
-                      </span>
-                      <span className="text-gray-400">•</span>
-                      <span className="text-xs">{appointment.vehicle.licensePlate}</span>
-                    </div>
-
-                    {/* Time & Location */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar size={14} className="text-teal-600" />
-                        {appointmentDate.toLocaleDateString('he-IL')}
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <Clock size={14} className="text-teal-600" />
-                        {appointment.time}
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <MapPin size={14} className="text-teal-600" />
-                        {appointment.garage.city}
-                      </div>
-                    </div>
-
-                    {/* In-progress indicator */}
-                    {isInProgress && (
-                      <div className="mt-2 flex items-center gap-2 text-blue-700 bg-blue-50 rounded-lg px-3 py-1.5">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                        <span className="text-xs font-medium">הרכב בטיפול כרגע</span>
-                      </div>
-                    )}
-
-                    {/* Notes if present */}
-                    {appointment.notes && (
-                      <p className="text-sm text-gray-500 mt-2 italic">
-                        הערות: {appointment.notes}
-                      </p>
-                    )}
-
-                    {/* Treatment Summary - shown when completed */}
-                    {appointment.status === 'completed' && appointment.completionNotes && (
-                      <div className="mt-3 p-3 bg-teal-50 border border-teal-200 rounded-xl">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <CheckCircle2 size={14} className="text-teal-600" />
-                          <span className="text-xs font-bold text-teal-700">סיכום טיפול</span>
-                        </div>
-                        <p className="text-sm text-teal-800">{appointment.completionNotes}</p>
-                        {appointment.completedAt && (
-                          <p className="text-xs text-teal-500 mt-1">
-                            הושלם: {new Date(appointment.completedAt).toLocaleDateString('he-IL')}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Arrow */}
-                  <div className="text-teal-600 flex-shrink-0 mt-1">
-                    <ChevronRight size={20} />
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
+          {/* Treatment Summary - shown when completed */}
+          {appointment.status === 'completed' && appointment.completionNotes && (
+            <div className="mt-3 p-3 bg-teal-50 border border-teal-200 rounded-xl">
+              <div className="flex items-center gap-1.5 mb-1">
+                <CheckCircle2 size={12} className="text-teal-600" />
+                <span className="text-xs font-bold text-teal-700">סיכום טיפול</span>
+              </div>
+              <p className="text-xs text-teal-800">{appointment.completionNotes}</p>
+              {appointment.completedAt && (
+                <p className="text-xs text-teal-500 mt-1">
+                  הושלם: {new Date(appointment.completedAt).toLocaleDateString('he-IL')}
+                </p>
+              )}
+            </div>
+          )}
         </div>
-      )}
 
+        {/* Arrow */}
+        <div className="text-teal-600 flex-shrink-0 mt-1">
+          <ChevronRight size={20} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Timeline Indicator Component
+function TimelineIndicator({ status }: { status: string }) {
+  const steps = ['pending', 'confirmed', 'in_progress', 'completed'];
+  const currentIndex = steps.indexOf(status);
+
+  if (status === 'cancelled' || status === 'rejected') {
+    return (
+      <span className="text-xs text-gray-500">
+        {status === 'cancelled' ? 'בוטל' : 'נדחה'}
+      </span>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1">
+      {steps.map((step, i) => (
+        <div
+          key={step}
+          className={`w-2 h-2 rounded-full ${
+            i <= currentIndex ? 'bg-teal-600' : 'bg-gray-300'
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function DetailAndCancelModals({
+  showDetailModal,
+  selectedAppointment,
+  setShowDetailModal,
+  showCancelModal,
+  setShowCancelModal,
+  cancelling,
+  canCancel,
+  handleCancelAppointment,
+  getServiceLabel,
+}: {
+  showDetailModal: boolean;
+  selectedAppointment: Appointment | null;
+  setShowDetailModal: (open: boolean) => void;
+  showCancelModal: boolean;
+  setShowCancelModal: (open: boolean) => void;
+  cancelling: boolean;
+  canCancel: (status: string) => boolean;
+  handleCancelAppointment: () => Promise<void>;
+  getServiceLabel: (type: string) => string;
+}) {
+  return (
+    <>
       {/* Detail Modal */}
       <Modal
         isOpen={showDetailModal && !!selectedAppointment}
@@ -652,7 +728,7 @@ export default function AppointmentsPage() {
             <StatusTimeline currentStatus={selectedAppointment.status} />
 
             {/* Appointment Details */}
-            <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 space-y-3 text-sm text-right">
+            <div className="bg-[#fef7ed] border border-gray-200 rounded-2xl p-4 space-y-3 text-sm text-right">
               <div className="flex justify-between">
                 <span className="text-gray-600">מוסך:</span>
                 <span className="font-medium">{selectedAppointment.garage.name}</span>
@@ -705,7 +781,7 @@ export default function AppointmentsPage() {
 
             {/* Pending message */}
             {selectedAppointment.status === 'pending' && (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
                 <div className="flex items-center gap-2 mb-1">
                   <Clock size={16} className="text-amber-600" />
                   <span className="font-bold text-amber-800 text-sm">ממתין לאישור המוסך</span>
@@ -716,7 +792,7 @@ export default function AppointmentsPage() {
 
             {/* Rejected message */}
             {selectedAppointment.status === 'rejected' && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
                 <div className="flex items-center gap-2 mb-1">
                   <X size={16} className="text-red-600" />
                   <span className="font-bold text-red-800 text-sm">ההזמנה נדחתה</span>
@@ -727,7 +803,7 @@ export default function AppointmentsPage() {
 
             {/* In-progress message */}
             {selectedAppointment.status === 'in_progress' && (
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
                   <span className="font-bold text-blue-800 text-sm">הרכב בטיפול</span>
@@ -738,7 +814,7 @@ export default function AppointmentsPage() {
 
             {/* Treatment Completion Summary */}
             {selectedAppointment.status === 'completed' && selectedAppointment.completionNotes && (
-              <div className="bg-teal-50 border border-teal-200 rounded-xl p-4">
+              <div className="bg-teal-50 border border-teal-200 rounded-2xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <CheckCircle2 size={16} className="text-teal-600" />
                   <span className="font-bold text-teal-800 text-sm">סיכום הטיפול שבוצע</span>
@@ -785,7 +861,7 @@ export default function AppointmentsPage() {
       >
         {selectedAppointment && (
           <div className="space-y-4">
-            <div className="flex gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <div className="flex gap-3 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
               <AlertCircle size={20} className="text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-medium text-amber-900">בטל את התור?</p>
@@ -817,6 +893,6 @@ export default function AppointmentsPage() {
           </div>
         )}
       </Modal>
-    </div>
+    </>
   );
 }

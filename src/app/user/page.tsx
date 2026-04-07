@@ -9,6 +9,7 @@ import {
   Gauge, Fuel, X, MapPin, Upload
 } from 'lucide-react';
 import OnboardingWizard from '@/components/shared/OnboardingWizard';
+import GlobalSearch from '@/components/ui/GlobalSearch';
 import Tesseract from 'tesseract.js';
 
 // ── Types ──────────────────────────────────────────
@@ -329,6 +330,10 @@ export default function UserHomePage() {
 
       {/* ═══ Header ═══ */}
       <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white px-4 pt-5 pb-6 rounded-b-3xl">
+        {/* Search */}
+        <div className="flex justify-end mb-2">
+          <GlobalSearch />
+        </div>
         {/* Vehicle Selector */}
         {vehicles.length > 1 ? (
           <div className="relative mb-3">

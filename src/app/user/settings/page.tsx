@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardTitle } from '@/components/ui/Card';
+import PageHeader from '@/components/ui/PageHeader';
+import PageSkeleton from '@/components/ui/PageSkeleton';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import {
-  Settings, User, Bell, LogOut, Save, Key, Loader2,
+  User, Bell, LogOut, Save, Key, Loader2,
   CheckCircle2, AlertCircle, Eye, EyeOff, Shield, Car,
   ClipboardList, Search, Calendar, AlertTriangle, Gift
 } from 'lucide-react';
@@ -152,177 +153,224 @@ export default function SettingsPage() {
     setNotifPrefs(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const getInitialGradient = () => {
+    const char = profile.fullName.charAt(0) || '?';
+    const charCode = char.charCodeAt(0);
+    const hue = (charCode * 137) % 360;
+    return `hsl(${hue}, 70%, 60%)`;
+  };
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-teal-600" size={32} />
-      </div>
-    );
+    return <PageSkeleton />;
   }
 
   return (
-    <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-[#fef7ed] border-2 border-[#1e3a5f] rounded-lg flex items-center justify-center">
-          <Settings size={22} className="text-[#1e3a5f]" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-[#1e3a5f]">הגדרות</h1>
-          <p className="text-sm text-gray-500">ניהול חשבון ופרטים אישיים</p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+      <PageHeader title="הגדרות" backUrl="/user/profile" />
 
-      {/* Profile summary card */}
-      <div className="bg-gradient-to-l from-teal-500 to-teal-600 rounded-2xl p-5 text-white">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-2xl font-bold backdrop-blur-sm">
-            {profile.fullName.charAt(0) || '?'}
-          </div>
-          <div className="flex-1">
-            <h2 className="text-lg font-bold">{profile.fullName || 'משתמש'}</h2>
-            <p className="text-teal-100 text-sm">{profile.email}</p>
-            <div className="flex items-center gap-3 mt-1 text-teal-100 text-xs">
-              <span className="flex items-center gap-1">
-                <Car size={12} />
-                {vehicleCount} רכבים
-              </span>
-              {profile.phone && (
-                <span>{profile.phone}</span>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Profile Details */}
-      <Card>
-        <CardTitle icon={<User className="text-teal-600" />}>פרטים אישיים</CardTitle>
-        <div className="space-y-4 mt-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-              label="שם מלא"
-              placeholder="הכנס שם מלא"
-              value={profile.fullName}
-              onChange={e => setProfile({ ...profile, fullName: e.target.value })}
-            />
-            <Input
-              label="טלפון"
-              placeholder="050-000-0000"
-              value={profile.phone}
-              onChange={e => setProfile({ ...profile, phone: e.target.value })}
-            />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-              label="אימייל"
-              placeholder="example@email.com"
-              value={profile.email}
-              type="email"
-              onChange={e => setProfile({ ...profile, email: e.target.value })}
-            />
-            <Input
-              label="מספר רישיון"
-              placeholder="מספר רישיון נהיגה"
-              value={profile.licenseNumber}
-              onChange={e => setProfile({ ...profile, licenseNumber: e.target.value })}
-            />
-          </div>
-
-          {saveMessage && (
-            <div className={`flex items-center gap-2 p-3 rounded-xl text-sm ${
-              saveSuccess ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
-            }`}>
-              {saveSuccess ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
-              {saveMessage}
-            </div>
-          )}
-
-          <Button icon={<Save size={16} />} loading={saving} onClick={handleSave}>
-            שמור שינויים
-          </Button>
-        </div>
-      </Card>
-
-      {/* Notifications */}
-      <Card>
-        <CardTitle icon={<Bell className="text-amber-500" />}>העדפות התראות</CardTitle>
-        <div className="space-y-2 mt-4">
-          {[
-            { key: 'testReminder' as const, label: 'תזכורת טסט', desc: 'התראה 30 יום לפני פקיעת הטסט', icon: ClipboardList },
-            { key: 'insuranceReminder' as const, label: 'תזכורת ביטוח', desc: 'התראה 30 יום לפני פקיעת הביטוח', icon: Shield },
-            { key: 'inspectionUpdate' as const, label: 'עדכוני בדיקה', desc: 'עדכון כשדוח בדיקה מוכן', icon: Search },
-            { key: 'appointmentReminder' as const, label: 'תזכורת תורים', desc: 'תזכורת יום לפני תור מוסך', icon: Calendar },
-            { key: 'sosAlerts' as const, label: 'התראות חירום', desc: 'עדכונים על אירועי חירום', icon: AlertTriangle },
-            { key: 'benefitAlerts' as const, label: 'הטבות חדשות', desc: 'התראה על הטבות חדשות במועדון', icon: Gift },
-          ].map(item => (
-            <label
-              key={item.key}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition"
+      <div className="max-w-2xl mx-auto px-4 space-y-6 pt-6">
+        {/* Profile Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white flex-shrink-0"
+              style={{
+                background: `linear-gradient(135deg, #1e3a5f 0%, #14b8a6 100%)`
+              }}
             >
-              <div className="flex items-center gap-3">
-                <item.icon size={18} className="text-gray-600" />
-                <div>
-                  <div className="font-medium text-sm text-gray-800">{item.label}</div>
-                  <div className="text-xs text-gray-500">{item.desc}</div>
-                </div>
+              {profile.fullName.charAt(0) || '?'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-lg font-bold text-gray-900 truncate">{profile.fullName || 'משתמש'}</h2>
+              <p className="text-sm text-gray-500 truncate">{profile.email}</p>
+              <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                <span className="flex items-center gap-1">
+                  <Car size={12} />
+                  {vehicleCount} רכבים
+                </span>
               </div>
-              <div className="relative">
+            </div>
+          </div>
+        </div>
+
+        {/* Personal Details Section */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <h3 className="flex items-center gap-2 font-bold text-gray-900 mb-4">
+            <User size={20} className="text-teal-600" />
+            פרטים אישיים
+          </h3>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">שם מלא</label>
                 <input
-                  type="checkbox"
-                  checked={notifPrefs[item.key]}
-                  onChange={() => toggleNotif(item.key)}
-                  className="sr-only peer"
+                  type="text"
+                  placeholder="הכנס שם מלא"
+                  value={profile.fullName}
+                  onChange={e => setProfile({ ...profile, fullName: e.target.value })}
+                  className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
                 />
-                <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-teal-500 transition-colors" />
-                <div className="absolute top-0.5 right-0.5 w-5 h-5 bg-white rounded-full shadow peer-checked:-translate-x-5 transition-transform" />
               </div>
-            </label>
-          ))}
-        </div>
-      </Card>
-
-      {/* Security */}
-      <Card>
-        <CardTitle icon={<Shield className="text-red-500" />}>אבטחה</CardTitle>
-        <div className="space-y-4 mt-4">
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-            <div>
-              <p className="font-medium text-sm text-gray-800">סיסמה</p>
-              <p className="text-xs text-gray-500">שנה את סיסמת החשבון שלך</p>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">טלפון</label>
+                <input
+                  type="tel"
+                  placeholder="050-000-0000"
+                  value={profile.phone}
+                  onChange={e => setProfile({ ...profile, phone: e.target.value })}
+                  className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                />
+              </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              icon={<Key size={14} />}
-              onClick={() => setShowPasswordModal(true)}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">אימייל</label>
+                <input
+                  type="email"
+                  placeholder="example@email.com"
+                  value={profile.email}
+                  onChange={e => setProfile({ ...profile, email: e.target.value })}
+                  className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">מספר רישיון</label>
+                <input
+                  type="text"
+                  placeholder="מספר רישיון נהיגה"
+                  value={profile.licenseNumber}
+                  onChange={e => setProfile({ ...profile, licenseNumber: e.target.value })}
+                  className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                />
+              </div>
+            </div>
+
+            {saveMessage && (
+              <div className={`flex items-center gap-2 p-3 rounded-xl text-sm ${
+                saveSuccess ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+              }`}>
+                {saveSuccess ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+                {saveMessage}
+              </div>
+            )}
+
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-medium py-2 rounded-xl hover:from-teal-600 hover:to-teal-700 transition disabled:opacity-50"
             >
-              שנה סיסמה
-            </Button>
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-            <div>
-              <p className="font-medium text-sm text-gray-800">מזהה חשבון</p>
-              <p className="text-xs text-gray-500">מזהה ייחודי לצורך תמיכה</p>
-            </div>
-            <code className="text-xs bg-gray-200 px-2 py-1 rounded font-mono text-gray-600">
-              {profile.email.split('@')[0]}
-            </code>
+              {saving ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 size={16} className="animate-spin" />
+                  جارٍ الحفظ
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <Save size={16} />
+                  שמור שינויים
+                </span>
+              )}
+            </button>
           </div>
         </div>
-      </Card>
 
-      {/* Logout */}
-      <Button
-        variant="danger"
-        icon={<LogOut size={16} />}
-        className="w-full"
-        loading={loggingOut}
-        onClick={handleLogout}
-      >
-        התנתקות
-      </Button>
+        {/* Notification Preferences */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <h3 className="flex items-center gap-2 font-bold text-gray-900 mb-4">
+            <Bell size={20} className="text-amber-500" />
+            העדפות התראות
+          </h3>
+          <div className="space-y-3">
+            {[
+              { key: 'testReminder' as const, label: 'תזכורת טסט', desc: 'התראה 30 יום לפני פקיעת הטסט', icon: ClipboardList },
+              { key: 'insuranceReminder' as const, label: 'תזכורת ביטוח', desc: 'התראה 30 יום לפני פקיעת הביטוח', icon: Shield },
+              { key: 'inspectionUpdate' as const, label: 'עדכוני בדיקה', desc: 'עדכון כשדוח בדיקה מוכן', icon: Search },
+              { key: 'appointmentReminder' as const, label: 'תזכורת תורים', desc: 'תזכורת יום לפני תור מוסך', icon: Calendar },
+              { key: 'sosAlerts' as const, label: 'התראות חירום', desc: 'עדכונים על אירועי חירום', icon: AlertTriangle },
+              { key: 'benefitAlerts' as const, label: 'הטבות חדשות', desc: 'התראה על הטבות חדשות במועדון', icon: Gift },
+            ].map(item => (
+              <label
+                key={item.key}
+                className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl cursor-pointer transition"
+              >
+                <div className="flex items-center gap-3">
+                  <item.icon size={18} className="text-gray-600" />
+                  <div>
+                    <div className="font-medium text-sm text-gray-800">{item.label}</div>
+                    <div className="text-xs text-gray-500">{item.desc}</div>
+                  </div>
+                </div>
+                <div className="relative flex-shrink-0">
+                  <input
+                    type="checkbox"
+                    checked={notifPrefs[item.key]}
+                    onChange={() => toggleNotif(item.key)}
+                    className="sr-only peer"
+                  />
+                  <div className={`w-11 h-6 rounded-full transition-colors ${
+                    notifPrefs[item.key] ? 'bg-teal-500' : 'bg-gray-300'
+                  }`} />
+                  <div className={`absolute top-0.5 right-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                    notifPrefs[item.key] ? '-translate-x-5' : ''
+                  }`} />
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Security Section */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <h3 className="flex items-center gap-2 font-bold text-gray-900 mb-4">
+            <Shield size={20} className="text-red-500" />
+            אבטחה
+          </h3>
+          <div className="space-y-3">
+            <button
+              onClick={() => setShowPasswordModal(true)}
+              className="w-full flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition"
+            >
+              <div>
+                <p className="font-medium text-sm text-gray-800">סיסמה</p>
+                <p className="text-xs text-gray-500">שנה את סיסמת החשבון שלך</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                icon={<Key size={14} />}
+              >
+                שנה סיסמה
+              </Button>
+            </button>
+
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <div>
+                <p className="font-medium text-sm text-gray-800">מזהה חשבון</p>
+                <p className="text-xs text-gray-500">מזהה ייחודי לצורך תמיכה</p>
+              </div>
+              <code className="text-xs bg-white px-3 py-1.5 rounded-lg font-mono text-gray-600 border border-gray-200">
+                {profile.email.split('@')[0]}
+              </code>
+            </div>
+          </div>
+        </div>
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          disabled={loggingOut}
+          className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 font-medium py-2.5 rounded-xl hover:bg-red-100 transition disabled:opacity-50 mb-8"
+        >
+          {loggingOut ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <>
+              <LogOut size={16} />
+              התנתקות
+            </>
+          )}
+        </button>
+      </div>
 
       {/* Change Password Modal */}
       <Modal
@@ -346,46 +394,55 @@ export default function SettingsPage() {
         ) : (
           <div className="space-y-4">
             <div className="relative">
-              <Input
-                label="סיסמה נוכחית"
-                type={showCurrent ? 'text' : 'password'}
-                value={passwordData.currentPassword}
-                onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                placeholder="הכנס סיסמה נוכחית"
-              />
-              <button
-                type="button"
-                onClick={() => setShowCurrent(!showCurrent)}
-                className="absolute left-3 top-9 text-gray-400 hover:text-gray-600"
-              >
-                {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
+              <label className="block text-sm font-medium text-gray-700 mb-2">סיסמה נוכחית</label>
+              <div className="relative">
+                <input
+                  type={showCurrent ? 'text' : 'password'}
+                  value={passwordData.currentPassword}
+                  onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                  placeholder="הכנס סיסמה נוכחית"
+                  className="w-full px-4 py-2 pr-10 rounded-xl border border-gray-300 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrent(!showCurrent)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
 
             <div className="relative">
-              <Input
-                label="סיסמה חדשה"
-                type={showNew ? 'text' : 'password'}
-                value={passwordData.newPassword}
-                onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                placeholder="לפחות 6 תווים"
-              />
-              <button
-                type="button"
-                onClick={() => setShowNew(!showNew)}
-                className="absolute left-3 top-9 text-gray-400 hover:text-gray-600"
-              >
-                {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
+              <label className="block text-sm font-medium text-gray-700 mb-2">סיסמה חדשה</label>
+              <div className="relative">
+                <input
+                  type={showNew ? 'text' : 'password'}
+                  value={passwordData.newPassword}
+                  onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                  placeholder="לפחות 6 תווים"
+                  className="w-full px-4 py-2 pr-10 rounded-xl border border-gray-300 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNew(!showNew)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
 
-            <Input
-              label="אימות סיסמה חדשה"
-              type="password"
-              value={passwordData.confirmPassword}
-              onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-              placeholder="הכנס שוב את הסיסמה החדשה"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">אימות סיסמה חדשה</label>
+              <input
+                type="password"
+                value={passwordData.confirmPassword}
+                onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                placeholder="הכנס שוב את הסיסמה החדשה"
+                className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+              />
+            </div>
 
             {passwordData.newPassword && (
               <div className="space-y-1">
@@ -419,16 +476,25 @@ export default function SettingsPage() {
             )}
 
             <div className="flex gap-3 pt-2">
-              <Button onClick={handlePasswordChange} loading={changingPassword} className="flex-1">
-                שנה סיסמה
-              </Button>
-              <Button
-                variant="ghost"
+              <button
+                onClick={handlePasswordChange}
+                disabled={changingPassword}
+                className="flex-1 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-medium py-2 rounded-xl hover:from-teal-600 hover:to-teal-700 transition disabled:opacity-50"
+              >
+                {changingPassword ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 size={16} className="animate-spin" />
+                  </span>
+                ) : (
+                  'שנה סיסמה'
+                )}
+              </button>
+              <button
                 onClick={() => setShowPasswordModal(false)}
-                className="flex-1"
+                className="flex-1 bg-gray-100 text-gray-700 font-medium py-2 rounded-xl hover:bg-gray-200 transition"
               >
                 ביטול
-              </Button>
+              </button>
             </div>
           </div>
         )}

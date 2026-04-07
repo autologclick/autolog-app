@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card } from '@/components/ui/Card';
+import PageHeader from '@/components/ui/PageHeader';
+import PageSkeleton from '@/components/ui/PageSkeleton';
 import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
 import {
   Loader2,
   CheckCircle2,
@@ -12,7 +12,7 @@ import {
   ClipboardCheck,
   AlertTriangle,
   Car,
-  MessageSquare,
+  Gift,
 } from 'lucide-react';
 
 interface Notification {
@@ -32,30 +32,41 @@ interface GroupedNotifications {
   older: Notification[];
 }
 
-const notificationTypeConfig: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
+const notificationTypeConfig: Record<string, { icon: React.ReactNode; color: string; bgColor: string; label: string }> = {
   appointment_update: {
     icon: <Calendar size={20} />,
     color: '#0d9488',
+    bgColor: 'bg-teal-100',
     label: 'עדכון תור',
   },
   inspection_complete: {
     icon: <ClipboardCheck size={20} />,
     color: '#059669',
+    bgColor: 'bg-green-100',
     label: 'בדיקה הושלמה',
   },
   sos_update: {
     icon: <AlertTriangle size={20} />,
     color: '#dc2626',
+    bgColor: 'bg-red-100',
     label: 'עדכון SOS',
   },
   vehicle_alert: {
     icon: <Car size={20} />,
     color: '#d97706',
+    bgColor: 'bg-amber-100',
     label: 'התראת רכב',
+  },
+  benefits_update: {
+    icon: <Gift size={20} />,
+    color: '#2563eb',
+    bgColor: 'bg-blue-100',
+    label: 'עדכון הטבות',
   },
   general: {
     icon: <Bell size={20} />,
     color: '#6b7280',
+    bgColor: 'bg-gray-100',
     label: 'כללי',
   },
 };
@@ -198,140 +209,131 @@ export default function NotificationsPage() {
     if (notifications.length === 0) return null;
 
     return (
-      <div key={title} className="space-y-3">
-        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider px-3">
+      <div key={title} className="space-y-2">
+        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 pt-2">
           {title}
         </h3>
         {notifications.map(notif => {
           const config = getNotificationConfig(notif.type);
           return (
-            <Card
+            <div
               key={notif.id}
-              hover
-              className={`transition-all ${
-                notif.isRead
-                  ? 'opacity-70 hover:opacity-100'
-                  : 'border-l-4 border-teal-500 bg-gradient-to-r from-teal-50 to-white'
-              }`}
+              className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all cursor-pointer"
               onClick={() => handleMarkAsRead(notif.id, notif.isRead, notif.link)}
             >
-              <div className="flex gap-4 items-start">
+              <div className="flex gap-3 items-start">
+                {/* Icon Box */}
                 <div
-                  className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-white"
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-white`}
                   style={{ backgroundColor: config.color }}
                 >
                   {config.icon}
                 </div>
+
+                {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-3 mb-2">
-                    <div className="flex-1">
-                      <h3 className="font-bold text-[#1e3a5f] text-sm leading-tight">
-                        {notif.title}
-                      </h3>
-                      <p className="text-xs text-gray-600 mt-1 line-clamp-2">
-                        {notif.message}
-                      </p>
-                    </div>
-                    <span className="text-xs text-gray-500 whitespace-nowrap ml-2 flex-shrink-0">
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <h3 className="font-semibold text-sm text-gray-900 leading-tight">
+                      {notif.title}
+                    </h3>
+                    <span className="text-xs text-gray-500 whitespace-nowrap flex-shrink-0">
                       {timeAgo(notif.createdAt)}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 mt-3">
-                    <Badge variant={notif.isRead ? 'default' : 'info'}>
+                  <p className="text-xs text-gray-600 line-clamp-2 mb-2">
+                    {notif.message}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-gray-500">
                       {config.label}
-                    </Badge>
+                    </span>
                     {!notif.isRead && (
-                      <div className="w-2 h-2 bg-teal-500 rounded-full" />
+                      <div className="w-2 h-2 rounded-full bg-teal-500" />
                     )}
                   </div>
                 </div>
               </div>
-            </Card>
+            </div>
           );
         })}
       </div>
     );
   };
 
+  if (loading) {
+    return <PageSkeleton />;
+  }
+
   return (
-    <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] border-2 border-[#1e3a5f] rounded-lg flex items-center justify-center">
-            <Bell size={20} className="text-[#1e3a5f]" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-[#1e3a5f]">התראות</h1>
-            {unreadCount > 0 && (
-              <p className="text-xs text-gray-600">
-                {unreadCount} התראות לא קראו
-              </p>
-            )}
-          </div>
-        </div>
+    <div className="bg-[#fef7ed] min-h-screen pb-24" dir="rtl">
+      <PageHeader
+        title="התראות"
+        subtitle={unreadCount + " התראות חדשות"}
+        backUrl="/user/profile"
+      />
+
+      <div className="px-4 md:px-6 space-y-4">
+        {/* Mark All as Read Button */}
         {unreadCount > 0 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            icon={<CheckCircle2 size={16} />}
-            onClick={handleMarkAllAsRead}
-            className="text-teal-600 hover:text-teal-700"
+          <div className="flex justify-end">
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={<CheckCircle2 size={16} />}
+              onClick={handleMarkAllAsRead}
+              className="text-teal-600 hover:text-teal-700 text-sm"
+            >
+              סמן הכל כנקרא
+            </Button>
+          </div>
+        )}
+
+        {/* Filter Chips */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setFilterUnread(false)}
+            className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
+              !filterUnread
+                ? 'bg-teal-500 text-white'
+                : 'bg-white text-gray-700 border border-gray-200'
+            }`}
           >
-            סמן הכל כנקרא
-          </Button>
+            הכל
+          </button>
+          <button
+            onClick={() => setFilterUnread(true)}
+            className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
+              filterUnread
+                ? 'bg-teal-500 text-white'
+                : 'bg-white text-gray-700 border border-gray-200'
+            }`}
+          >
+            חדשות בלבד
+          </button>
+        </div>
+
+        {/* Notifications List */}
+        {!hasNotifications ? (
+          <div className="bg-white rounded-2xl p-8 shadow-sm text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Bell size={32} className="text-gray-400" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">אין התראות</h3>
+            <p className="text-gray-600 text-sm">
+              {filterUnread
+                ? 'הכל נקרא - מצוין!'
+                : 'עדיין אין התראות חדשות'}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {renderNotificationGroup(grouped.today, 'היום')}
+            {renderNotificationGroup(grouped.yesterday, 'אתמול')}
+            {renderNotificationGroup(grouped.thisWeek, 'השבוע')}
+            {renderNotificationGroup(grouped.older, 'ישן יותר')}
+          </div>
         )}
       </div>
-
-      {/* Filter Tabs */}
-      <div className="flex gap-2 border-b border-gray-200">
-        <button
-          onClick={() => setFilterUnread(false)}
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            !filterUnread
-              ? 'border-teal-500 text-teal-600'
-              : 'border-transparent text-gray-600 hover:text-[#1e3a5f]'
-          }`}
-        >
-          הכל
-        </button>
-        <button
-          onClick={() => setFilterUnread(true)}
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            filterUnread
-              ? 'border-teal-500 text-teal-600'
-              : 'border-transparent text-gray-600 hover:text-[#1e3a5f]'
-          }`}
-        >
-          שלא נקראו ({unreadCount})
-        </button>
-      </div>
-
-      {/* Notifications List */}
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
-        </div>
-      ) : !hasNotifications ? (
-        <Card className="text-center py-16">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Bell size={32} className="text-gray-400" />
-          </div>
-          <h3 className="text-lg font-bold text-[#1e3a5f] mb-2">אין התראות</h3>
-          <p className="text-gray-600 text-sm">
-            {filterUnread
-              ? 'הכל נקרא - מצוין!'
-              : 'עדיין אין התראות חדשות'}
-          </p>
-        </Card>
-      ) : (
-        <div className="space-y-6">
-          {renderNotificationGroup(grouped.today, 'היום')}
-          {renderNotificationGroup(grouped.yesterday, 'אתמול')}
-          {renderNotificationGroup(grouped.thisWeek, 'השבוע')}
-          {renderNotificationGroup(grouped.older, 'ישן יותר')}
-        </div>
-      )}
     </div>
   );
 }

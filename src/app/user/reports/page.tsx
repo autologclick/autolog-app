@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Card } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
+import PageHeader from '@/components/ui/PageHeader';
+import PageSkeleton from '@/components/ui/PageSkeleton';
 import { StatusBadge } from '@/components/ui/Badge';
 import {
-  FileText, Filter, Loader2, Search, ChevronDown,
+  FileText, Filter, Loader2, Search, ChevronDown, PenLine,
   Car, ClipboardCheck, Wrench, Settings, AlertTriangle,
   CheckCircle2, Clock, Eye, Download, BarChart3, Brain, TrendingUp, Target
 } from 'lucide-react';
@@ -138,26 +139,29 @@ function getConfig(type: string) {
 }
 
 // ============ SCORE CIRCLE ============
-function ScoreCircle({ score, accentColor }: { score: number; accentColor: string }) {
-  const green = '#0d9488';
-  const amber = '#f59e0b';
-  const red = '#ef4444';
-  const strokeColor = score >= 80 ? green : score >= 60 ? amber : red;
-  const circumference = 2 * Math.PI * 45;
+function ScoreCircle({ score }: { score: number }) {
+  const getGradientColor = (score: number) => {
+    if (score >= 80) return '#10b981'; // green
+    if (score >= 60) return '#f59e0b'; // amber
+    return '#ef4444'; // red
+  };
+
+  const strokeColor = getGradientColor(score);
+  const circumference = 2 * Math.PI * 20;
   const offset = circumference - (score / 100) * circumference;
 
   return (
-    <div className="relative w-16 h-16 flex-shrink-0">
+    <div className="relative w-12 h-12 flex-shrink-0">
       <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-        <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" strokeWidth="8" />
+        <circle cx="50" cy="50" r="45" fill="none" stroke="#f3f4f6" strokeWidth="10" />
         <circle
-          cx="50" cy="50" r="45" fill="none" stroke={strokeColor} strokeWidth="8"
+          cx="50" cy="50" r="45" fill="none" stroke={strokeColor} strokeWidth="10"
           strokeDasharray={circumference} strokeDashoffset={offset}
           strokeLinecap="round"
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-sm font-bold" style={{ color: strokeColor }}>{score}</span>
+        <span className="text-xs font-bold" style={{ color: strokeColor }}>{score}</span>
       </div>
     </div>
   );
@@ -206,40 +210,34 @@ export default function ReportsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+      <div className="bg-[#fef7ed] pb-24" dir="rtl">
+        <PageHeader title="דוחות בדיקה" variant="purple" backUrl="/user/profile" />
+        <div className="container mx-auto px-4 pt-12">
+          <PageSkeleton />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] border-2 border-[#1e3a5f] rounded-lg flex items-center justify-center">
-            <FileText size={20} className="text-[#1e3a5f]" />
-          </div>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">דוחות ופעולות</h1>
-            <p className="text-sm text-gray-500">{reports.length} רשומות</p>
-          </div>
-        </div>
-        {/* Search */}
+    <div className="bg-[#fef7ed] pb-24 min-h-screen" dir="rtl">
+      <PageHeader title="דוחות בדיקה" variant="purple" backUrl="/user/profile" />
+
+      <div className="container mx-auto px-4 space-y-6 pt-6">
+        {/* Search Bar */}
         <div className="relative">
-          <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="חיפוש לפי רכב או מוסך..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full sm:w-64 pl-3 pr-9 py-2.5 border border-gray-200 rounded-xl text-sm text-right focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full pl-4 pr-12 py-3 bg-white rounded-xl text-sm text-right border-0 shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
           />
         </div>
-      </div>
 
-      {/* Filter Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      {/* Filter Chips */}
+      <div className="flex gap-2 overflow-x-auto pb-2">
         {FILTER_TABS.map(tab => {
           const count = tab.key === 'all' ? reports.length : (typeCounts[tab.key] || 0);
           if (tab.key !== 'all' && count === 0) return null;
@@ -248,16 +246,16 @@ export default function ReportsPage() {
             <button
               key={tab.key}
               onClick={() => setFilterType(tab.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                 filterType === tab.key
-                  ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-purple-600 text-white shadow-md'
+                  : 'bg-white text-gray-700 shadow-sm hover:shadow-md'
               }`}
             >
               <IconComponent size={14} />
               {tab.label}
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                filterType === tab.key ? 'bg-white/20' : 'bg-gray-200'
+              <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                filterType === tab.key ? 'bg-white/20' : 'bg-gray-100'
               }`}>
                 {count}
               </span>
@@ -268,56 +266,75 @@ export default function ReportsPage() {
 
       {/* AI Insights */}
       {!loading && reports.length > 0 && (
-        <div className="bg-gradient-to-r from-[#fef7ed] to-white border border-teal-200 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-teal-500/10 rounded-lg flex items-center justify-center">
-              <Brain size={18} className="text-teal-600" />
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-purple-500/10 rounded-lg flex items-center justify-center">
+              <Brain size={16} className="text-purple-600" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לדוחות</h2>
+            <h2 className="text-sm font-bold text-[#1e3a5f]">תובנות AI</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Average Score */}
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
-                <TrendingUp size={14} className="text-teal-500" />
+                <TrendingUp size={14} className="text-purple-500" />
                 <span className="text-xs font-bold text-gray-700">ציון ממוצע</span>
               </div>
-              <p className="text-xs text-gray-600">
+              <p className="text-sm font-semibold text-gray-800">
                 {(() => {
                   const avgScore = Math.round(reports.reduce((sum, r) => sum + (r.overallScore || 0), 0) / reports.length);
-                  const interpretation = avgScore >= 80 ? '✅ ממצב טוב מאוד' : avgScore >= 60 ? '⚠️ דורש תשומת לב' : '🔴 יש בעיות';
-                  return `${avgScore}% ${interpretation}`;
+                  const interpretation = avgScore >= 80 ? 'ממצב טוב' : avgScore >= 60 ? 'דורש תשומת לב' : 'יש בעיות';
+                  return `${avgScore}%`;
+                })()}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                {(() => {
+                  const avgScore = Math.round(reports.reduce((sum, r) => sum + (r.overallScore || 0), 0) / reports.length);
+                  const interpretation = avgScore >= 80 ? 'ממצב טוב' : avgScore >= 60 ? 'דורש תשומת לב' : 'יש בעיות';
+                  return interpretation;
                 })()}
               </p>
             </div>
 
             {/* Most Common Type */}
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
-                <BarChart3 size={14} className="text-blue-500" />
-                <span className="text-xs font-bold text-gray-700">סוג בדיקה מוביל</span>
+                <BarChart3 size={14} className="text-purple-500" />
+                <span className="text-xs font-bold text-gray-700">בדיקה מוביל</span>
               </div>
-              <p className="text-xs text-gray-600">
+              <p className="text-sm font-semibold text-gray-800 truncate">
                 {(() => {
                   const mostCommonType = Object.entries(typeCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'all';
                   const config = getConfig(mostCommonType);
-                  return `📊 ${config.label}`;
+                  return config.label.split(' ')[0];
+                })()}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                {(() => {
+                  const mostCommonType = Object.entries(typeCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'all';
+                  const count = typeCounts[mostCommonType] || 0;
+                  return `${count} דוחות`;
                 })()}
               </p>
             </div>
 
             {/* Overall Status */}
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
                 <Target size={14} className="text-purple-500" />
-                <span className="text-xs font-bold text-gray-700">סטטוס כללי</span>
+                <span className="text-xs font-bold text-gray-700">הושלמו</span>
               </div>
-              <p className="text-xs text-gray-600">
+              <p className="text-sm font-semibold text-gray-800">
                 {(() => {
                   const completed = reports.filter(r => r.status === 'completed').length;
                   const percentage = Math.round((completed / reports.length) * 100);
-                  const emoji = percentage === 100 ? '🎯' : percentage >= 75 ? '📈' : '⏳';
-                  return `${emoji} ${percentage}% הושלמו`;
+                  return `${percentage}%`;
+                })()}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                {(() => {
+                  const completed = reports.filter(r => r.status === 'completed').length;
+                  return `${completed}/${reports.length} דוחות`;
                 })()}
               </p>
             </div>
@@ -327,17 +344,17 @@ export default function ReportsPage() {
 
       {/* Empty State */}
       {filteredReports.length === 0 ? (
-        <Card className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100">
-          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-200">
-            <FileText size={32} className="text-gray-300" />
+        <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
+          <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FileText size={32} className="text-purple-300" />
           </div>
-          <h3 className="text-lg font-bold text-gray-600 mb-2">
-            {reports.length === 0 ? 'אין דוחות ופעולות' : 'אין תוצאות'}
+          <h3 className="text-lg font-bold text-gray-700 mb-2">
+            {reports.length === 0 ? 'אין דוחות בדיקה' : 'אין תוצאות'}
           </h3>
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-500 text-sm">
             {reports.length === 0 ? 'לאחר בדיקת AutoLog או טיפול, המידע יופיע כאן' : 'נסה לשנות את הסינון'}
           </p>
-        </Card>
+        </div>
       ) : (
         <div className="space-y-3">
           {filteredReports.map(r => {
@@ -347,10 +364,10 @@ export default function ReportsPage() {
             const recommendationCount = r.items?.filter(i => i.status !== 'ok').length || 0;
 
             return (
-              <div key={r.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden hover:shadow-md transition-all border-r-4 ${r.status === 'awaiting_signature' ? 'border-amber-300 ring-2 ring-amber-200 animate-pulse-once' : 'border-gray-200'} ${config.borderClass}`}>
+              <div key={r.id} className={`bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-all ${r.status === 'awaiting_signature' ? 'ring-2 ring-amber-200' : ''}`}>
                 {/* Awaiting signature banner */}
                 {r.status === 'awaiting_signature' && (
-                  <Link href={`/inspection/${r.id}`} className="block bg-amber-50 border-b border-amber-200 px-4 py-2.5 hover:bg-amber-100 transition">
+                  <Link href={`/inspection/${r.id}`} className="block bg-amber-50 px-4 py-2.5 hover:bg-amber-100 transition">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-amber-700 bg-amber-200 px-3 py-1 rounded-full">חתום עכשיו ←</span>
                       <div className="flex items-center gap-2 text-amber-700">
@@ -363,28 +380,29 @@ export default function ReportsPage() {
 
                 {/* Main Row */}
                 <div
-                  className="flex items-center gap-3 sm:gap-4 p-4 cursor-pointer"
+                  className="flex items-center gap-4 p-4 cursor-pointer"
                   onClick={() => setExpandedReport(isExpanded ? null : r.id)}
                 >
                   {/* Score Circle */}
-                  <ScoreCircle score={r.overallScore || 0} accentColor={config.scoreBgClass} />
+                  <ScoreCircle score={r.overallScore || 0} />
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    {/* Type Badge + Title */}
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    {/* Type Badge + Status */}
+                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                       <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${config.badgeBg} ${config.badgeText}`}>
                         <config.icon size={12} />
-                        {config.label}
+                        {config.label.split(' ')[0]}
                       </span>
                       <StatusBadge status={r.status} />
                     </div>
 
-                    {/* Vehicle + Garage */}
-                    <div className="text-sm text-gray-700 font-medium truncate">
-                      {r.vehicle?.nickname || r.vehicle?.model} {r.vehicle?.licensePlate && `• ${r.vehicle.licensePlate}`}
+                    {/* Vehicle + Garage + Date */}
+                    <div className="text-sm text-gray-800 font-medium truncate">
+                      {r.vehicle?.nickname || r.vehicle?.model}
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-gray-400 mt-0.5">
+                    <div className="flex items-center gap-3 text-xs text-gray-500 mt-0.5 flex-wrap">
+                      {r.vehicle?.licensePlate && <span>{r.vehicle.licensePlate}</span>}
                       {r.garage?.name && <span>{r.garage.name}</span>}
                       <span>{new Date(r.createdAt || r.date).toLocaleDateString('he-IL')}</span>
                     </div>
@@ -393,8 +411,8 @@ export default function ReportsPage() {
                   {/* Recommendations count + expand */}
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {recommendationCount > 0 && (
-                      <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full font-semibold">
-                        {recommendationCount} המלצות
+                      <span className="text-xs text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full font-semibold">
+                        {recommendationCount}
                       </span>
                     )}
                     <ChevronDown
@@ -406,7 +424,7 @@ export default function ReportsPage() {
 
                 {/* Expanded Content */}
                 {isExpanded && (
-                  <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-4">
+                  <div className="border-t border-gray-100 px-4 py-4 bg-gray-50/30">
                     {/* Category breakdown */}
                     {r.items && r.items.length > 0 && (
                       <>
@@ -419,12 +437,12 @@ export default function ReportsPage() {
                               const hasWarning = catItems.some(i => i.status !== 'ok');
                               const hasCritical = catItems.some(i => i.status === 'critical');
                               return (
-                                <div key={cat} className={`p-3 rounded-xl text-center ${
-                                  hasCritical ? 'bg-red-50 border border-red-200' :
-                                  hasWarning ? 'bg-amber-50 border border-amber-200' :
-                                  'bg-green-50 border border-green-200'
+                                <div key={cat} className={`p-3 rounded-xl text-center bg-white shadow-sm ${
+                                  hasCritical ? 'border border-red-200' :
+                                  hasWarning ? 'border border-amber-200' :
+                                  'border border-green-200'
                                 }`}>
-                                  <div className="text-xs text-gray-600 mb-1">{cat}</div>
+                                  <div className="text-xs text-gray-600 mb-1">{categoryLabel(cat)}</div>
                                   <div className={`text-lg font-bold ${
                                     hasCritical ? 'text-red-600' : hasWarning ? 'text-amber-600' : 'text-green-600'
                                   }`}>{avgScore}</div>
@@ -437,14 +455,16 @@ export default function ReportsPage() {
                         {/* Problem items */}
                         {r.items.filter(i => i.status !== 'ok').length > 0 && (
                           <div className="space-y-2 mb-4">
-                            <p className="text-xs font-semibold text-gray-500">ממצאים:</p>
+                            <p className="text-xs font-semibold text-gray-600 mb-2">ממצאים:</p>
                             {r.items.filter(i => i.status !== 'ok').map((item, idx) => (
-                              <div key={idx} className={`flex items-center gap-2 p-2.5 rounded-xl text-sm ${
-                                item.status === 'critical' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
+                              <div key={idx} className={`flex items-center gap-2 p-2.5 rounded-xl text-sm bg-white shadow-sm border ${
+                                item.status === 'critical' ? 'border-red-200' : 'border-amber-200'
                               }`}>
                                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${item.status === 'critical' ? 'bg-red-500' : 'bg-amber-500'}`} />
-                                <span className="font-medium">{categoryLabel(item.category)} - {item.itemName}</span>
-                                {item.notes && <span className="text-xs opacity-70 mr-auto">({item.notes})</span>}
+                                <span className={`font-medium ${item.status === 'critical' ? 'text-red-700' : 'text-amber-700'}`}>
+                                  {categoryLabel(item.category)} - {item.itemName}
+                                </span>
+                                {item.notes && <span className={`text-xs opacity-70 mr-auto ${item.status === 'critical' ? 'text-red-600' : 'text-amber-600'}`}>({item.notes})</span>}
                               </div>
                             ))}
                           </div>
@@ -472,6 +492,7 @@ export default function ReportsPage() {
           })}
         </div>
       )}
+      </div>
     </div>
   );
 }

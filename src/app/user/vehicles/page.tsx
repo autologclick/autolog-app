@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Card, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge, { StatusBadge } from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
+import PageHeader from '@/components/ui/PageHeader';
+import PageSkeleton from '@/components/ui/PageSkeleton';
 import {
   Car, Plus, Edit, Trash2, Shield, Calendar, Fuel,
   Gauge, Users, ChevronDown, Eye, FileText, Loader2, Search, AlertCircle,
@@ -362,15 +363,38 @@ export default function VehiclesPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
-      </div>
-    );
+    return <PageSkeleton cards={3} />;
   }
 
+  const handleDeleteVehicle = async (vehicleId: string) => {
+    if (!confirm('האם אתה בטוח שברצונך למחוק רכב זה?')) return;
+    try {
+      const res = await fetch(`/api/vehicles/${vehicleId}`, { method: 'DELETE' });
+      if (res.ok) {
+        fetchVehicles();
+      } else {
+        setError('שגיאה במחיקת רכב');
+      }
+    } catch {
+      setError('שגיאת חיבור');
+    }
+  };
+
+  const handleSetPrimary = async (vehicleId: string) => {
+    try {
+      const res = await fetch(`/api/vehicles/${vehicleId}/set-primary`, { method: 'POST' });
+      if (res.ok) {
+        fetchVehicles();
+      } else {
+        setError('שגיאה בעדכון רכב ראשי');
+      }
+    } catch {
+      setError('שגיאת חיבור');
+    }
+  };
+
   return (
-    <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
+    <div className="bg-[#fef7ed] min-h-screen pb-24" dir="rtl">
       {/* Hidden camera input for capture */}
       <input
         ref={cameraInputRef}
@@ -381,163 +405,254 @@ export default function VehiclesPage() {
         onChange={handleImageSelect}
       />
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] rounded-lg border-2 border-[#1e3a5f] flex items-center justify-center">
-            <Car size={20} className="text-[#1e3a5f]" />
+      {/* Page Header */}
+      <PageHeader title="הרכבים שלי" showBack={false} />
+
+      {/* Main content */}
+      <div className="px-4 pt-6 space-y-6">
+        {/* Add Vehicle Button (always at top) */}
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-2xl py-3 px-4 font-bold text-sm flex items-center justify-center gap-2 shadow-sm hover:from-teal-600 hover:to-teal-700 transition-all active:scale-95"
+        >
+          <Plus size={16} />
+          ➕ הוסף רכב חדש
+        </button>
+
+        {/* Error message */}
+        {error && !showAddModal && !showEditModal && (
+          <div className="flex gap-2 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm">
+            <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+            {error}
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">הרכבים שלי</h1>
-        </div>
+        )}
+
+        {/* AI Insights */}
+        {!loading && vehicles.length > 0 && (
+          <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-teal-500/10 rounded-lg flex items-center justify-center">
+                <Brain size={18} className="text-teal-600" />
+              </div>
+              <h2 className="text-base font-bold text-[#1e3a5f]">תובנות AI לרכבים</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Test Status Card */}
+              <div className="bg-[#fef7ed] rounded-xl p-3 border border-amber-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangleIcon size={14} className="text-amber-500" />
+                  <span className="text-xs font-bold text-gray-700">סטטוס טסט</span>
+                </div>
+                <p className="text-xs text-gray-600">
+                  {vehicles.filter(v => v.testStatus === 'expired' || v.testStatus === 'expiring').length === 0
+                    ? '✓ כל הרכבים בתוקף'
+                    : `⚠️ ${vehicles.filter(v => v.testStatus === 'expired' || v.testStatus === 'expiring').length} רכבים בעיה טסט`}
+                </p>
+              </div>
+
+              {/* Insurance Status Card */}
+              <div className="bg-[#fef7ed] rounded-xl p-3 border border-blue-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <Shield size={14} className="text-blue-500" />
+                  <span className="text-xs font-bold text-gray-700">סטטוס ביטוח</span>
+                </div>
+                <p className="text-xs text-gray-600">
+                  {vehicles.filter(v => v.insuranceStatus === 'expired' || v.insuranceStatus === 'expiring').length === 0
+                    ? '✓ כל הביטוחים בתוקף'
+                    : `⚠️ ${vehicles.filter(v => v.insuranceStatus === 'expired' || v.insuranceStatus === 'expiring').length} ביטוחים בעיה`}
+                </p>
+              </div>
+
+              {/* Activity Summary Card */}
+              <div className="bg-[#fef7ed] rounded-xl p-3 border border-green-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp size={14} className="text-green-500" />
+                  <span className="text-xs font-bold text-gray-700">סיכום פעילות</span>
+                </div>
+                <p className="text-xs text-gray-600">
+                  📊 {vehicles.reduce((sum, v) => sum + (v._count?.inspections || 0), 0)} בדיקות • {vehicles.reduce((sum, v) => sum + (v._count?.expenses || 0), 0)} הוצאות
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {vehicles.length === 0 && !error && (
+          <div className="bg-white rounded-2xl p-8 text-center space-y-4">
+            <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto">
+              <Car size={32} className="text-teal-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-[#1e3a5f] mb-2">הוסף את הרכב הראשון שלך</h3>
+              <p className="text-sm text-gray-500 mb-4">התחל לעקוב אחר הרכבים שלך עם AutoLog</p>
+            </div>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-2xl py-3 px-4 font-bold text-sm flex items-center justify-center gap-2 shadow-sm hover:from-teal-600 hover:to-teal-700 transition-all active:scale-95"
+            >
+              <Plus size={16} />
+              הוסף רכב חדש
+            </button>
+          </div>
+        )}
+
+        {/* Vehicles List */}
         {vehicles.length > 0 && (
-          <Button icon={<Plus size={16} />} onClick={() => setShowAddModal(true)} className="w-full sm:w-auto">
-            הוסף רכב
-          </Button>
+          <div className="space-y-4">
+            {vehicles.map(v => (
+              <div
+                key={v.id}
+                className={`bg-white rounded-2xl p-4 shadow-sm border-2 transition-all ${
+                  v.isPrimary ? 'border-teal-400' : 'border-transparent'
+                }`}
+              >
+                {/* Vehicle Header */}
+                <div className="flex items-start gap-4">
+                  <VehicleImage vehicleId={v.id} imageUrl={v.imageUrl} size="md" key={`img-${v.id}`} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="text-base font-bold text-[#1e3a5f]">{v.nickname}</h3>
+                      {v.isPrimary && (
+                        <Badge variant="info" className="text-xs">ראשי</Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {v.manufacturer} {v.model} • {v.year}
+                    </p>
+                    {/* Israeli License Plate */}
+                    <div className="mt-2 inline-flex items-center gap-1 bg-yellow-300 text-black rounded px-2 py-1 text-xs font-bold border border-yellow-500">
+                      <span>🇮🇱</span>
+                      <span>{v.licensePlate}</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1 flex-shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon={<Edit size={14} />}
+                      onClick={() => openEditModal(v)}
+                      className="text-gray-600 hover:text-teal-600"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon={<Trash2 size={14} />}
+                      onClick={() => handleDeleteVehicle(v.id)}
+                      className="text-gray-600 hover:text-red-600"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon={<ChevronDown size={14} className={expandedVehicle === v.id ? 'rotate-180 transition' : 'transition'} />}
+                      onClick={() => setExpandedVehicle(expandedVehicle === v.id ? null : v.id)}
+                      className="text-gray-600 hover:text-teal-600"
+                    />
+                  </div>
+                </div>
+
+                {/* Status Badges Row */}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {v.testStatus === 'valid' && (
+                    <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-medium border border-green-200">
+                      🧪 טסט תקין
+                    </span>
+                  )}
+                  {v.testStatus === 'expiring' && (
+                    <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-medium border border-amber-200">
+                      ⚠️ טסט פוקע
+                    </span>
+                  )}
+                  {v.testStatus === 'expired' && (
+                    <span className="inline-flex items-center gap-1 bg-red-50 text-red-700 px-3 py-1 rounded-full text-xs font-medium border border-red-200">
+                      ❌ טסט פג תוקף
+                    </span>
+                  )}
+
+                  {v.insuranceStatus === 'valid' && (
+                    <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-medium border border-green-200">
+                      🛡️ ביטוח תקין
+                    </span>
+                  )}
+                  {v.insuranceStatus === 'expiring' && (
+                    <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-medium border border-amber-200">
+                      ⚠️ ביטוח פוקע
+                    </span>
+                  )}
+                  {v.insuranceStatus === 'expired' && (
+                    <span className="inline-flex items-center gap-1 bg-red-50 text-red-700 px-3 py-1 rounded-full text-xs font-medium border border-red-200">
+                      ❌ ביטוח פג תוקף
+                    </span>
+                  )}
+                </div>
+
+                {/* Expanded Details */}
+                {expandedVehicle === v.id && (
+                  <div className="mt-4 pt-4 border-t border-gray-100 space-y-4">
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <div className="text-xs text-gray-500 mb-1">תוקף טסט</div>
+                        <div className="font-medium text-[#1e3a5f]">
+                          {v.testExpiryDate ? new Date(v.testExpiryDate).toLocaleDateString('he-IL') : '—'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500 mb-1">תוקף ביטוח</div>
+                        <div className="font-medium text-[#1e3a5f]">
+                          {v.insuranceExpiry ? new Date(v.insuranceExpiry).toLocaleDateString('he-IL') : '—'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500 mb-1">ק״מ</div>
+                        <div className="font-medium text-[#1e3a5f]">
+                          {v.mileage?.toLocaleString() || '—'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500 mb-1">דלק</div>
+                        <div className="font-medium text-[#1e3a5f]">
+                          {v.fuelType || '—'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500 mb-1">צבע</div>
+                        <div className="font-medium text-[#1e3a5f]">
+                          {v.color || '—'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500 mb-1">בדיקות</div>
+                        <div className="font-medium text-[#1e3a5f]">
+                          {v._count?.inspections || 0}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      {!v.isPrimary && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleSetPrimary(v.id)}
+                          className="w-full border border-teal-200 text-teal-600 hover:bg-teal-50"
+                        >
+                          הגדר כרכב ראשי
+                        </Button>
+                      )}
+                      <button
+                        onClick={() => router.push(`/user/vehicles/${v.id}`)}
+                        className="w-full text-center bg-[#fef7ed] hover:bg-gray-100 text-[#1e3a5f] rounded-xl py-2 px-3 font-medium text-sm transition-colors"
+                      >
+                        צפה בדוחות
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         )}
       </div>
-
-      {error && !showAddModal && !showEditModal && (
-        <div className="flex gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-          <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
-          {error}
-        </div>
-      )}
-
-      {/* AI Insights */}
-      {!loading && vehicles.length > 0 && (
-        <div className="bg-gradient-to-r from-[#fef7ed] to-white border border-teal-200 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-teal-500/10 rounded-lg flex items-center justify-center">
-              <Brain size={18} className="text-teal-600" />
-            </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לרכבים</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Test Status Card */}
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertTriangleIcon size={14} className="text-amber-500" />
-                <span className="text-xs font-bold text-gray-700">סטטוס טסט</span>
-              </div>
-              <p className="text-xs text-gray-600">
-                {vehicles.filter(v => v.testStatus === 'expired' || v.testStatus === 'expiring').length === 0
-                  ? '✓ כל הרכבים בתוקף'
-                  : `⚠️ ${vehicles.filter(v => v.testStatus === 'expired' || v.testStatus === 'expiring').length} רכבים בעיה טסט`}
-              </p>
-            </div>
-
-            {/* Insurance Status Card */}
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
-              <div className="flex items-center gap-2 mb-2">
-                <Shield size={14} className="text-blue-500" />
-                <span className="text-xs font-bold text-gray-700">סטטוס ביטוח</span>
-              </div>
-              <p className="text-xs text-gray-600">
-                {vehicles.filter(v => v.insuranceStatus === 'expired' || v.insuranceStatus === 'expiring').length === 0
-                  ? '✓ כל הביטוחים בתוקף'
-                  : `⚠️ ${vehicles.filter(v => v.insuranceStatus === 'expired' || v.insuranceStatus === 'expiring').length} ביטוחים בעיה`}
-              </p>
-            </div>
-
-            {/* Activity Summary Card */}
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp size={14} className="text-green-500" />
-                <span className="text-xs font-bold text-gray-700">סיכום פעילות</span>
-              </div>
-              <p className="text-xs text-gray-600">
-                📊 {vehicles.reduce((sum, v) => sum + (v._count?.inspections || 0), 0)} בדיקות • {vehicles.reduce((sum, v) => sum + (v._count?.expenses || 0), 0)} הוצאות
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {vehicles.length === 0 && !error ? (
-        <Card className="text-center py-12">
-          <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <Car size={24} className="text-teal-600" />
-          </div>
-          <h3 className="text-lg font-bold text-gray-600 mb-2">אין רכבים עדיין</h3>
-          <p className="text-gray-400 mb-4">הוסף את הרכב הראשון שלך!</p>
-          <Button icon={<Plus size={16} />} onClick={() => setShowAddModal(true)}>הוסף רכב</Button>
-        </Card>
-      ) : vehicles.length > 0 ? (
-        <div className="space-y-4">
-          {vehicles.map(v => (
-            <Card key={v.id} className="overflow-hidden">
-              {/* Vehicle Header */}
-              <div className="flex items-center gap-4">
-                <VehicleImage vehicleId={v.id} imageUrl={v.imageUrl} size="md" key={v.id} />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-bold text-[#1e3a5f]">{v.nickname}</h3>
-                    {v.isPrimary && <Badge variant="info">ראשי</Badge>}
-                  </div>
-                  <p className="text-sm text-gray-500">
-                    {v.manufacturer} {v.model} • {v.year} • {v.licensePlate}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" icon={<Edit size={14} />} onClick={() => openEditModal(v)} />
-                  <Button variant="ghost" size="sm"
-                    icon={<ChevronDown size={14} className={expandedVehicle === v.id ? 'rotate-180 transition' : 'transition'} />}
-                    onClick={() => setExpandedVehicle(expandedVehicle === v.id ? null : v.id)}
-                  />
-                </div>
-              </div>
-
-              {/* Status Row */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mt-4">
-                <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                  <Shield size={16} className="text-teal-600" />
-                  <div>
-                    <div className="text-xs text-gray-500">טסט</div>
-                    <StatusBadge status={v.testStatus} />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                  <FileText size={16} className="text-blue-600" />
-                  <div>
-                    <div className="text-xs text-gray-500">ביטוח</div>
-                    <StatusBadge status={v.insuranceStatus} />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                  <Gauge size={16} className="text-[#1e3a5f]" />
-                  <div>
-                    <div className="text-xs text-gray-500">ק&quot;מ</div>
-                    <span className="text-sm font-bold">{v.mileage?.toLocaleString() || '—'}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                  <Fuel size={16} className="text-orange-500" />
-                  <div>
-                    <div className="text-xs text-gray-500">דלק</div>
-                    <span className="text-sm font-bold">{v.fuelType || '—'}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Expanded Details */}
-              {expandedVehicle === v.id && (
-                <div className="mt-4 pt-4 border-t border-gray-100 space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
-                    <div><span className="text-gray-500">תוקף טסט:</span> <span className="font-medium">{v.testExpiryDate ? new Date(v.testExpiryDate).toLocaleDateString('he-IL') : '—'}</span></div>
-                    <div><span className="text-gray-500">תוקף ביטוח:</span> <span className="font-medium">{v.insuranceExpiry ? new Date(v.insuranceExpiry).toLocaleDateString('he-IL') : '—'}</span></div>
-                    <div><span className="text-gray-500">צבע:</span> <span className="font-medium">{v.color || '—'}</span></div>
-                    <div><span className="text-gray-500">בדיקות:</span> <span className="font-medium">{v._count?.inspections || 0} בדיקות</span></div>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button variant="outline" size="sm" icon={<Eye size={14} />} className="flex-1" onClick={() => router.push(`/user/vehicles/${v.id}`)}>צפה בדוחות</Button>
-                    <Button variant="outline" size="sm" icon={<Calendar size={14} />} className="flex-1" onClick={() => router.push('/user/book-garage')}>קבע תור</Button>
-                  </div>
-                </div>
-              )}
-            </Card>
-          ))}
-        </div>
-      ) : null}
 
       {/* Edit Vehicle Modal */}
       <Modal isOpen={showEditModal} onClose={() => { setShowEditModal(false); setEditVehicleId(null); resetForm(); }} title="עריכת רכב" size="lg">
@@ -592,8 +707,8 @@ export default function VehiclesPage() {
       <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)} title="הוספת רכב חדש" size="lg">
         <div className="space-y-4">
           {/* MOT Lookup Section */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+            <div className="flex items-center gap-2 mb-3">
               <Search size={16} className="text-blue-600" />
               <h4 className="font-bold text-blue-800 text-sm">חיפוש אוטומטי ממשרד התחבורה</h4>
             </div>

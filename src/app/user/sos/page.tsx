@@ -6,6 +6,8 @@ import Button from '@/components/ui/Button';
 import Badge, { StatusBadge } from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
+import PageHeader from '@/components/ui/PageHeader';
+import PageSkeleton from '@/components/ui/PageSkeleton';
 import { AlertCircle, Phone, MapPin, Clock, Plus, Send, Car, Loader2, AlertTriangle, CheckCircle2, ArrowRight, Flame, Wrench, CircleDot, Fuel, Lock, HelpCircle } from 'lucide-react';
 
 const eventTypeIcons: Record<string, typeof AlertCircle> = {
@@ -207,58 +209,61 @@ export default function SosPage() {
   };
 
   return (
-    <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
-          <AlertTriangle size={20} className="text-red-600" />
-        </div>
-        <h1 className="text-2xl font-bold text-[#1e3a5f]">SOS חירום</h1>
-      </div>
+    <div className="min-h-screen bg-[#fef7ed] pb-24 pt-12 lg:pt-0" dir="rtl">
+      <div className="space-y-6">
+        <PageHeader title="🆘 מצב חירום" variant="red" backUrl="/user/service" />
 
-      {submitMessage && (
-        <div className={`p-4 rounded-xl text-center font-medium ${
-          submitMessage.includes('הצלחה') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-        }`}>
-          {submitMessage}
-        </div>
-      )}
-
-      {/* Emergency Button */}
-      <Card className="bg-gradient-to-l from-red-600 to-red-700 text-white border-none shadow-2xl">
-        <div className="text-center py-8 px-6">
-          <div className="w-20 h-20 bg-white/25 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse">
-            <AlertTriangle size={48} className="text-white" />
+        {submitMessage && (
+          <div className={`mx-4 lg:mx-0 p-4 rounded-xl text-center font-medium ${
+            submitMessage.includes('הצלחה') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          }`}>
+            {submitMessage}
           </div>
-          <h2 className="text-3xl font-bold mb-3 text-white">צריך עזרה דחופה?</h2>
-          <p className="text-white/90 mb-6 text-lg">דווח על אירוע ונשלח לך עזרה מיידית</p>
-          <Button
-            size="lg"
-            className="bg-white text-red-600 hover:bg-red-50 font-bold text-xl px-12 py-3 w-full shadow-lg"
-            icon={<AlertCircle size={24} />}
-            onClick={() => { setShowReportModal(true); setStep(0); setSelectedType(null); }}
-          >
-            דווח על אירוע חירום
-          </Button>
-        </div>
-      </Card>
+        )}
 
-      {/* Quick Call & Emergency Numbers */}
-      <div className="grid grid-cols-2 gap-3">
-        <a href="tel:+97246840000" className="w-full">
-          <Button variant="outline" size="lg" icon={<Phone size={18} />} className="py-4 w-full">
-            חייג למוקד: *6840
-          </Button>
-        </a>
-        <Button variant="outline" size="lg" icon={<MapPin size={18} />} className="py-4" onClick={handleDetectLocation} disabled={geoLocating}>
-          {geoLocating ? 'חיפוש מיקום...' : 'זהה מיקום'}
-        </Button>
-      </div>
+        {loading && <PageSkeleton count={3} />}
 
-      {/* Active SOS Status Timeline */}
-      {events.filter(e => e.status !== 'resolved').length > 0 && (
-        <Card>
-          <CardTitle>אירועים פעילים</CardTitle>
-          <div className="space-y-4 mt-3">
+        {!loading && (
+          <>
+            {/* Emergency Button */}
+            <div className="mx-4 lg:mx-0">
+              <Card className="bg-gradient-to-l from-red-600 to-red-700 text-white border-none shadow-2xl">
+                <div className="text-center py-8 px-6">
+                  <div className="w-20 h-20 bg-white/25 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse">
+                    <AlertTriangle size={48} className="text-white" />
+                  </div>
+                  <h2 className="text-3xl font-bold mb-3 text-white">צריך עזרה דחופה?</h2>
+                  <p className="text-white/90 mb-6 text-lg">דווח על אירוע ונשלח לך עזרה מיידית</p>
+                  <Button
+                    size="lg"
+                    className="bg-white text-red-600 hover:bg-red-50 font-bold text-xl px-12 py-3 w-full shadow-lg"
+                    icon={<AlertCircle size={24} />}
+                    onClick={() => { setShowReportModal(true); setStep(0); setSelectedType(null); }}
+                  >
+                    דווח על אירוע חירום
+                  </Button>
+                </div>
+              </Card>
+            </div>
+
+            {/* Quick Call & Emergency Numbers */}
+            <div className="mx-4 lg:mx-0 grid grid-cols-2 gap-3">
+              <a href="tel:+97246840000" className="w-full">
+                <Button variant="outline" size="lg" icon={<Phone size={18} />} className="py-4 w-full">
+                  חייג למוקד: *6840
+                </Button>
+              </a>
+              <Button variant="outline" size="lg" icon={<MapPin size={18} />} className="py-4" onClick={handleDetectLocation} disabled={geoLocating}>
+                {geoLocating ? 'חיפוש מיקום...' : 'זהה מיקום'}
+              </Button>
+            </div>
+
+            {/* Active SOS Status Timeline */}
+            {events.filter(e => e.status !== 'resolved').length > 0 && (
+              <div className="mx-4 lg:mx-0">
+                <Card className="bg-white rounded-2xl">
+                  <CardTitle>אירועים פעילים</CardTitle>
+                  <div className="space-y-4 mt-3">
             {events.filter(e => e.status !== 'resolved').map(event => {
               const statuses = ['open', 'assigned', 'in_progress', 'resolved'];
               const currentIndex = statuses.indexOf(event.status);
@@ -357,18 +362,16 @@ export default function SosPage() {
                 </div>
               );
             })}
-          </div>
-        </Card>
-      )}
+                  </div>
+                </Card>
+              </div>
+            )}
 
-      {/* Past Events */}
-      <Card>
-        <CardTitle icon={<Clock className="text-gray-500" />}>היסטוריית אירועים</CardTitle>
-        {loading ? (
-          <div className="flex justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-          </div>
-        ) : events.length === 0 ? (
+            {/* Past Events */}
+            <div className="mx-4 lg:mx-0">
+              <Card className="bg-white rounded-2xl">
+                <CardTitle icon={<Clock className="text-gray-500" />}>היסטוריית אירועים</CardTitle>
+                {events.length === 0 ? (
           <div className="text-center py-8">
             <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center mx-auto mb-2">
               <CheckCircle2 size={20} className="text-green-600" />
@@ -406,9 +409,12 @@ export default function SosPage() {
             ))}
           </div>
         )}
-      </Card>
+              </Card>
+            </div>
+          </>
+        )}
 
-      {/* Report Modal */}
+        {/* Report Modal */}
       <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)} title="דיווח אירוע SOS" size="lg">
         {step === 0 && (
           <div className="space-y-5">
@@ -490,7 +496,8 @@ export default function SosPage() {
             </div>
           </div>
         )}
-      </Modal>
+        </Modal>
+      </div>
     </div>
   );
 }
