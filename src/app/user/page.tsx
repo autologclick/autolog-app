@@ -303,7 +303,7 @@ export default function UserHomePage() {
   }
 
   if (showOnboarding) {
-    return <OnboardingWizard onComplete={() => window.location.reload()} />;
+    return <OnboardingWizard isOpen={true} onComplete={() => window.location.reload()} />;
   }
 
   if (!vehicle) {
