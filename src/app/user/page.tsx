@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import OnboardingWizard from '@/components/shared/OnboardingWizard';
 import GlobalSearch from '@/components/ui/GlobalSearch';
-import Tesseract from 'tesseract.js';
+// Tesseract loaded dynamically in handleScanReceipt to avoid SSR issues
 
 // ── Types ──────────────────────────────────────────
 interface Vehicle {
@@ -242,6 +242,7 @@ export default function UserHomePage() {
     try {
       const dataUrl = await compressImage(file, 1200, 0.85);
       setTreatmentImage(dataUrl);
+      const Tesseract = (await import('tesseract.js')).default;
       const { data } = await Tesseract.recognize(dataUrl, 'heb+eng');
       const text = data.text;
       // Try extracting cost
