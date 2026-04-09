@@ -3,6 +3,7 @@ import { jsonResponse, errorResponse } from '@/lib/api-helpers';
 import { getResourceId, getApiUrl } from '@/lib/mot-config';
 import { createRequestLogger } from '@/lib/logger';
 import { VEHICLE_LOOKUP_ERRORS, VALIDATION_ERRORS } from '@/lib/messages';
+import { normalizeVehicleNames } from '@/lib/vehicle-names';
 
 // Israel Ministry of Transport - Vehicle data lookup via data.gov.il CKAN API
 // Resource ID and API URL are managed in mot-config.ts and can be updated dynamically
@@ -79,8 +80,8 @@ export async function GET(req: NextRequest) {
       (r: GovVehicleData) => String(r.mispar_rechev) === cleanPlate
     ) || data.result.records[0];
 
-    // Map to our format
-    const vehicleInfo = {
+    // Map to our format with raw MOT values
+    const rawVehicleInfo = {
       licensePlate: String(record.mispar_rechev),
       manufacturer: record.tozeret_nm || '',
       model: record.degem_nm || '',
@@ -101,10 +102,16 @@ export async function GET(req: NextRequest) {
       source: 'data.gov.il - משרד התחבורה',
     };
 
+    // Normalize manufacturer/model to commercial names
+    // e.g., "מזדה יפן" + "BN627" → "מזדה" + "3"
+    const vehicleInfo = normalizeVehicleNames(rawVehicleInfo);
+
     logger.info('Vehicle lookup successful', {
       plateNumber: cleanPlate,
-      manufacturer: record.tozeret_nm,
-      model: record.degem_nm,
+      rawManufacturer: record.tozeret_nm,
+      rawModel: record.degem_nm,
+      manufacturer: vehicleInfo.manufacturer,
+      model: vehicleInfo.model,
     });
 
     return jsonResponse({ vehicle: vehicleInfo });

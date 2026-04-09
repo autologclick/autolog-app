@@ -16,8 +16,8 @@ const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
 const manufacturers = [
   'טויוטה', 'הונדה', 'ניסאן', 'מאזדה', 'סוזוקי', 'יונדאי', 'קיה', 'סקודה',
   'פולקסווגן', 'אאודי', 'BMW', 'מרצדס', 'פיאט', 'סיטרואן',
-  'פז\'ו', 'שברולט', 'פורד', 'רנו', 'אופל', 'וולוו', 'סיאט',
-  'BYD', 'טסלה', 'דאצ\'יה', 'ג\'יפ', 'סובארו', 'מיצובישי',
+  'פז\'\u05D5', 'שברולט', 'פורד', 'רנו', 'אופל', 'וולוו', 'סיאט',
+  'BYD', 'טסלה', 'דאצ\'\u05D9ה', 'ג\'\u05D9פ', 'סובארו', 'מיצובישי',
 ];
 
 export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizardProps) {
@@ -86,7 +86,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
           color: v.color || prev.color,
           fuelType: v.fuelType || prev.fuelType,
           testExpiryDate: v.testExpiryDate || prev.testExpiryDate,
-          nickname: v.manufacturer && v.model ? `${v.manufacturer} ${v.model}` : prev.nickname,
+          nickname: v.commercialName || (v.manufacturer && v.model ? `${v.manufacturer} ${v.model}` : prev.nickname),
         }));
         setLookupMessage('הפרטים נטענו בהצלחה!');
         setTimeout(() => setLookupMessage(''), 3000);
@@ -175,7 +175,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                 </div>
                 <div>
                   <p className="font-semibold text-gray-800">ניהול רכבים</p>
-                  <p className="text-sm text-gray-500">עקוב אחר כל הרכבים שלך ותחזוקתם</p>
+                  <p className="text-sm text-gray-500">עקוב אחרי כל הרכבים שלך ותחזוקתם</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -274,6 +274,10 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                     className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
                   >
                     <option value="">בחר יצרן</option>
+                    {/* Include API-returned manufacturer if not in the static list */}
+                    {formData.manufacturer && !manufacturers.includes(formData.manufacturer) && (
+                      <option value={formData.manufacturer}>{formData.manufacturer}</option>
+                    )}
                     {manufacturers.map(m => (
                       <option key={m} value={m}>{m}</option>
                     ))}
