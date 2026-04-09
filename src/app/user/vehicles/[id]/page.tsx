@@ -419,7 +419,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
     {
       title: 'טיפול שגרתי',
       value: (vehicle?.mileage ? (Math.ceil((vehicle.mileage + 5000) / 10000) * 10000).toLocaleString('he-IL') : 'N/A'),
-      subtitle: 'עד לק�ן הבא',
+      subtitle: 'עד לק"ן הבא',
       status: 'success' as const,
     },
     {
@@ -975,7 +975,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
             <div>
               <p className="font-medium text-red-900">זו פעולה בלתי הפיכה</p>
               <p className="text-sm text-red-700 mt-1">
-                המחיקה של {vehicle.nickname} תסיר את כל הבדיקות, התורים וההוצאות הקשורות אליו.
+                המחיקה של {vehicle.nickname} תסיר את כל הבדיקות, התורים והוצאות הקשורות אליה.
               </p>
             </div>
           </div>
