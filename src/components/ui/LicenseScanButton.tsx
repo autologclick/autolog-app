@@ -100,7 +100,7 @@ async function lookupVehicleByPlate(plate: string): Promise<ScanResult | null> {
       testExpiryDate: v.testExpiryDate || undefined,
       trimLevel: v.trimLevel || undefined,
       engineModel: v.engineModel || undefined,
-      nickname: v.manufacturer && v.model ? `${v.manufacturer} ${v.model}` : undefined,
+      nickname: v.commercialName || (v.manufacturer && v.model ? `${v.manufacturer} ${v.model}` : undefined),
     };
   } catch {
     return null;
@@ -201,11 +201,18 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
       console.error('OCR Error:', err);
       if (imageUrl) URL.revokeObjectURL(imageUrl);
       setScanStatus('error');
-      const errMsg = err instanceof Error ? err.message : '';
-      if (errMsg.includes('memory') || errMsg.includes('allocation')) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      const errName = err instanceof Error ? err.name : '';
+      console.error('OCR Error details:', { message: errMsg, name: errName, stack: err instanceof Error ? err.stack : '' });
+
+      if (errMsg.includes('memory') || errMsg.includes('allocation') || errMsg.includes('OOM')) {
         setStatusMessage('התמונה גדולה מדי. נסה לצלם מקרוב יותר.');
-      } else if (errMsg.includes('network') || errMsg.includes('fetch') || errMsg.includes('load')) {
-        setStatusMessage('שגיאת רשת. ודא שיש חיבור אינטרנט ונסה שוב.');
+      } else if (errMsg.includes('network') || errMsg.includes('fetch') || errMsg.includes('Failed to fetch')) {
+        setStatusMessage('שגיאת רשת בטעינת מנוע הסריקה. בדוק חיבור אינטרנט ונסה שוב.');
+      } else if (errMsg.includes('load') || errMsg.includes('wasm') || errMsg.includes('Module')) {
+        setStatusMessage('שגיאה בטעינת מנוע הסריקה. נסה לרענן את הדף ולצלם שוב.');
+      } else if (errMsg.includes('worker') || errMsg.includes('Worker')) {
+        setStatusMessage('שגיאה באתחול הסריקה. נסה לרענן את הדף.');
       } else {
         setStatusMessage('שגיאה בסריקה. נסה לצלם שוב עם תאורה טובה.');
       }
@@ -327,7 +334,7 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
               scanStatus === 'loading' ? 'text-teal-600' :
               'text-blue-600'
             }`}>
-              {statusMessage || 'צלם או העלה תמונה של רישיון הרכב — מספר הרכב יזוהה והפרטים ימולאו ממשרד התחבורה'}
+              {statusMessage || 'צלם או העלה תמונה של רישיון הרכג — מספר הרכב יזוהה והפרטים ימולאו ממשרד התחבורה'}
             </p>
           </div>
         </div>
