@@ -35,11 +35,13 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
-          // Content Security Policy - allow Google Fonts, Resend API, and Tesseract.js OCR
-          {
-            key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; connect-src 'self' https://api.resend.com https://cdn.jsdelivr.net https://unpkg.com https://tessdata.projectnaptha.com; worker-src 'self' blob:; frame-ancestors 'none'",
-          },
+          // CSP temporarily disabled — Tesseract.js OCR requires blob: workers,
+          // CDN importScripts, and WASM loading that conflict with strict CSP.
+          // TODO: re-enable CSP once OCR approach is finalized.
+          // {
+          //   key: 'Content-Security-Policy',
+          //   value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net; ...",
+          // },
           // Browser permissions — camera needed for license scanning
           {
             key: 'Permissions-Policy',
