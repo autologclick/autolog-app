@@ -419,7 +419,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
     {
       title: 'טיפול שגרתי',
       value: (vehicle?.mileage ? (Math.ceil((vehicle.mileage + 5000) / 10000) * 10000).toLocaleString('he-IL') : 'N/A'),
-      subtitle: 'עד לק"מ הבא',
+      subtitle: 'עד לק�ן הבא',
       status: 'success' as const,
     },
     {
@@ -476,7 +476,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
           <p className="text-sm text-gray-500">{vehicle.manufacturer}</p>
           <h1 className="text-lg font-bold text-gray-800">{vehicle.model}</h1>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1">
           <button className="p-2 hover:bg-gray-100 rounded-lg">
             <Bell size={20} className="text-gray-800" />
           </button>
@@ -485,6 +485,13 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
             className="p-2 hover:bg-gray-100 rounded-lg"
           >
             <Plus size={20} className="text-gray-800" />
+          </button>
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="p-2 hover:bg-red-50 rounded-lg"
+            title="מחק רכב"
+          >
+            <Trash2 size={20} className="text-red-500" />
           </button>
         </div>
       </div>
@@ -685,13 +692,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
           </div>
         </div>
 
-        {/* Remove Vehicle Button */}
-        <button
-          onClick={() => setShowDeleteModal(true)}
-          className="w-full py-3 border-2 border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 transition-colors"
-        >
-          הסר רכב
-        </button>
+        {/* Delete button moved to header */}
       </div>
 
       {/* Add Treatment Modal */}
