@@ -6,7 +6,7 @@ import {
   Car, ChevronDown, ChevronLeft, Loader2, Plus, Flag,
   Wrench, FileText, Receipt, Calendar, Shield, Clock,
   Camera, Image as ImageIcon, AlertTriangle, CheckCircle,
-  Gauge, Fuel, X, MapPin, Upload
+  Gauge, Fuel, X, MapPin, Upload, Trash2
 } from 'lucide-react';
 import OnboardingWizard from '@/components/shared/OnboardingWizard';
 import GlobalSearch from '@/components/ui/GlobalSearch';
@@ -168,6 +168,8 @@ export default function UserHomePage() {
   const [treatmentImage, setTreatmentImage] = useState<string | null>(null);
   const [submittingTreatment, setSubmittingTreatment] = useState(false);
   const [scanning, setScanning] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingVehicle, setDeletingVehicle] = useState(false);
   const treatmentImageRef = useRef<HTMLInputElement>(null);
   const scanRef = useRef<HTMLInputElement>(null);
 
@@ -211,6 +213,26 @@ export default function UserHomePage() {
   const thisMonthExpenses = expenses
     .filter(e => new Date(e.date).getMonth() === new Date().getMonth() && new Date(e.date).getFullYear() === new Date().getFullYear())
     .reduce((sum, e) => sum + e.amount, 0);
+
+  // ── Delete Vehicle ──
+  const handleDeleteVehicle = async () => {
+    if (!vehicle) return;
+    setDeletingVehicle(true);
+    try {
+      const res = await fetch(`/api/vehicles/${vehicle.id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete');
+      setShowDeleteModal(false);
+      setVehicles(prev => prev.filter(v => v.id !== vehicle.id));
+      setSelectedIdx(0);
+      if (vehicles.length <= 1) {
+        router.push('/user/vehicles/add');
+      }
+    } catch {
+      alert('שגיאה במחיקת הרכב');
+    } finally {
+      setDeletingVehicle(false);
+    }
+  };
 
   // ── Image compression ──
   const compressImage = (file: File, maxWidth = 800, quality = 0.7): Promise<string> => {
@@ -331,8 +353,15 @@ export default function UserHomePage() {
 
       {/* ═══ Header ═══ */}
       <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white px-4 pt-5 pb-6 rounded-b-3xl">
-        {/* Search */}
-        <div className="flex justify-end mb-2">
+        {/* Search & Delete */}
+        <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            title="מחק רכב"
+          >
+            <Trash2 size={20} className="text-red-300" />
+          </button>
           <GlobalSearch />
         </div>
         {/* Vehicle Selector */}
@@ -724,6 +753,41 @@ export default function UserHomePage() {
               >
                 {submittingTreatment ? <Loader2 size={18} className="animate-spin" /> : null}
                 {submittingTreatment ? 'שומר...' : 'שמור טיפול'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ Delete Vehicle Modal ═══ */}
+      {showDeleteModal && vehicle && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={() => setShowDeleteModal(false)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="text-center mb-4">
+              <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Trash2 size={28} className="text-red-500" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">מחיקת רכב</h3>
+              <p className="text-sm text-gray-500">
+                האם אתה בטוח שברצונך למחוק את{' '}
+                <span className="font-semibold text-gray-700">{vehicle.nickname || `${vehicle.manufacturer} ${vehicle.model}`}</span>?
+              </p>
+              <p className="text-xs text-red-500 mt-2">פעולה זו תמחק את כל הטיפולים, המסמכים וההוצאות של הרכב ולא ניתן לשחזר אותם.</p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 bg-gray-100 text-gray-700 rounded-xl py-3 font-semibold text-sm"
+              >
+                ביטול
+              </button>
+              <button
+                onClick={handleDeleteVehicle}
+                disabled={deletingVehicle}
+                className="flex-1 bg-red-500 text-white rounded-xl py-3 font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {deletingVehicle ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                {deletingVehicle ? 'מוחק...' : 'מחק'}
               </button>
             </div>
           </div>
