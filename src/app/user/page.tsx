@@ -540,7 +540,17 @@ export default function UserHomePage() {
           </div>
           {/* Document slots */}
           {['vehicle_license', 'insurance', 'driving_license'].map(docType => {
-            const doc = documents.find(d => d.type === docType);
+            const doc = documents.find(d => {
+              const t = d.type;
+              // Normalize legacy types for matching
+              if (docType === 'vehicle_license') {
+                return t === 'vehicle_license' || t === 'license' || t === 'registration' || t === 'test_certificate';
+              }
+              if (docType === 'insurance') {
+                return t === 'insurance' || t.startsWith('insurance');
+              }
+              return t === docType;
+            });
             const hasExpiry = doc?.expiryDate;
             const days = hasExpiry ? daysUntil(doc.expiryDate) : null;
             const isExpired = days !== null && days < 0;

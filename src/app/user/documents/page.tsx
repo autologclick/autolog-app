@@ -115,7 +115,20 @@ function parseDocumentText(text: string) {
   const plateMatch = text.match(/(\d{2,3}[-\s]?\d{2,3}[-\s]?\d{2,3})/);
   if (plateMatch) {
     const plate = plateMatch[1].replace(/[-\s]/g, '');
-    if (plate.length >= 7 && plate.length <= 8) result.licensePlate = plate;
+    if (plate.length >= 7 && plate.length <= 8) {
+      result.licensePlate = plate;
+      // If a license plate was found but no category detected, it's likely a vehicle license
+      if (!result.category) {
+        result.category = 'vehicle_license';
+      }
+    }
+  }
+
+  // Additional Hebrew keywords commonly found on Israeli vehicle licenses
+  if (!result.category) {
+    if (lower.includes('משרד התחבורה') || lower.includes('רשות הרישוי') || lower.includes('סוג רכב') || lower.includes('מספר רכב') || lower.includes('בעל הרכב') || lower.includes('מס רכב') || lower.includes('שנת ייצור')) {
+      result.category = 'vehicle_license';
+    }
   }
 
   return result;

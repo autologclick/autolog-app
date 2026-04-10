@@ -663,7 +663,16 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
 
           <div className="space-y-2">
             {documentTypes.map(docType => {
-              const exists = documents.some(d => d.type === docType.key);
+              const exists = documents.some(d => {
+                const t = d.type;
+                if (docType.key === 'license') {
+                  return t === 'license' || t === 'vehicle_license' || t === 'registration' || t === 'test_certificate';
+                }
+                if (docType.key === 'mandatory_insurance' || docType.key === 'comprehensive_insurance') {
+                  return t === docType.key || t === 'insurance' || t.startsWith('insurance');
+                }
+                return t === docType.key;
+              });
               const Icon = docType.icon;
 
               return (

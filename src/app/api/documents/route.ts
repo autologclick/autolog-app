@@ -14,6 +14,15 @@ import {
 import { documentSchema } from '@/lib/validations';
 import { NOT_FOUND } from '@/lib/messages';
 
+// Normalize legacy document types to canonical types
+function normalizeDocType(type: string): string {
+  if (type.startsWith('insurance')) return 'insurance';
+  if (['license', 'registration'].includes(type)) return 'vehicle_license';
+  if (type === 'test_certificate') return 'vehicle_license';
+  if (['vehicle_license', 'driving_license', 'receipt', 'photo', 'other'].includes(type)) return type;
+  return type;
+}
+
 // GET /api/documents - List documents for user's vehicles
 export async function GET(req: NextRequest) {
   try {
@@ -78,7 +87,7 @@ export async function POST(req: NextRequest) {
 
     const {
       vehicleId,
-      type,
+      type: rawType,
       title,
       description,
       fileData,
@@ -88,6 +97,9 @@ export async function POST(req: NextRequest) {
       expiryDate,
       isActive,
     } = validation.data;
+
+    // Normalize legacy document types to canonical types
+    const type = normalizeDocType(rawType);
 
     // Verify user owns the vehicle
     const vehicle = await prisma.vehicle.findUnique({
