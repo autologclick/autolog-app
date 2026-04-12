@@ -83,6 +83,7 @@ model Vehicle {
   mileage           Int?
   fuelType          String?   // petrol | diesel | electric | hybrid
   imageUrl          String?   // Vehicle photo URL (Vercel Blob)
+  maintenanceData   String?   // JSON: AI-generated maintenance schedule cache
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 

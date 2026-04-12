@@ -60,6 +60,26 @@ interface Expense {
   description?: string;
 }
 
+interface MaintenanceItem {
+  category: string;
+  item: string;
+  intervalKm: number;
+  intervalMonths: number;
+  nextAtKm: number;
+  priority: 'high' | 'medium' | 'low';
+  estimatedCost: string;
+  description: string;
+}
+
+interface MaintenanceSchedule {
+  nextServiceKm: number;
+  nextServiceDate: string;
+  summary: string;
+  items: MaintenanceItem[];
+  generatedAt: string;
+  basedOnMileage: number;
+}
+
 // ── Helpers ────────────────────────────────────────
 const formatPlate = (p: string) => {
   const clean = p.replace(/[^0-9]/g, '');
@@ -159,6 +179,11 @@ export default function UserHomePage() {
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
+  // Maintenance schedule
+  const [maintenanceSchedule, setMaintenanceSchedule] = useState<MaintenanceSchedule | null>(null);
+  const [maintenanceLoading, setMaintenanceLoading] = useState(false);
+  const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
+
   // Treatment modal
   const [showAddTreatment, setShowAddTreatment] = useState(false);
   const [treatmentForm, setTreatmentForm] = useState({
@@ -205,6 +230,17 @@ export default function UserHomePage() {
       setDocuments(dData.documents || []);
       setExpenses(eData.expenses || []);
     });
+    // Fetch maintenance schedule
+    if (vehicle.mileage && vehicle.mileage > 0) {
+      setMaintenanceLoading(true);
+      fetch(`/api/vehicles/${id}/maintenance-schedule`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.schedule) setMaintenanceSchedule(data.schedule);
+        })
+        .catch(() => {})
+        .finally(() => setMaintenanceLoading(false));
+    }
   }, [vehicle?.id]);
 
   // ── Computed values ──
@@ -446,12 +482,14 @@ export default function UserHomePage() {
             subtitle={vehicle.insuranceExpiry ? new Date(vehicle.insuranceExpiry).toLocaleDateString('he-IL') : undefined}
             status={insuranceDays !== null ? (insuranceDays < 0 ? 'danger' : insuranceDays < 30 ? 'warning' : 'success') : 'warning'}
           />
-          <ReminderCard
-            icon="🔧" title="טיפול הבא"
-            value={treatments.length > 0 ? 'עודכן' : 'אין נתונים'}
-            subtitle={treatments[0] ? new Date(treatments[0].date).toLocaleDateString('he-IL') : 'הוסף טיפול ראשון'}
-            status={treatments.length > 0 ? 'success' : 'warning'}
-          />
+          <div onClick={() => maintenanceSchedule && setShowMaintenanceModal(true)} className={maintenanceSchedule ? 'cursor-pointer' : ''}>
+            <ReminderCard
+              icon="🔧" title="טיפול הבא"
+              value={maintenanceLoading ? 'טוען...' : maintenanceSchedule ? `${(maintenanceSchedule.nextServiceKm / 1000).toFixed(0)}K ק"מ` : (vehicle?.mileage ? 'חשב עכשיו' : 'אין נתונים')}
+              subtitle={maintenanceLoading ? 'מחשב לפי יצרן...' : maintenanceSchedule ? maintenanceSchedule.summary : (vehicle?.mileage ? 'לחץ לחישוב AI' : 'עדכן קילומטראז\'')}
+              status={maintenanceSchedule ? (maintenanceSchedule.items.some(i => i.priority === 'high') ? 'danger' : 'success') : 'warning'}
+            />
+          </div>
         </div>
 
         {/* Vehicle Inspection Booking CTA */}
@@ -788,6 +826,95 @@ export default function UserHomePage() {
               >
                 {submittingTreatment ? <Loader2 size={18} className="animate-spin" /> : null}
                 {submittingTreatment ? 'שומר...' : 'שמור טיפול'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ Maintenance Schedule Modal ═══ */}
+      {showMaintenanceModal && maintenanceSchedule && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-end lg:items-center justify-center" onClick={() => setShowMaintenanceModal(false)}>
+          <div className="bg-white rounded-t-2xl lg:rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-100 p-4 flex items-center justify-between rounded-t-2xl">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">🔧 טיפול הבא - פירוט</h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  לפי הוראות יצרן • {vehicle?.manufacturer} {vehicle?.model} {vehicle?.year}
+                </p>
+              </div>
+              <button onClick={() => setShowMaintenanceModal(false)} className="p-2 hover:bg-gray-100 rounded-full">
+                <X size={20} className="text-gray-500" />
+              </button>
+            </div>
+
+            {/* Summary */}
+            <div className="p-4 bg-teal-50 border-b border-teal-100">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-teal-600 rounded-xl flex items-center justify-center">
+                  <Wrench size={24} className="text-white" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-teal-800">
+                    טיפול הבא ב-{maintenanceSchedule.nextServiceKm.toLocaleString()} ק&quot;מ
+                  </div>
+                  <div className="text-xs text-teal-600">
+                    תאריך משוער: {new Date(maintenanceSchedule.nextServiceDate).toLocaleDateString('he-IL')}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5">
+                    קילומטראז&apos; נוכחי: {maintenanceSchedule.basedOnMileage.toLocaleString()} ק&quot;מ
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Items List */}
+            <div className="p-4 space-y-3">
+              {maintenanceSchedule.items.map((item, idx) => (
+                <div key={idx} className={`border rounded-xl p-3 ${
+                  item.priority === 'high' ? 'border-red-200 bg-red-50' :
+                  item.priority === 'medium' ? 'border-amber-200 bg-amber-50' :
+                  'border-gray-200 bg-gray-50'
+                }`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          item.priority === 'high' ? 'bg-red-500 text-white' :
+                          item.priority === 'medium' ? 'bg-amber-500 text-white' :
+                          'bg-gray-400 text-white'
+                        }`}>
+                          {item.priority === 'high' ? 'דחוף' : item.priority === 'medium' ? 'בינוני' : 'רגיל'}
+                        </span>
+                        <span className="text-xs text-gray-500">{item.category}</span>
+                      </div>
+                      <h4 className="font-bold text-sm text-gray-900 mt-1">{item.item}</h4>
+                      <p className="text-xs text-gray-600 mt-0.5">{item.description}</p>
+                      <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-400">
+                        <span>כל {item.intervalKm.toLocaleString()} ק&quot;מ</span>
+                        <span>•</span>
+                        <span>הבא ב-{item.nextAtKm.toLocaleString()} ק&quot;מ</span>
+                      </div>
+                    </div>
+                    <div className="text-left flex-shrink-0">
+                      <div className="text-xs font-bold text-gray-700">{item.estimatedCost}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4">
+              <p className="text-[10px] text-gray-400 text-center mb-2">
+                * המידע מבוסס על הוראות יצרן ו-AI. מומלץ להתייעץ עם מוסך מורשה.
+              </p>
+              <button
+                onClick={() => setShowMaintenanceModal(false)}
+                className="w-full bg-teal-600 text-white rounded-xl py-3 font-semibold text-sm"
+              >
+                סגור
               </button>
             </div>
           </div>
