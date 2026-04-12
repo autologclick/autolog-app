@@ -205,8 +205,8 @@ async function lookupVehicleByPlate(plate: string): Promise<ScanResult | null> {
     const v = data.vehicle;
     return {
       licensePlate: v.licensePlate || plate,
-      manufacturer: v.manufacturer || undefined,     model: v.model || undefined,
-         model: v.model || undefined,
+      manufacturer: v.manufacturer || undefined,
+      model: v.model || undefined,
       year: v.year ? String(v.year) : undefined,
       color: v.color || undefined,
       fuelType: v.fuelType || undefined,
@@ -275,35 +275,53 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
       const img = await loadImage(file);
       setScanProgress(20);
 
-      // Step 2: Quick single-region OCR — only the top area where plate number appears
+      // Step 2: OCR — scan multiple regions to find plate number
       setStatusMessage('מזהה מספר רכב...');
       const { createWorker } = await import('tesseract.js');
       setScanProgress(30);
 
-      // Use only English for digit recognition — much faster than heb+eng
       const worker = await createWorker('eng', undefined, {
         logger: (m: { status: string; progress: number }) => {
           if (m.status === 'recognizing text') {
-            setScanProgress(30 + Math.round(m.progress * 40));
+            setScanProgress(30 + Math.round(m.progress * 30));
           }
         },
       });
 
-      // Scan only the top-right area (where plate number is on Israeli license)
-      const bestRegion = getPlateRegions(img.width, img.height)[0];
-      const croppedDataUrl = cropAndPreprocess(img, bestRegion);
-      const result = await worker.recognize(croppedDataUrl);
-      const text = result.data.text;
-      console.log('OCR result:', text);
+      const regions = getPlateRegions(img.width, img.height);
+      let candidates: string[] = [];
 
-      let candidates = extractAllPlates(text);
+      // Try each region with preprocessing (binary threshold)
+      for (let i = 0; i < regions.length && candidates.length === 0; i++) {
+        const croppedDataUrl = cropAndPreprocess(img, regions[i]);
+        const result = await worker.recognize(croppedDataUrl);
+        console.log(`OCR region ${regions[i].label}:`, result.data.text);
+        candidates = extractAllPlates(result.data.text);
+        setScanProgress(30 + Math.round(((i + 1) / regions.length) * 25));
+      }
 
-      // If no candidates from top-right, try top strip quickly
+      // Fallback: try full preprocessed image (no crop) if no candidates found
       if (candidates.length === 0) {
-        const topStrip = getPlateRegions(img.width, img.height)[1];
-        const stripDataUrl = cropAndPreprocess(img, topStrip);
-        const stripResult = await worker.recognize(stripDataUrl);
-        candidates = extractAllPlates(stripResult.data.text);
+        setStatusMessage('סורק תמונה מלאה...');
+        const fullDataUrl = preprocessFullImage(img);
+        const fullResult = await worker.recognize(fullDataUrl);
+        console.log('OCR full image:', fullResult.data.text);
+        candidates = extractAllPlates(fullResult.data.text);
+      }
+
+      // Fallback 2: try top-right region WITHOUT binary threshold (just resize)
+      if (candidates.length === 0) {
+        const canvas = document.createElement('canvas');
+        const r = regions[0];
+        const scale = 3;
+        canvas.width = Math.round(r.w * scale);
+        canvas.height = Math.round(r.h * scale);
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, r.x, r.y, r.w, r.h, 0, 0, canvas.width, canvas.height);
+        const rawDataUrl = canvas.toDataURL('image/png');
+        const rawResult = await worker.recognize(rawDataUrl);
+        console.log('OCR raw (no threshold):', rawResult.data.text);
+        candidates = extractAllPlates(rawResult.data.text);
       }
 
       await worker.terminate();
