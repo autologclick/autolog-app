@@ -452,12 +452,6 @@ export default function UserHomePage() {
             subtitle={treatments[0] ? new Date(treatments[0].date).toLocaleDateString('he-IL') : 'הוסף טיפול ראשון'}
             status={treatments.length > 0 ? 'success' : 'warning'}
           />
-          <ReminderCard
-            icon="🔄" title="צמיגים"
-            value="תקין"
-            subtitle="בדוק בטיפול הבא"
-            status="success"
-          />
         </div>
 
         {/* Vehicle Inspection Booking CTA */}
