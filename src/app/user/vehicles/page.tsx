@@ -13,6 +13,7 @@ import {
   Camera, Upload, X, Image as ImageIcon, Brain, TrendingUp, AlertTriangle as AlertTriangleIcon
 } from 'lucide-react';
 import LicenseScanButton, { type ScanResult } from '@/components/ui/LicenseScanButton';
+import { getManufacturerNames, getModelNames } from '@/lib/vehicle-data';
 import { useRouter } from 'next/navigation';
 
 interface Vehicle {
@@ -674,10 +675,45 @@ export default function VehiclesPage() {
             <Input label="מספר רישוי" value={formData.licensePlate} disabled />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-            <Input label="יצרן" value={formData.manufacturer}
-              onChange={e => setFormData({ ...formData, manufacturer: e.target.value })} />
-            <Input label="דגם" value={formData.model}
-              onChange={e => setFormData({ ...formData, model: e.target.value })} />
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">יצרן</label>
+              <select
+                value={formData.manufacturer}
+                onChange={e => setFormData({ ...formData, manufacturer: e.target.value, model: '' })}
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+              >
+                <option value="">בחר יצרן</option>
+                {formData.manufacturer && !getManufacturerNames().includes(formData.manufacturer) && (
+                  <option value={formData.manufacturer}>{formData.manufacturer}</option>
+                )}
+                {getManufacturerNames().map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">דגם</label>
+              {formData.manufacturer && getModelNames(formData.manufacturer).length > 0 ? (
+                <select
+                  value={formData.model}
+                  onChange={e => setFormData({ ...formData, model: e.target.value })}
+                  className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+                >
+                  <option value="">בחר דגם</option>
+                  {formData.model && !getModelNames(formData.manufacturer).includes(formData.model) && (
+                    <option value={formData.model}>{formData.model}</option>
+                  )}
+                  {getModelNames(formData.manufacturer).map(m => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
+                </select>
+              ) : (
+                <input type="text" value={formData.model}
+                  onChange={e => setFormData({ ...formData, model: e.target.value })}
+                  placeholder="הזן דגם"
+                  className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm" />
+              )}
+            </div>
             <Input label="שנת ייצור" type="number" value={formData.year}
               onChange={e => setFormData({ ...formData, year: e.target.value })} />
           </div>
@@ -690,8 +726,21 @@ export default function VehiclesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <Input label="ק״מ" type="number" value={formData.mileage}
               onChange={e => setFormData({ ...formData, mileage: e.target.value })} />
-            <Input label="סוג דלק" value={formData.fuelType}
-              onChange={e => setFormData({ ...formData, fuelType: e.target.value })} />
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">סוג דלק</label>
+              <select
+                value={formData.fuelType}
+                onChange={e => setFormData({ ...formData, fuelType: e.target.value })}
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+              >
+                <option value="">בחר סוג דלק</option>
+                <option value="בנזין">בנזין</option>
+                <option value="דיזל">דיזל</option>
+                <option value="היברידי">היברידי</option>
+                <option value="חשמלי">חשמלי</option>
+                <option value="גז">גז</option>
+              </select>
+            </div>
             <Input label="צבע" value={formData.color}
               onChange={e => setFormData({ ...formData, color: e.target.value })} />
           </div>
@@ -747,10 +796,45 @@ export default function VehiclesPage() {
               onChange={e => setFormData({ ...formData, licensePlate: e.target.value })} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-            <Input label="יצרן" placeholder="KIA" value={formData.manufacturer}
-              onChange={e => setFormData({ ...formData, manufacturer: e.target.value })} />
-            <Input label="דגם" placeholder="SPORTAGE" value={formData.model}
-              onChange={e => setFormData({ ...formData, model: e.target.value })} />
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">יצרן</label>
+              <select
+                value={formData.manufacturer}
+                onChange={e => setFormData({ ...formData, manufacturer: e.target.value, model: '' })}
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+              >
+                <option value="">בחר יצרן</option>
+                {formData.manufacturer && !getManufacturerNames().includes(formData.manufacturer) && (
+                  <option value={formData.manufacturer}>{formData.manufacturer}</option>
+                )}
+                {getManufacturerNames().map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">דגם</label>
+              {formData.manufacturer && getModelNames(formData.manufacturer).length > 0 ? (
+                <select
+                  value={formData.model}
+                  onChange={e => setFormData({ ...formData, model: e.target.value })}
+                  className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+                >
+                  <option value="">בחר דגם</option>
+                  {formData.model && !getModelNames(formData.manufacturer).includes(formData.model) && (
+                    <option value={formData.model}>{formData.model}</option>
+                  )}
+                  {getModelNames(formData.manufacturer).map(m => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
+                </select>
+              ) : (
+                <input type="text" value={formData.model}
+                  onChange={e => setFormData({ ...formData, model: e.target.value })}
+                  placeholder="הזן דגם"
+                  className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm" />
+              )}
+            </div>
             <Input label="שנת ייצור" placeholder="2020" type="number" value={formData.year}
               onChange={e => setFormData({ ...formData, year: e.target.value })} />
           </div>
@@ -763,8 +847,21 @@ export default function VehiclesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <Input label="ק״מ" placeholder="45000" type="number" value={formData.mileage}
               onChange={e => setFormData({ ...formData, mileage: e.target.value })} />
-            <Input label="סוג דלק" placeholder="בנזין / דיזל / חשמלי" value={formData.fuelType}
-              onChange={e => setFormData({ ...formData, fuelType: e.target.value })} />
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">סוג דלק</label>
+              <select
+                value={formData.fuelType}
+                onChange={e => setFormData({ ...formData, fuelType: e.target.value })}
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+              >
+                <option value="">בחר סוג דלק</option>
+                <option value="בנזין">בנזין</option>
+                <option value="דיזל">דיזל</option>
+                <option value="היברידי">היברידי</option>
+                <option value="חשמלי">חשמלי</option>
+                <option value="גז">גז</option>
+              </select>
+            </div>
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex flex-col sm:flex-row gap-3 pt-4">

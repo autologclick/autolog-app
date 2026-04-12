@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ChevronRight, CheckCircle2, Loader2, AlertCircle, Search } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import LicenseScanButton, { type ScanResult } from '@/components/ui/LicenseScanButton';
+import { getManufacturerNames, getModelNames } from '@/lib/vehicle-data';
 
 interface OnboardingWizardProps {
   isOpen: boolean;
@@ -13,12 +14,7 @@ interface OnboardingWizardProps {
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
-const manufacturers = [
-  'טויוטה', 'הונדה', 'ניסאן', 'מאזדה', 'סוזוקי', 'יונדאי', 'קיה', 'סקודה',
-  'פולקסווגן', 'אאודי', 'BMW', 'מרצדס', 'פיאט', 'סיטרואן',
-  'פז\'\u05D5', 'שברולט', 'פורד', 'רנו', 'אופל', 'וולוו', 'סיאט',
-  'BYD', 'טסלה', 'דאצ\'\u05D9ה', 'ג\'\u05D9פ', 'סובארו', 'מיצובישי',
-];
+const manufacturers = getManufacturerNames();
 
 export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizardProps) {
   const [step, setStep] = useState(1);
@@ -286,12 +282,30 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">דגם</label>
-                  <Input
-                    placeholder="למשל: Corolla"
-                    value={formData.model}
-                    onChange={(e) => handleInputChange('model', e.target.value)}
-                    disabled={loading}
-                  />
+                  {formData.manufacturer && getModelNames(formData.manufacturer).length > 0 ? (
+                    <select
+                      value={formData.model}
+                      onChange={(e) => handleInputChange('model', e.target.value)}
+                      disabled={loading}
+                      className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+                    >
+                      <option value="">בחר דגם</option>
+                      {formData.model && !getModelNames(formData.manufacturer).includes(formData.model) && (
+                        <option value={formData.model}>{formData.model}</option>
+                      )}
+                      {getModelNames(formData.manufacturer).map(m => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                      <option value="__other__">אחר...</option>
+                    </select>
+                  ) : (
+                    <Input
+                      placeholder="למשל: Corolla"
+                      value={formData.model}
+                      onChange={(e) => handleInputChange('model', e.target.value)}
+                      disabled={loading}
+                    />
+                  )}
                 </div>
               </div>
 

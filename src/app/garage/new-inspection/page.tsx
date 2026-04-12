@@ -12,6 +12,7 @@ import {
   CircleDot, Settings, Wind, Eye, PenLine, ScanLine, Plus, Keyboard, FileText, Info, Send
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { getManufacturerNames, getModelNames } from '@/lib/vehicle-data';
 
 // ====== Types ======
 type ItemStatus = 'ok' | 'warning' | 'critical' | '';
@@ -998,13 +999,34 @@ export default function NewInspectionPage() {
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <label className="block text-xs font-medium text-gray-600 mb-1">יצרן</label>
-                        <input type="text" value={manualManufacturer} onChange={e => setManualManufacturer(e.target.value)}
-                          placeholder="למשל: KIA" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualManufacturer ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
+                        <select value={manualManufacturer} onChange={e => { setManualManufacturer(e.target.value); setManualModel(''); }}
+                          className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualManufacturer ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl">
+                          <option value="">בחר יצרן</option>
+                          {manualManufacturer && !getManufacturerNames().includes(manualManufacturer) && (
+                            <option value={manualManufacturer}>{manualManufacturer}</option>
+                          )}
+                          {getManufacturerNames().map(m => (
+                            <option key={m} value={m}>{m}</option>
+                          ))}
+                        </select>
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-gray-600 mb-1">דגם</label>
-                        <input type="text" value={manualModel} onChange={e => setManualModel(e.target.value)}
-                          placeholder="למשל: SPORTAGE" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualModel ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
+                        {manualManufacturer && getModelNames(manualManufacturer).length > 0 ? (
+                          <select value={manualModel} onChange={e => setManualModel(e.target.value)}
+                            className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualModel ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl">
+                            <option value="">בחר דגם</option>
+                            {manualModel && !getModelNames(manualManufacturer).includes(manualModel) && (
+                              <option value={manualModel}>{manualModel}</option>
+                            )}
+                            {getModelNames(manualManufacturer).map(m => (
+                              <option key={m} value={m}>{m}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input type="text" value={manualModel} onChange={e => setManualModel(e.target.value)}
+                            placeholder="למשל: SPORTAGE" className={`w-full rounded-lg border px-3 py-2 text-sm ${lookupDone && manualModel ? 'border-green-300 bg-green-50/50' : 'border-gray-300'}`} dir="rtl" />
+                        )}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
