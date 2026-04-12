@@ -101,15 +101,46 @@ function parseDocumentText(text: string) {
     if (latestFuture) result.expiryDate = latestFuture;
   }
 
-  // Category
-  if (lower.includes('רישיון נהיגה') || lower.includes('driving license') || lower.includes('driver')) {
-    result.category = 'driving_license';
-  } else if (lower.includes('ביטוח') || lower.includes('פוליס') || lower.includes('insurance') || lower.includes('חובה') || lower.includes('מקיף')) {
-    result.category = 'insurance';
-  } else if (lower.includes('קבלה') || lower.includes('חשבונית') || lower.includes('receipt') || lower.includes('invoice')) {
-    result.category = 'receipt';
-  } else if (lower.includes('רישיון') || lower.includes('רכב') || lower.includes('vehicle') || lower.includes('license') || lower.includes('רישום')) {
-    result.category = 'vehicle_license';
+  // Category — score-based approach for better accuracy
+  const scores: Record<string, number> = { driving_license: 0, insurance: 0, receipt: 0, vehicle_license: 0 };
+
+  // Driving license signals
+  if (lower.includes('רישיון נהיגה')) scores.driving_license += 10;
+  if (lower.includes('driving license') || lower.includes('driver')) scores.driving_license += 8;
+  if (lower.includes('דרגה') || lower.includes('רשות הרישוי')) scores.driving_license += 4;
+
+  // Insurance signals
+  if (lower.includes('פוליס')) scores.insurance += 10;
+  if (lower.includes('ביטוח')) scores.insurance += 6;
+  if (lower.includes('insurance')) scores.insurance += 8;
+  if (lower.includes('חובה') || lower.includes('מקיף') || lower.includes('צד ג')) scores.insurance += 5;
+  if (lower.includes('מבוטח') || lower.includes('פרמיה') || lower.includes('תביע')) scores.insurance += 4;
+
+  // Receipt / invoice signals — financial keywords
+  if (lower.includes('קבלה')) scores.receipt += 10;
+  if (lower.includes('חשבונית')) scores.receipt += 10;
+  if (lower.includes('receipt') || lower.includes('invoice')) scores.receipt += 8;
+  if (lower.includes('סה"כ') || lower.includes('סה״כ') || lower.includes('סהכ')) scores.receipt += 7;
+  if (lower.includes('מע"מ') || lower.includes('מע״מ') || lower.includes('vat')) scores.receipt += 6;
+  if (lower.includes('₪') || lower.includes('ש"ח') || lower.includes('ש״ח') || lower.includes('שח')) scores.receipt += 5;
+  if (lower.includes('תשלום') || lower.includes('מזומן') || lower.includes('אשראי')) scores.receipt += 5;
+  if (lower.includes('דלק') || lower.includes('בנזין') || lower.includes('סולר') || lower.includes('ליטר')) scores.receipt += 6;
+  if (lower.includes('תדלוק') || lower.includes('sonol') || lower.includes('paz') || lower.includes('delek') || lower.includes('פז') || lower.includes('סונול') || lower.includes('דור אלון') || lower.includes('ten')) scores.receipt += 7;
+  if (lower.includes('עסקה') || lower.includes('כרטיס') || lower.includes('visa') || lower.includes('mastercard') || lower.includes('ישראכרט') || lower.includes('לאומי קארד') || lower.includes('כאל') || lower.includes('מקס')) scores.receipt += 6;
+  if (lower.includes('מחיר') || lower.includes('סכום') || lower.includes('יחידה')) scores.receipt += 3;
+
+  // Vehicle license signals
+  if (lower.includes('רישיון רכב')) scores.vehicle_license += 10;
+  if (lower.includes('משרד התחבורה')) scores.vehicle_license += 8;
+  if (lower.includes('סוג רכב') || lower.includes('מספר רכב') || lower.includes('בעל הרכב')) scores.vehicle_license += 6;
+  if (lower.includes('שנת ייצור') || lower.includes('מס רכב') || lower.includes('נפח מנוע')) scores.vehicle_license += 5;
+  if (lower.includes('רישיון') && !lower.includes('נהיגה')) scores.vehicle_license += 3;
+  if (lower.includes('רישום')) scores.vehicle_license += 2;
+
+  // Pick highest scoring category
+  const best = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
+  if (best[1] >= 3) {
+    result.category = best[0];
   }
 
   const plateMatch = text.match(/(\d{2,3}[-\s]?\d{2,3}[-\s]?\d{2,3})/);
@@ -124,12 +155,6 @@ function parseDocumentText(text: string) {
     }
   }
 
-  // Additional Hebrew keywords commonly found on Israeli vehicle licenses
-  if (!result.category) {
-    if (lower.includes('משרד התחבורה') || lower.includes('רשות הרישוי') || lower.includes('סוג רכב') || lower.includes('מספר רכב') || lower.includes('בעל הרכב') || lower.includes('מס רכב') || lower.includes('שנת ייצור')) {
-      result.category = 'vehicle_license';
-    }
-  }
 
   return result;
 }
@@ -318,6 +343,40 @@ export default function DocumentsPage() {
     }
   };
 
+  // Compress image for upload (max 800px, quality 0.6) to stay under API body limit
+  const compressForUpload = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      if (!file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target?.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+        return;
+      }
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const canvas = document.createElement('canvas');
+        const maxDim = 1200;
+        let w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) {
+          const ratio = Math.min(maxDim / w, maxDim / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('Canvas not supported')); return; }
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load')); };
+      img.src = url;
+    });
+  };
+
   const handleUploadSubmit = async () => {
     if (!selectedCategory || !selectedVehicle) {
       setError('נא לבחור קטגוריה');
@@ -328,11 +387,7 @@ export default function DocumentsPage() {
     try {
       let fileData = null;
       if (uploadFile) {
-        const reader = new FileReader();
-        fileData = await new Promise((resolve) => {
-          reader.onload = (e) => resolve(e.target?.result as string);
-          reader.readAsDataURL(uploadFile);
-        });
+        fileData = await compressForUpload(uploadFile);
       }
       const res = await fetch('/api/documents', {
         method: 'POST',
@@ -353,8 +408,9 @@ export default function DocumentsPage() {
       const fetchRes = await fetch(`/api/documents?vehicleId=${selectedVehicle}`);
       const fetchData = await fetchRes.json();
       setDocuments(fetchData.documents || []);
-    } catch {
-      setError('שגיאת חיבור');
+    } catch (err) {
+      console.error('Upload error:', err);
+      setError('שגיאת חיבור — נסה שוב או צלם מחדש בפורמט קטן יותר');
     }
     setSaving(false);
   };
