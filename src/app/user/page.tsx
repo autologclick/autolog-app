@@ -460,11 +460,11 @@ export default function UserHomePage() {
           />
         </div>
 
-        {/* Vehicle Inspection CTA */}
+        {/* Vehicle Inspection Booking CTA */}
         {vehicle && (
           <button
-            onClick={() => router.push(`/garage/new-inspection?vehicleId=${vehicle.licensePlate}`)}
-            className="w-full relative overflow-hidden rounded-2xl py-4 px-6 shadow-lg active:scale-[0.98] transition-all duration-200"
+            onClick={() => router.push('/user/book-garage?service=inspection')}
+            className="w-full relative overflow-hidden rounded-2xl py-5 px-6 shadow-lg active:scale-[0.98] transition-all duration-200"
             style={{
               background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #115e59 100%)',
             }}
@@ -479,11 +479,14 @@ export default function UserHomePage() {
                   <ClipboardCheck size={24} className="text-white" />
                 </div>
                 <div className="text-right">
-                  <h3 className="text-white font-bold text-base">בדיקת רכב</h3>
-                  <p className="text-teal-100 text-xs mt-0.5">התחל בדיקה מקצועית לרכב</p>
+                  <h3 className="text-white font-bold text-base">הזמן בדיקה מקצועית לרכב</h3>
+                  <p className="text-teal-100 text-xs mt-0.5 leading-relaxed">
+                    בדיקת AutoLog מקיפה ע&quot;י טכנאי מוסמך — כוללת מנוע, בלמים, שלדה, חשמל ועוד.
+                    קבל דוח מפורט עם ציון בריאות הרכב והמלצות לטיפול
+                  </p>
                 </div>
               </div>
-              <ChevronLeft size={22} className="text-white/70" />
+              <ChevronLeft size={22} className="text-white/70 flex-shrink-0" />
             </div>
           </button>
         )}

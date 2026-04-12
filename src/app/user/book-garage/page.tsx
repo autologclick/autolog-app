@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -116,6 +117,7 @@ const ProgressBar = ({ currentStep }: { currentStep: number }) => {
 };
 
 export default function BookGaragePage() {
+  const searchParams = useSearchParams();
   const [garages, setGarages] = useState<Garage[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [search, setSearch] = useState('');
@@ -136,7 +138,8 @@ export default function BookGaragePage() {
   const [error, setError] = useState('');
 
   // Flow state: service → garages → booking details → success
-  const [selectedService, setSelectedService] = useState<string>('');
+  // Auto-select service from URL params (e.g., ?service=inspection)
+  const [selectedService, setSelectedService] = useState<string>(searchParams.get('service') || '');
   const [selectedGarageId, setSelectedGarageId] = useState<string>('');
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookingStep, setBookingStep] = useState<'details' | 'success'>('details');
