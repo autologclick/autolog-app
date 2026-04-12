@@ -267,162 +267,88 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
   const processImage = async (file: File) => {
     setScanning(true);
     setScanStatus('loading');
-    setScanProgress(5);
-    setStatusMessage('טוען תמונה...');
+    setScanProgress(10);
+    setStatusMessage('מעבד תמונה...');
 
     try {
-      // Step 1: Load image
+      // Step 1: Load and preprocess image
       const img = await loadImage(file);
-      setScanProgress(10);
-      setStatusMessage('טוען מנוע זיהוי...');
-
-      // Step 2: Load Tesseract.js
-      const { createWorker } = await import('tesseract.js');
       setScanProgress(20);
 
-      // Step 3: Try focused crop regions first (faster, more accurate)
-      const regions = getPlateRegions(img.width, img.height);
-      let foundPlate: string | null = null;
-      let foundVehicle: ScanResult | null = null;
+      // Step 2: Quick single-region OCR — only the top area where plate number appears
+      setStatusMessage('מזהה מספר רכב...');
+      const { createWorker } = await import('tesseract.js');
+      setScanProgress(30);
 
-      setStatusMessage('סורק אזור מספר הרכב...');
-
-      // Create worker for digit-focused recognition
+      // Use only English for digit recognition — much faster than heb+eng
       const worker = await createWorker('eng', undefined, {
         logger: (m: { status: string; progress: number }) => {
           if (m.status === 'recognizing text') {
-            setScanProgress(25 + Math.round(m.progress * 15));
+            setScanProgress(30 + Math.round(m.progress * 40));
           }
         },
       });
 
-      // Try each crop region
-      for (let i = 0; i < regions.length && !foundVehicle; i++) {
-        const region = regions[i];
-        setScanProgress(25 + Math.round((i / regions.length) * 30));
-        setStatusMessage(`סורק אזור ${i + 1} מתוך ${regions.length}...`);
+      // Scan only the top-right area (where plate number is on Israeli license)
+      const bestRegion = getPlateRegions(img.width, img.height)[0];
+      const croppedDataUrl = cropAndPreprocess(img, bestRegion);
+      const result = await worker.recognize(croppedDataUrl);
+      const text = result.data.text;
+      console.log('OCR result:', text);
 
-        const croppedDataUrl = cropAndPreprocess(img, region);
-        const result = await worker.recognize(croppedDataUrl);
-        const text = result.data.text;
+      let candidates = extractAllPlates(text);
 
-        console.log(`OCR region ${region.label}:`, text);
-
-        // Extract all plate candidates
-        const candidates = extractAllPlates(text);
-        console.log(`Plate candidates from ${region.label}:`, candidates);
-
-        // Try each candidate against MOT API
-        for (const plate of candidates) {
-          setScanProgress(60);
-          setStatusMessage(`בודק מספר ${plate} במשרד התחבורה...`);
-
-          const vehicleData = await lookupVehicleByPlate(plate);
-          if (vehicleData) {
-            foundPlate = plate;
-            foundVehicle = vehicleData;
-            break;
-          }
-        }
-
-        // If no MOT match yet, keep the first candidate as fallback
-        if (!foundPlate && candidates.length > 0) {
-          foundPlate = candidates[0];
-        }
+      // If no candidates from top-right, try top strip quickly
+      if (candidates.length === 0) {
+        const topStrip = getPlateRegions(img.width, img.height)[1];
+        const stripDataUrl = cropAndPreprocess(img, topStrip);
+        const stripResult = await worker.recognize(stripDataUrl);
+        candidates = extractAllPlates(stripResult.data.text);
       }
 
-      // Step 4: If focused crops didn't get a MOT match, try full image OCR with Hebrew
-      if (!foundVehicle) {
-        setScanProgress(65);
-        setStatusMessage('סורק מסמך מלא...');
+      await worker.terminate();
+      setScanProgress(75);
 
-        // Terminate English-only worker and create Hebrew+English one
-        await worker.terminate();
+      // Step 3: Try candidates against MOT API
+      let foundVehicle: ScanResult | null = null;
+      let foundPlate: string | null = null;
 
-        const fullWorker = await createWorker('heb+eng', undefined, {
-          logger: (m: { status: string; progress: number }) => {
-            if (m.status === 'recognizing text') {
-              setScanProgress(70 + Math.round(m.progress * 15));
-              setStatusMessage(`סורק מסמך מלא... ${Math.round(m.progress * 100)}%`);
-            }
-          },
-        });
-
-        const fullImageUrl = preprocessFullImage(img);
-        const fullResult = await fullWorker.recognize(fullImageUrl);
-        await fullWorker.terminate();
-
-        const fullText = fullResult.data.text;
-        console.log('Full OCR text:', fullText);
-
-        const fullCandidates = extractAllPlates(fullText);
-        console.log('Full OCR plate candidates:', fullCandidates);
-
-        // Try each candidate from full scan against MOT
-        for (const plate of fullCandidates) {
-          if (plate === foundPlate) continue; // Already tried
-          setScanProgress(88);
-          setStatusMessage(`בודק מספר ${plate} במשרד התחבורה...`);
-          const vehicleData = await lookupVehicleByPlate(plate);
-          if (vehicleData) {
-            foundPlate = plate;
-            foundVehicle = vehicleData;
-            break;
-          }
+      for (const plate of candidates) {
+        setStatusMessage(`בודק מספר ${plate} במשרד התחבורה...`);
+        setScanProgress(85);
+        const vehicleData = await lookupVehicleByPlate(plate);
+        if (vehicleData) {
+          foundPlate = plate;
+          foundVehicle = vehicleData;
+          break;
         }
-
-        // Use first full-scan candidate as fallback if we still have nothing
-        if (!foundPlate && fullCandidates.length > 0) {
-          foundPlate = fullCandidates[0];
-        }
-      } else {
-        await worker.terminate();
+        if (!foundPlate) foundPlate = plate;
       }
 
-      setScanProgress(95);
+      setScanProgress(100);
 
-      // Step 5: Return results or show manual entry
       if (foundVehicle) {
-        setScanProgress(100);
         const fieldsFound = Object.values(foundVehicle).filter(Boolean).length;
         setScanStatus('success');
         setStatusMessage(`נמצאו ${fieldsFound} פרטים! הנתונים מולאו אוטומטית.`);
         onScanResult(foundVehicle);
         setTimeout(() => { setScanStatus('idle'); setStatusMessage(''); setScanProgress(0); }, 5000);
       } else if (foundPlate) {
-        // We found a plate but MOT didn't validate — show manual correction
-        setScanProgress(100);
         setScanStatus('manual');
         setManualPlate(foundPlate);
         setStatusMessage(`זוהה מספר ${foundPlate} אך לא אומת. תקן אם צריך:`);
       } else {
-        // No plate found at all — show manual entry
-        setScanProgress(100);
         setScanStatus('manual');
         setManualPlate('');
         setStatusMessage('לא זוהה מספר רכב. הזן ידנית:');
       }
 
     } catch (err) {
-      console.error('OCR Error:', err);
-      setScanStatus('error');
-      const errMsg = err instanceof Error ? err.message : String(err);
-      console.error('OCR Error details:', errMsg);
-
-      if (errMsg.includes('memory') || errMsg.includes('allocation') || errMsg.includes('OOM')) {
-        setStatusMessage('התמונה גדולה מדי. נסה לצלם מקרוב יותר.');
-      } else if (errMsg.includes('network') || errMsg.includes('fetch') || errMsg.includes('Failed to fetch')) {
-        setStatusMessage('שגיאת רשת בטעינת מנוע הסריקה. בדוק חיבור אינטרנט ונסה שוב.');
-      } else if (errMsg.includes('load') || errMsg.includes('wasm') || errMsg.includes('Module')) {
-        setStatusMessage('שגיאה בטעינת מנוע הסריקה. נסה לרענן את הדף ולצלם שוב.');
-      } else if (errMsg.includes('worker') || errMsg.includes('Worker')) {
-        setStatusMessage('שגיאה באתחול הסריקה. נסה לרענן את הדף.');
-      } else {
-        // Fall back to manual entry on any error
-        setScanStatus('manual');
-        setManualPlate('');
-        setStatusMessage('שגיאה בסריקה. הזן מספר רכב ידנית:');
-      }
+      console.error('Scan error:', err);
+      // Fall back to manual entry on any error
+      setScanStatus('manual');
+      setManualPlate('');
+      setStatusMessage('שגיאה בסריקה. הזן מספר רכב ידנית:');
     }
 
     setScanning(false);

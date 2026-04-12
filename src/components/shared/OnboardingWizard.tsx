@@ -201,7 +201,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
             <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-[#1e3a5f]">הוסף את הרכב שלך</h2>
-                <div className="text-2xl">🔧</div>
+                <div className="text-2xl">🚗</div>
               </div>
               <p className="text-sm text-gray-500">צלם רישיון רכב או הזן פרטים ידנית</p>
             </div>
