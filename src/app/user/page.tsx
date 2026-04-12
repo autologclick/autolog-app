@@ -6,7 +6,7 @@ import {
   Car, ChevronDown, ChevronLeft, Loader2, Plus, Flag,
   Wrench, FileText, Receipt, Calendar, Shield, Clock,
   Camera, Image as ImageIcon, AlertTriangle, CheckCircle,
-  Gauge, Fuel, X, MapPin, Upload, Trash2
+  Gauge, Fuel, X, MapPin, Upload, Trash2, ClipboardCheck
 } from 'lucide-react';
 import OnboardingWizard from '@/components/shared/OnboardingWizard';
 import GlobalSearch from '@/components/ui/GlobalSearch';
@@ -459,6 +459,34 @@ export default function UserHomePage() {
             status="success"
           />
         </div>
+
+        {/* Vehicle Inspection CTA */}
+        {vehicle && (
+          <button
+            onClick={() => router.push(`/garage/new-inspection?vehicleId=${vehicle.licensePlate}`)}
+            className="w-full relative overflow-hidden rounded-2xl py-4 px-6 shadow-lg active:scale-[0.98] transition-all duration-200"
+            style={{
+              background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #115e59 100%)',
+            }}
+          >
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute -top-8 -left-8 w-32 h-32 bg-white rounded-full" />
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white rounded-full" />
+            </div>
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <ClipboardCheck size={24} className="text-white" />
+                </div>
+                <div className="text-right">
+                  <h3 className="text-white font-bold text-base">בדיקת רכב</h3>
+                  <p className="text-teal-100 text-xs mt-0.5">התחל בדיקה מקצועית לרכב</p>
+                </div>
+              </div>
+              <ChevronLeft size={22} className="text-white/70" />
+            </div>
+          </button>
+        )}
 
         {/* Quick Actions */}
         <div className="flex gap-3">
