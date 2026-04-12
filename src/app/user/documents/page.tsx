@@ -200,6 +200,7 @@ export default function DocumentsPage() {
   const [uploadExpiry, setUploadExpiry] = useState<string>('');
   const [uploadDescription, setUploadDescription] = useState<string>('');
   const [scanResults, setScanResults] = useState<{ licensePlate?: string; expiryDate?: string } | null>(null);
+  const [viewingDoc, setViewingDoc] = useState<{ fileUrl: string; title: string } | null>(null);
 
   // Derived: is upload form visible?
   const isUploading = !!uploadFile || scanning;
@@ -726,6 +727,36 @@ export default function DocumentsPage() {
           </div>
         )}
       </div>
+
+      {/* Document Viewer Modal */}
+      {viewingDoc && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setViewingDoc(null)}>
+          <div className="relative w-full max-w-lg max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between bg-white rounded-t-2xl px-4 py-3">
+              <button onClick={() => setViewingDoc(null)}
+                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
+                <X size={20} />
+              </button>
+              <h3 className="font-bold text-gray-800 text-sm">{viewingDoc.title}</h3>
+              <div className="w-8" />
+            </div>
+            <div className="bg-white rounded-b-2xl overflow-auto flex-1 flex items-center justify-center p-2">
+              {viewingDoc.fileUrl.startsWith('data:image') || viewingDoc.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                <img src={viewingDoc.fileUrl} alt={viewingDoc.title}
+                  className="max-w-full max-h-[70vh] object-contain rounded-lg" />
+              ) : viewingDoc.fileUrl.startsWith('data:application/pdf') || viewingDoc.fileUrl.endsWith('.pdf') ? (
+                <iframe src={viewingDoc.fileUrl} className="w-full h-[70vh] rounded-lg" />
+              ) : (
+                <div className="text-center py-12 text-gray-500">
+                  <FileText size={48} className="mx-auto mb-3 text-gray-300" />
+                  <p className="text-sm">לא ניתן להציג קובץ מסוג זה</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -772,10 +803,10 @@ export default function DocumentsPage() {
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
             {doc.fileUrl && (
-              <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer"
+              <button onClick={() => setViewingDoc({ fileUrl: doc.fileUrl!, title: doc.title })}
                 className="p-2 rounded-lg hover:bg-purple-50 text-gray-400 hover:text-purple-600 transition">
                 <Eye size={16} />
-              </a>
+              </button>
             )}
             <button onClick={() => setShowDeleteConfirm(doc.id)}
               className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition">
