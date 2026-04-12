@@ -356,7 +356,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                   </>
                 ) : (
                   <>
-                    הוסף רכב
+                    המשך
                     <ChevronRight size={18} />
                   </>
                 )}

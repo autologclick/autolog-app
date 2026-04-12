@@ -93,7 +93,19 @@ export async function GET(req: NextRequest) {
       trimLevel: record.ramat_gimur || '',
       ownership: record.baalut || '',
       lastTestDate: record.mivchan_acharon_dt || null,
-      testExpiryDate: record.tokef_dt || null,
+      testExpiryDate: record.tokef_dt || (() => {
+        // If no tokef_dt but we have last test date, estimate expiry as last test + 1 year
+        if (record.mivchan_acharon_dt) {
+          try {
+            const lastTest = new Date(record.mivchan_acharon_dt);
+            if (!isNaN(lastTest.getTime())) {
+              lastTest.setFullYear(lastTest.getFullYear() + 1);
+              return lastTest.toISOString().split('T')[0];
+            }
+          } catch { /* ignore */ }
+        }
+        return null;
+      })(),
       firstRegistrationDate: record.moed_aliya_lakvish || null,
       frontTire: record.zmig_kidmi || '',
       rearTire: record.zmig_ahori || '',
@@ -112,6 +124,9 @@ export async function GET(req: NextRequest) {
       rawModel: record.degem_nm,
       manufacturer: vehicleInfo.manufacturer,
       model: vehicleInfo.model,
+      tokef_dt: record.tokef_dt || '(empty)',
+      mivchan_acharon_dt: record.mivchan_acharon_dt || '(empty)',
+      testExpiryDate: vehicleInfo.testExpiryDate || '(empty)',
     });
 
     return jsonResponse({ vehicle: vehicleInfo });
