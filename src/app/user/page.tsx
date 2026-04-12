@@ -436,9 +436,9 @@ export default function UserHomePage() {
         <div className="grid grid-cols-3 gap-2">
           <ReminderCard
             icon="🧪" title="טסט"
-            value={testDays !== null ? (testDays < 0 ? 'פג תוקף!' : `${testDays} יום`) : 'לא הוגדר'}
-            subtitle={vehicle.testExpiryDate ? new Date(vehicle.testExpiryDate).toLocaleDateString('he-IL') : undefined}
-            status={testDays !== null ? (testDays < 0 ? 'danger' : testDays < 30 ? 'warning' : 'success') : 'warning'}
+            value={testDays !== null ? (testDays < 0 ? 'פג תוקף!' : `${testDays} יום`) : 'ללא טסט'}
+            subtitle={vehicle.testExpiryDate ? new Date(vehicle.testExpiryDate).toLocaleDateString('he-IL') : 'לא בתוקף'}
+            status={testDays !== null ? (testDays < 0 ? 'danger' : testDays < 30 ? 'warning' : 'success') : 'danger'}
           />
           <ReminderCard
             icon="🛡️" title="ביטוח"

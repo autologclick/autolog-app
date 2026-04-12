@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 
     // Validate type if provided
     if (type && !['inspection', 'appointment', 'expense', 'sos'].includes(type)) {
-      return errorResponse('ÃÂ¡ÃÂÃÂ ÃÂÃÂÃÂ¨ÃÂÃÂ¢ ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ', 400);
+      return errorResponse('סוג אירוע לא תקין', 400);
     }
 
     // If vehicleId is specified, verify user owns it
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
       });
 
       if (!vehicle || vehicle.userId !== payload.userId) {
-        return errorResponse('ÃÂÃÂÃÂ ÃÂÃÂ¨ÃÂ©ÃÂÃÂ ÃÂÃÂÃÂÃÂ©ÃÂ ÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂ', 403);
+        return errorResponse('אין הרשאה לגישה לרכב זה', 403);
       }
     }
 

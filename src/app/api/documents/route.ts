@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return jsonResponse({ document, message: 'ÃÂÃÂÃÂ¡ÃÂÃÂ ÃÂ ÃÂÃÂ¡ÃÂ£ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ!' }, 201);
+    return jsonResponse({ document, message: 'המסמך נוסף בהצלחה!' }, 201);
   } catch (error) {
     return handleApiError(error);
   }

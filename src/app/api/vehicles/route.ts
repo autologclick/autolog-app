@@ -73,14 +73,14 @@ export async function POST(req: NextRequest) {
     // Check plate uniqueness
     const existing = await prisma.vehicle.findUnique({ where: { licensePlate } });
     if (existing) {
-      return errorResponse('ÃÂÃÂ¡ÃÂ¤ÃÂ¨ ÃÂ¨ÃÂÃÂ©ÃÂÃÂ ÃÂÃÂÃÂ¨ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂ¢ÃÂ¨ÃÂÃÂª', 409);
+      return errorResponse('מספר רישוי כבר קיים במערכת', 409);
     }
 
     // Check if VIN already exists (if provided)
     if (vin) {
       const existingVin = await prisma.vehicle.findUnique({ where: { vin } });
       if (existingVin) {
-        return errorResponse('VIN ÃÂÃÂ ÃÂÃÂÃÂ¨ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂ¢ÃÂ¨ÃÂÃÂª', 409);
+        return errorResponse('VIN זה כבר קיים במערכת', 409);
       }
     }
 
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return jsonResponse({ vehicle, message: 'ÃÂÃÂ¨ÃÂÃÂ ÃÂ ÃÂÃÂ¡ÃÂ£ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ!' }, 201);
+    return jsonResponse({ vehicle, message: 'הרכב נוסף בהצלחה!' }, 201);
   } catch (error) {
     return handleApiError(error);
   }

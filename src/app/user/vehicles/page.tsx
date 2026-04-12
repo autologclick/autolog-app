@@ -866,7 +866,7 @@ export default function VehiclesPage() {
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <Button variant="ghost" onClick={() => setShowAddModal(false)} className="w-full sm:w-auto">ביטול</Button>
-            <Button icon={<Plus size={16} />} loading={saving} onClick={handleAddVehicle} className="w-full sm:w-auto">הוסף רכב</Button>
+            <Button loading={saving} onClick={handleAddVehicle} className="w-full sm:w-auto">המשך</Button>
           </div>
         </div>
       </Modal>

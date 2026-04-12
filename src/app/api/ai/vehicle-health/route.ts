@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     const vehicleId = url.searchParams.get('vehicleId');
 
     if (!vehicleId) {
-      return errorResponse('ÃÂÃÂ¡ÃÂ¨ ÃÂÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂ', 400);
+      return errorResponse('חסר מזהה רכב', 400);
     }
 
     // Fetch vehicle with all related data

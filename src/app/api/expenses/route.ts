@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
     // Add category filter if provided
     if (category) {
       if (!isValidExpenseCategory(category)) {
-        return errorResponse('ÃÂ§ÃÂÃÂÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ ÃÂ', 400);
+        return errorResponse('קטגוריה לא תקינה', 400);
       }
       whereFilters.category = category;
     }
@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
     // Parse date
     const expenseDate = new Date(date);
     if (isNaN(expenseDate.getTime())) {
-      return errorResponse('ÃÂªÃÂÃÂ¨ÃÂÃÂ ÃÂÃÂ ÃÂªÃÂ§ÃÂÃÂ', 400);
+      return errorResponse('תאריך לא תקין', 400);
     }
 
     // Create expense
@@ -175,7 +175,7 @@ export async function POST(req: NextRequest) {
     });
 
     return jsonResponse(
-      { expense, message: 'ÃÂÃÂÃÂ¦ÃÂÃÂ ÃÂ ÃÂÃÂ¡ÃÂ¤ÃÂ ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ' },
+      { expense, message: 'הוצאה נוספה בהצלחה' },
       201
     );
   } catch (error) {
