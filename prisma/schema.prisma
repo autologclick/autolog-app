@@ -47,6 +47,8 @@ model User {
   appointments  Appointment[]
   notifications Notification[]
   garageOwner   Garage?   @relation("GarageOwner")
+  ownedShares   VehicleShare[] @relation("SharedVehicleOwner")
+  sharedVehicles VehicleShare[] @relation("SharedVehicleUser")
 
   @@index([email])
   @@index([role])
@@ -90,6 +92,7 @@ model Vehicle {
   expenses          Expense[]
   drivers           VehicleDriver[]
   documents         Document[]
+  shares            VehicleShare[]
 
   @@index([userId])
   @@index([licensePlate])
@@ -107,6 +110,26 @@ model VehicleDriver {
   relationship String? // owner | spouse | child | employee
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
+}
+
+model VehicleShare {
+  id              String   @id @default(cuid())
+  vehicleId       String
+  vehicle         Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  ownerUserId     String
+  owner           User     @relation("SharedVehicleOwner", fields: [ownerUserId], references: [id])
+  sharedWithEmail String
+  sharedWithUserId String?
+  sharedUser      User?    @relation("SharedVehicleUser", fields: [sharedWithUserId], references: [id])
+  status          String   @default("pending") // pending | approved | rejected
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([vehicleId, sharedWithEmail])
+  @@index([ownerUserId])
+  @@index([sharedWithEmail])
+  @@index([sharedWithUserId])
+  @@index([status])
 }
 
 // ============================================================

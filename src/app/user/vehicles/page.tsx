@@ -10,7 +10,8 @@ import PageSkeleton from '@/components/ui/PageSkeleton';
 import {
   Car, Plus, Edit, Trash2, Shield, Calendar, Fuel,
   Gauge, Users, ChevronDown, Eye, FileText, Loader2, Search, AlertCircle,
-  Camera, Upload, X, Image as ImageIcon, Brain, TrendingUp, AlertTriangle as AlertTriangleIcon
+  Camera, Upload, X, Image as ImageIcon, Brain, TrendingUp, AlertTriangle as AlertTriangleIcon,
+  Send, Mail, CheckCircle2, XCircle, Clock, UserPlus
 } from 'lucide-react';
 import LicenseScanButton, { type ScanResult } from '@/components/ui/LicenseScanButton';
 import { getManufacturerNames, getModelNames } from '@/lib/vehicle-data';
@@ -34,6 +35,18 @@ interface Vehicle {
   imageUrl?: string;
   _count?: { inspections: number; sosEvents: number; expenses: number };
   drivers?: { id: string; driverName: string }[];
+  isShared?: boolean;
+  ownerName?: string | null;
+}
+
+interface ShareRequest {
+  id: string;
+  vehicleId: string;
+  status: string;
+  createdAt: string;
+  vehicle: { id: string; nickname: string; licensePlate: string; manufacturer: string; model: string };
+  sharedUser?: { fullName: string; email: string; phone?: string };
+  owner?: { fullName: string };
 }
 
 // Vehicle image component with fallback
@@ -148,6 +161,11 @@ export default function VehiclesPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
 
+  // Share request state
+  const [shareRequests, setShareRequests] = useState<ShareRequest[]>([]);
+  const [shareState, setShareState] = useState<'idle' | 'can_request' | 'requesting' | 'sent'>('idle');
+  const [sharePlate, setSharePlate] = useState('');
+  const [processingShareId, setProcessingShareId] = useState<string | null>(null);
 
   // Auto-save form draft to sessionStorage
   useEffect(() => {
@@ -189,7 +207,58 @@ export default function VehiclesPage() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchVehicles(); }, []);
+  const fetchShareRequests = async () => {
+    try {
+      const res = await fetch('/api/vehicles/share?type=received');
+      const data = await res.json();
+      if (res.ok && data.requests) {
+        setShareRequests(data.requests);
+      }
+    } catch {
+      // Silent fail — share requests are secondary
+    }
+  };
+
+  const handleShareAction = async (shareId: string, action: 'approve' | 'reject') => {
+    setProcessingShareId(shareId);
+    try {
+      const res = await fetch('/api/vehicles/share', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shareId, action }),
+      });
+      if (res.ok) {
+        fetchShareRequests();
+        if (action === 'approve') fetchVehicles();
+      }
+    } catch {
+      // Silent fail
+    }
+    setProcessingShareId(null);
+  };
+
+  const handleSendShareRequest = async () => {
+    setShareState('requesting');
+    try {
+      const res = await fetch('/api/vehicles/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ licensePlate: sharePlate }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'שגיאה בשליחת הבקשה');
+        setShareState('can_request');
+        return;
+      }
+      setShareState('sent');
+    } catch {
+      setError('שגיאת חיבור');
+      setShareState('can_request');
+    }
+  };
+
+  useEffect(() => { fetchVehicles(); fetchShareRequests(); }, []);
 
   const handleLookup = async () => {
     if (!formData.licensePlate || formData.licensePlate.length < 5) {
@@ -229,6 +298,8 @@ export default function VehiclesPage() {
     setLookupMessage('');
     setImagePreview(null);
     setImageData(null);
+    setShareState('idle');
+    setSharePlate('');
     sessionStorage.removeItem('autolog_vehicle_draft');
   };
 
@@ -346,6 +417,13 @@ export default function VehiclesPage() {
       });
       const data = await res.json();
       if (!res.ok) {
+        if (data.canRequestShare) {
+          setShareState('can_request');
+          setSharePlate(data.vehiclePlate);
+          setError('');
+          setSaving(false);
+          return;
+        }
         setError(data.error || 'שגיאה בהוספת רכב');
         setSaving(false);
         return;
@@ -517,10 +595,19 @@ export default function VehiclesPage() {
                       {v.isPrimary && (
                         <Badge variant="info" className="text-xs">ראשי</Badge>
                       )}
+                      {v.isShared && (
+                        <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-[10px] font-medium border border-blue-200">
+                          <Users size={10} />
+                          משותף
+                        </span>
+                      )}
                     </div>
                     <p className="text-sm text-gray-500 mt-1">
                       {v.manufacturer} {v.model} • {v.year}
                     </p>
+                    {v.isShared && v.ownerName && (
+                      <p className="text-xs text-blue-600 mt-0.5">בבעלות {v.ownerName}</p>
+                    )}
                     {/* Israeli License Plate */}
                     <div className="mt-2 inline-flex items-center gap-1 bg-yellow-300 text-black rounded px-2 py-1 text-xs font-bold border border-yellow-500">
                       <span>🇮🇱</span>
@@ -649,6 +736,49 @@ export default function VehiclesPage() {
                     </div>
                   </div>
                 )}
+              </div>
+            ))}
+          </div>
+        )}
+        {/* Pending Share Requests (for vehicle owners) */}
+        {shareRequests.filter(r => r.status === 'pending').length > 0 && (
+          <div className="bg-white rounded-2xl p-5 shadow-sm space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                <UserPlus size={18} className="text-blue-600" />
+              </div>
+              <h2 className="text-base font-bold text-[#1e3a5f]">בקשות שיתוף ממתינות</h2>
+              <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                {shareRequests.filter(r => r.status === 'pending').length}
+              </span>
+            </div>
+            {shareRequests.filter(r => r.status === 'pending').map(req => (
+              <div key={req.id} className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-800">{req.sharedUser?.fullName}</p>
+                  <p className="text-xs text-gray-500">{req.sharedUser?.email}</p>
+                  <p className="text-xs text-blue-600 mt-0.5">
+                    מבקש גישה ל-{req.vehicle.nickname || `${req.vehicle.manufacturer} ${req.vehicle.model}`} ({req.vehicle.licensePlate})
+                  </p>
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => handleShareAction(req.id, 'approve')}
+                    disabled={processingShareId === req.id}
+                    className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs font-semibold hover:bg-green-700 transition disabled:opacity-50 flex items-center gap-1"
+                  >
+                    {processingShareId === req.id ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle2 size={12} />}
+                    אשר
+                  </button>
+                  <button
+                    onClick={() => handleShareAction(req.id, 'reject')}
+                    disabled={processingShareId === req.id}
+                    className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg text-xs font-semibold hover:bg-red-200 transition disabled:opacity-50 flex items-center gap-1"
+                  >
+                    <XCircle size={12} />
+                    דחה
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -863,11 +993,64 @@ export default function VehiclesPage() {
               </select>
             </div>
           </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button variant="ghost" onClick={() => setShowAddModal(false)} className="w-full sm:w-auto">ביטול</Button>
-            <Button loading={saving} onClick={handleAddVehicle} className="w-full sm:w-auto">המשך</Button>
-          </div>
+          {error && shareState === 'idle' && <p className="text-red-500 text-sm">{error}</p>}
+
+          {/* Share Request Panel — when vehicle belongs to another user */}
+          {shareState !== 'idle' && (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl space-y-3">
+              {shareState === 'can_request' && (
+                <>
+                  <div className="flex items-start gap-2">
+                    <Mail size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-blue-800 text-sm">רכב זה כבר רשום במערכת</p>
+                      <p className="text-blue-700 text-xs mt-1">
+                        ניתן לשלוח בקשת שיתוף לבעל הרכב. לאחר אישורו, הרכב יופיע גם אצלך.
+                      </p>
+                    </div>
+                  </div>
+                  {error && <p className="text-red-500 text-sm">{error}</p>}
+                  <button
+                    type="button"
+                    onClick={handleSendShareRequest}
+                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2"
+                  >
+                    <Send size={14} />
+                    שלח בקשת שיתוף
+                  </button>
+                </>
+              )}
+              {shareState === 'requesting' && (
+                <div className="flex items-center justify-center gap-2 py-2 text-blue-700 text-sm">
+                  <Loader2 size={16} className="animate-spin" />
+                  שולח בקשת שיתוף...
+                </div>
+              )}
+              {shareState === 'sent' && (
+                <div className="text-center space-y-2 py-1">
+                  <div className="flex items-center justify-center gap-2 text-green-700">
+                    <CheckCircle2 size={18} />
+                    <span className="font-semibold text-sm">הבקשה נשלחה בהצלחה!</span>
+                  </div>
+                  <p className="text-xs text-green-600">בעל הרכב יקבל הודעה במייל ויוכל לאשר את השיתוף</p>
+                  <button
+                    type="button"
+                    onClick={() => { setShowAddModal(false); resetForm(); }}
+                    className="mt-2 px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold transition"
+                  >
+                    סגור
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {shareState === 'idle' && (
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+              <Button variant="ghost" onClick={() => setShowAddModal(false)} className="w-full sm:w-auto">ביטול</Button>
+              <Button loading={saving} onClick={handleAddVehicle} className="w-full sm:w-auto">המשך</Button>
+            </div>
+          )}
         </div>
       </Modal>
     </div>

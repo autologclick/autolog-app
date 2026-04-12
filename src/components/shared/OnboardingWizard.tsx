@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { ChevronRight, CheckCircle2, Loader2, AlertCircle, Search } from 'lucide-react';
+import { ChevronRight, CheckCircle2, Loader2, AlertCircle, Search, Send, Mail } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import LicenseScanButton, { type ScanResult } from '@/components/ui/LicenseScanButton';
@@ -32,6 +32,8 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
   const [loading, setLoading] = useState(false);
   const [lookingUp, setLookingUp] = useState(false);
   const [lookupMessage, setLookupMessage] = useState('');
+  const [shareState, setShareState] = useState<'idle' | 'can_request' | 'requesting' | 'sent'>('idle');
+  const [sharePlate, setSharePlate] = useState('');
 
   if (!isOpen) return null;
 
@@ -126,6 +128,14 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
       const data = await res.json();
 
       if (!res.ok) {
+        // Vehicle exists and belongs to another user — offer share request
+        if (data.canRequestShare) {
+          setShareState('can_request');
+          setSharePlate(data.vehiclePlate);
+          setError('');
+          setLoading(false);
+          return;
+        }
         setError(data.error || 'שגיאה בהוספת הרכב');
         setLoading(false);
         return;
@@ -138,6 +148,32 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
     } catch {
       setError('שגיאת חיבור. אנא נסה שוב.');
       setLoading(false);
+    }
+  };
+
+  const handleShareRequest = async () => {
+    setShareState('requesting');
+    setError('');
+
+    try {
+      const res = await fetch('/api/vehicles/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ licensePlate: sharePlate }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'שגיאה בשליחת הבקשה');
+        setShareState('can_request');
+        return;
+      }
+
+      setShareState('sent');
+    } catch {
+      setError('שגיאת חיבור. אנא נסה שוב.');
+      setShareState('can_request');
     }
   };
 
@@ -336,6 +372,56 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
               </div>
             </div>
 
+            {/* Share Request Panel — shown when vehicle belongs to another user */}
+            {shareState !== 'idle' && (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl space-y-3">
+                {shareState === 'can_request' && (
+                  <>
+                    <div className="flex items-start gap-2">
+                      <Mail size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-blue-800 text-sm">רכב זה כבר רשום במערכת</p>
+                        <p className="text-blue-700 text-xs mt-1">
+                          ניתן לשלוח בקשת שיתוף לבעל הרכב. לאחר אישורו, הרכב יופיע גם אצלך.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleShareRequest}
+                      className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2"
+                    >
+                      <Send size={14} />
+                      שלח בקשת שיתוף
+                    </button>
+                  </>
+                )}
+                {shareState === 'requesting' && (
+                  <div className="flex items-center justify-center gap-2 py-2 text-blue-700 text-sm">
+                    <Loader2 size={16} className="animate-spin" />
+                    שולח בקשת שיתוף...
+                  </div>
+                )}
+                {shareState === 'sent' && (
+                  <div className="text-center space-y-2 py-1">
+                    <div className="flex items-center justify-center gap-2 text-green-700">
+                      <CheckCircle2 size={18} />
+                      <span className="font-semibold text-sm">הבקשה נשלחה בהצלחה!</span>
+                    </div>
+                    <p className="text-xs text-green-600">בעל הרכב יקבל הודעה במייל ויוכל לאשר את השיתוף</p>
+                    <button
+                      type="button"
+                      onClick={onComplete}
+                      className="mt-2 px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold transition"
+                    >
+                      סגור
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {shareState === 'idle' && (
             <div className="flex gap-3 pt-2">
               <Button
                 onClick={() => setStep(1)}
@@ -362,6 +448,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                 )}
               </Button>
             </div>
+            )}
           </div>
         )}
 

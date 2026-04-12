@@ -6,7 +6,7 @@ import { requireAuth, jsonResponse, errorResponse, handleApiError, getPagination
 import { vehicleSchema } from '@/lib/validations';
 import { parseFlexDate, getExpiryStatus } from '@/lib/utils';
 
-// GET /api/vehicles - List user's vehicles
+// GET /api/vehicles - List user's vehicles (owned + shared)
 export async function GET(req: NextRequest) {
   try {
     const payload = requireAuth(req);
@@ -17,18 +17,21 @@ export async function GET(req: NextRequest) {
 
     const { page, skip, limit } = getPaginationParams(req);
 
-    const [vehicles, total] = await Promise.all([
+    const vehicleInclude = {
+      _count: { select: { inspections: true, sosEvents: true, expenses: true } },
+      drivers: { where: { isActive: true } },
+      inspections: {
+        orderBy: { date: 'desc' as const },
+        take: 1,
+        select: { id: true, overallScore: true, date: true, inspectionType: true },
+      },
+    };
+
+    // Fetch owned vehicles
+    const [ownedVehicles, ownedTotal] = await Promise.all([
       prisma.vehicle.findMany({
         where: { userId: payload.userId },
-        include: {
-          _count: { select: { inspections: true, sosEvents: true, expenses: true } },
-          drivers: { where: { isActive: true } },
-          inspections: {
-            orderBy: { date: 'desc' },
-            take: 1,
-            select: { id: true, overallScore: true, date: true, inspectionType: true },
-          },
-        },
+        include: vehicleInclude,
         orderBy: [{ isPrimary: 'desc' }, { createdAt: 'desc' }],
         skip,
         take: limit,
@@ -36,15 +39,38 @@ export async function GET(req: NextRequest) {
       prisma.vehicle.count({ where: { userId: payload.userId } }),
     ]);
 
-    // Attach latest inspection score to each vehicle
-    const vehiclesWithScore = vehicles.map(v => ({
+    // Fetch shared vehicles (approved shares only)
+    const sharedRecords = await prisma.vehicleShare.findMany({
+      where: { sharedWithUserId: payload.userId, status: 'approved' },
+      include: {
+        vehicle: { include: vehicleInclude },
+        owner: { select: { fullName: true } },
+      },
+    });
+
+    // Combine: owned vehicles first, then shared
+    const ownedWithMeta = ownedVehicles.map(v => ({
       ...v,
       overallScore: v.inspections?.[0]?.overallScore ?? null,
       lastInspectionId: v.inspections?.[0]?.id ?? null,
       lastInspectionDate: v.inspections?.[0]?.date ?? null,
+      isShared: false,
+      ownerName: null as string | null,
     }));
 
-    return jsonResponse({ vehicles: vehiclesWithScore, ...paginationMeta(total, page, limit) });
+    const sharedWithMeta = sharedRecords.map(sr => ({
+      ...sr.vehicle,
+      overallScore: sr.vehicle.inspections?.[0]?.overallScore ?? null,
+      lastInspectionId: sr.vehicle.inspections?.[0]?.id ?? null,
+      lastInspectionDate: sr.vehicle.inspections?.[0]?.date ?? null,
+      isShared: true,
+      ownerName: sr.owner.fullName,
+    }));
+
+    const vehicles = [...ownedWithMeta, ...sharedWithMeta];
+    const total = ownedTotal + sharedRecords.length;
+
+    return jsonResponse({ vehicles, ...paginationMeta(total, page, limit) });
   } catch (error) {
     return handleApiError(error);
   }
@@ -71,9 +97,21 @@ export async function POST(req: NextRequest) {
       testExpiryDate, insuranceExpiry, registrationDate, mileage } = validation.data;
 
     // Check plate uniqueness
-    const existing = await prisma.vehicle.findUnique({ where: { licensePlate } });
+    const existing = await prisma.vehicle.findUnique({
+      where: { licensePlate },
+      select: { id: true, userId: true, nickname: true, licensePlate: true },
+    });
     if (existing) {
-      return errorResponse('מספר רישוי כבר קיים במערכת', 409);
+      // If the user already has this vehicle (owns or shared), block duplicate
+      if (existing.userId === payload.userId) {
+        return errorResponse('רכב זה כבר רשום אצלך', 409);
+      }
+      // Vehicle belongs to someone else — offer share request option
+      return jsonResponse({
+        error: 'מספר רישוי כבר קיים במערכת',
+        canRequestShare: true,
+        vehiclePlate: existing.licensePlate,
+      }, 409);
     }
 
     // Check if VIN already exists (if provided)

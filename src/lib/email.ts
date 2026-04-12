@@ -476,3 +476,58 @@ export function buildCustomerStatusEmailHtml({
 </body>
 </html>`.trim();
 }
+
+/**
+ * Build the HTML for a vehicle share request email.
+ */
+export function buildVehicleShareRequestEmailHtml(
+  ownerName: string,
+  requesterName: string,
+  requesterEmail: string,
+  vehicleLabel: string,
+  manageUrl: string,
+): string {
+  return `
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head><meta charset="utf-8"></head>
+<body style="font-family:Arial,Helvetica,sans-serif;background:#f4f4f7;margin:0;padding:0;direction:rtl">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:32px 0">
+    <tr><td align="center">
+      <table width="520" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06)">
+        <tr>
+          <td style="background:linear-gradient(135deg,#0d9488,#0f766e);padding:24px 32px;text-align:center">
+            <h1 style="color:#ffffff;margin:0;font-size:22px">🚗 בקשת שיתוף רכב</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px 32px">
+            <p style="font-size:16px;color:#1e293b;margin:0 0 20px">שלום ${ownerName},</p>
+            <p style="font-size:16px;color:#1e293b;margin:0 0 20px">
+              <strong>${requesterName}</strong> (${requesterEmail}) מבקש/ת גישה לניהול הרכב שלך:
+            </p>
+            <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:8px;padding:16px;margin:0 0 24px;text-align:center">
+              <p style="margin:0;font-size:18px;font-weight:700;color:#0d9488">${vehicleLabel}</p>
+            </div>
+            <p style="font-size:15px;color:#475569;margin:0 0 24px">
+              אישור הבקשה יאפשר למשתמש לצפות בפרטי הרכב, להוסיף טיפולים, הוצאות ומסמכים. אתה תישאר הבעלים הראשי של הרכב.
+            </p>
+            <div style="text-align:center;margin:28px 0">
+              <a href="${manageUrl}" style="display:inline-block;background:#0d9488;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:16px;font-weight:700">
+                נהל בקשות שיתוף
+              </a>
+            </div>
+            <p style="font-size:13px;color:#94a3b8;margin:0">ניתן לאשר או לדחות את הבקשה בכל עת מדף הרכבים שלך.</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 32px;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0">
+            AutoLog — ניהול רכבים חכם
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`.trim();
+}
