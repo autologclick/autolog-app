@@ -12,6 +12,3 @@ dist/
 .vercel
 .turbo
 out/
-
-.vercel
-.env*.local

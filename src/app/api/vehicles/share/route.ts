@@ -64,10 +64,7 @@ export async function POST(req: NextRequest) {
       if (existing.status === 'approved') {
         return errorResponse('הרכב כבר משותף איתך', 400);
       }
-      if (existing.status === 'pending') {
-        return errorResponse('בקשת שיתוף כבר נשלחה, ממתין לאישור', 400);
-      }
-      // If rejected, allow re-request by updating
+      // If pending or rejected, reset to pending and re-send email
       await prisma.vehicleShare.update({
         where: { id: existing.id },
         data: { status: 'pending', updatedAt: new Date() },
