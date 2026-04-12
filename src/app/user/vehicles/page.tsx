@@ -556,6 +556,50 @@ export default function VehiclesPage() {
           </div>
         )}
 
+        {/* Pending Share Requests (for vehicle owners) */}
+        {shareRequests.filter(r => r.status === 'pending').length > 0 && (
+          <div className="bg-white rounded-2xl p-5 shadow-sm space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                <UserPlus size={18} className="text-blue-600" />
+              </div>
+              <h2 className="text-base font-bold text-[#1e3a5f]">בקשות שיתוף ממתינות</h2>
+              <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                {shareRequests.filter(r => r.status === 'pending').length}
+              </span>
+            </div>
+            {shareRequests.filter(r => r.status === 'pending').map(req => (
+              <div key={req.id} className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-800">{req.sharedUser?.fullName}</p>
+                  <p className="text-xs text-gray-500">{req.sharedUser?.email}</p>
+                  <p className="text-xs text-blue-600 mt-0.5">
+                    מבקש גישה ל-{req.vehicle.nickname || `${req.vehicle.manufacturer} ${req.vehicle.model}`} ({req.vehicle.licensePlate})
+                  </p>
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => handleShareAction(req.id, 'approve')}
+                    disabled={processingShareId === req.id}
+                    className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs font-semibold hover:bg-green-700 transition disabled:opacity-50 flex items-center gap-1"
+                  >
+                    {processingShareId === req.id ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle2 size={12} />}
+                    אשר
+                  </button>
+                  <button
+                    onClick={() => handleShareAction(req.id, 'reject')}
+                    disabled={processingShareId === req.id}
+                    className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg text-xs font-semibold hover:bg-red-200 transition disabled:opacity-50 flex items-center gap-1"
+                  >
+                    <XCircle size={12} />
+                    דחה
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Empty State */}
         {vehicles.length === 0 && !error && (
           <div className="bg-white rounded-2xl p-8 text-center space-y-4">
@@ -736,49 +780,6 @@ export default function VehiclesPage() {
                     </div>
                   </div>
                 )}
-              </div>
-            ))}
-          </div>
-        )}
-        {/* Pending Share Requests (for vehicle owners) */}
-        {shareRequests.filter(r => r.status === 'pending').length > 0 && (
-          <div className="bg-white rounded-2xl p-5 shadow-sm space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                <UserPlus size={18} className="text-blue-600" />
-              </div>
-              <h2 className="text-base font-bold text-[#1e3a5f]">בקשות שיתוף ממתינות</h2>
-              <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">
-                {shareRequests.filter(r => r.status === 'pending').length}
-              </span>
-            </div>
-            {shareRequests.filter(r => r.status === 'pending').map(req => (
-              <div key={req.id} className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-800">{req.sharedUser?.fullName}</p>
-                  <p className="text-xs text-gray-500">{req.sharedUser?.email}</p>
-                  <p className="text-xs text-blue-600 mt-0.5">
-                    מבקש גישה ל-{req.vehicle.nickname || `${req.vehicle.manufacturer} ${req.vehicle.model}`} ({req.vehicle.licensePlate})
-                  </p>
-                </div>
-                <div className="flex gap-2 flex-shrink-0">
-                  <button
-                    onClick={() => handleShareAction(req.id, 'approve')}
-                    disabled={processingShareId === req.id}
-                    className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs font-semibold hover:bg-green-700 transition disabled:opacity-50 flex items-center gap-1"
-                  >
-                    {processingShareId === req.id ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle2 size={12} />}
-                    אשר
-                  </button>
-                  <button
-                    onClick={() => handleShareAction(req.id, 'reject')}
-                    disabled={processingShareId === req.id}
-                    className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg text-xs font-semibold hover:bg-red-200 transition disabled:opacity-50 flex items-center gap-1"
-                  >
-                    <XCircle size={12} />
-                    דחה
-                  </button>
-                </div>
               </div>
             ))}
           </div>
