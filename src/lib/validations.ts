@@ -386,11 +386,12 @@ export const documentSchema = z.object({
     .or(z.literal('')),
   fileData: z.string()
     .optional()
-    .or(z.literal('')),
+    .or(z.literal(''))
+    .or(z.null()),
   fileUrl: z.string()
-    .url('כתובת קובץ לא תקינה')
     .optional()
-    .or(z.literal('')),
+    .or(z.literal(''))
+    .or(z.null()),
   fileName: z.string()
     .max(255, 'שם קובץ ארוך מדי')
     .optional()

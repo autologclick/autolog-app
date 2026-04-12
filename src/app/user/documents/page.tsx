@@ -101,6 +101,14 @@ function parseDocumentText(text: string) {
     if (latestFuture) result.expiryDate = latestFuture;
   }
 
+  // Detect license plate early for scoring
+  const plateMatch = text.match(/(\d{2,3}[-\s]?\d{2,3}[-\s]?\d{2,3})/);
+  let detectedPlate = '';
+  if (plateMatch) {
+    const plate = plateMatch[1].replace(/[-\s]/g, '');
+    if (plate.length >= 7 && plate.length <= 8) detectedPlate = plate;
+  }
+
   // Category — score-based approach for better accuracy
   const scores: Record<string, number> = { driving_license: 0, insurance: 0, receipt: 0, vehicle_license: 0 };
 
@@ -130,12 +138,19 @@ function parseDocumentText(text: string) {
   if (lower.includes('מחיר') || lower.includes('סכום') || lower.includes('יחידה')) scores.receipt += 3;
 
   // Vehicle license signals
-  if (lower.includes('רישיון רכב')) scores.vehicle_license += 10;
-  if (lower.includes('משרד התחבורה')) scores.vehicle_license += 8;
-  if (lower.includes('סוג רכב') || lower.includes('מספר רכב') || lower.includes('בעל הרכב')) scores.vehicle_license += 6;
-  if (lower.includes('שנת ייצור') || lower.includes('מס רכב') || lower.includes('נפח מנוע')) scores.vehicle_license += 5;
-  if (lower.includes('רישיון') && !lower.includes('נהיגה')) scores.vehicle_license += 3;
+  if (lower.includes('רישיון רכב')) scores.vehicle_license += 12;
+  if (lower.includes('רשיון רכב')) scores.vehicle_license += 12;
+  if (lower.includes('משרד התחבורה')) scores.vehicle_license += 10;
+  if (lower.includes('רשות הרישוי')) scores.vehicle_license += 8;
+  if (lower.includes('סוג רכב') || lower.includes('מספר רכב') || lower.includes('בעל הרכב')) scores.vehicle_license += 7;
+  if (lower.includes('שנת ייצור') || lower.includes('מס רכב') || lower.includes('נפח מנוע')) scores.vehicle_license += 6;
+  if (lower.includes('מספר שלדה') || lower.includes('צבע') || lower.includes('דגם')) scores.vehicle_license += 4;
+  if (lower.includes('תוקף') && (lower.includes('רישיון') || lower.includes('רשיון'))) scores.vehicle_license += 6;
+  if (lower.includes('רישיון') && !lower.includes('נהיגה')) scores.vehicle_license += 4;
+  if (lower.includes('רשיון') && !lower.includes('נהיגה')) scores.vehicle_license += 4;
   if (lower.includes('רישום')) scores.vehicle_license += 2;
+  // If license plate detected AND no strong receipt signals, boost vehicle license
+  if (detectedPlate && scores.receipt < 5) scores.vehicle_license += 5;
 
   // Pick highest scoring category
   const best = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
@@ -143,16 +158,9 @@ function parseDocumentText(text: string) {
     result.category = best[0];
   }
 
-  const plateMatch = text.match(/(\d{2,3}[-\s]?\d{2,3}[-\s]?\d{2,3})/);
-  if (plateMatch) {
-    const plate = plateMatch[1].replace(/[-\s]/g, '');
-    if (plate.length >= 7 && plate.length <= 8) {
-      result.licensePlate = plate;
-      // If a license plate was found but no category detected, it's likely a vehicle license
-      if (!result.category) {
-        result.category = 'vehicle_license';
-      }
-    }
+  if (detectedPlate) {
+    result.licensePlate = detectedPlate;
+    if (!result.category) result.category = 'vehicle_license';
   }
 
 
