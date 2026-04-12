@@ -137,9 +137,9 @@ const ReminderCard = ({ title, icon, value, subtitle, status }: {
   const borderColor = status === 'danger' ? 'border-r-red-500' : status === 'warning' ? 'border-r-amber-400' : 'border-r-green-500';
   const valueColor = status === 'danger' ? 'text-red-600' : status === 'warning' ? 'text-amber-600' : 'text-green-600';
   return (
-    <div className={`bg-white rounded-xl p-3 shadow-sm border-r-4 ${borderColor}`}>
-      <div className="text-xs text-gray-500 mb-1">{icon} {title}</div>
-      <div className={`text-xl font-bold ${valueColor}`}>{value}</div>
+    <div className={`bg-white rounded-xl p-2.5 shadow-sm border-r-4 ${borderColor}`}>
+      <div className="text-[11px] text-gray-500 mb-1">{icon} {title}</div>
+      <div className={`text-lg font-bold leading-tight ${valueColor}`}>{value}</div>
       {subtitle && <div className="text-[10px] text-gray-400 mt-0.5">{subtitle}</div>}
     </div>
   );
@@ -433,7 +433,7 @@ export default function UserHomePage() {
       <div className="px-4 -mt-3 space-y-4">
 
         {/* Smart Reminders */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           <ReminderCard
             icon="🧪" title="טסט"
             value={testDays !== null ? (testDays < 0 ? 'פג תוקף!' : `${testDays} יום`) : 'לא הוגדר'}
