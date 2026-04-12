@@ -349,30 +349,15 @@ export default function BookGaragePage() {
             <Input placeholder="חפש מוסך לפי שם או עיר..." icon={<Search size={16} />}
               value={search} onChange={e => setSearch(e.target.value)} />
 
-            {/* Filters row - sort + city in one compact row */}
-            <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
+            {/* Sort options */}
+            <div className="flex gap-2 justify-end">
               {(['nearest', 'rating'] as SortOption[]).map(opt => (
                 <button key={opt} onClick={() => setSortBy(opt)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition ${
+                  className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition ${
                     sortBy === opt ? 'bg-teal-600 text-white shadow-sm' : 'bg-white text-gray-500 border border-gray-200'
                   }`}>
                   {sortLabels[opt]}
                 </button>
-              ))}
-              {cities.length > 0 && (
-                <div className="w-px bg-gray-200 flex-shrink-0 my-1" />
-              )}
-              {cities.length > 0 && (
-                <button onClick={() => setFilterCity('')}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition ${
-                    !filterCity ? 'bg-teal-600 text-white shadow-sm' : 'bg-white text-gray-500 border border-gray-200'
-                  }`}>הכל</button>
-              )}
-              {cities.map(city => (
-                <button key={city} onClick={() => setFilterCity(city)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition ${
-                    filterCity === city ? 'bg-teal-600 text-white shadow-sm' : 'bg-white text-gray-500 border border-gray-200'
-                  }`}>{city}</button>
               ))}
             </div>
 
