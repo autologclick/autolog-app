@@ -329,56 +329,51 @@ export default function BookGaragePage() {
           <>
             <ProgressBar currentStep={2} />
 
-            {/* Selected service chip */}
-            <div className="flex items-center justify-between bg-white rounded-2xl p-4 shadow-sm border-l-4 border-teal-600">
-              <button
-                onClick={() => setSelectedService('')}
-                className="text-xs text-teal-600 hover:text-teal-800 font-medium flex items-center gap-1"
-              >
-                <X size={14} /> שנה
-              </button>
+            {/* Header with service context */}
+            <div>
+              <h2 className="text-lg font-bold text-gray-800 mb-1">בחר מוסך</h2>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">שירות:</span>
-                <span className="font-bold text-teal-600">{serviceValueToLabel[selectedService]}</span>
+                <p className="text-sm text-gray-500">
+                  שירות: <span className="font-semibold text-teal-600">{serviceValueToLabel[selectedService]}</span>
+                </p>
+                <button
+                  onClick={() => setSelectedService('')}
+                  className="text-xs text-gray-400 hover:text-teal-600 transition"
+                >
+                  (שנה)
+                </button>
               </div>
             </div>
 
-            {/* Search + filters */}
-            <div className="space-y-3">
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <Input placeholder="חפש מוסך לפי שם או עיר..." icon={<Search size={16} />}
-                    value={search} onChange={e => setSearch(e.target.value)} />
-                </div>
-              </div>
+            {/* Search */}
+            <Input placeholder="חפש מוסך לפי שם או עיר..." icon={<Search size={16} />}
+              value={search} onChange={e => setSearch(e.target.value)} />
 
-              {/* Sort chips */}
-              <div className="flex gap-2 flex-wrap">
-                {(['nearest', 'rating'] as SortOption[]).map(opt => (
-                  <button key={opt} onClick={() => setSortBy(opt)}
-                    className={`px-4 py-2 rounded-full text-xs font-bold transition ${
-                      sortBy === opt ? 'bg-teal-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-teal-600'
-                    }`}>
-                    {sortLabels[opt]}
-                  </button>
-                ))}
-              </div>
-
-              {/* City filter chips */}
+            {/* Filters row - sort + city in one compact row */}
+            <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
+              {(['nearest', 'rating'] as SortOption[]).map(opt => (
+                <button key={opt} onClick={() => setSortBy(opt)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition ${
+                    sortBy === opt ? 'bg-teal-600 text-white shadow-sm' : 'bg-white text-gray-500 border border-gray-200'
+                  }`}>
+                  {sortLabels[opt]}
+                </button>
+              ))}
               {cities.length > 0 && (
-                <div className="flex gap-2 flex-wrap">
-                  <button onClick={() => setFilterCity('')}
-                    className={`px-4 py-1.5 rounded-full text-xs font-medium transition ${
-                      !filterCity ? 'bg-teal-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-teal-600'
-                    }`}>הכל</button>
-                  {cities.map(city => (
-                    <button key={city} onClick={() => setFilterCity(city)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-medium transition ${
-                        filterCity === city ? 'bg-teal-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-teal-600'
-                      }`}>{city}</button>
-                  ))}
-                </div>
+                <div className="w-px bg-gray-200 flex-shrink-0 my-1" />
               )}
+              {cities.length > 0 && (
+                <button onClick={() => setFilterCity('')}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition ${
+                    !filterCity ? 'bg-teal-600 text-white shadow-sm' : 'bg-white text-gray-500 border border-gray-200'
+                  }`}>הכל</button>
+              )}
+              {cities.map(city => (
+                <button key={city} onClick={() => setFilterCity(city)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition ${
+                    filterCity === city ? 'bg-teal-600 text-white shadow-sm' : 'bg-white text-gray-500 border border-gray-200'
+                  }`}>{city}</button>
+              ))}
             </div>
 
             {/* Garage List */}
@@ -386,59 +381,62 @@ export default function BookGaragePage() {
               <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
                 <Building2 size={48} className="mx-auto text-gray-300 mb-4" />
                 <p className="text-gray-500 text-lg font-bold">לא נמצאו מוסכים</p>
-                <p className="text-gray-400 text-sm">נסה לשנות את החיפוש או לבחור עיר אחרת</p>
+                <p className="text-gray-400 text-sm mt-1">נסה לשנות את החיפוש או לבחור עיר אחרת</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {sortedGarages.map(g => (
-                  <div key={g.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition">
-                    <div className="flex items-start gap-3 mb-3">
-                      <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center flex-shrink-0">
-                        <Building2 size={24} className="text-teal-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <h3 className="font-bold text-gray-800">{g.name}</h3>
-                          {g.isPartner && <Badge variant="success" size="sm">שותף</Badge>}
+                  <div key={g.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+                    {/* Garage info */}
+                    <div className="p-4 pb-3">
+                      <div className="flex items-start gap-3">
+                        <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <Building2 size={22} className="text-teal-600" />
                         </div>
-                        <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
-                          <MapPin size={13} />
-                          <span>{g.address ? `${g.address}, ${g.city}` : g.city}</span>
-                          {g.distance != null && g.distance < 900 && (
-                            <span className="text-teal-600 font-medium mr-1">
-                              • {g.distance < 1 ? `${Math.round(g.distance * 1000)} מ׳` : `${g.distance.toFixed(1)} ק״מ`}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <StarRating rating={Math.round(g.rating)} size={14} />
-                          <span className="text-sm font-bold text-gray-700">{g.rating > 0 ? g.rating.toFixed(1) : '—'}</span>
-                          <button onClick={() => openReviewsList(g)} className="text-xs text-teal-600 hover:underline">
-                            ({g.reviewCount} ביקורות)
-                          </button>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <h3 className="font-bold text-gray-800 text-sm">{g.name}</h3>
+                            {g.isPartner && <Badge variant="success" size="sm">שותף</Badge>}
+                          </div>
+                          <div className="flex items-center gap-1 text-xs text-gray-500">
+                            <MapPin size={12} />
+                            <span>{g.city}</span>
+                            {g.distance != null && g.distance < 900 && (
+                              <span className="text-teal-600 font-semibold">
+                                • {g.distance < 1 ? `${Math.round(g.distance * 1000)} מ׳` : `${g.distance.toFixed(1)} ק״מ`}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-1.5">
+                            <StarRating rating={Math.round(g.rating)} size={13} />
+                            <span className="text-xs font-bold text-gray-700">{g.rating > 0 ? g.rating.toFixed(1) : '—'}</span>
+                            <button onClick={() => openReviewsList(g)} className="text-xs text-gray-400 hover:text-teal-600">
+                              ({g.reviewCount})
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex items-center gap-2">
-                      {g.phone && (
-                        <a href={`tel:${g.phone}`}
-                          className="w-11 h-11 flex items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:bg-teal-50 transition">
-                          <Phone size={16} />
-                        </a>
-                      )}
-                      <button onClick={() => openReviewModal(g)}
-                        className="w-11 h-11 flex items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:bg-teal-50 transition">
-                        <MessageSquare size={16} />
-                      </button>
+                    {/* Action bar */}
+                    <div className="flex items-center gap-2 px-4 py-3 bg-gray-50/70 border-t border-gray-100">
                       <button
                         onClick={() => openBooking(g)}
-                        className="flex-1 bg-teal-600 text-white h-11 rounded-xl text-sm font-bold hover:bg-teal-700 transition flex items-center justify-center gap-1.5"
+                        className="flex-1 bg-teal-600 text-white h-10 rounded-xl text-sm font-bold hover:bg-teal-700 transition flex items-center justify-center gap-1.5"
                       >
                         <Calendar size={14} />
                         הזמן תור
                       </button>
+                      <button onClick={() => openReviewModal(g)}
+                        className="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-400 hover:text-teal-600 hover:border-teal-200 transition">
+                        <MessageSquare size={15} />
+                      </button>
+                      {g.phone && (
+                        <a href={`tel:${g.phone}`}
+                          className="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-400 hover:text-teal-600 hover:border-teal-200 transition">
+                          <Phone size={15} />
+                        </a>
+                      )}
                     </div>
                   </div>
                 ))}
