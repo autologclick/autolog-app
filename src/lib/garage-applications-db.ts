@@ -36,6 +36,7 @@ export async function createApplication(data: {
   yearsExperience?: number;
   employeeCount?: number;
   licenseNumber?: string;
+  businessNumber?: string;
   images?: string;
 }): Promise<string> {
   const result = await prisma.garageApplication.create({
@@ -52,6 +53,7 @@ export async function createApplication(data: {
       yearsExperience: data.yearsExperience || 0,
       employeeCount: data.employeeCount || 1,
       licenseNumber: data.licenseNumber || null,
+      businessNumber: data.businessNumber || null,
       images: data.images || null,
       status: 'pending',
     },

@@ -121,6 +121,27 @@ export async function POST(req: NextRequest) {
       return errorResponse('לא ניתן להזמין תור בתאריך שעבר', 400);
     }
 
+    // Conflict detection: same garage + same date + same time slot
+    const mechanicId = (body as { mechanicId?: string }).mechanicId;
+    const conflictWhere: Prisma.AppointmentWhereInput = {
+      garageId,
+      date: appointmentDate,
+      time,
+      status: { in: ['pending', 'confirmed', 'in_progress'] },
+    };
+    if (mechanicId) {
+      conflictWhere.mechanicId = mechanicId;
+    }
+    const conflict = await prisma.appointment.findFirst({ where: conflictWhere });
+    if (conflict) {
+      return errorResponse(
+        mechanicId
+          ? 'המכונאי כבר מוזמן בשעה זו'
+          : 'קיים כבר תור בשעה זו במוסך, אנא בחר שעה אחרת',
+        409
+      );
+    }
+
     // Create appointment
     const appointment = await prisma.appointment.create({
       data: {
@@ -132,6 +153,7 @@ export async function POST(req: NextRequest) {
         time,
         notes: notes || null,
         status: 'pending',
+        mechanicId: mechanicId || null,
       },
       include: {
         garage: {

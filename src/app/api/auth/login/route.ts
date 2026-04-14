@@ -14,6 +14,7 @@ import {
 } from '@/lib/rate-limit';
 import { createRequestLogger } from '@/lib/logger';
 import { logAuthEvent } from '@/lib/audit-log';
+import { verifyTotp, verifyBackupCode } from '@/lib/totp';
 
 export async function POST(req: NextRequest) {
   const logger = createRequestLogger('auth', req);
@@ -113,6 +114,45 @@ export async function POST(req: NextRequest) {
         req,
       });
       return errorResponse(AUTH_ERRORS.INVALID_EMAIL_OR_PASSWORD, 401);
+    }
+
+    // ========================================================================
+    // 2FA CHECK (required for admins if enabled; mandatory for admin role)
+    // ========================================================================
+    const twoFactorCode: string | undefined = (body as { twoFactorCode?: string })?.twoFactorCode;
+    const isAdmin = user.role === 'admin';
+
+    // Admins must have 2FA enabled
+    if (isAdmin && !user.twoFactorEnabled) {
+      logger.warn('Admin login blocked: 2FA not enrolled', { userId: user.id });
+      return errorResponse(
+        'חשבון אדמין חייב להפעיל 2FA. פנה למנהל המערכת להפעלה.',
+        403
+      );
+    }
+
+    if (user.twoFactorEnabled && user.twoFactorSecret) {
+      if (!twoFactorCode) {
+        return jsonResponse({ requires2FA: true, message: 'יש להזין קוד אימות דו-שלבי' }, 200);
+      }
+      let ok = verifyTotp(user.twoFactorSecret, twoFactorCode);
+      if (!ok && user.twoFactorBackupCodes) {
+        const list: string[] = JSON.parse(user.twoFactorBackupCodes);
+        const res = verifyBackupCode(twoFactorCode, list);
+        if (res.ok) {
+          ok = true;
+          // Consume the used backup code
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { twoFactorBackupCodes: JSON.stringify(res.remaining) },
+          });
+        }
+      }
+      if (!ok) {
+        recordFailedAttempt(normalizedEmail);
+        logAuthEvent('LOGIN', user.id, { status: 'failure', errorMessage: '2FA invalid', req });
+        return errorResponse('קוד אימות דו-שלבי שגוי', 401);
+      }
     }
 
     // ========================================================================

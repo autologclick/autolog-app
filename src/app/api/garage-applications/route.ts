@@ -6,6 +6,8 @@ import { createApplication, checkDuplicateEmail } from '@/lib/garage-application
 import { notifyAdmins } from '@/lib/services/notification-service';
 import { createLogger } from '@/lib/logger';
 import { VALIDATION_ERRORS, GARAGE_MESSAGES, API_ERRORS } from '@/lib/messages';
+import { isValidBusinessNumber, isValidIsraeliPhone } from '@/lib/israeli-validators';
+import prisma from '@/lib/db';
 
 const logger = createLogger('garage-applications');
 
@@ -22,6 +24,7 @@ interface SanitizedApplication {
   yearsExperience?: number;
   employeeCount?: number;
   licenseNumber?: string;
+  businessNumber?: string;
   images?: string;
 }
 
@@ -38,6 +41,10 @@ const applicationSchema = z.object({
   yearsExperience: z.number().min(0).max(100).optional(),
   employeeCount: z.number().min(1).max(500).optional(),
   licenseNumber: z.string().max(50).optional(),
+  businessNumber: z.string().optional().refine(
+    (v) => !v || isValidBusinessNumber(v),
+    { message: 'ח.פ לא תקין (חובה 9 ספרות עם ספרת ביקורת)' }
+  ),
   images: z.array(z.string()).max(6).optional(),
 });
 
@@ -53,6 +60,21 @@ export async function POST(req: NextRequest) {
 
     const data = parsed.data;
 
+    // Validate Israeli phone format
+    if (!isValidIsraeliPhone(data.phone)) {
+      return errorResponse('מספר טלפון ישראלי לא תקין', 422);
+    }
+
+    // Duplicate ח.פ check
+    if (data.businessNumber) {
+      const existsBiz = await prisma.garageApplication.findFirst({
+        where: { businessNumber: data.businessNumber, status: { in: ['pending', 'approved'] } },
+      });
+      if (existsBiz) {
+        return errorResponse('כבר קיימת בקשה עם ח.פ זה', 409);
+      }
+    }
+
     // Sanitize inputs
     const sanitized: SanitizedApplication = {
       garageName: sanitizeInput(data.garageName),
@@ -67,6 +89,7 @@ export async function POST(req: NextRequest) {
       yearsExperience: data.yearsExperience,
       employeeCount: data.employeeCount,
       licenseNumber: data.licenseNumber ? sanitizeInput(data.licenseNumber) : undefined,
+      businessNumber: data.businessNumber ? sanitizeInput(data.businessNumber).replace(/\D/g, '') : undefined,
     };
 
     // Check for duplicate pending/approved applications

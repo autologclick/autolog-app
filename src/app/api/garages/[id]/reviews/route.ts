@@ -42,6 +42,20 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const garage = await prisma.garage.findUnique({ where: { id: params.id } });
     if (!garage) return errorResponse(NOT_FOUND.GARAGE, 404);
 
+    // Review integrity: only customers with a completed appointment at this
+    // garage may post a review.
+    const completed = await prisma.appointment.findFirst({
+      where: {
+        garageId: params.id,
+        userId: payload.userId,
+        status: 'completed',
+      },
+      select: { id: true },
+    });
+    if (!completed) {
+      return errorResponse('ניתן לכתוב ביקורת רק לאחר שהושלם טיפול במוסך זה', 403);
+    }
+
     // Get user name
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },

@@ -67,10 +67,18 @@ export function requireAuth(req: NextRequest): JwtPayload {
   return payload;
 }
 
+// Admin sessions expire after 30 minutes regardless of access-token lifetime.
+// This enforces a shorter idle window for privileged actions.
+const ADMIN_SESSION_MAX_AGE_SEC = 30 * 60;
+
 export function requireAdmin(req: NextRequest): JwtPayload {
   const payload = requireAuth(req);
   if (payload.role !== 'admin') {
     throw new AuthError(AUTH_ERRORS.FORBIDDEN, 403);
+  }
+  const iat = (payload as unknown as { iat?: number }).iat;
+  if (iat && Date.now() / 1000 - iat > ADMIN_SESSION_MAX_AGE_SEC) {
+    throw new AuthError('פג תוקף סשן מנהל, נא להתחבר שוב', 401);
   }
   return payload;
 }

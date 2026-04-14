@@ -1,10 +1,13 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAdmin, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { assertSeedAllowed } from '@/lib/seed-guard';
 
 // POST /api/admin/seed-notifications - Create sample notifications for demo user
 export async function POST(req: NextRequest) {
   try {
+    const blocked = assertSeedAllowed();
+    if (blocked) return blocked;
     const payload = requireAdmin(req);
 
     // Get all users for seeding

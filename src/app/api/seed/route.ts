@@ -2,12 +2,17 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { createLogger } from '@/lib/logger';
+import { assertSeedAllowed } from '@/lib/seed-guard';
 
 const logger = createLogger('seed');
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
+  // Block in production unless ALLOW_SEED=true
+  const blocked = assertSeedAllowed();
+  if (blocked) return blocked;
+
   // Security: require a secret key to prevent unauthorized seeding
   const { searchParams } = new URL(request.url);
   const key = searchParams.get('key');

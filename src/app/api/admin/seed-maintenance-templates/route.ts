@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { requireAdmin, jsonResponse, handleApiError } from '@/lib/api-helpers';
+import { assertSeedAllowed } from '@/lib/seed-guard';
 import { seedAllTemplates, ISRAELI_MARKET_TEMPLATES } from '@/lib/maintenance-templates';
 
 /**
@@ -9,6 +10,8 @@ import { seedAllTemplates, ISRAELI_MARKET_TEMPLATES } from '@/lib/maintenance-te
  */
 export async function POST(req: NextRequest) {
   try {
+    const blocked = assertSeedAllowed();
+    if (blocked) return blocked;
     requireAdmin(req);
 
     const count = await seedAllTemplates();

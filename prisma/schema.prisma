@@ -39,6 +39,11 @@ model User {
   phoneVerified Boolean   @default(false)
   lastLoginAt   DateTime?
 
+  // Two-factor authentication (TOTP)
+  twoFactorSecret       String?   // base32-encoded TOTP secret
+  twoFactorEnabled      Boolean   @default(false)
+  twoFactorBackupCodes  String?   // JSON array of one-time backup codes (hashed)
+
   // Preferences
   notificationPreferences String? // JSON: { email: bool, push: bool, sms: bool, whatsapp: bool }
 
@@ -314,6 +319,7 @@ model Appointment {
   serviceType String    // inspection | maintenance | repair | test_prep
   date        DateTime
   time        String
+  mechanicId  String?   // optional assigned mechanic (for conflict detection)
   status      String    @default("pending") // pending | confirmed | in_progress | completed | cancelled
   notes       String?
   completionNotes  String?   // Treatment summary written by garage when completing
@@ -473,6 +479,7 @@ model GarageApplication {
   yearsExperience Int       @default(0)
   employeeCount   Int       @default(1)
   licenseNumber   String?
+  businessNumber  String?   // ח.פ - Israeli company/business number (9 digits)
   images          String?
   status          String    @default("pending") // pending | approved | rejected
   adminNotes      String?
@@ -541,6 +548,48 @@ model BenefitRedemption {
 
 // ============================================================
 // MAINTENANCE TEMPLATES (OEM Service Schedules)
+// ============================================================
+
+// ============================================================
+// AUDIT LOG (immutable, append-only)
+// ============================================================
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  timestamp     DateTime @default(now())
+  action        String   // CREATE | UPDATE | DELETE | LOGIN | LOGOUT | REFRESH_TOKEN | PERMISSION_CHANGE | EXPORT | IMPORT
+  userId        String   // actor
+  resourceType  String
+  resourceId    String
+  resourceName  String?
+  changes       String?  // JSON { before?, after? }
+  ip            String?
+  userAgent     String?
+  status        String   @default("success") // success | failure
+  errorMessage  String?
+  metadata      String?  // JSON
+
+  @@index([userId])
+  @@index([resourceType, resourceId])
+  @@index([action])
+  @@index([timestamp])
+}
+
+// ============================================================
+// MAINTENANCE MODE (global kill-switch by admin)
+// ============================================================
+
+model MaintenanceMode {
+  id         String   @id @default("singleton")
+  enabled    Boolean  @default(false)
+  message    String?
+  enabledAt  DateTime?
+  enabledBy  String?  // admin userId
+  updatedAt  DateTime @updatedAt
+}
+
+// ============================================================
+// APPOINTMENT CONFLICTS guard — optional slot per mechanic
 // ============================================================
 
 model MaintenanceTemplate {

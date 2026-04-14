@@ -279,6 +279,36 @@ export function checkRegisterRateLimit(req: NextRequest): {
   return checkRateLimit(registerAttempts, ip, 3, 60 * 1000); // 3 attempts per 1 minute
 }
 
+// Additional rate-limit stores for sensitive endpoints
+const adminAttempts: RateLimitStore = new Map();
+const customerLookupAttempts: RateLimitStore = new Map();
+const scanVehicleAttempts: RateLimitStore = new Map();
+
+/**
+ * Rate limit for admin endpoints: 30 per minute per IP
+ */
+export function checkAdminRateLimit(req: NextRequest) {
+  const ip = getClientIp(req);
+  return checkRateLimit(adminAttempts, ip, 30, 60 * 1000);
+}
+
+/**
+ * Rate limit for customer lookup (by phone/email): 20 per minute per IP
+ * Prevents enumeration/scraping of customer info.
+ */
+export function checkCustomerLookupRateLimit(req: NextRequest) {
+  const ip = getClientIp(req);
+  return checkRateLimit(customerLookupAttempts, ip, 20, 60 * 1000);
+}
+
+/**
+ * Rate limit for vehicle scan lookups: 30 per minute per IP
+ */
+export function checkScanVehicleRateLimit(req: NextRequest) {
+  const ip = getClientIp(req);
+  return checkRateLimit(scanVehicleAttempts, ip, 30, 60 * 1000);
+}
+
 /**
  * Rate limit for general API calls: 100 per minute per user
  */

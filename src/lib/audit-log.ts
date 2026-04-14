@@ -1,5 +1,6 @@
 import { createLogger } from './logger';
 import { NextRequest } from 'next/server';
+import prisma from './db';
 
 /**
  * Audit logging system for compliance and accountability
@@ -29,7 +30,8 @@ export type ResourceType =
   | 'expense'
   | 'garage'
   | 'permission'
-  | 'session';
+  | 'session'
+  | 'system';
 
 export interface AuditLogEntry {
   timestamp: string;
@@ -308,17 +310,29 @@ function sanitizeData(data: Record<string, unknown>): Record<string, unknown> {
  * In production, this would write to an audit log table
  */
 async function persistAuditLog(entry: AuditLogEntry): Promise<void> {
-  // TODO: Implement actual persistence to database
-  // This should store audit logs in a dedicated audit table
-  // with proper indexing for userId, resourceType, timestamp
-  //
-  // Example:
-  // await prisma.auditLog.create({
-  //   data: {
-  //     ...entry,
-  //     changes: entry.changes ? JSON.stringify(entry.changes) : null,
-  //   },
-  // });
+  try {
+    await prisma.auditLog.create({
+      data: {
+        action: entry.action,
+        userId: entry.userId,
+        resourceType: entry.resourceType,
+        resourceId: entry.resourceId,
+        resourceName: entry.resourceName,
+        changes: entry.changes ? JSON.stringify(entry.changes) : null,
+        ip: entry.ip,
+        userAgent: entry.userAgent,
+        status: entry.status,
+        errorMessage: entry.errorMessage,
+        metadata: entry.metadata ? JSON.stringify(entry.metadata) : null,
+      },
+    });
+  } catch (err) {
+    // Never break app flow because of audit persistence
+    auditLogger.error('Failed to persist audit log', {
+      error: err instanceof Error ? err.message : 'unknown',
+      action: entry.action,
+    });
+  }
 }
 
 /**
@@ -334,9 +348,37 @@ export async function queryAuditLogs(filters: {
   limit?: number;
   offset?: number;
 }): Promise<AuditLogEntry[]> {
-  // TODO: Implement actual querying from audit log table
-  // This would be used for compliance reports and investigations
-  return [];
+  const where: Record<string, unknown> = {};
+  if (filters.userId) where.userId = filters.userId;
+  if (filters.resourceType) where.resourceType = filters.resourceType;
+  if (filters.resourceId) where.resourceId = filters.resourceId;
+  if (filters.action) where.action = filters.action;
+  if (filters.startDate || filters.endDate) {
+    where.timestamp = {
+      ...(filters.startDate ? { gte: filters.startDate } : {}),
+      ...(filters.endDate ? { lte: filters.endDate } : {}),
+    };
+  }
+  const rows = await prisma.auditLog.findMany({
+    where,
+    orderBy: { timestamp: 'desc' },
+    take: filters.limit ?? 100,
+    skip: filters.offset ?? 0,
+  });
+  return rows.map((r) => ({
+    timestamp: r.timestamp.toISOString(),
+    action: r.action as AuditAction,
+    userId: r.userId,
+    resourceType: r.resourceType as ResourceType,
+    resourceId: r.resourceId,
+    resourceName: r.resourceName ?? undefined,
+    changes: r.changes ? JSON.parse(r.changes) : undefined,
+    ip: r.ip ?? 'unknown',
+    userAgent: r.userAgent ?? undefined,
+    status: r.status as 'success' | 'failure',
+    errorMessage: r.errorMessage ?? undefined,
+    metadata: r.metadata ? JSON.parse(r.metadata) : undefined,
+  }));
 }
 
 /**

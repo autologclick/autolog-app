@@ -1,10 +1,13 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAdmin, jsonResponse, handleApiError } from '@/lib/api-helpers';
+import { assertSeedAllowed } from '@/lib/seed-guard';
 
 // POST /api/admin/seed-benefits - Create sample club benefits
 export async function POST(req: NextRequest) {
   try {
+    const blocked = assertSeedAllowed();
+    if (blocked) return blocked;
     requireAdmin(req);
 
     const benefits = [

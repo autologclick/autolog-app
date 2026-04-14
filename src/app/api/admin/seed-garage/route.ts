@@ -1,10 +1,13 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAdmin, jsonResponse, handleApiError } from '@/lib/api-helpers';
+import { assertSeedAllowed } from '@/lib/seed-guard';
 
 // GET /api/admin/seed-garage - Create/update demo garages with full data
 export async function GET(req: NextRequest) {
   try {
+    const blocked = assertSeedAllowed();
+    if (blocked) return blocked;
     requireAdmin(req);
     const garageOwner = await prisma.user.findFirst({
       where: { email: 'garage@autolog.co.il' },
