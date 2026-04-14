@@ -38,9 +38,8 @@ async function ensureColumn() {
     await prisma.$executeRawUnsafe(
       `ALTER TABLE "Vehicle" ADD COLUMN IF NOT EXISTS "maintenanceData" TEXT`
     );
-  } catch (e) {
+  } catch {
     // Column might already exist or DB doesn't support IF NOT EXISTS — ignore
-    console.log('Migration check:', e instanceof Error ? e.message : e);
   }
   migrationChecked = true;
 }
@@ -232,16 +231,13 @@ async function generateMaintenanceSchedule(vehicle: {
       vehicle.manufacturer, vehicle.model, vehicle.year, vehicle.fuelType
     );
     if (templateItems && templateItems.length > 0) {
-      console.log(`[maintenance] Using OEM template for ${vehicle.manufacturer} ${vehicle.model} ${vehicle.year}`);
       return calculateScheduleFromTemplate(
         templateItems, mileage, vehicle.manufacturer, vehicle.model, vehicle.year
       );
     }
-  } catch (e) {
-    console.error('[maintenance] Template lookup failed, falling back to AI:', e);
+  } catch {
+    // Template lookup failed — fall through to AI generation
   }
-
-  console.log(`[maintenance] No template found for ${vehicle.manufacturer} ${vehicle.model} ${vehicle.year}, using AI`);
 
   const prompt = `You are an expert automotive mechanic with deep knowledge of manufacturer maintenance schedules for all car brands worldwide.
 

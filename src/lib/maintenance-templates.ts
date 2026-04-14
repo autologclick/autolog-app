@@ -68,8 +68,8 @@ async function ensureMaintenanceTemplateTable() {
       CREATE INDEX IF NOT EXISTS "MaintenanceTemplate_manufacturer_model_idx"
       ON "MaintenanceTemplate" ("manufacturer", "model")
     `);
-  } catch (e) {
-    console.log('MaintenanceTemplate table check:', e instanceof Error ? e.message : e);
+  } catch {
+    /* table check non-fatal */
   }
   tableChecked = true;
 }

@@ -295,7 +295,6 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
       for (let i = 0; i < regions.length && candidates.length === 0; i++) {
         const croppedDataUrl = cropAndPreprocess(img, regions[i]);
         const result = await worker.recognize(croppedDataUrl);
-        console.log(`OCR region ${regions[i].label}:`, result.data.text);
         candidates = extractAllPlates(result.data.text);
         setScanProgress(30 + Math.round(((i + 1) / regions.length) * 25));
       }
@@ -305,7 +304,6 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
         setStatusMessage('סורק תמונה מלאה...');
         const fullDataUrl = preprocessFullImage(img);
         const fullResult = await worker.recognize(fullDataUrl);
-        console.log('OCR full image:', fullResult.data.text);
         candidates = extractAllPlates(fullResult.data.text);
       }
 
@@ -320,7 +318,6 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
         ctx.drawImage(img, r.x, r.y, r.w, r.h, 0, 0, canvas.width, canvas.height);
         const rawDataUrl = canvas.toDataURL('image/png');
         const rawResult = await worker.recognize(rawDataUrl);
-        console.log('OCR raw (no threshold):', rawResult.data.text);
         candidates = extractAllPlates(rawResult.data.text);
       }
 

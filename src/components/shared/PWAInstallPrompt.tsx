@@ -19,14 +19,9 @@ export default function PWAInstallPrompt() {
   useEffect(() => {
     // Register Service Worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then((reg) => {
-          console.log('SW registered:', reg.scope);
-        })
-        .catch((err) => {
-          console.warn('SW registration failed:', err);
-        });
+      navigator.serviceWorker.register('/sw.js').catch(() => {
+        /* SW registration failed — non-fatal */
+      });
     }
 
     // Check if already installed
