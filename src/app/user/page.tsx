@@ -429,7 +429,7 @@ export default function UserHomePage() {
   }
 
   // ── Treatment type chips ──
-  const treatmentTypes = ['maintenance', 'tires', 'electrical', 'oil_change', 'brakes', 'repair', 'other'];
+  const treatmentTypes = ['maintenance', 'repair', 'tires', 'bodywork', 'other'];
 
   return (
     <div className="min-h-screen bg-[#fef7ed] pb-24">
