@@ -559,11 +559,11 @@ export default function UserHomePage() {
             <span className="text-xs font-semibold">+ מסמך</span>
           </button>
           <button
-            onClick={() => router.push('/user/expenses')}
+            onClick={() => router.push('/user/vehicles')}
             className="flex-1 bg-teal-600 text-white rounded-xl py-3 flex flex-col items-center gap-1 shadow-md active:scale-[0.97] transition-transform"
           >
-            <Receipt size={20} />
-            <span className="text-xs font-semibold">+ הוצאה</span>
+            <Car size={20} />
+            <span className="text-xs font-semibold">הגראז&apos; שלי</span>
           </button>
         </div>
 
