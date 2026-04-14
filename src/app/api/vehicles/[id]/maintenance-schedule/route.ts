@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, handleApiError, AuthError } from '@/lib/api-helpers';
+import { requireAuth, jsonResponse, handleApiError } from '@/lib/api-helpers';
+import { findMaintenanceTemplate, calculateScheduleFromTemplate } from '@/lib/maintenance-templates';
 
 /**
  * GET /api/vehicles/[id]/maintenance-schedule
@@ -70,8 +71,21 @@ export async function GET(
       return jsonResponse({ error: 'רכב לא נמצא' }, 404);
     }
 
-    if (vehicle.userId !== payload.userId) {
-      throw new AuthError('אין הרשאה', 403);
+    // If vehicle has no mileage, try to get from latest treatment
+    if (!vehicle.mileage || vehicle.mileage <= 0) {
+      const latestTreatment = await prisma.treatment.findFirst({
+        where: { vehicleId: id, mileage: { gt: 0 } },
+        orderBy: { date: 'desc' },
+        select: { mileage: true },
+      });
+      if (latestTreatment?.mileage && latestTreatment.mileage > 0) {
+        vehicle.mileage = latestTreatment.mileage;
+        // Also update the vehicle record for future use
+        await prisma.vehicle.update({
+          where: { id },
+          data: { mileage: latestTreatment.mileage },
+        });
+      }
     }
 
     if (!vehicle.mileage || vehicle.mileage <= 0) {
@@ -152,6 +166,22 @@ export async function POST(
       return jsonResponse({ error: 'רכב לא נמצא או אין הרשאה' }, 404);
     }
 
+    // If vehicle has no mileage, try to get from latest treatment
+    if (!vehicle.mileage || vehicle.mileage <= 0) {
+      const latestTreatment = await prisma.treatment.findFirst({
+        where: { vehicleId: id, mileage: { gt: 0 } },
+        orderBy: { date: 'desc' },
+        select: { mileage: true },
+      });
+      if (latestTreatment?.mileage && latestTreatment.mileage > 0) {
+        vehicle.mileage = latestTreatment.mileage;
+        await prisma.vehicle.update({
+          where: { id },
+          data: { mileage: latestTreatment.mileage },
+        });
+      }
+    }
+
     if (!vehicle.mileage || vehicle.mileage <= 0) {
       return jsonResponse({ error: 'יש לעדכן קילומטראז\' לפני חישוב טיפול הבא' }, 400);
     }
@@ -195,6 +225,24 @@ async function generateMaintenanceSchedule(vehicle: {
   }
 
   const mileage = vehicle.mileage || 0;
+
+  // ===== HYBRID APPROACH: Try OEM database first, then AI fallback =====
+  try {
+    const templateItems = await findMaintenanceTemplate(
+      vehicle.manufacturer, vehicle.model, vehicle.year, vehicle.fuelType
+    );
+    if (templateItems && templateItems.length > 0) {
+      console.log(`[maintenance] Using OEM template for ${vehicle.manufacturer} ${vehicle.model} ${vehicle.year}`);
+      return calculateScheduleFromTemplate(
+        templateItems, mileage, vehicle.manufacturer, vehicle.model, vehicle.year
+      );
+    }
+  } catch (e) {
+    console.error('[maintenance] Template lookup failed, falling back to AI:', e);
+  }
+
+  console.log(`[maintenance] No template found for ${vehicle.manufacturer} ${vehicle.model} ${vehicle.year}, using AI`);
+
   const prompt = `You are an expert automotive mechanic with deep knowledge of manufacturer maintenance schedules for all car brands worldwide.
 
 Given this vehicle:
@@ -234,14 +282,23 @@ Include ALL relevant items (typically 8-15 items). Sort by priority (high first)
 Use accurate manufacturer intervals — do NOT guess. If unsure about a specific interval for this model, use industry-standard intervals.
 All text fields should be in Hebrew.`;
 
-  try {
-    if (openaiKey) {
-      return await generateWithOpenAI(openaiKey, prompt, mileage);
-    } else if (anthropicKey) {
-      return await generateWithAnthropic(anthropicKey, prompt, mileage);
+  // Try Anthropic Haiku first (fastest + cheapest), then OpenAI as fallback
+  if (anthropicKey) {
+    try {
+      const result = await generateWithAnthropic(anthropicKey, prompt, mileage);
+      if (result) return result;
+    } catch (error) {
+      console.error('Anthropic generation error:', error);
     }
-  } catch (error) {
-    console.error('AI generation error:', error);
+  }
+
+  if (openaiKey) {
+    try {
+      const result = await generateWithOpenAI(openaiKey, prompt, mileage);
+      if (result) return result;
+    } catch (error) {
+      console.error('OpenAI generation error:', error);
+    }
   }
 
   return null;
@@ -273,15 +330,19 @@ async function generateWithOpenAI(apiKey: string, prompt: string, mileage: numbe
 
   if (!content) return null;
 
-  // Parse JSON (handle markdown code blocks)
-  const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-  const parsed = JSON.parse(jsonStr);
-
-  return {
-    ...parsed,
-    generatedAt: new Date().toISOString(),
-    basedOnMileage: mileage,
-  };
+  // Safely extract JSON - handle possible text preamble from AI
+  const cleaned = content.replace(/```json\n?/g, '').replace(/```/g, '').trim();
+  try {
+    const parsed = JSON.parse(cleaned);
+    return { ...parsed, generatedAt: new Date().toISOString(), basedOnMileage: mileage };
+  } catch {
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (match) {
+      const parsed = JSON.parse(match[0]);
+      return { ...parsed, generatedAt: new Date().toISOString(), basedOnMileage: mileage };
+    }
+    throw new Error('No valid JSON found in OpenAI response: ' + cleaned.substring(0, 100));
+  }
 }
 
 async function generateWithAnthropic(apiKey: string, prompt: string, mileage: number): Promise<MaintenanceSchedule | null> {
@@ -293,8 +354,10 @@ async function generateWithAnthropic(apiKey: string, prompt: string, mileage: nu
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
+      temperature: 0.2,
+      system: 'You are a JSON API endpoint for a vehicle maintenance application. You MUST respond with ONLY a valid JSON object. Never include any text, explanation, disclaimers, or conversation before or after the JSON. If you are unsure about specific manufacturer intervals, use widely accepted industry-standard intervals. Your response must start with { and end with }.',
       messages: [{ role: 'user', content: prompt }],
     }),
   });
@@ -310,12 +373,18 @@ async function generateWithAnthropic(apiKey: string, prompt: string, mileage: nu
 
   if (!content) return null;
 
-  const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-  const parsed = JSON.parse(jsonStr);
-
-  return {
-    ...parsed,
-    generatedAt: new Date().toISOString(),
-    basedOnMileage: mileage,
-  };
+  // Safely extract JSON - handle possible text preamble from AI
+  const cleaned = content.replace(/```json\n?/g, '').replace(/```/g, '').trim();
+  try {
+    const parsed = JSON.parse(cleaned);
+    return { ...parsed, generatedAt: new Date().toISOString(), basedOnMileage: mileage };
+  } catch {
+    // Try extracting JSON object from text
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (match) {
+      const parsed = JSON.parse(match[0]);
+      return { ...parsed, generatedAt: new Date().toISOString(), basedOnMileage: mileage };
+    }
+    throw new Error('No valid JSON found in Anthropic response: ' + cleaned.substring(0, 100));
+  }
 }

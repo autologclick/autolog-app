@@ -535,3 +535,24 @@ model BenefitRedemption {
   @@index([code])
   @@index([status])
 }
+
+// ============================================================
+// MAINTENANCE TEMPLATES (OEM Service Schedules)
+// ============================================================
+
+model MaintenanceTemplate {
+  id            String   @id @default(cuid())
+  manufacturer  String   // e.g. "סקודה", "יונדאי", "טויוטה"
+  model         String   // e.g. "אוקטביה", "i20", "קורולה"
+  yearFrom      Int      // model year range start
+  yearTo        Int      // model year range end
+  fuelType      String?  // gasoline | diesel | hybrid | electric | null=all
+  source        String   @default("manual") // manual | oem_pdf | api
+  items         String   // JSON array of MaintenanceItem[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([manufacturer, model, yearFrom, yearTo, fuelType])
+  @@index([manufacturer, model])
+  @@index([manufacturer])
+}

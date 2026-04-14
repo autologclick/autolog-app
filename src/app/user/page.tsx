@@ -182,7 +182,31 @@ export default function UserHomePage() {
   // Maintenance schedule
   const [maintenanceSchedule, setMaintenanceSchedule] = useState<MaintenanceSchedule | null>(null);
   const [maintenanceLoading, setMaintenanceLoading] = useState(false);
+  const [maintenanceError, setMaintenanceError] = useState(false);
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
+
+  // Fetch maintenance schedule (reusable)
+  const fetchMaintenanceSchedule = async (vehicleId: string, forceRefresh = false) => {
+    setMaintenanceLoading(true);
+    setMaintenanceError(false);
+    try {
+      const url = forceRefresh
+        ? `/api/vehicles/${vehicleId}/maintenance-schedule`
+        : `/api/vehicles/${vehicleId}/maintenance-schedule`;
+      const options = forceRefresh ? { method: 'POST' } : { method: 'GET' };
+      const r = await fetch(url, options);
+      const data = await r.json();
+      if (data.schedule) {
+        setMaintenanceSchedule(data.schedule);
+      } else {
+        setMaintenanceError(true);
+      }
+    } catch {
+      setMaintenanceError(true);
+    } finally {
+      setMaintenanceLoading(false);
+    }
+  };
 
   // Treatment modal
   const [showAddTreatment, setShowAddTreatment] = useState(false);
@@ -230,17 +254,9 @@ export default function UserHomePage() {
       setDocuments(dData.documents || []);
       setExpenses(eData.expenses || []);
     });
-    // Fetch maintenance schedule
-    if (vehicle.mileage && vehicle.mileage > 0) {
-      setMaintenanceLoading(true);
-      fetch(`/api/vehicles/${id}/maintenance-schedule`)
-        .then(r => r.json())
-        .then(data => {
-          if (data.schedule) setMaintenanceSchedule(data.schedule);
-        })
-        .catch(() => {})
-        .finally(() => setMaintenanceLoading(false));
-    }
+    // Fetch maintenance schedule automatically
+    // Always try - the API will fallback to treatment mileage if vehicle.mileage is null
+    fetchMaintenanceSchedule(id);
   }, [vehicle?.id]);
 
   // ── Computed values ──
@@ -482,12 +498,22 @@ export default function UserHomePage() {
             subtitle={vehicle.insuranceExpiry ? new Date(vehicle.insuranceExpiry).toLocaleDateString('he-IL') : undefined}
             status={insuranceDays !== null ? (insuranceDays < 0 ? 'danger' : insuranceDays < 30 ? 'warning' : 'success') : 'warning'}
           />
-          <div onClick={() => maintenanceSchedule && setShowMaintenanceModal(true)} className={maintenanceSchedule ? 'cursor-pointer' : ''}>
+          <div
+            onClick={() => {
+              if (maintenanceLoading) return;
+              if (maintenanceSchedule) {
+                setShowMaintenanceModal(true);
+              } else if (vehicle) {
+                fetchMaintenanceSchedule(vehicle.id);
+              }
+            }}
+            className="cursor-pointer"
+          >
             <ReminderCard
               icon="🔧" title="טיפול הבא"
-              value={maintenanceLoading ? 'טוען...' : maintenanceSchedule ? `${(maintenanceSchedule.nextServiceKm / 1000).toFixed(0)}K ק"מ` : (vehicle?.mileage ? 'חשב עכשיו' : 'אין נתונים')}
-              subtitle={maintenanceLoading ? 'מחשב לפי יצרן...' : maintenanceSchedule ? maintenanceSchedule.summary : (vehicle?.mileage ? 'לחץ לחישוב AI' : 'עדכן קילומטראז\'')}
-              status={maintenanceSchedule ? (maintenanceSchedule.items.some(i => i.priority === 'high') ? 'danger' : 'success') : 'warning'}
+              value={maintenanceLoading ? 'מחשב...' : maintenanceSchedule ? `${(maintenanceSchedule.nextServiceKm / 1000).toFixed(0)}K ק"מ` : maintenanceError ? 'נסה שוב' : 'חשב עכשיו'}
+              subtitle={maintenanceLoading ? 'AI מחשב לפי יצרן...' : maintenanceSchedule ? maintenanceSchedule.summary : maintenanceError ? 'לחץ לניסיון נוסף' : 'לחץ לחישוב AI'}
+              status={maintenanceSchedule ? (maintenanceSchedule.items.some(i => i.priority === 'high') ? 'danger' : 'success') : maintenanceError ? 'danger' : 'warning'}
             />
           </div>
         </div>

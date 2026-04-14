@@ -51,9 +51,10 @@ export async function POST(req: NextRequest) {
     const data = validation.data;
 
     // Verify vehicle belongs to user
-    const vehicle = await (await import('@/lib/db')).default.vehicle.findFirst({
+    const prismaClient = (await import('@/lib/db')).default;
+    const vehicle = await prismaClient.vehicle.findFirst({
       where: { id: data.vehicleId, userId: payload.userId },
-      select: { id: true },
+      select: { id: true, mileage: true },
     });
 
     if (!vehicle) {
@@ -64,6 +65,14 @@ export async function POST(req: NextRequest) {
       ...data,
       userId: payload.userId,
     });
+
+    // Update vehicle mileage if treatment has higher mileage
+    if (data.mileage && data.mileage > 0 && (!vehicle.mileage || data.mileage > vehicle.mileage)) {
+      await prismaClient.vehicle.update({
+        where: { id: data.vehicleId },
+        data: { mileage: data.mileage },
+      });
+    }
 
     return jsonResponse({ treatment, message: 'הטיפול נוסף בהצלחה!' }, 201);
   } catch (error) {

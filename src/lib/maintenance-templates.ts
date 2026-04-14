@@ -1,0 +1,387 @@
+/**
+ * Maintenance Templates — OEM-based service schedules for popular Israeli market vehicles.
+ *
+ * Architecture (Hybrid):
+ *   1. Check DB for manufacturer+model+year match → use stored OEM data (fast, accurate)
+ *   2. If no match → fallback to AI (Claude Haiku) for generation
+ *   3. Cache result in Vehicle.maintenanceData either way
+ *
+ * Each template contains items with:
+ *   - category: Hebrew category name
+ *   - item: Hebrew item name
+ *   - intervalKm: manufacturer-recommended km interval
+ *   - intervalMonths: manufacturer-recommended month interval
+ *   - estimatedCost: estimated cost range in ILS
+ *   - description: Hebrew description of why this is needed
+ */
+
+import prisma from '@/lib/db';
+
+export interface MaintenanceTemplateItem {
+  category: string;
+  item: string;
+  intervalKm: number;
+  intervalMonths: number;
+  estimatedCost: string;
+  description: string;
+}
+
+export interface MaintenanceTemplateData {
+  manufacturer: string;
+  model: string;
+  yearFrom: number;
+  yearTo: number;
+  fuelType: string | null;
+  source: string;
+  items: MaintenanceTemplateItem[];
+}
+
+// ============================================================
+// DB Operations
+// ============================================================
+
+let tableChecked = false;
+
+async function ensureMaintenanceTemplateTable() {
+  if (tableChecked) return;
+  try {
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "MaintenanceTemplate" (
+        "id" TEXT NOT NULL DEFAULT gen_random_uuid()::text,
+        "manufacturer" TEXT NOT NULL,
+        "model" TEXT NOT NULL,
+        "yearFrom" INTEGER NOT NULL,
+        "yearTo" INTEGER NOT NULL,
+        "fuelType" TEXT,
+        "source" TEXT NOT NULL DEFAULT 'manual',
+        "items" TEXT NOT NULL,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT "MaintenanceTemplate_pkey" PRIMARY KEY ("id")
+      )
+    `);
+    await prisma.$executeRawUnsafe(`
+      CREATE UNIQUE INDEX IF NOT EXISTS "MaintenanceTemplate_manufacturer_model_yearFrom_yearTo_fuelType_key"
+      ON "MaintenanceTemplate" ("manufacturer", "model", "yearFrom", "yearTo", "fuelType")
+    `);
+    await prisma.$executeRawUnsafe(`
+      CREATE INDEX IF NOT EXISTS "MaintenanceTemplate_manufacturer_model_idx"
+      ON "MaintenanceTemplate" ("manufacturer", "model")
+    `);
+  } catch (e) {
+    console.log('MaintenanceTemplate table check:', e instanceof Error ? e.message : e);
+  }
+  tableChecked = true;
+}
+
+/**
+ * Find a matching maintenance template for a vehicle.
+ * Tries exact match first, then broadens to any fuel type.
+ */
+export async function findMaintenanceTemplate(
+  manufacturer: string,
+  model: string,
+  year: number,
+  fuelType: string | null
+): Promise<MaintenanceTemplateItem[] | null> {
+  await ensureMaintenanceTemplateTable();
+
+  // Normalize inputs for matching
+  const mfr = manufacturer.trim();
+  const mdl = model.trim();
+
+  try {
+    // Try exact match with fuel type first
+    let results = await prisma.$queryRawUnsafe<Array<{ items: string }>>(
+      `SELECT "items" FROM "MaintenanceTemplate"
+       WHERE "manufacturer" = $1 AND "model" = $2
+       AND "yearFrom" <= $3 AND "yearTo" >= $3
+       AND ("fuelType" = $4 OR "fuelType" IS NULL)
+       ORDER BY CASE WHEN "fuelType" = $4 THEN 0 ELSE 1 END
+       LIMIT 1`,
+      mfr, mdl, year, fuelType
+    );
+
+    if (results.length === 0) {
+      // Try manufacturer-only match (generic schedule for all models of this brand)
+      results = await prisma.$queryRawUnsafe<Array<{ items: string }>>(
+        `SELECT "items" FROM "MaintenanceTemplate"
+         WHERE "manufacturer" = $1 AND "model" = '*'
+         AND "yearFrom" <= $2 AND "yearTo" >= $2
+         LIMIT 1`,
+        mfr, year
+      );
+    }
+
+    if (results.length > 0) {
+      return JSON.parse(results[0].items) as MaintenanceTemplateItem[];
+    }
+  } catch (e) {
+    console.error('Error finding maintenance template:', e);
+  }
+
+  return null;
+}
+
+/**
+ * Calculate next service km and build schedule from template items.
+ */
+export function calculateScheduleFromTemplate(
+  items: MaintenanceTemplateItem[],
+  currentMileage: number,
+  manufacturer: string,
+  model: string,
+  year: number
+) {
+  const enrichedItems = items.map(item => {
+    // Calculate next km this item is due
+    const intervalsPassed = Math.floor(currentMileage / item.intervalKm);
+    const nextAtKm = (intervalsPassed + 1) * item.intervalKm;
+
+    // Calculate priority based on how close we are
+    const kmUntilDue = nextAtKm - currentMileage;
+    let priority: 'high' | 'medium' | 'low';
+    if (kmUntilDue <= 2000) {
+      priority = 'high';
+    } else if (kmUntilDue <= 5000) {
+      priority = 'medium';
+    } else {
+      priority = 'low';
+    }
+
+    return {
+      ...item,
+      nextAtKm,
+      priority,
+    };
+  });
+
+  // Sort by priority (high first) then by nextAtKm
+  enrichedItems.sort((a, b) => {
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    }
+    return a.nextAtKm - b.nextAtKm;
+  });
+
+  // Next service is at the nearest interval
+  const nextServiceKm = Math.min(...enrichedItems.map(i => i.nextAtKm));
+
+  // Estimate date based on ~15,000 km/year
+  const kmToNext = nextServiceKm - currentMileage;
+  const daysToNext = Math.round((kmToNext / 15000) * 365);
+  const nextDate = new Date();
+  nextDate.setDate(nextDate.getDate() + daysToNext);
+  const nextServiceDate = nextDate.toISOString().split('T')[0];
+
+  // Summary of high-priority items
+  const highPriorityItems = enrichedItems
+    .filter(i => i.priority === 'high')
+    .map(i => i.item)
+    .slice(0, 3);
+
+  const summary = highPriorityItems.length > 0
+    ? `שירות תחזוקה הכולל ${highPriorityItems.join(', ')}`
+    : `טיפול שגרתי ב-${nextServiceKm.toLocaleString()} ק"מ`;
+
+  return {
+    nextServiceKm,
+    nextServiceDate,
+    summary,
+    items: enrichedItems,
+    generatedAt: new Date().toISOString(),
+    basedOnMileage: currentMileage,
+    source: 'oem_database' as const,
+  };
+}
+
+/**
+ * Seed a maintenance template into the database.
+ */
+export async function seedMaintenanceTemplate(template: MaintenanceTemplateData): Promise<void> {
+  await ensureMaintenanceTemplateTable();
+
+  try {
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO "MaintenanceTemplate" ("id", "manufacturer", "model", "yearFrom", "yearTo", "fuelType", "source", "items", "updatedAt")
+       VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)
+       ON CONFLICT ("manufacturer", "model", "yearFrom", "yearTo", "fuelType")
+       DO UPDATE SET "items" = $7, "source" = $6, "updatedAt" = CURRENT_TIMESTAMP`,
+      template.manufacturer, template.model, template.yearFrom, template.yearTo,
+      template.fuelType, template.source, JSON.stringify(template.items)
+    );
+  } catch (e) {
+    console.error('Error seeding maintenance template:', e);
+  }
+}
+
+// ============================================================
+// Seed Data — Popular Israeli Market Vehicles
+// ============================================================
+
+export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
+  // ---- SKODA ----
+  {
+    manufacturer: 'סקודה',
+    model: '*', // Applies to all Skoda models (VW Group standard intervals)
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '250-400 ₪', description: 'החלפת שמן סינטטי ומסנן שמן לשמירה על ביצועי המנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '80-150 ₪', description: 'מסנן אוויר נקי מבטיח שריפה יעילה וחיסכון בדלק' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן תא נוסעים (מזגן)', intervalKm: 15000, intervalMonths: 12, estimatedCost: '60-120 ₪', description: 'מסנן תא הנוסעים מסנן אבק ומזהמים מהאוויר בתוך הרכב' },
+      { category: 'בלמים', item: 'בדיקת רפידות בלמים קדמיות', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-800 ₪', description: 'בדיקת עובי רפידות הבלמים והחלפה במידת הצורך' },
+      { category: 'בלמים', item: 'בדיקת רפידות בלמים אחוריות', intervalKm: 60000, intervalMonths: 48, estimatedCost: '350-700 ₪', description: 'בדיקת רפידות אחוריות — בלאי איטי יותר מקדמיות' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 60000, intervalMonths: 24, estimatedCost: '150-250 ₪', description: 'נוזל בלמים סופג לחות לאורך זמן ומאבד מיעילותו' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, estimatedCost: '200-350 ₪', description: 'נוזל קירור מונע התחממות יתר והקפאה של המנוע' },
+      { category: 'צמיגים', item: 'בדיקת לחץ אוויר וסיבוב צמיגים', intervalKm: 15000, intervalMonths: 12, estimatedCost: '50-100 ₪', description: 'סיבוב צמיגים מבטיח בלאי אחיד ומאריך חיי הצמיג' },
+      { category: 'צמיגים', item: 'החלפת צמיגים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '1,200-2,400 ₪', description: 'החלפת 4 צמיגים בהתאם לבלאי — בטיחות קריטית' },
+      { category: 'רצועות', item: 'בדיקת רצועת טיימינג', intervalKm: 90000, intervalMonths: 60, estimatedCost: '1,500-2,500 ₪', description: 'קריעת רצועת טיימינג עלולה לגרום לנזק חמור למנוע' },
+      { category: 'מתלים', item: 'בדיקת בולמי זעזועים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '800-1,600 ₪', description: 'בולמי זעזועים משפיעים על יציבות הרכב ונוחות הנסיעה' },
+      { category: 'חשמל', item: 'בדיקת מצבר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '350-550 ₪', description: 'מצבר ישן עלול לגרום לכשלי התנעה, במיוחד בקיץ הישראלי' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '200-400 ₪', description: 'מצתים בלויים פוגעים בביצועי המנוע ובצריכת הדלק' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר (DSG/אוטומט)', intervalKm: 60000, intervalMonths: 48, estimatedCost: '500-900 ₪', description: 'החלפת שמן גיר DSG שומרת על תיבת ההילוכים ומונעת תקלות' },
+      { category: 'כללי', item: 'בדיקה כללית ואבחון מחשב', intervalKm: 15000, intervalMonths: 12, estimatedCost: '100-200 ₪', description: 'סריקת מחשב לאיתור תקלות ובדיקה ויזואלית כללית' },
+    ]
+  },
+
+  // ---- HYUNDAI ----
+  {
+    manufacturer: 'יונדאי',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '220-380 ₪', description: 'החלפת שמן ומסנן — הטיפול הבסיסי ביותר לשמירה על המנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '70-130 ₪', description: 'מסנן אוויר נקי חיוני לביצועי מנוע מיטביים' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן דלק', intervalKm: 60000, intervalMonths: 48, estimatedCost: '100-200 ₪', description: 'מסנן דלק מגן על מערכת ההזרקה מפני זיהומים' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן תא נוסעים', intervalKm: 15000, intervalMonths: 12, estimatedCost: '50-100 ₪', description: 'מסנן קבינה לאוויר נקי ונעים בתוך הרכב' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-800 ₪', description: 'בדיקת רפידות, דיסקים וצנרת בלמים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, estimatedCost: '120-220 ₪', description: 'נוזל בלמים חדש מבטיח בלימה אפקטיבית' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 60, estimatedCost: '180-300 ₪', description: 'נוזל קירור מונע התחממות יתר של המנוע' },
+      { category: 'צמיגים', item: 'סיבוב צמיגים ובדיקת לחץ', intervalKm: 15000, intervalMonths: 12, estimatedCost: '50-80 ₪', description: 'סיבוב מאריך חיי צמיג ומשפר אחיזה' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר (V-belt)', intervalKm: 60000, intervalMonths: 48, estimatedCost: '300-600 ₪', description: 'רצועת עזר מפעילה מזגן, הגה כוח ואלטרנטור' },
+      { category: 'מתלים', item: 'בדיקת מתלים ובולמי זעזועים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '700-1,400 ₪', description: 'מתלים תקינים חיוניים לבטיחות ונוחות' },
+      { category: 'חשמל', item: 'בדיקת מצבר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '300-500 ₪', description: 'מצבר תקין מבטיח התנעה אמינה' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, estimatedCost: '150-350 ₪', description: 'מצתים חדשים משפרים ביצועים וצריכת דלק' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, estimatedCost: '400-800 ₪', description: 'שמן גיר נקי מונע שחיקה מוקדמת של תיבת ההילוכים' },
+      { category: 'כללי', item: 'בדיקה כללית ואבחון', intervalKm: 15000, intervalMonths: 12, estimatedCost: '80-150 ₪', description: 'בדיקה שגרתית כוללת של כל מערכות הרכב' },
+    ]
+  },
+
+  // ---- TOYOTA ----
+  {
+    manufacturer: 'טויוטה',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 10000, intervalMonths: 12, estimatedCost: '250-400 ₪', description: 'טויוטה ממליצה על החלפה כל 10,000 ק"מ לשמירה על אחריות' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 40000, intervalMonths: 36, estimatedCost: '80-140 ₪', description: 'מסנן אוויר מנוע — החלפה לפי הוראות טויוטה' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן תא נוסעים', intervalKm: 20000, intervalMonths: 18, estimatedCost: '60-110 ₪', description: 'שמירה על אוויר נקי בתא הנוסעים' },
+      { category: 'בלמים', item: 'בדיקת רפידות ודיסקי בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-900 ₪', description: 'בדיקה והחלפה לפי בלאי — בטיחות קריטית' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, estimatedCost: '130-230 ₪', description: 'מונע קורוזיה במערכת הבלמים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 160000, intervalMonths: 84, estimatedCost: '200-350 ₪', description: 'טויוטה משתמשת בנוזל Super Long Life — החלפה נדירה' },
+      { category: 'צמיגים', item: 'סיבוב צמיגים', intervalKm: 10000, intervalMonths: 12, estimatedCost: '50-80 ₪', description: 'טויוטה ממליצה על סיבוב כל 10,000 ק"מ' },
+      { category: 'צמיגים', item: 'החלפת צמיגים', intervalKm: 50000, intervalMonths: 48, estimatedCost: '1,000-2,200 ₪', description: 'החלפת סט צמיגים בהתאם למידת הבלאי' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 100000, intervalMonths: 72, estimatedCost: '250-500 ₪', description: 'רצועת עזר מפעילה מערכות עזר במנוע' },
+      { category: 'מתלים', item: 'בדיקת מתלים ובולמים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '800-1,500 ₪', description: 'יציבות ונוחות נסיעה' },
+      { category: 'חשמל', item: 'בדיקת/החלפת מצבר', intervalKm: 40000, intervalMonths: 36, estimatedCost: '350-550 ₪', description: 'מצבר — בדיקה מומלצת אחת ל-3 שנים באקלים ישראלי' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 100000, intervalMonths: 72, estimatedCost: '200-400 ₪', description: 'מצתי אירידיום של טויוטה מחזיקים עד 100,000 ק"מ' },
+      { category: 'תיבת הילוכים', item: 'בדיקת שמן גיר CVT/אוטומט', intervalKm: 80000, intervalMonths: 60, estimatedCost: '400-700 ₪', description: 'בדיקה והחלפה לפי סוג התיבה' },
+      { category: 'כללי', item: 'טיפול שגרתי ובדיקת מחשב', intervalKm: 10000, intervalMonths: 12, estimatedCost: '100-180 ₪', description: 'בדיקה כוללת לפי לוח הטיפולים של טויוטה' },
+    ]
+  },
+
+  // ---- KIA ----
+  {
+    manufacturer: 'קיה',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '220-370 ₪', description: 'טיפול בסיסי — שמירה על המנוע באחריות קיה 7 שנים' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '70-130 ₪', description: 'מסנן אוויר חדש לביצועי מנוע מיטביים' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן תא נוסעים', intervalKm: 15000, intervalMonths: 12, estimatedCost: '50-100 ₪', description: 'אוויר נקי בתא הנוסעים' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '350-750 ₪', description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, estimatedCost: '120-200 ₪', description: 'נוזל חדש לבלימה בטוחה' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 60, estimatedCost: '170-280 ₪', description: 'מניעת התחממות יתר' },
+      { category: 'צמיגים', item: 'סיבוב צמיגים', intervalKm: 15000, intervalMonths: 12, estimatedCost: '50-80 ₪', description: 'בלאי אחיד = חיי צמיג ארוכים יותר' },
+      { category: 'רצועות', item: 'בדיקת רצועת עזר', intervalKm: 60000, intervalMonths: 48, estimatedCost: '300-550 ₪', description: 'בדיקה ויזואלית והחלפה לפי מצב' },
+      { category: 'מתלים', item: 'בדיקת מתלים ובולמים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '700-1,300 ₪', description: 'שמירה על יציבות ובטיחות' },
+      { category: 'חשמל', item: 'בדיקת מצבר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '300-500 ₪', description: 'בדיקה והחלפה לפי מצב' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, estimatedCost: '150-300 ₪', description: 'מצתים חדשים לביצועים ויעילות' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, estimatedCost: '400-750 ₪', description: 'שמירה על תיבת ההילוכים' },
+      { category: 'כללי', item: 'בדיקה כללית ואבחון', intervalKm: 15000, intervalMonths: 12, estimatedCost: '80-150 ₪', description: 'בדיקה שגרתית של כל מערכות הרכב' },
+    ]
+  },
+
+  // ---- MAZDA ----
+  {
+    manufacturer: 'מאזדה',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '250-400 ₪', description: 'שמן סינטטי 0W-20 מומלץ למנועי SkyActiv' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '80-140 ₪', description: 'מסנן אוויר נקי לטכנולוגיית SkyActiv' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן תא נוסעים', intervalKm: 20000, intervalMonths: 18, estimatedCost: '60-110 ₪', description: 'אוויר נקי ונעים' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-850 ₪', description: 'בדיקה והחלפה לפי בלאי' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, estimatedCost: '130-220 ₪', description: 'שמירה על מערכת בלימה אפקטיבית' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, estimatedCost: '200-320 ₪', description: 'נוזל קירור FL22 ייעודי למאזדה' },
+      { category: 'צמיגים', item: 'סיבוב צמיגים', intervalKm: 10000, intervalMonths: 12, estimatedCost: '50-80 ₪', description: 'מאזדה ממליצה כל 10,000 ק"מ' },
+      { category: 'מתלים', item: 'בדיקת מתלים ובולמים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '800-1,400 ₪', description: 'בדיקת מערכת המתלים' },
+      { category: 'חשמל', item: 'בדיקת מצבר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '320-520 ₪', description: 'בדיקה ובמידת הצורך החלפה' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, estimatedCost: '180-350 ₪', description: 'מצתים ייעודיים למנועי SkyActiv' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, estimatedCost: '450-800 ₪', description: 'שמן SkyActiv-Drive ייעודי' },
+      { category: 'כללי', item: 'טיפול שגרתי ואבחון', intervalKm: 15000, intervalMonths: 12, estimatedCost: '80-170 ₪', description: 'בדיקה כללית ואבחון מחשב' },
+    ]
+  },
+
+  // ---- SEAT / CUPRA (VW Group — similar to Skoda) ----
+  {
+    manufacturer: 'סיאט',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '250-400 ₪', description: 'מרווח VW Group סטנדרטי' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '80-150 ₪', description: 'מסנן אוויר — מרווח VW Group' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן תא נוסעים', intervalKm: 15000, intervalMonths: 12, estimatedCost: '60-120 ₪', description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת רפידות בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-800 ₪', description: 'בדיקת בלמים קדמיים ואחוריים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 60000, intervalMonths: 24, estimatedCost: '150-250 ₪', description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, estimatedCost: '200-350 ₪', description: 'נוזל קירור G13' },
+      { category: 'צמיגים', item: 'סיבוב צמיגים', intervalKm: 15000, intervalMonths: 12, estimatedCost: '50-100 ₪', description: 'סיבוב ובדיקת לחץ' },
+      { category: 'רצועות', item: 'בדיקת רצועת טיימינג', intervalKm: 90000, intervalMonths: 60, estimatedCost: '1,500-2,500 ₪', description: 'קריטי — רצועה קרועה = נזק למנוע' },
+      { category: 'חשמל', item: 'בדיקת מצבר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '350-550 ₪', description: 'בדיקה והחלפה' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '200-400 ₪', description: 'מצתים' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DSG', intervalKm: 60000, intervalMonths: 48, estimatedCost: '500-900 ₪', description: 'שמן DSG — קריטי לתיבות כפולות' },
+      { category: 'כללי', item: 'בדיקה ואבחון', intervalKm: 15000, intervalMonths: 12, estimatedCost: '100-200 ₪', description: 'בדיקה כללית' },
+    ]
+  },
+];
+
+/**
+ * Seed all templates into the database.
+ */
+export async function seedAllTemplates(): Promise<number> {
+  let count = 0;
+  for (const template of ISRAELI_MARKET_TEMPLATES) {
+    await seedMaintenanceTemplate(template);
+    count++;
+  }
+  return count;
+}
