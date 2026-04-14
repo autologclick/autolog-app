@@ -19,28 +19,19 @@ interface NavItem {
 }
 
 const userNav: NavItem[] = [
-  // Tab 1: הרכב שלי
-  { label: 'הרכב שלי', href: '/user', icon: <Car size={20} /> },
-  { label: 'הרכבים שלי', href: '/user/vehicles', icon: <Home size={20} /> },
+  { label: 'דף הבית', href: '/user', icon: <Home size={20} /> },
+  { label: 'הרכבים שלי', href: '/user/vehicles', icon: <Car size={20} /> },
   { label: 'טיפולים', href: '/user/treatments', icon: <Wrench size={20} /> },
   { label: 'מסמכים', href: '/user/documents', icon: <FolderOpen size={20} /> },
   { label: 'הוצאות', href: '/user/expenses', icon: <Receipt size={20} /> },
-  { label: 'היסטוריה', href: '/user/history', icon: <Clock size={20} /> },
-  // Tab 2: שירות
   { label: 'הזמנת מוסך', href: '/user/book-garage', icon: <MapPin size={20} /> },
-  { label: 'תורים שלי', href: '/user/appointments', icon: <Calendar size={20} /> },
   { label: 'SOS חירום', href: '/user/sos', icon: <AlertTriangle size={20} /> },
-  // Tab 3: פרופיל
-  { label: 'התראות', href: '/user/notifications', icon: <Bell size={20} /> },
-  { label: 'הטבות מועדון', href: '/user/benefits', icon: <Star size={20} /> },
-  { label: 'תשלומים', href: '/user/payments', icon: <CreditCard size={20} /> },
-  { label: 'דוחות בדיקה', href: '/user/reports', icon: <FileCheck size={20} /> },
-  { label: 'הגדרות', href: '/user/settings', icon: <Settings size={20} /> },
+  { label: 'פרופיל', href: '/user/profile', icon: <User size={20} /> },
 ];
 
 // Mobile bottom nav items — new simplified 3-tab navigation
 const userMobileNav: NavItem[] = [
-  { label: 'הרכב שלי', href: '/user', icon: <Car size={20} /> },
+  { label: 'דף הבית', href: '/user', icon: <Home size={20} /> },
   { label: 'שירות', href: '/user/service', icon: <Wrench size={20} /> },
   { label: 'פרופיל', href: '/user/profile', icon: <User size={20} /> },
 ];
