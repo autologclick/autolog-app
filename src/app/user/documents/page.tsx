@@ -508,66 +508,57 @@ export default function DocumentsPage() {
 
       <div className="px-4 space-y-6 pt-6" style={{ maxWidth: '640px', marginLeft: 'auto', marginRight: 'auto' }}>
 
-        {/* Vehicle Selector */}
-        {vehicles.length > 0 && (
-          <div>
-            <div className="text-right mb-2">
-              <span className="text-xs font-medium text-gray-600">בחר רכב</span>
-            </div>
-            <div className="relative">
-              <button
-                onClick={() => setShowVehicleDropdown(!showVehicleDropdown)}
-                className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border border-gray-200 hover:border-purple-300 transition shadow-sm"
-              >
-                <ChevronDown size={18} className={`text-gray-400 transition-transform ${showVehicleDropdown ? 'rotate-180' : ''}`} />
-                <div className="flex items-center gap-3">
-                  <div className="text-right">
-                    <div className="font-semibold text-gray-800 text-sm">{currentVehicle?.nickname || (currentVehicle?.manufacturer + ' ' + currentVehicle?.model)}</div>
-                    <div className="text-xs text-gray-400">{currentVehicle?.licensePlate}</div>
-                  </div>
-                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <Car size={18} className="text-gray-600" />
-                  </div>
-                </div>
-              </button>
-              {showVehicleDropdown && vehicles.length > 1 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-2xl shadow-lg z-20 overflow-hidden">
-                  {vehicles.map((v) => (
-                    <button
-                      key={v.id}
-                      onClick={() => { setSelectedVehicle(v.id); setShowVehicleDropdown(false); }}
-                      className={`w-full flex items-center gap-3 p-4 text-right hover:bg-purple-50 transition ${v.id === selectedVehicle ? 'bg-purple-100 bg-opacity-30' : ''}`}
-                    >
-                      <div className="flex-1">
-                        <div className="font-semibold text-sm text-gray-800">{v.nickname || v.manufacturer + ' ' + v.model}</div>
-                        <div className="text-xs text-gray-400">{v.licensePlate}</div>
-                      </div>
-                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                        <Car size={14} className="text-gray-600" />
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+        {/* Vehicle Selector - compact, only if multiple vehicles */}
+        {vehicles.length > 1 && (
+          <div className="relative">
+            <button
+              onClick={() => setShowVehicleDropdown(!showVehicleDropdown)}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-white border border-gray-200 hover:border-teal-300 transition shadow-sm"
+            >
+              <ChevronDown size={16} className={`text-gray-400 transition-transform ${showVehicleDropdown ? 'rotate-180' : ''}`} />
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-gray-800 text-sm">
+                  {currentVehicle?.nickname || (currentVehicle?.manufacturer + ' ' + currentVehicle?.model)}
+                </span>
+                <span className="text-xs text-gray-400">· {currentVehicle?.licensePlate}</span>
+                <Car size={16} className="text-gray-500" />
+              </div>
+            </button>
+            {showVehicleDropdown && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden">
+                {vehicles.map((v) => (
+                  <button
+                    key={v.id}
+                    onClick={() => { setSelectedVehicle(v.id); setShowVehicleDropdown(false); }}
+                    className={`w-full flex items-center gap-2 px-3 py-2.5 text-right hover:bg-teal-50 transition ${v.id === selectedVehicle ? 'bg-teal-50' : ''}`}
+                  >
+                    <div className="flex-1">
+                      <div className="font-semibold text-sm text-gray-800">{v.nickname || v.manufacturer + ' ' + v.model}</div>
+                      <div className="text-[11px] text-gray-400">{v.licensePlate}</div>
+                    </div>
+                    <Car size={14} className="text-gray-500" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
-        {/* CTA Button - Upload/Scan */}
+        {/* Upload / Scan - compact unified buttons */}
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => cameraInputRef.current?.click()}
-            className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border-2 border-purple-200 hover:border-purple-400 hover:shadow-md transition"
+            className="flex items-center justify-center gap-2 py-3 rounded-xl bg-teal-600 text-white font-semibold text-sm shadow-sm hover:bg-teal-700 active:scale-[0.98] transition"
           >
-            <div className="text-2xl">📸</div>
-            <span className="text-xs font-semibold text-gray-800">סרוק</span>
+            <Camera size={18} />
+            <span>סרוק מסמך</span>
           </button>
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border-2 border-purple-200 hover:border-purple-400 hover:shadow-md transition"
+            className="flex items-center justify-center gap-2 py-3 rounded-xl bg-white text-teal-700 font-semibold text-sm border-2 border-teal-600 hover:bg-teal-50 active:scale-[0.98] transition"
           >
-            <div className="text-2xl">📄</div>
-            <span className="text-xs font-semibold text-gray-800">העלה</span>
+            <Upload size={18} />
+            <span>העלה קובץ</span>
           </button>
         </div>
 
