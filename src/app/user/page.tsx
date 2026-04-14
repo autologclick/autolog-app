@@ -83,8 +83,10 @@ interface MaintenanceSchedule {
 // ── Helpers ────────────────────────────────────────
 const formatPlate = (p: string) => {
   const clean = p.replace(/[^0-9]/g, '');
-  if (clean.length === 7) return `${clean.slice(0, 2)}-${clean.slice(2, 5)}-${clean.slice(5)}`;
-  if (clean.length === 8) return `${clean.slice(0, 3)}-${clean.slice(3, 5)}-${clean.slice(5)}`;
+  // 7-digit: 2 · 3 · 2
+  if (clean.length === 7) return `${clean.slice(0, 2)}\u00B7${clean.slice(2, 5)}\u00B7${clean.slice(5)}`;
+  // 8-digit: 3 · 2 · 3
+  if (clean.length === 8) return `${clean.slice(0, 3)}\u00B7${clean.slice(3, 5)}\u00B7${clean.slice(5)}`;
   return p;
 };
 
@@ -140,18 +142,21 @@ const expenseCatLabel = (c: string) => {
 // ── Components ─────────────────────────────────────
 const LicensePlate = ({ plate }: { plate: string }) => (
   <div
-    className="inline-flex items-stretch rounded-md overflow-hidden border border-black/80 shadow-md"
-    style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif" }}
+    dir="ltr"
+    className="inline-flex items-stretch rounded-md overflow-hidden border-2 border-black shadow-md bg-[#f7d417]"
   >
-    {/* EU blue strip */}
-    <div className="bg-[#003399] text-white px-2 py-1.5 flex flex-col items-center justify-center gap-0.5 min-w-[28px]">
-      <span className="text-yellow-300 text-[11px] leading-none">★</span>
-      <span className="text-[10px] font-bold leading-none tracking-wider">IL</span>
+    {/* Israeli blue strip */}
+    <div className="bg-[#1e56a8] text-white px-1.5 py-1 flex flex-col items-center justify-center gap-[2px] min-w-[30px]">
+      <div className="w-5 h-3 bg-white flex items-center justify-center">
+        <span className="text-[#1e56a8] text-[9px] leading-none">✡</span>
+      </div>
+      <span className="text-white text-[9px] font-bold leading-none tracking-wider">IL</span>
+      <span className="text-white text-[7px] leading-none" style={{ fontFamily: "'Arial Hebrew', Arial, sans-serif" }}>ישראל</span>
     </div>
     {/* Plate body */}
-    <div className="bg-[#f7d417] px-4 py-1.5 flex items-center border-l border-black/70">
+    <div className="px-4 py-1 flex items-center border-l-2 border-black">
       <span
-        className="text-[22px] font-black text-black tracking-[2px] leading-none"
+        className="text-[26px] font-black text-black tracking-[1px] leading-none"
         style={{ fontFamily: "'Arial Black', 'Helvetica', sans-serif" }}
       >
         {formatPlate(plate)}
