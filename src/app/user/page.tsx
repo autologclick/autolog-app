@@ -210,6 +210,7 @@ export default function UserHomePage() {
 
   // Treatment modal
   const [showAddTreatment, setShowAddTreatment] = useState(false);
+  const [showTreatmentsMenu, setShowTreatmentsMenu] = useState(false);
   const [treatmentForm, setTreatmentForm] = useState({
     type: 'maintenance', title: '', date: new Date().toISOString().slice(0, 10),
     cost: '', mileage: '', garageName: '', description: '',
@@ -545,11 +546,11 @@ export default function UserHomePage() {
         {/* Quick Actions */}
         <div className="flex gap-3">
           <button
-            onClick={() => setShowAddTreatment(true)}
+            onClick={() => setShowTreatmentsMenu(true)}
             className="flex-1 bg-teal-600 text-white rounded-xl py-3 flex flex-col items-center gap-1 shadow-md active:scale-[0.97] transition-transform"
           >
             <Wrench size={20} />
-            <span className="text-xs font-semibold">+ טיפול</span>
+            <span className="text-xs font-semibold">טיפולים</span>
           </button>
           <button
             onClick={() => router.push('/user/documents')}
@@ -711,6 +712,74 @@ export default function UserHomePage() {
           </button>
         </div>
       </div>
+
+      {/* ═══ Treatments Menu Modal ═══ */}
+      {showTreatmentsMenu && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center" onClick={() => setShowTreatmentsMenu(false)}>
+          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-bold text-[#1e3a5f]">טיפולים</h3>
+              <button onClick={() => setShowTreatmentsMenu(false)} className="p-2 hover:bg-gray-100 rounded-full">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-4 space-y-2">
+              <button
+                onClick={() => { setShowTreatmentsMenu(false); setShowAddTreatment(true); }}
+                className="w-full flex items-center gap-3 p-4 bg-teal-50 hover:bg-teal-100 rounded-xl text-right transition-colors"
+              >
+                <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center flex-shrink-0">
+                  <Wrench size={20} />
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-[#1e3a5f]">הוסף טיפול חדש</div>
+                  <div className="text-xs text-gray-500">רישום טיפול שבוצע ברכב</div>
+                </div>
+                <ChevronLeft size={20} className="text-gray-400" />
+              </button>
+              <button
+                onClick={() => { setShowTreatmentsMenu(false); router.push('/user/treatments'); }}
+                className="w-full flex items-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl text-right transition-colors"
+              >
+                <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
+                  <FileText size={20} />
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-[#1e3a5f]">היסטוריית טיפולים</div>
+                  <div className="text-xs text-gray-500">כל הטיפולים שבוצעו ברכב</div>
+                </div>
+                <ChevronLeft size={20} className="text-gray-400" />
+              </button>
+              <button
+                onClick={() => { setShowTreatmentsMenu(false); setShowMaintenanceModal(true); }}
+                className="w-full flex items-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl text-right transition-colors"
+              >
+                <div className="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center flex-shrink-0">
+                  <Wrench size={20} />
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-[#1e3a5f]">הטיפול הבא</div>
+                  <div className="text-xs text-gray-500">מתי מומלץ הטיפול הבא לרכב</div>
+                </div>
+                <ChevronLeft size={20} className="text-gray-400" />
+              </button>
+              <button
+                onClick={() => { setShowTreatmentsMenu(false); router.push('/user/book-garage'); }}
+                className="w-full flex items-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl text-right transition-colors"
+              >
+                <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center flex-shrink-0">
+                  <Car size={20} />
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-[#1e3a5f]">הזמן תור למוסך</div>
+                  <div className="text-xs text-gray-500">קבע מועד לטיפול הבא</div>
+                </div>
+                <ChevronLeft size={20} className="text-gray-400" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ═══ Add Treatment Modal ═══ */}
       {showAddTreatment && (
