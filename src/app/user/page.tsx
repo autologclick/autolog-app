@@ -964,28 +964,61 @@ export default function UserHomePage() {
               </div>
             </div>
 
-            {/* What to replace - simple list */}
+            {/* What to replace - concrete per-vehicle price */}
             <div className="p-4">
               <h4 className="text-sm font-bold text-gray-700 mb-3">מה צריך להחליף?</h4>
               <div className="space-y-2">
-                {maintenanceSchedule.items.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      item.priority === 'high' ? 'bg-red-500' :
-                      item.priority === 'medium' ? 'bg-amber-500' :
-                      'bg-gray-400'
-                    }`} />
-                    <div className="flex-1 text-sm font-medium text-gray-800">{item.item}</div>
-                    <div className="text-xs text-gray-500">{item.estimatedCost}</div>
-                  </div>
-                ))}
+                {(() => {
+                  // Vehicle-class multiplier for Israeli market averages
+                  const brand = (vehicle?.manufacturer || '').toLowerCase();
+                  const luxury = ['bmw', 'mercedes', 'audi', 'volvo', 'lexus', 'porsche', 'land rover', 'jaguar', 'מרצדס', 'ב.מ.וו', 'אאודי'];
+                  const economy = ['kia', 'hyundai', 'suzuki', 'dacia', 'skoda', 'seat', 'קיה', 'יונדאי', 'סוזוקי'];
+                  const mult = luxury.some(b => brand.includes(b)) ? 1.5
+                             : economy.some(b => brand.includes(b)) ? 0.9
+                             : 1.0;
+                  const parseCost = (s: string): number | null => {
+                    const nums = (s.match(/\d+/g) || []).map(Number);
+                    if (nums.length === 0) return null;
+                    const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
+                    return Math.round(avg * mult / 10) * 10;
+                  };
+                  let total = 0;
+                  const rows = maintenanceSchedule.items.map((item, idx) => {
+                    const price = parseCost(item.estimatedCost);
+                    if (price) total += price;
+                    return (
+                      <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                          item.priority === 'high' ? 'bg-red-500' :
+                          item.priority === 'medium' ? 'bg-amber-500' :
+                          'bg-gray-400'
+                        }`} />
+                        <div className="flex-1 text-sm font-medium text-gray-800">{item.item}</div>
+                        <div className="text-xs font-semibold text-teal-700 whitespace-nowrap">
+                          {price ? `≈ ₪${price.toLocaleString()}` : item.estimatedCost}
+                        </div>
+                      </div>
+                    );
+                  });
+                  return (
+                    <>
+                      {rows}
+                      {total > 0 && (
+                        <div className="flex items-center justify-between mt-3 p-3 bg-teal-50 rounded-xl border border-teal-100">
+                          <span className="text-sm font-bold text-teal-800">סה&quot;כ משוער</span>
+                          <span className="text-base font-bold text-teal-800">≈ ₪{total.toLocaleString()}</span>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             </div>
 
             {/* Footer */}
             <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4">
               <p className="text-[10px] text-gray-400 text-center mb-2">
-                הערכה בלבד • מומלץ להתייעץ עם מוסך
+                הערכת מחיר ממוצעת לשוק הישראלי • מותאם לסוג הרכב • מומלץ להתייעץ עם מוסך
               </p>
               <button
                 onClick={() => setShowMaintenanceModal(false)}
