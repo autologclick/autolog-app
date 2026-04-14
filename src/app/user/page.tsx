@@ -583,7 +583,8 @@ export default function UserHomePage() {
           </button>
         </div>
 
-        {/* Recent Treatments */}
+        {/* Recent Treatments - hidden */}
+        {false && (
         <div className="bg-white rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-base font-bold text-[#1e3a5f] flex items-center gap-2">
@@ -625,7 +626,10 @@ export default function UserHomePage() {
           )}
         </div>
 
-        {/* Documents */}
+        )}
+
+        {/* Documents - hidden */}
+        {false && (
         <div className="bg-white rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-base font-bold text-[#1e3a5f] flex items-center gap-2">
@@ -675,6 +679,8 @@ export default function UserHomePage() {
             );
           })}
         </div>
+
+        )}
 
         {/* Monthly Expenses Summary */}
         <div className="bg-white rounded-2xl p-4 shadow-sm">
