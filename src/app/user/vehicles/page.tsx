@@ -536,14 +536,16 @@ export default function VehiclesPage() {
 
       {/* Main content */}
       <div className="px-4 pt-6 space-y-6">
-        {/* Add Vehicle Button (always at top) */}
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-2xl py-3 px-4 font-bold text-sm flex items-center justify-center gap-2 shadow-sm hover:from-teal-600 hover:to-teal-700 transition-all active:scale-95"
-        >
-          <Plus size={16} />
-          ➕ הוסף רכב חדש
-        </button>
+        {/* Add Vehicle Button (compact, top-left) */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-1.5 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg py-1.5 px-3 font-semibold text-xs shadow-sm hover:from-teal-600 hover:to-teal-700 transition-all active:scale-95"
+          >
+            <Plus size={14} />
+            הוסף רכב
+          </button>
+        </div>
 
         {/* Error message */}
         {error && !showAddModal && !showEditModal && (
@@ -553,8 +555,8 @@ export default function VehiclesPage() {
           </div>
         )}
 
-        {/* AI Insights */}
-        {!loading && vehicles.length > 0 && (
+        {/* AI Insights - hidden for cleaner layout */}
+        {false && !loading && vehicles.length > 0 && (
           <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-teal-500/10 rounded-lg flex items-center justify-center">
