@@ -139,13 +139,23 @@ const expenseCatLabel = (c: string) => {
 
 // ── Components ─────────────────────────────────────
 const LicensePlate = ({ plate }: { plate: string }) => (
-  <div className="inline-flex items-center rounded-lg overflow-hidden border-2 border-gray-700 shadow-sm">
-    <div className="bg-blue-700 text-white px-2.5 py-2 flex flex-col items-center gap-0.5">
-      <Flag size={10} className="fill-white" />
-      <span className="text-[9px] font-bold leading-none">IL</span>
+  <div
+    className="inline-flex items-stretch rounded-md overflow-hidden border border-black/80 shadow-md"
+    style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif" }}
+  >
+    {/* EU blue strip */}
+    <div className="bg-[#003399] text-white px-2 py-1.5 flex flex-col items-center justify-center gap-0.5 min-w-[28px]">
+      <span className="text-yellow-300 text-[11px] leading-none">★</span>
+      <span className="text-[10px] font-bold leading-none tracking-wider">IL</span>
     </div>
-    <div className="bg-yellow-300 px-4 py-2">
-      <span className="text-lg font-black text-gray-900 tracking-[3px] font-mono">{formatPlate(plate)}</span>
+    {/* Plate body */}
+    <div className="bg-[#f7d417] px-4 py-1.5 flex items-center border-l border-black/70">
+      <span
+        className="text-[22px] font-black text-black tracking-[2px] leading-none"
+        style={{ fontFamily: "'Arial Black', 'Helvetica', sans-serif" }}
+      >
+        {formatPlate(plate)}
+      </span>
     </div>
   </div>
 );
