@@ -60,6 +60,15 @@ interface Expense {
   description?: string;
 }
 
+interface Appointment {
+  id: string;
+  serviceType: string;
+  date: string;
+  time?: string;
+  status: string; // pending | confirmed | completed | cancelled
+  garage?: { id: string; name: string } | null;
+}
+
 interface MaintenanceItem {
   category: string;
   item: string;
@@ -191,6 +200,7 @@ export default function UserHomePage() {
   const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
@@ -265,10 +275,12 @@ export default function UserHomePage() {
       fetch(`/api/treatments?vehicleId=${id}`).then(r => r.json()).catch(() => ({ treatments: [] })),
       fetch(`/api/documents?vehicleId=${id}`).then(r => r.json()).catch(() => ({ documents: [] })),
       fetch(`/api/expenses?vehicleId=${id}&limit=10`).then(r => r.json()).catch(() => ({ expenses: [] })),
-    ]).then(([tData, dData, eData]) => {
+      fetch(`/api/appointments?vehicleId=${id}`).then(r => r.json()).catch(() => ({ appointments: [] })),
+    ]).then(([tData, dData, eData, aData]) => {
       setTreatments(tData.treatments || []);
       setDocuments(dData.documents || []);
       setExpenses(eData.expenses || []);
+      setAppointments(aData.appointments || []);
     });
     // Fetch maintenance schedule automatically
     // Always try - the API will fallback to treatment mileage if vehicle.mileage is null
@@ -696,6 +708,55 @@ export default function UserHomePage() {
         </div>
 
         )}
+
+        {/* Upcoming Appointments */}
+        {(() => {
+          const upcoming = appointments
+            .filter(a => ['pending', 'confirmed'].includes(a.status) && new Date(a.date) >= new Date(new Date().toDateString()))
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .slice(0, 3);
+          if (upcoming.length === 0) return null;
+          const statusMeta: Record<string, { label: string; cls: string }> = {
+            pending:   { label: 'ממתין לאישור', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
+            confirmed: { label: 'מאושר',         cls: 'bg-green-50 text-green-700 border-green-200' },
+          };
+          return (
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-bold text-[#1e3a5f] flex items-center gap-2">
+                  <Calendar size={16} className="text-teal-600" />
+                  תורים קרובים
+                </h3>
+                <button onClick={() => router.push('/user/appointments')} className="text-sm text-teal-600 font-semibold">
+                  הכל ←
+                </button>
+              </div>
+              <div className="space-y-2">
+                {upcoming.map(a => {
+                  const meta = statusMeta[a.status] || { label: a.status, cls: 'bg-gray-50 text-gray-600 border-gray-200' };
+                  const d = new Date(a.date);
+                  const dateStr = d.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                  return (
+                    <div key={a.id} className="flex items-center justify-between border border-gray-100 rounded-xl p-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-[#1e3a5f] text-sm truncate">
+                          {a.garage?.name || 'שירות'}
+                          <span className="text-gray-500 font-normal"> · {a.serviceType}</span>
+                        </div>
+                        <div className="text-xs text-gray-500 mt-0.5">
+                          {dateStr}{a.time ? ' · ' + a.time : ''}
+                        </div>
+                      </div>
+                      <span className={`text-[11px] font-semibold px-2 py-1 rounded-full border ${meta.cls}`}>
+                        {meta.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Monthly Expenses Summary */}
         <div className="bg-white rounded-2xl p-4 shadow-sm">
