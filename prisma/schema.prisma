@@ -385,6 +385,8 @@ model Expense {
   description String?
   date        DateTime
   receiptUrl  String?
+  treatmentId String?   @unique
+  treatment   Treatment? @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
   createdAt   DateTime  @default(now())
 
   @@index([vehicleId])
@@ -504,6 +506,7 @@ model Treatment {
   rejectedAt      DateTime?
   rejectionReason String?
   notes           String?
+  expense         Expense?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 

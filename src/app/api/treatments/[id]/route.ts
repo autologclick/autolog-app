@@ -8,6 +8,7 @@ import {
   approveTreatment,
   rejectTreatment,
 } from '@/lib/treatments-db';
+import prisma from '@/lib/db';
 
 // GET /api/treatments/[id] - Get single treatment
 export async function GET(
@@ -43,6 +44,39 @@ export async function PUT(
     }
 
     const treatment = await getTreatmentById(params.id);
+
+    // Sync the linked Expense so dashboard totals stay consistent
+    if (treatment) {
+      try {
+        const existing = await prisma.expense.findUnique({ where: { treatmentId: treatment.id } });
+        if (treatment.cost && treatment.cost > 0) {
+          const desc = treatment.title + (treatment.garageName ? ' (' + treatment.garageName + ')' : '');
+          if (existing) {
+            await prisma.expense.update({
+              where: { id: existing.id },
+              data: { amount: treatment.cost, description: desc, date: new Date(treatment.date) },
+            });
+          } else {
+            await prisma.expense.create({
+              data: {
+                vehicleId: treatment.vehicleId,
+                category: 'maintenance',
+                amount: treatment.cost,
+                description: desc,
+                date: new Date(treatment.date),
+                treatmentId: treatment.id,
+              },
+            });
+          }
+        } else if (existing) {
+          // Cost was cleared — remove the orphan expense
+          await prisma.expense.delete({ where: { id: existing.id } });
+        }
+      } catch (e) {
+        console.warn('[treatments] expense sync failed', e);
+      }
+    }
+
     return jsonResponse({ treatment, message: SUCCESS_MESSAGES.TREATMENT_UPDATED });
   } catch (error) {
     return handleApiError(error);

@@ -99,6 +99,7 @@ export async function POST(req: NextRequest) {
             amount: data.cost,
             description: data.title + (data.garageName ? ' (' + data.garageName + ')' : ''),
             date: new Date(data.date),
+            treatmentId: treatment.id,
           },
         });
       } catch (e) {

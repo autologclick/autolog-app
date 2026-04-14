@@ -129,6 +129,20 @@ export async function PUT(
       updateData.date = expenseDate;
     }
 
+    // Sync linked Treatment cost so there's no duplication between views
+    if (data.amount !== undefined) {
+      const linked = await prisma.expense.findUnique({
+        where: { id },
+        select: { treatmentId: true },
+      });
+      if (linked?.treatmentId) {
+        await prisma.treatment.update({
+          where: { id: linked.treatmentId },
+          data: { cost: data.amount },
+        });
+      }
+    }
+
     // Update expense
     const updated = await prisma.expense.update({
       where: { id },
