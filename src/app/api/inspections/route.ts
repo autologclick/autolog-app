@@ -6,6 +6,7 @@ import { comprehensiveInspectionSchema } from '@/lib/validations';
 import { NOT_FOUND } from '@/lib/messages';
 import { INSPECTION_TYPE_HEB } from '@/lib/constants/translations';
 import { buildInspectionData, generateAutoInspectionItems, ValidatedInspectionInput } from '@/lib/services/inspection-service';
+import { updateVehicleMileage, MileageError } from '@/lib/mileage';
 
 // GET /api/inspections - List inspections (user sees their own, garage sees theirs)
 export async function GET(req: NextRequest) {
@@ -104,6 +105,16 @@ export async function POST(req: NextRequest) {
               : data.manualVehicle.licensePlate,
           },
         });
+      }
+    }
+
+    // Validate + auto-propagate mileage BEFORE creating the inspection
+    if (data.mileage && data.mileage > 0) {
+      try {
+        await updateVehicleMileage(vehicle.id, data.mileage);
+      } catch (e) {
+        if (e instanceof MileageError) return errorResponse(e.message, e.status);
+        throw e;
       }
     }
 

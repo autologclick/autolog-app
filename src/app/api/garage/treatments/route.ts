@@ -4,6 +4,7 @@ import { createGarageTreatment, getGarageTreatments } from '@/lib/treatments-db'
 import prisma from '@/lib/db';
 import { NOT_FOUND, AUTH_ERRORS } from '@/lib/messages';
 import { z } from 'zod';
+import { updateVehicleMileage, MileageError } from '@/lib/mileage';
 
 const garageTreatmentSchema = z.object({
   licensePlate: z.string().min(1),
@@ -76,6 +77,16 @@ export async function POST(req: NextRequest) {
 
     if (!vehicle) {
       return errorResponse('רכב לא נמצא במערכת. הלקוח צריך להירשם תחילה.', 404);
+    }
+
+    // Validate and update mileage before creating the treatment
+    if (data.mileage && data.mileage > 0) {
+      try {
+        await updateVehicleMileage(vehicle.id, data.mileage);
+      } catch (e) {
+        if (e instanceof MileageError) return errorResponse(e.message, e.status);
+        throw e;
+      }
     }
 
     const treatment = await createGarageTreatment({

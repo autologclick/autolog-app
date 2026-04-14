@@ -119,7 +119,7 @@ export async function PUT(
     // Verify ownership
     const vehicle = await prisma.vehicle.findUnique({
       where: { id },
-      select: { userId: true },
+      select: { userId: true, mileage: true },
     });
 
     if (!vehicle) {
@@ -140,7 +140,21 @@ export async function PUT(
     }
     if (d.mileage !== undefined) {
       const m = typeof d.mileage === 'string' ? parseInt(d.mileage) : d.mileage;
-      if (!isNaN(m) && m >= 0) updateData.mileage = m;
+      if (!isNaN(m) && m >= 0) {
+        const current = vehicle.mileage || 0;
+        if (m < current) {
+          return jsonResponse(
+            {
+              error:
+                'לא ניתן לעדכן קילומטראז׳ נמוך יותר מהקיים (' +
+                current.toLocaleString() +
+                ' ק"מ). הזן ערך גבוה או שווה לזה.',
+            },
+            400
+          );
+        }
+        updateData.mileage = m;
+      }
     }
     if (d.fuelType !== undefined) updateData.fuelType = d.fuelType;
     if (d.color !== undefined) updateData.color = d.color;

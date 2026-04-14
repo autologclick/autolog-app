@@ -3,6 +3,7 @@ import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/
 import { getUserTreatments, createTreatment, getPendingTreatments } from '@/lib/treatments-db';
 import { z } from 'zod';
 import { NOT_FOUND } from '@/lib/messages';
+import { updateVehicleMileage, MileageError } from '@/lib/mileage';
 
 const createTreatmentSchema = z.object({
   vehicleId: z.string().min(1),
@@ -61,18 +62,20 @@ export async function POST(req: NextRequest) {
       return errorResponse(NOT_FOUND.VEHICLE, 404);
     }
 
+    // Validate mileage BEFORE creating the treatment so we can reject it cleanly
+    if (data.mileage && data.mileage > 0) {
+      try {
+        await updateVehicleMileage(data.vehicleId, data.mileage);
+      } catch (e) {
+        if (e instanceof MileageError) return errorResponse(e.message, e.status);
+        throw e;
+      }
+    }
+
     const treatment = await createTreatment({
       ...data,
       userId: payload.userId,
     });
-
-    // Update vehicle mileage if treatment has higher mileage
-    if (data.mileage && data.mileage > 0 && (!vehicle.mileage || data.mileage > vehicle.mileage)) {
-      await prismaClient.vehicle.update({
-        where: { id: data.vehicleId },
-        data: { mileage: data.mileage },
-      });
-    }
 
     // Auto-create expense so it shows in monthly expenses summary
     if (data.cost && data.cost > 0) {
