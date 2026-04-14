@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { requireAuth, jsonResponse, handleApiError } from '@/lib/api-helpers';
+import { requireAdmin, jsonResponse, handleApiError } from '@/lib/api-helpers';
 import { seedAllTemplates, ISRAELI_MARKET_TEMPLATES } from '@/lib/maintenance-templates';
 
 /**
@@ -9,12 +9,7 @@ import { seedAllTemplates, ISRAELI_MARKET_TEMPLATES } from '@/lib/maintenance-te
  */
 export async function POST(req: NextRequest) {
   try {
-    const payload = requireAuth(req);
-
-    // Only admins can seed templates
-    if (payload.role !== 'admin') {
-      return jsonResponse({ error: 'אין הרשאה' }, 403);
-    }
+    requireAdmin(req);
 
     const count = await seedAllTemplates();
 
@@ -37,11 +32,7 @@ export async function POST(req: NextRequest) {
  */
 export async function GET(req: NextRequest) {
   try {
-    const payload = requireAuth(req);
-
-    if (payload.role !== 'admin') {
-      return jsonResponse({ error: 'אין הרשאה' }, 403);
-    }
+    requireAdmin(req);
 
     const templates = ISRAELI_MARKET_TEMPLATES.map(t => ({
       manufacturer: t.manufacturer,
