@@ -188,17 +188,9 @@ export default function ExpensesPage() {
       const newExpense = await res.json();
       const vehicle = vehicles.find(v => v.id === formData.vehicleId);
       setExpenses(prev => [...prev, { ...newExpense.expense, vehicle }]);
-      // Reset form but keep modal open for quick successive adds
-      const keepCategory = formData.category;
-      const keepVehicle = formData.vehicleId;
-      setFormData({
-        vehicleId: keepVehicle,
-        category: keepCategory,
-        amount: '',
-        description: '',
-        date: new Date().toISOString().split('T')[0],
-      });
       setError('');
+      resetForm();
+      setShowAddModal(false);
     } catch {
       setError('שגיאת חיבור');
     }
