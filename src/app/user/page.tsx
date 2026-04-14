@@ -172,10 +172,10 @@ const ReminderCard = ({ title, icon, value, subtitle, status }: {
   const borderColor = status === 'danger' ? 'border-r-red-500' : status === 'warning' ? 'border-r-amber-400' : 'border-r-green-500';
   const valueColor = status === 'danger' ? 'text-red-600' : status === 'warning' ? 'text-amber-600' : 'text-green-600';
   return (
-    <div className={`bg-white rounded-xl p-2.5 shadow-sm border-r-4 ${borderColor}`}>
-      <div className="text-[11px] text-gray-500 mb-1">{icon} {title}</div>
-      <div className={`text-lg font-bold leading-tight ${valueColor}`}>{value}</div>
-      {subtitle && <div className="text-[10px] text-gray-400 mt-0.5">{subtitle}</div>}
+    <div className={`bg-white rounded-lg px-2 py-1.5 shadow-sm border-r-[3px] ${borderColor}`}>
+      <div className="text-[10px] text-gray-500 leading-none mb-0.5">{icon} {title}</div>
+      <div className={`text-sm font-bold leading-tight truncate ${valueColor}`}>{value}</div>
+      {subtitle && <div className="text-[9px] text-gray-400 mt-0.5 truncate">{subtitle}</div>}
     </div>
   );
 };
@@ -520,8 +520,8 @@ export default function UserHomePage() {
           >
             <ReminderCard
               icon="🔧" title="טיפול הבא"
-              value={maintenanceLoading ? 'מחשב...' : maintenanceSchedule ? `${(maintenanceSchedule.nextServiceKm / 1000).toFixed(0)}K ק"מ` : maintenanceError ? 'נסה שוב' : 'חשב עכשיו'}
-              subtitle={maintenanceLoading ? 'AI מחשב לפי יצרן...' : maintenanceSchedule ? maintenanceSchedule.summary : maintenanceError ? 'לחץ לניסיון נוסף' : 'לחץ לחישוב AI'}
+              value={maintenanceLoading ? '...' : maintenanceSchedule ? `${(maintenanceSchedule.nextServiceKm / 1000).toFixed(0)}K ק"מ` : maintenanceError ? 'נסה שוב' : 'חשב'}
+              subtitle={maintenanceLoading ? 'מחשב...' : maintenanceSchedule ? `בעוד ${Math.max(0, maintenanceSchedule.nextServiceKm - maintenanceSchedule.basedOnMileage).toLocaleString()} ק"מ` : maintenanceError ? 'נסה שוב' : 'לחץ לחישוב'}
               status={maintenanceSchedule ? (maintenanceSchedule.items.some(i => i.priority === 'high') ? 'danger' : 'success') : maintenanceError ? 'danger' : 'warning'}
             />
           </div>
