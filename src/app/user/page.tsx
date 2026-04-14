@@ -768,8 +768,8 @@ export default function UserHomePage() {
                   <Wrench size={20} />
                 </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-[#1e3a5f]">הוסף טיפול חדש</div>
-                  <div className="text-xs text-gray-500">רישום טיפול שבוצע ברכב</div>
+                  <div className="font-semibold text-[#1e3a5f]">הוסף טיפול/תיקון חדש</div>
+                  <div className="text-xs text-gray-500">רישום טיפול / תיקון שבוצע ברכב</div>
                 </div>
                 <ChevronLeft size={20} className="text-gray-400" />
               </button>
