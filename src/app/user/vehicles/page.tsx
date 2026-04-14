@@ -314,20 +314,37 @@ export default function VehiclesPage() {
       setError('התמונה גדולה מדי (מקסימום 20MB)');
       return;
     }
+    // Fast visual preview using object URL (doesn't choke on large images)
     try {
-      // Fast visual preview using object URL (doesn't choke on large images)
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
+    } catch {
+      // ignore preview failure — we'll still try upload
+    }
 
-      // Compress & convert to data URL for upload (max 1600px long edge, JPEG 0.85)
+    // Try compressing; if that fails (HEIC, memory, etc.) fall back to raw data URL
+    try {
       const compressed = await compressImage(file, 1600, 0.85);
       setImageData(compressed);
     } catch {
-      setError('לא ניתן לטעון את התמונה. נסה תמונה אחרת.');
+      try {
+        const raw = await fileToDataUrl(file);
+        setImageData(raw);
+      } catch {
+        setError('לא ניתן לטעון את התמונה. נסה תמונה אחרת.');
+      }
     }
     // Reset input value so same file can be selected again
     e.target.value = '';
   };
+
+  const fileToDataUrl = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => resolve(ev.target?.result as string);
+      reader.onerror = () => reject(new Error('file read failed'));
+      reader.readAsDataURL(file);
+    });
 
   // Resize + recompress image to a safe data URL for upload
   const compressImage = (file: File, maxEdge: number, quality: number): Promise<string> => {
