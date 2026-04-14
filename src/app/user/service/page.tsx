@@ -56,12 +56,12 @@ export default function ServicePage() {
   return (
     <div className="min-h-screen bg-[#fef7ed] pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white px-4 pt-6 pb-8 rounded-b-3xl">
+      <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white px-4 pt-6 pb-6 rounded-b-3xl">
         <h1 className="text-2xl font-bold mb-1">שירות</h1>
         <p className="text-sm text-white/70">הזמנת מוסך, תורים ומצבי חירום</p>
       </div>
 
-      <div className="px-4 -mt-4 space-y-4">
+      <div className="px-4 mt-4 space-y-5">
         {/* Book New Service — primary CTA */}
         <button
           onClick={() => router.push('/user/book-garage')}
