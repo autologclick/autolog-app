@@ -567,7 +567,7 @@ export default function UserHomePage() {
             className="flex-1 bg-teal-600 text-white rounded-xl py-3 flex flex-col items-center gap-1 shadow-md active:scale-[0.97] transition-transform"
           >
             <FileText size={20} />
-            <span className="text-xs font-semibold">+ מסמך</span>
+            <span className="text-xs font-semibold">מסמכים</span>
           </button>
           <button
             onClick={() => router.push('/user/vehicles')}
