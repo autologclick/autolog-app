@@ -926,77 +926,45 @@ export default function UserHomePage() {
           <div className="bg-white rounded-t-2xl lg:rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
             {/* Header */}
             <div className="sticky top-0 bg-white border-b border-gray-100 p-4 flex items-center justify-between rounded-t-2xl">
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">🔧 טיפול הבא - פירוט</h3>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  לפי הוראות יצרן • {vehicle?.manufacturer} {vehicle?.model} {vehicle?.year}
-                </p>
-              </div>
+              <h3 className="text-lg font-bold text-gray-900">הטיפול הבא</h3>
               <button onClick={() => setShowMaintenanceModal(false)} className="p-2 hover:bg-gray-100 rounded-full">
                 <X size={20} className="text-gray-500" />
               </button>
             </div>
 
-            {/* Summary */}
-            <div className="p-4 bg-teal-50 border-b border-teal-100">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-teal-600 rounded-xl flex items-center justify-center">
-                  <Wrench size={24} className="text-white" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-teal-800">
-                    טיפול הבא ב-{maintenanceSchedule.nextServiceKm.toLocaleString()} ק&quot;מ
-                  </div>
-                  <div className="text-xs text-teal-600">
-                    תאריך משוער: {new Date(maintenanceSchedule.nextServiceDate).toLocaleDateString('he-IL')}
-                  </div>
-                  <div className="text-xs text-gray-500 mt-0.5">
-                    קילומטראז&apos; נוכחי: {maintenanceSchedule.basedOnMileage.toLocaleString()} ק&quot;מ
-                  </div>
-                </div>
+            {/* Summary - simple */}
+            <div className="p-5 bg-teal-50 border-b border-teal-100 text-center">
+              <div className="text-xs text-teal-700 mb-1">הטיפול הבא ברכב</div>
+              <div className="text-2xl font-bold text-teal-800">
+                {maintenanceSchedule.nextServiceKm.toLocaleString()} ק&quot;מ
+              </div>
+              <div className="text-sm text-gray-600 mt-1">
+                נותרו {Math.max(0, maintenanceSchedule.nextServiceKm - maintenanceSchedule.basedOnMileage).toLocaleString()} ק&quot;מ
               </div>
             </div>
 
-            {/* Items List */}
-            <div className="p-4 space-y-3">
-              {maintenanceSchedule.items.map((item, idx) => (
-                <div key={idx} className={`border rounded-xl p-3 ${
-                  item.priority === 'high' ? 'border-red-200 bg-red-50' :
-                  item.priority === 'medium' ? 'border-amber-200 bg-amber-50' :
-                  'border-gray-200 bg-gray-50'
-                }`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          item.priority === 'high' ? 'bg-red-500 text-white' :
-                          item.priority === 'medium' ? 'bg-amber-500 text-white' :
-                          'bg-gray-400 text-white'
-                        }`}>
-                          {item.priority === 'high' ? 'דחוף' : item.priority === 'medium' ? 'בינוני' : 'רגיל'}
-                        </span>
-                        <span className="text-xs text-gray-500">{item.category}</span>
-                      </div>
-                      <h4 className="font-bold text-sm text-gray-900 mt-1">{item.item}</h4>
-                      <p className="text-xs text-gray-600 mt-0.5">{item.description}</p>
-                      <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-400">
-                        <span>כל {item.intervalKm.toLocaleString()} ק&quot;מ</span>
-                        <span>•</span>
-                        <span>הבא ב-{item.nextAtKm.toLocaleString()} ק&quot;מ</span>
-                      </div>
-                    </div>
-                    <div className="text-left flex-shrink-0">
-                      <div className="text-xs font-bold text-gray-700">{item.estimatedCost}</div>
-                    </div>
+            {/* What to replace - simple list */}
+            <div className="p-4">
+              <h4 className="text-sm font-bold text-gray-700 mb-3">מה צריך להחליף?</h4>
+              <div className="space-y-2">
+                {maintenanceSchedule.items.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                      item.priority === 'high' ? 'bg-red-500' :
+                      item.priority === 'medium' ? 'bg-amber-500' :
+                      'bg-gray-400'
+                    }`} />
+                    <div className="flex-1 text-sm font-medium text-gray-800">{item.item}</div>
+                    <div className="text-xs text-gray-500">{item.estimatedCost}</div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
             {/* Footer */}
             <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4">
               <p className="text-[10px] text-gray-400 text-center mb-2">
-                * המידע מבוסס על הוראות יצרן ו-AI. מומלץ להתייעץ עם מוסך מורשה.
+                הערכה בלבד • מומלץ להתייעץ עם מוסך
               </p>
               <button
                 onClick={() => setShowMaintenanceModal(false)}
