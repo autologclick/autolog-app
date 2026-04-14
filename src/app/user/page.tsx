@@ -375,8 +375,23 @@ export default function UserHomePage() {
         setShowAddTreatment(false);
         setTreatmentForm({ type: 'maintenance', title: '', date: new Date().toISOString().slice(0, 10), cost: '', mileage: '', garageName: '', description: '' });
         setTreatmentImage(null);
+        // Reload expenses so dashboard shows the new expense
+        if (vehicle?.id) {
+          try {
+            const exRes = await fetch(`/api/expenses?vehicleId=${vehicle.id}`);
+            if (exRes.ok) {
+              const exData = await exRes.json();
+              if (exData.expenses) setExpenses(exData.expenses);
+            }
+          } catch {}
+        }
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert('שמירה נכשלה: ' + (err.error || 'שגיאה לא ידועה'));
       }
-    } catch { /* silently fail */ }
+    } catch (e) {
+      alert('שמירה נכשלה: ' + (e instanceof Error ? e.message : 'שגיאת רשת'));
+    }
     setSubmittingTreatment(false);
   };
 

@@ -74,6 +74,36 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Auto-create expense so it shows in monthly expenses summary
+    if (data.cost && data.cost > 0) {
+      // Map treatment type -> expense category
+      const categoryMap: Record<string, string> = {
+        maintenance: 'maintenance',
+        repair: 'maintenance',
+        oil_change: 'maintenance',
+        tires: 'maintenance',
+        brakes: 'maintenance',
+        electrical: 'maintenance',
+        ac: 'maintenance',
+        bodywork: 'maintenance',
+        other: 'other',
+      };
+      try {
+        await prismaClient.expense.create({
+          data: {
+            vehicleId: data.vehicleId,
+            category: categoryMap[data.type] || 'maintenance',
+            amount: data.cost,
+            description: data.title + (data.garageName ? ' (' + data.garageName + ')' : ''),
+            date: new Date(data.date),
+          },
+        });
+      } catch (e) {
+        // Expense creation is non-blocking — treatment was already saved
+        console.warn('[treatments] failed to auto-create expense', e);
+      }
+    }
+
     return jsonResponse({ treatment, message: 'הטיפול נוסף בהצלחה!' }, 201);
   } catch (error) {
     return handleApiError(error);
