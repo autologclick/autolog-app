@@ -563,7 +563,7 @@ export default function UserHomePage() {
             className="flex-1 bg-teal-600 text-white rounded-xl py-3 flex flex-col items-center gap-1 shadow-md active:scale-[0.97] transition-transform"
           >
             <Car size={20} />
-            <span className="text-xs font-semibold">הגראז&apos; שלי</span>
+            <span className="text-xs font-semibold">הרכבים שלי</span>
           </button>
         </div>
 
