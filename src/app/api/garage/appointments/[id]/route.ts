@@ -62,6 +62,14 @@ export async function PUT(
       return errorResponse('התור כבר הושלם', 400);
     }
 
+    // Prevent re-confirming an already-confirmed appointment
+    if (status === 'confirmed' && appointment.status === 'confirmed') {
+      return errorResponse('התור כבר אושר על ידך קודם לכן.', 400);
+    }
+    if (status === 'rejected' && appointment.status === 'confirmed') {
+      return errorResponse('התור כבר אושר ולא ניתן לדחות אותו כעת.', 400);
+    }
+
     // For confirm/reject: check 15-minute response window
     if ((status === 'confirmed' || status === 'rejected') && appointment.status === 'pending') {
       const createdAt = new Date(appointment.createdAt).getTime();
