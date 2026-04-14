@@ -208,7 +208,7 @@ export async function DELETE(
     // Verify ownership
     const vehicle = await prisma.vehicle.findUnique({
       where: { id },
-      select: { userId: true },
+      select: { userId: true, licensePlate: true },
     });
 
     if (!vehicle) {
@@ -217,12 +217,27 @@ export async function DELETE(
 
     requireOwnership(payload.userId, vehicle.userId);
 
-    // Hard delete - cascade handled by Prisma
-    await prisma.vehicle.delete({
-      where: { id },
-    });
+    // Full cleanup in a transaction:
+    // 1. Non-cascading relations (Appointment, SosEvent) — explicit delete
+    // 2. Notifications — no FK, match by licensePlate in message OR vehicle id in link
+    // 3. The vehicle itself — cascades handle the rest (Treatment, Expense,
+    //    Document, Inspection, VehicleDriver, VehicleShare)
+    await prisma.$transaction([
+      prisma.appointment.deleteMany({ where: { vehicleId: id } }),
+      prisma.sosEvent.deleteMany({ where: { vehicleId: id } }),
+      prisma.notification.deleteMany({
+        where: {
+          userId: vehicle.userId,
+          OR: [
+            { message: { contains: vehicle.licensePlate } },
+            { link: { contains: '/vehicles/' + id } },
+          ],
+        },
+      }),
+      prisma.vehicle.delete({ where: { id } }),
+    ]);
 
-    return jsonResponse({ message: 'הרכב נמחק בהצלחה' });
+    return jsonResponse({ message: 'הרכב וכל הנתונים הקשורים אליו נמחקו בהצלחה' });
   } catch (error) {
     return handleApiError(error);
   }
