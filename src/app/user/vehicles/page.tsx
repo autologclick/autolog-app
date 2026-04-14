@@ -303,26 +303,56 @@ export default function VehiclesPage() {
     sessionStorage.removeItem('autolog_vehicle_draft');
   };
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       setError('נא לבחור קובץ תמונה בלבד');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setError('התמונה גדולה מדי (מקסימום 5MB)');
+    if (file.size > 20 * 1024 * 1024) {
+      setError('התמונה גדולה מדי (מקסימום 20MB)');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const dataUrl = ev.target?.result as string;
-      setImagePreview(dataUrl);
-      setImageData(dataUrl);
-    };
-    reader.readAsDataURL(file);
+    try {
+      // Fast visual preview using object URL (doesn't choke on large images)
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+
+      // Compress & convert to data URL for upload (max 1600px long edge, JPEG 0.85)
+      const compressed = await compressImage(file, 1600, 0.85);
+      setImageData(compressed);
+    } catch {
+      setError('לא ניתן לטעון את התמונה. נסה תמונה אחרת.');
+    }
     // Reset input value so same file can be selected again
     e.target.value = '';
+  };
+
+  // Resize + recompress image to a safe data URL for upload
+  const compressImage = (file: File, maxEdge: number, quality: number): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const objUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objUrl);
+        const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('canvas context unavailable'));
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objUrl);
+        reject(new Error('image load failed'));
+      };
+      img.src = objUrl;
+    });
   };
 
   const handleCameraCapture = () => {
