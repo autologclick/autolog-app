@@ -126,9 +126,23 @@ export async function middleware(req: NextRequest) {
   return applyRoleChecks(pathname, payload, req);
 }
 
+function logDenied(payload: { userId?: string; email?: string; role: string }, pathname: string, req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown';
+  const ua = req.headers.get('user-agent') || 'unknown';
+  console.warn('[SECURITY] Unauthorized access attempt', JSON.stringify({
+    userId: payload.userId,
+    email: payload.email,
+    role: payload.role,
+    pathname,
+    ip,
+    ua,
+    ts: new Date().toISOString(),
+  }));
+}
+
 function applyRoleChecks(
   pathname: string,
-  payload: { role: string },
+  payload: { userId?: string; email?: string; role: string },
   req: NextRequest,
   response?: NextResponse
 ): NextResponse {
@@ -138,26 +152,29 @@ function applyRoleChecks(
   // Admin routes - require admin role
   if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
     if (userRole !== 'admin') {
+      logDenied(payload, pathname, req);
       if (pathname.startsWith('/api')) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
-      return NextResponse.redirect(new URL('/auth/login', req.url));
+      return NextResponse.redirect(new URL('/user', req.url));
     }
   }
 
   // Garage owner routes - require garage_owner or admin role
   if (pathname.startsWith('/garage') || pathname.startsWith('/api/garage')) {
     if (userRole !== 'garage_owner' && userRole !== 'admin') {
+      logDenied(payload, pathname, req);
       if (pathname.startsWith('/api')) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
-      return NextResponse.redirect(new URL('/auth/login', req.url));
+      return NextResponse.redirect(new URL('/user', req.url));
     }
   }
 
   // User routes - require user role (or higher)
   if (pathname.startsWith('/user')) {
     if (userRole !== 'user' && userRole !== 'admin') {
+      logDenied(payload, pathname, req);
       if (pathname.startsWith('/api')) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
