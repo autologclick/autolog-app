@@ -92,9 +92,12 @@ const garageMobileNav: NavItem[] = [
 interface SidebarProps {
   portal: 'user' | 'admin' | 'garage';
   userName?: string;
+  userRole?: string;
 }
 
-export default function Sidebar({ portal, userName = 'משתמש' }: SidebarProps) {
+export default function Sidebar({ portal, userName = 'משתמש', userRole }: SidebarProps) {
+  const canSeeAdmin = userRole === 'admin';
+  const canSeeGarage = userRole === 'admin' || userRole === 'garage_owner';
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
@@ -262,7 +265,7 @@ export default function Sidebar({ portal, userName = 'משתמש' }: SidebarProp
             {!collapsed && 'אפליקציית משתמש'}
           </button>
         )}
-        {portal !== 'admin' && (
+        {portal !== 'admin' && canSeeAdmin && (
           <button
             onClick={() => router.push('/admin')}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-white/50 hover:text-white hover:bg-white/10 transition-all duration-200"
@@ -271,7 +274,7 @@ export default function Sidebar({ portal, userName = 'משתמש' }: SidebarProp
             {!collapsed && 'מרכז בקרה'}
           </button>
         )}
-        {portal !== 'garage' && (
+        {portal !== 'garage' && canSeeGarage && (
           <button
             onClick={() => router.push('/garage')}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-white/50 hover:text-white hover:bg-white/10 transition-all duration-200"
