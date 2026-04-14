@@ -95,7 +95,7 @@ export async function GET(
         totalInspections: inspections.length,
         totalExpenses: expenses.length,
         totalCost: treatments.reduce((sum, t) => sum + (t.cost || 0), 0) +
-                   expenses.reduce((sum, e) => sum + e.amount, 0),
+                   expenses.filter(e => !e.treatmentId).reduce((sum, e) => sum + e.amount, 0),
         lastTreatmentDate: treatments[0]?.date || null,
         lastInspectionDate: inspections[0]?.date || null,
         lastMileage: treatments.reduce((max, t) => Math.max(max, t.mileage || 0), 0),
