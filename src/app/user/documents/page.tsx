@@ -704,31 +704,26 @@ export default function DocumentsPage() {
         {/* DOCUMENTS SECTIONS                               */}
         {/* ================================================ */}
 
-        {/* Filter Chips */}
+        {/* Filter - unified dropdown */}
         {documents.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2">
-            {CATEGORIES.map(cat => {
-              const count = getCategoryCount(cat.id);
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveFilter(cat.id)}
-                  className={`px-4 py-2 rounded-full font-semibold text-sm transition-all duration-200 flex items-center gap-1.5 ${
-                    activeFilter === cat.id
-                      ? 'bg-purple-600 text-white shadow-md'
-                      : 'bg-white text-gray-600 hover:bg-purple-100 border border-gray-200'
-                  }`}
-                >
-                  <span>{cat.icon}</span>
-                  {cat.label}
-                  {count > 0 && cat.id !== 'all' && (
-                    <span className={`text-xs font-bold ${
-                      activeFilter === cat.id ? 'bg-white/20' : 'bg-gray-200 text-gray-700'
-                    } px-2 py-0.5 rounded-full`}>{count}</span>
-                  )}
-                </button>
-              );
-            })}
+          <div className="flex items-center justify-end">
+            <label className="relative inline-flex items-center bg-white rounded-xl border border-gray-200 shadow-sm px-3 py-2 gap-2 text-sm font-semibold text-gray-700">
+              <span className="text-gray-500 text-xs">סנן לפי:</span>
+              <select
+                value={activeFilter}
+                onChange={(e) => setActiveFilter(e.target.value)}
+                className="bg-transparent border-0 outline-none font-semibold text-[#1e3a5f] pr-1"
+              >
+                {CATEGORIES.map(cat => {
+                  const count = getCategoryCount(cat.id);
+                  return (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.icon} {cat.label}{count > 0 && cat.id !== 'all' ? ` (${count})` : ''}
+                    </option>
+                  );
+                })}
+              </select>
+            </label>
           </div>
         )}
 
