@@ -62,18 +62,18 @@ export async function PUT(
       return errorResponse('התור כבר הושלם', 400);
     }
 
-    // For confirm/reject: check 3-minute response window
+    // For confirm/reject: check 15-minute response window
     if ((status === 'confirmed' || status === 'rejected') && appointment.status === 'pending') {
       const createdAt = new Date(appointment.createdAt).getTime();
       const now = Date.now();
-      const threeMinutes = 3 * 60 * 1000;
-      if (now - createdAt > threeMinutes) {
+      const fifteenMinutes = 15 * 60 * 1000;
+      if (now - createdAt > fifteenMinutes) {
         // Auto-reject expired appointments
         await prisma.appointment.update({
           where: { id },
           data: { status: 'rejected' },
         });
-        return errorResponse('חלון הזמן לאישור (3 דקות) חלף. ההזמנה נדחתה אוטומטית.', 400);
+        return errorResponse('חלון הזמן לאישור (15 דקות) חלף. ההזמנה נדחתה אוטומטית.', 400);
       }
     }
 

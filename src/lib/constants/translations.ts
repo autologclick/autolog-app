@@ -28,7 +28,7 @@ export const APPOINTMENT_STATUS_HEB: Record<string, string> = {
 };
 
 // Time limit for garage to respond to appointment (in minutes)
-export const APPOINTTENT_RESPONSE_TIMEOUT_MINUTES = 3;
+export const APPOINTTENT_RESPONSE_TIMEOUT_MINUTES = 15;
 
 // =============================================
 // User roles

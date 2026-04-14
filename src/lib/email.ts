@@ -223,7 +223,7 @@ export function buildAppointmentEmailHtml({
               ${notes ? `<tr><td style="border-top:1px solid #e2e8f0;font-weight:600">הערות</td><td style="border-top:1px solid #e2e8f0">${notes}</td></tr>` : ''}
             </table>
 
-            <p style="font-size:14px;color:#dc2626;background:#fef2f2;padding:10px 14px;border-radius:8px;margin:0 0 20px">⏱️ יש לך 3 דקות לאשר או לדחות את התור לפני שהוא נדחה אוטומטית.</p>
+            <p style="font-size:14px;color:#dc2626;background:#fef2f2;padding:10px 14px;border-radius:8px;margin:0 0 20px">⏱️ יש לך 15 דקות לאשר או לדחות את התור לפני שהוא נדחה אוטומטית.</p>
 
             <div style="text-align:center;margin:24px 0">
               <a href="${appointmentsUrl}" style="display:inline-block;background:#059669;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:700;margin-left:12px">

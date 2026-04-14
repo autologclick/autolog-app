@@ -786,7 +786,7 @@ function DetailAndCancelModals({
                   <Clock size={16} className="text-amber-600" />
                   <span className="font-bold text-amber-800 text-sm">ממתין לאישור המוסך</span>
                 </div>
-                <p className="text-xs text-amber-700">למוסך יש 3 דקות לאשר או לדחות את ההזמנה. תקבל התראה.</p>
+                <p className="text-xs text-amber-700">למוסך יש 15 דקות לאשר או לדחות את ההזמנה. תקבל התראה.</p>
               </div>
             )}
 
