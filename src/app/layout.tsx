@@ -2,14 +2,15 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import PWAInstallPrompt from '@/components/shared/PWAInstallPrompt';
+import MaintenanceGate from '@/components/shared/MaintenanceGate';
 
 export const metadata: Metadata = {
   title: {
     default: 'AutoLog - ניהול רכבים חכם',
     template: '%s | AutoLog',
   },
-  description: 'מערכת ניהול רכבים מקצועit - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד. הצטרפו ל-2,500+ משתמשים שכבר מנהלים את הרכב בצורה חכמה.',
-  keywords: ['ניהול רכבים', 'טסט', 'ביטוח רכב', 'מוסר', 'בדיקת רכב', 'AutoLog', 'תזדורות רכב', 'SOS חירום'],
+  description: 'מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד. הצטרפו ל-2,500+ משתמשים שכבר מנהלים את הרכב בצורה חכמה.',
+  keywords: ['ניהול רכבים', 'טסט', 'ביטוח רכב', 'מוסך', 'בדיקת רכב', 'AutoLog', 'תזכורות רכב', 'SOS חירום'],
   authors: [{ name: 'AutoLog' }],
   creator: 'AutoLog',
   icons: { icon: '/favicon.ico', apple: '/apple-touch-icon.png' },
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
     url: 'https://autolog.click',
     siteName: 'AutoLog',
     title: 'AutoLog - ניהול רכבים חכם ויעיל',
-    description: 'מערכת ניהול רכבים מקצועit - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד',
+    description: 'מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד',
   },
   twitter: {
     card: 'summary_large_image',
@@ -98,6 +99,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
               <PWAInstallPrompt />
+              <MaintenanceGate />
         </body>
     </html>
   );

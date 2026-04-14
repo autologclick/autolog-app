@@ -48,6 +48,8 @@ const adminNav: NavItem[] = [
   { label: 'אירועי SOS', href: '/admin/sos', icon: <AlertTriangle size={20} /> },
   { label: 'בקשות מוסכים', href: '/admin/applications', icon: <FileText size={20} /> },
   { label: 'התראות', href: '/admin/alerts', icon: <Bell size={20} /> },
+  { label: 'יומן אירועים', href: '/admin/audit-logs', icon: <ClipboardCheck size={20} /> },
+  { label: 'מצב תחזוקה', href: '/admin/maintenance', icon: <Shield size={20} /> },
   { label: 'הגדרות', href: '/admin/settings', icon: <Settings size={20} /> },
 ];
 
