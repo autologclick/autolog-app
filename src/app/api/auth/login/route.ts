@@ -122,8 +122,10 @@ export async function POST(req: NextRequest) {
     const twoFactorCode: string | undefined = (body as { twoFactorCode?: string })?.twoFactorCode;
     const isAdmin = user.role === 'admin';
 
-    // Admins must have 2FA enabled
-    if (isAdmin && !user.twoFactorEnabled) {
+    // Admins must have 2FA enabled — only enforced when REQUIRE_ADMIN_2FA=true.
+    // This gives admins a window to enroll before the hard block activates.
+    const enforceAdmin2FA = process.env.REQUIRE_ADMIN_2FA === 'true';
+    if (enforceAdmin2FA && isAdmin && !user.twoFactorEnabled) {
       logger.warn('Admin login blocked: 2FA not enrolled', { userId: user.id });
       return errorResponse(
         'חשבון אדמין חייב להפעיל 2FA. פנה למנהל המערכת להפעלה.',
