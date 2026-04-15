@@ -16,6 +16,15 @@ export default function LoginPage() {
   const [isVisible, setIsVisible] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // OTP step (second factor) — after password is accepted
+  const [otpStep, setOtpStep] = useState(false);
+  const [requiresTotp, setRequiresTotp] = useState(false);
+  const [emailOtp, setEmailOtp] = useState('');
+  const [totpCode, setTotpCode] = useState('');
+  const [savedEmail, setSavedEmail] = useState('');
+  const [savedPassword, setSavedPassword] = useState('');
+  const [info, setInfo] = useState('');
+
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -63,6 +72,18 @@ export default function LoginPage() {
         return;
       }
 
+      // Login step 1: server asked for OTP
+      if (!isRegister && data.requiresOtp) {
+        setSavedEmail(String(email));
+        setSavedPassword(String(password));
+        setRequiresTotp(Boolean(data.requiresTotp));
+        setOtpStep(true);
+        setInfo(data.message || 'נשלח קוד למייל שלך.');
+        setLoading(false);
+        return;
+      }
+
+      // Register flow (no OTP) — straight redirect
       const role = data.user?.role;
       if (role === 'admin') router.push('/admin');
       else if (role === 'garage_owner') router.push('/garage');
@@ -72,6 +93,60 @@ export default function LoginPage() {
         console.error('Form submit error:', err);
       }
       setError('שגיאת חיבור. אנא בדוק את החיבור שלך ונסה שוב.');
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/auth/verify-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: savedEmail,
+          password: savedPassword,
+          emailOtp,
+          ...(requiresTotp && { totpCode }),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'שגיאה באימות הקוד');
+        setLoading(false);
+        return;
+      }
+      const role = data.user?.role;
+      if (role === 'admin') router.push('/admin');
+      else if (role === 'garage_owner') router.push('/garage');
+      else router.push('/user');
+    } catch {
+      setError('שגיאת רשת. נסה שוב.');
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setError('');
+    setInfo('');
+    setLoading(true);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: savedEmail, password: savedPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'שגיאה בשליחת הקוד');
+      } else {
+        setInfo('קוד חדש נשלח לאימייל שלך.');
+      }
+    } catch {
+      setError('שגיאת רשת.');
+    } finally {
       setLoading(false);
     }
   };
@@ -117,15 +192,103 @@ export default function LoginPage() {
           {/* Card Header */}
           <div className="bg-gradient-to-r from-slate-50 to-blue-50 px-5 sm:px-8 py-4 sm:py-6 border-b border-slate-200">
             <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-              {isRegister ? 'הרשמה חדשה' : 'התחברות'}
+              {otpStep ? 'אימות קוד מהמייל' : isRegister ? 'הרשמה חדשה' : 'התחברות'}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 mt-1">
-              {isRegister ? 'צור חשבון חדש לניהול רכבך' : 'התחבר לחשבונך הקיים'}
+              {otpStep
+                ? `שלחנו קוד בן 6 ספרות ל-${savedEmail}`
+                : isRegister
+                  ? 'צור חשבון חדש לניהול רכבך'
+                  : 'התחבר לחשבונך הקיים'}
             </p>
           </div>
 
           {/* Form Section */}
           <div className="px-5 sm:px-8 py-5 sm:py-8">
+            {otpStep ? (
+              <form onSubmit={handleVerifyOtp} className="space-y-5">
+                {info && (
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900">
+                    {info}
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    קוד מהמייל (6 ספרות)
+                  </label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={emailOtp}
+                    onChange={(e) => setEmailOtp(e.target.value.replace(/\D/g, ''))}
+                    placeholder="000000"
+                    className="w-full border-2 rounded-xl p-4 text-center text-2xl font-mono tracking-widest"
+                    dir="ltr"
+                    autoFocus
+                  />
+                </div>
+
+                {requiresTotp && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      קוד מאפליקציית האימות (חשבון מנהל)
+                    </label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={8}
+                      value={totpCode}
+                      onChange={(e) => setTotpCode(e.target.value)}
+                      placeholder="000000"
+                      className="w-full border-2 rounded-xl p-4 text-center text-xl font-mono tracking-widest"
+                      dir="ltr"
+                    />
+                  </div>
+                )}
+
+                {error && (
+                  <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-red-700 text-sm font-medium">{error}</p>
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white shadow-lg"
+                  size="lg"
+                  loading={loading}
+                  disabled={emailOtp.length !== 6 || (requiresTotp && totpCode.length < 6)}
+                >
+                  אמת והיכנס
+                </Button>
+
+                <div className="flex justify-between text-sm">
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    disabled={loading}
+                    className="text-teal-600 hover:text-teal-700 font-medium disabled:opacity-50"
+                  >
+                    שלח קוד חדש
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOtpStep(false);
+                      setEmailOtp('');
+                      setTotpCode('');
+                      setError('');
+                      setInfo('');
+                    }}
+                    className="text-slate-500 hover:text-slate-700"
+                  >
+                    ← חזור
+                  </button>
+                </div>
+              </form>
+            ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Register Fields */}
               {isRegister && (
@@ -208,9 +371,10 @@ export default function LoginPage() {
                 {isRegister ? 'הרשמה' : 'התחברות'}
               </Button>
             </form>
+            )}
 
             {/* Forgot Password */}
-            {!isRegister && (
+            {!isRegister && !otpStep && (
               <div className="text-center mt-4">
                 <a
                   href="/auth/forgot-password"
@@ -222,17 +386,19 @@ export default function LoginPage() {
             )}
 
             {/* Toggle Mode */}
-            <div className="text-center mt-6 pt-6 border-t border-slate-200">
-              <button
-                onClick={() => {
-                  setIsRegister(!isRegister);
-                  setError('');
-                }}
-                className="text-teal-600 hover:text-teal-700 text-sm font-medium transition-colors"
-              >
-                {isRegister ? 'כבר יש לך חשבון? התחבר כאן' : 'אין לך חשבון? הירשם כאן'}
-              </button>
-            </div>
+            {!otpStep && (
+              <div className="text-center mt-6 pt-6 border-t border-slate-200">
+                <button
+                  onClick={() => {
+                    setIsRegister(!isRegister);
+                    setError('');
+                  }}
+                  className="text-teal-600 hover:text-teal-700 text-sm font-medium transition-colors"
+                >
+                  {isRegister ? 'כבר יש לך חשבון? התחבר כאן' : 'אין לך חשבון? הירשם כאן'}
+                </button>
+              </div>
+            )}
 
           </div>
         </div>

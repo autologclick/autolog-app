@@ -61,6 +61,23 @@ model User {
 }
 
 // ============================================================
+// EMAIL OTP (login second-factor for regular users)
+// ============================================================
+
+model EmailOtp {
+  id         String   @id @default(cuid())
+  email      String                         // normalized (lowercased) user email
+  codeHash   String                         // SHA-256 hash of the 6-digit code
+  expiresAt  DateTime                       // 10 minutes after issue
+  attempts   Int      @default(0)           // failed verification attempts (max 3)
+  consumed   Boolean  @default(false)       // set true on successful verification
+  createdAt  DateTime @default(now())
+
+  @@index([email])
+  @@index([expiresAt])
+}
+
+// ============================================================
 // VEHICLES
 // ============================================================
 
