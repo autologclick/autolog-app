@@ -2,13 +2,14 @@ import { NextRequest } from 'next/server';
 import { execSync } from 'child_process';
 import path from 'path';
 import prisma from '@/lib/db';
-import { errorResponse, handleApiError } from '@/lib/api-helpers';
+import { errorResponse, handleApiError, requireAuth } from '@/lib/api-helpers';
 import { createLogger } from '@/lib/logger';
+import { verifyShareToken } from '@/lib/share-tokens';
 
 const logger = createLogger('pdf');
 
-// Public PDF endpoint - no auth required (accessible via shared links)
-// Security: Inspection IDs are UUIDs, hard to guess
+// Access control: either valid HMAC share token (for buyer-facing links)
+// or authenticated owner/admin. UUID alone is NOT sufficient.
 
 function getPythonCommand(): string {
   try {
@@ -34,6 +35,13 @@ export async function GET(
   try {
     const { id } = params;
 
+    // --- Access control: share token OR authenticated owner/admin ---
+    const url = new URL(req.url);
+    const token = url.searchParams.get('token') || '';
+    const expStr = url.searchParams.get('exp') || '0';
+    const expiresAt = parseInt(expStr, 10);
+    const tokenOk = token && verifyShareToken('inspection-pdf', id, token, expiresAt);
+
     const inspection = await prisma.inspection.findUnique({
       where: { id },
       include: {
@@ -55,6 +63,18 @@ export async function GET(
 
     if (!inspection) {
       return errorResponse(NOT_FOUND.INSPECTION, 404);
+    }
+
+    if (!tokenOk) {
+      let payload;
+      try {
+        payload = requireAuth(req);
+      } catch {
+        return errorResponse('אין הרשאה לצפות בבדיקה', 403);
+      }
+      if (payload.role !== 'admin' && inspection.vehicle.userId !== payload.userId) {
+        return errorResponse('אין הרשאה לצפות בבדיקה', 403);
+      }
     }
 
     const pdfData = {

@@ -168,9 +168,29 @@ export async function POST(
         data: { passwordHash: hashed },
       });
 
+      // Email the temporary password to the user rather than returning it in the response
+      try {
+        const { sendEmail } = await import('@/lib/email');
+        await sendEmail({
+          to: user.email,
+          subject: 'AutoLog — סיסמה זמנית חדשה',
+          html: `
+            <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px;">
+              <h2>סיסמה זמנית אופסה</h2>
+              <p>שלום ${user.fullName || ''},</p>
+              <p>מנהל מערכת איפס את הסיסמה שלך. להלן הסיסמה הזמנית:</p>
+              <p style="font-family: monospace; font-size: 20px; background:#f4f4f4; padding:12px; border-radius:8px; letter-spacing: 2px;">${tempPass}</p>
+              <p>מומלץ להתחבר ולהחליף מיד את הסיסמה.</p>
+              <p style="color:#888;font-size:12px;">אם לא ביקשת איפוס — צור קשר עם התמיכה מייד.</p>
+            </div>
+          `,
+        });
+      } catch {
+        // non-fatal — admin can retry
+      }
+
       return jsonResponse({
-        message: 'הסיסמה אופסה בהצלחה',
-        tempPassword: tempPass,
+        message: 'הסיסמה אופסה ונשלחה למייל המשתמש',
         email: user.email,
       });
     }

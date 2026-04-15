@@ -1,10 +1,16 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { verifyShareToken } from '@/lib/share-tokens';
+import { requireAuth } from '@/lib/api-helpers';
 
 /**
- * GET /api/public/vehicle-history/[id]
- * Public endpoint - returns vehicle inspection & service history
- * Used for sharing vehicle history with potential buyers
+ * GET /api/public/vehicle-history/[id]?token=<hmac>&exp=<epoch>
+ *
+ * Returns vehicle inspection & service history. Access granted via either:
+ *  (a) valid HMAC share token + expiration (for public sharing with buyers), OR
+ *  (b) authenticated owner / admin.
+ *
+ * A guessed vehicle UUID alone is NOT sufficient.
  */
 export async function GET(
   req: NextRequest,
@@ -12,6 +18,42 @@ export async function GET(
 ) {
   try {
     const vehicleId = params.id;
+
+    // --- Access control: token OR owner/admin ---
+    const url = new URL(req.url);
+    const token = url.searchParams.get('token') || '';
+    const expStr = url.searchParams.get('exp') || '0';
+    const expiresAt = parseInt(expStr, 10);
+    const tokenOk = token && verifyShareToken('vehicle-history', vehicleId, token, expiresAt);
+
+    if (!tokenOk) {
+      // Fall back to authenticated access
+      let payload;
+      try {
+        payload = requireAuth(req);
+      } catch {
+        return new Response(
+          JSON.stringify({ error: 'אין הרשאה לצפות בהיסטוריית הרכב' }),
+          { status: 403, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      const owned = await prisma.vehicle.findUnique({
+        where: { id: vehicleId },
+        select: { userId: true },
+      });
+      if (!owned) {
+        return new Response(
+          JSON.stringify({ error: 'רכב לא נמצא' }),
+          { status: 404, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      if (payload.role !== 'admin' && owned.userId !== payload.userId) {
+        return new Response(
+          JSON.stringify({ error: 'אין הרשאה לצפות בהיסטוריית הרכב' }),
+          { status: 403, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+    }
 
     const vehicle = await prisma.vehicle.findUnique({
       where: { id: vehicleId },
@@ -112,7 +154,7 @@ export async function GET(
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=3600',
+          'Cache-Control': 'private, max-age=300',
         },
       }
     );

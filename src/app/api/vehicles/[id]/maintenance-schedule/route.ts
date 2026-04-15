@@ -70,6 +70,11 @@ export async function GET(
       return jsonResponse({ error: 'רכב לא נמצא' }, 404);
     }
 
+    // Ownership check — non-admins can only see their own vehicles
+    if (payload.role !== 'admin' && vehicle.userId !== payload.userId) {
+      return jsonResponse({ error: 'אין הרשאה' }, 403);
+    }
+
     // If vehicle has no mileage, try to get from latest treatment
     if (!vehicle.mileage || vehicle.mileage <= 0) {
       const latestTreatment = await prisma.treatment.findFirst({

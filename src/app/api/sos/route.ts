@@ -12,11 +12,10 @@ export async function GET(req: NextRequest) {
     const payload = requireAuth(req);
     const { page, skip, limit } = getPaginationParams(req);
 
-    const where: Prisma.SosEventWhereInput = {};
-    if (payload.role === 'user') {
-      where.userId = payload.userId;
-    }
-    // admin sees all
+    // Explicit role gate: only admins see all events, everyone else sees ONLY their own.
+    // No role is ever treated as "trusted to see everything".
+    const where: Prisma.SosEventWhereInput =
+      payload.role === 'admin' ? {} : { userId: payload.userId };
 
     const [events, total] = await Promise.all([
       prisma.sosEvent.findMany({
