@@ -1,10 +1,18 @@
 import type { Metadata, Viewport } from 'next';
+import * as Sentry from '@sentry/nextjs';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import PWAInstallPrompt from '@/components/shared/PWAInstallPrompt';
 import MaintenanceGate from '@/components/shared/MaintenanceGate';
 
-export const metadata: Metadata = {
+export function generateMetadata(): Metadata {
+  return {
+    ...baseMetadata,
+    other: { ...Sentry.getTraceData() },
+  };
+}
+
+const baseMetadata: Metadata = {
   title: {
     default: 'AutoLog - ניהול רכבים חכם',
     template: '%s | AutoLog',
