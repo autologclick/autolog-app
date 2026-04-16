@@ -75,6 +75,7 @@ model EmailOtp {
 
   @@index([email])
   @@index([expiresAt])
+  @@index([email, consumed])
 }
 
 // ============================================================
@@ -121,6 +122,7 @@ model Vehicle {
   @@index([licensePlate])
   @@index([testExpiryDate])
   @@index([insuranceExpiry])
+  @@index([userId, isPrimary])
 }
 
 model VehicleDriver {
@@ -308,6 +310,8 @@ model Inspection {
   @@index([status])
   @@index([createdAt])
   @@index([date])
+  @@index([vehicleId, date])
+  @@index([vehicleId, status])
 }
 
 model InspectionItem {
@@ -348,6 +352,9 @@ model Appointment {
   @@index([userId])
   @@index([status])
   @@index([date])
+  @@index([garageId, date])
+  @@index([garageId, mechanicId, date])
+  @@index([userId, date])
 }
 
 // ============================================================
@@ -376,6 +383,8 @@ model SosEvent {
 
   @@index([userId])
   @@index([status])
+  @@index([vehicleId])
+  @@index([status, priority])
 }
 
 // ============================================================
@@ -415,6 +424,7 @@ model Expense {
   @@index([vehicleId])
   @@index([category])
   @@index([date])
+  @@index([vehicleId, date])
 }
 
 // ============================================================
@@ -431,6 +441,7 @@ model GarageReview {
   createdAt   DateTime  @default(now())
 
   @@index([garageId])
+  @@index([garageId, createdAt])
 }
 
 // ============================================================
@@ -455,6 +466,7 @@ model Document {
   @@index([vehicleId])
   @@index([type])
   @@index([expiryDate])
+  @@index([vehicleId, type])
 }
 
 // ============================================================
@@ -538,6 +550,8 @@ model Treatment {
   @@index([userId])
   @@index([garageId])
   @@index([status])
+  @@index([vehicleId, date])
+  @@index([userId, status])
 }
 
 // ============================================================
@@ -590,6 +604,7 @@ model AuditLog {
   @@index([resourceType, resourceId])
   @@index([action])
   @@index([timestamp])
+  @@index([userId, timestamp])
 }
 
 // ============================================================
