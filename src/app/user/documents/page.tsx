@@ -598,7 +598,7 @@ export default function DocumentsPage() {
                     <p className="text-sm font-medium text-gray-800 truncate">{uploadFile.name}</p>
                     <p className="text-xs text-gray-400">{(uploadFile.size / 1024).toFixed(0)} KB</p>
                   </div>
-                  <button onClick={resetUploadForm}
+                  <button onClick={resetUploadForm} aria-label="הסר קובץ"
                     className="p-2 rounded-lg hover:bg-gray-200 text-gray-400 transition flex-shrink-0">
                     <X size={18} />
                   </button>

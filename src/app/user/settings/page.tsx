@@ -202,8 +202,9 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">שם מלא</label>
+                <label htmlFor="settings-fullname" className="block text-sm font-medium text-gray-700 mb-2">שם מלא</label>
                 <input
+                  id="settings-fullname"
                   type="text"
                   placeholder="הכנס שם מלא"
                   value={profile.fullName}
@@ -212,8 +213,9 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">טלפון</label>
+                <label htmlFor="settings-phone" className="block text-sm font-medium text-gray-700 mb-2">טלפון</label>
                 <input
+                  id="settings-phone"
                   type="tel"
                   placeholder="050-000-0000"
                   value={profile.phone}
@@ -224,8 +226,9 @@ export default function SettingsPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">אימייל</label>
+                <label htmlFor="settings-email" className="block text-sm font-medium text-gray-700 mb-2">אימייל</label>
                 <input
+                  id="settings-email"
                   type="email"
                   placeholder="example@email.com"
                   value={profile.email}
@@ -234,8 +237,9 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">מספר רישיון</label>
+                <label htmlFor="settings-license" className="block text-sm font-medium text-gray-700 mb-2">מספר רישיון</label>
                 <input
+                  id="settings-license"
                   type="text"
                   placeholder="מספר רישיון נהיגה"
                   value={profile.licenseNumber}
@@ -394,9 +398,10 @@ export default function SettingsPage() {
         ) : (
           <div className="space-y-4">
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">סיסמה נוכחית</label>
+              <label htmlFor="settings-current-password" className="block text-sm font-medium text-gray-700 mb-2">סיסמה נוכחית</label>
               <div className="relative">
                 <input
+                  id="settings-current-password"
                   type={showCurrent ? 'text' : 'password'}
                   value={passwordData.currentPassword}
                   onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
@@ -407,6 +412,7 @@ export default function SettingsPage() {
                   type="button"
                   onClick={() => setShowCurrent(!showCurrent)}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  aria-label={showCurrent ? 'הסתר סיסמה' : 'הצג סיסמה'}
                 >
                   {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -414,9 +420,10 @@ export default function SettingsPage() {
             </div>
 
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">סיסמה חדשה</label>
+              <label htmlFor="settings-new-password" className="block text-sm font-medium text-gray-700 mb-2">סיסמה חדשה</label>
               <div className="relative">
                 <input
+                  id="settings-new-password"
                   type={showNew ? 'text' : 'password'}
                   value={passwordData.newPassword}
                   onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
@@ -427,6 +434,7 @@ export default function SettingsPage() {
                   type="button"
                   onClick={() => setShowNew(!showNew)}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  aria-label={showNew ? 'הסתר סיסמה' : 'הצג סיסמה'}
                 >
                   {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -434,8 +442,9 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">אימות סיסמה חדשה</label>
+              <label htmlFor="settings-confirm-password" className="block text-sm font-medium text-gray-700 mb-2">אימות סיסמה חדשה</label>
               <input
+                id="settings-confirm-password"
                 type="password"
                 value={passwordData.confirmPassword}
                 onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}

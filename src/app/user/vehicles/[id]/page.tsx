@@ -480,12 +480,13 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
           <h1 className="text-lg font-bold text-gray-800">{vehicle.model}</h1>
         </div>
         <div className="flex gap-1">
-          <button className="p-2 hover:bg-gray-100 rounded-lg">
+          <button className="p-2 hover:bg-gray-100 rounded-lg" aria-label="התראות">
             <Bell size={20} className="text-gray-800" />
           </button>
           <button
             onClick={() => router.push('/user/vehicles/add')}
             className="p-2 hover:bg-gray-100 rounded-lg"
+            aria-label="הוסף רכב חדש"
           >
             <Plus size={20} className="text-gray-800" />
           </button>
@@ -493,6 +494,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
             onClick={() => setShowDeleteModal(true)}
             className="p-2 hover:bg-red-50 rounded-lg"
             title="מחק רכב"
+            aria-label="מחק רכב"
           >
             <Trash2 size={20} className="text-red-500" />
           </button>
@@ -659,7 +661,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
         <div className="space-y-4">
           <div className="flex items-center justify-between px-4">
             <h2 className="text-lg font-bold text-gray-800">מסמכים</h2>
-            <button className="p-1 hover:bg-gray-100 rounded-lg">
+            <button className="p-1 hover:bg-gray-100 rounded-lg" aria-label="הוסף מסמך">
               <Plus size={20} className="text-gray-800" />
             </button>
           </div>

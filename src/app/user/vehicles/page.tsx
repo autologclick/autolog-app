@@ -103,6 +103,7 @@ function ImageUploadSection({ imagePreview, onImageSelect, onImageRemove, onCame
             type="button"
             onClick={onImageRemove}
             className="absolute top-2 end-2 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition"
+            aria-label="הסר תמונה"
           >
             <X size={14} />
           </button>

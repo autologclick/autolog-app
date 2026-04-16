@@ -664,10 +664,10 @@ export default function InspectionReportPage() {
       <div className={`rounded-2xl bg-gradient-to-br ${scoreBg(score)} text-white p-4 sm:p-6 shadow-lg`}>
         <div className="flex items-center justify-between mb-3 sm:mb-4">
           <div className="flex gap-2">
-            <button onClick={handleDownload} className="w-8 h-8 sm:w-9 sm:h-9 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
+            <button onClick={handleDownload} aria-label="הורד דוח" className="w-8 h-8 sm:w-9 sm:h-9 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
               <Download size={16} />
             </button>
-            <button onClick={handleShare} className="w-8 h-8 sm:w-9 sm:h-9 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
+            <button onClick={handleShare} aria-label="שתף דוח" className="w-8 h-8 sm:w-9 sm:h-9 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
               <Share2 size={16} />
             </button>
           </div>

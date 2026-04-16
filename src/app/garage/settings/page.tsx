@@ -413,6 +413,7 @@ export default function GarageSettingsPage() {
                     onClick={handleDeleteLogo}
                     className="absolute top-1 left-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition"
                     title="מחק לוגו"
+                    aria-label="מחק לוגו"
                   >
                     <X size={14} />
                   </button>

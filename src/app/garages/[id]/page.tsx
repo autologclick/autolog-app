@@ -175,7 +175,7 @@ export default function PublicGaragePage() {
               התקשר
             </a>
           )}
-          <button onClick={handleShare}
+          <button onClick={handleShare} aria-label="שתף מוסך"
             className="flex items-center justify-center w-11 h-11 rounded-xl border-2 border-gray-200 text-gray-500 hover:bg-gray-50 transition">
             <Share2 size={16} />
           </button>
