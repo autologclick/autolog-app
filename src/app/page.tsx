@@ -89,7 +89,7 @@ function FeatureCard({ icon: Icon, title, description, delay }: {
         <Icon className="w-7 h-7 text-teal-600" />
       </div>
       <h3 className="text-lg font-bold text-[#1e3a5f] mb-3">{title}</h3>
-      <p className="text-gray-500 leading-relaxed text-sm">{description}</p>
+      <p className="text-gray-600 leading-relaxed text-sm">{description}</p>
     </div>
   );
 }
@@ -273,6 +273,7 @@ export default function Home() {
         )}
       </nav>
 
+      <main id="main-content">
       {/* ============ HERO ============ */}
       <section className="relative min-h-[85vh] sm:min-h-[100vh] flex items-center overflow-hidden">
         {/* Background */}
@@ -432,7 +433,7 @@ export default function Home() {
 
       {/* ============ TRUST BAR ============ */}
       <section className="py-6 bg-gray-50 border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 flex flex-wrap justify-center items-center gap-8 text-gray-400 text-sm">
+        <div className="max-w-6xl mx-auto px-4 flex flex-wrap justify-center items-center gap-8 text-gray-600 text-sm">
           <div className="flex items-center gap-2">
             <Lock size={16} />
             <span>מאובטח ומוצפן</span>
@@ -665,7 +666,7 @@ export default function Home() {
                       <Icon className="w-5 h-5 text-emerald-600" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-[#1e3a5f] text-sm mb-1">{title}</h4>
+                      <h3 className="font-bold text-[#1e3a5f] text-sm mb-1">{title}</h3>
                       <p className="text-gray-500 text-sm">{desc}</p>
                     </div>
                   </div>
@@ -685,7 +686,7 @@ export default function Home() {
             <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-8 border border-emerald-100">
               <div className="bg-white rounded-2xl shadow-lg p-6 mb-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-bold text-[#1e3a5f]"><BarChart3 size={16} className="inline" /> סיכום חודשי</h4>
+                  <h3 className="font-bold text-[#1e3a5f]"><BarChart3 size={16} className="inline" /> סיכום חודשי</h3>
                   <span className="text-xs text-gray-400">מרץ 2026</span>
                 </div>
                 <div className="grid grid-cols-3 gap-4 text-center">
@@ -705,7 +706,7 @@ export default function Home() {
               </div>
 
               <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h4 className="font-bold text-[#1e3a5f] mb-3"><Calendar size={16} className="inline" /> תורים להיום</h4>
+                <h3 className="font-bold text-[#1e3a5f] mb-3"><Calendar size={16} className="inline" /> תורים להיום</h3>
                 <div className="space-y-3">
                   {[
                     { time: '09:00', name: 'דני כהן', type: 'טסט שנתי', color: 'bg-blue-100 text-blue-700' },
@@ -850,6 +851,8 @@ export default function Home() {
         </div>
       </section>
 
+      </main>
+
       {/* ============ FOOTER ============ */}
       <footer className="bg-[#0f2b47] text-white pt-16 pb-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -865,7 +868,7 @@ export default function Home() {
 
             {/* Links */}
             <div>
-              <h4 className="font-bold mb-4 text-sm">המוצר</h4>
+              <h3 className="font-bold mb-4 text-sm">המוצר</h3>
               <ul className="space-y-2.5 text-gray-400 text-sm">
                 <li><a href="#features" className="hover:text-white transition">תכונות</a></li>
                 <li><a href="#how-it-works" className="hover:text-white transition">איך זה עובד</a></li>
@@ -876,7 +879,7 @@ export default function Home() {
 
             {/* Legal */}
             <div>
-              <h4 className="font-bold mb-4 text-sm">משפטי</h4>
+              <h3 className="font-bold mb-4 text-sm">משפטי</h3>
               <ul className="space-y-2.5 text-gray-400 text-sm">
                 <li><Link href="/terms" className="hover:text-white transition">תנאי שימוש</Link></li>
                 <li><Link href="/privacy" className="hover:text-white transition">מדיניות פרטיות</Link></li>
@@ -887,7 +890,7 @@ export default function Home() {
 
             {/* Contact */}
             <div>
-              <h4 className="font-bold mb-4 text-sm">צור קשר</h4>
+              <h3 className="font-bold mb-4 text-sm">צור קשר</h3>
               <ul className="space-y-3 text-gray-400 text-sm">
                 <li className="flex items-center gap-2">
                   <Mail size={14} />

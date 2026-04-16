@@ -55,8 +55,11 @@ const baseMetadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  // Allow users to zoom up to 5x for accessibility (WCAG 1.4.4).
+  // Blocking zoom fails Lighthouse accessibility and is hostile to users
+  // who rely on pinch-zoom to read text.
+  maximumScale: 5,
+  userScalable: true,
   themeColor: '#1e3a5f',
 };
 
