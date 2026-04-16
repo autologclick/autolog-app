@@ -1,11 +1,19 @@
+import Image from 'next/image';
+
 export default function Loading() {
   return (
     <div className="min-h-screen bg-[#fef7ed] flex items-center justify-center">
       <div className="text-center">
         {/* Animated Logo */}
         <div className="mb-6 inline-block animate-pulse">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="AutoLog" className="w-20 h-20 object-contain" />
+          <Image
+            src="/logo.png"
+            alt="AutoLog"
+            width={80}
+            height={80}
+            className="w-20 h-20 object-contain"
+            priority
+          />
         </div>
 
         {/* Loading Text */}

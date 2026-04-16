@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import NextImage from 'next/image';
 import { Card } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -407,7 +408,7 @@ export default function GarageSettingsPage() {
             <div className="relative w-28 h-28 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 overflow-hidden flex-shrink-0 group">
               {logo ? (
                 <>
-                  <img src={`${logo}?t=${Date.now()}`} alt="לוגו המוסך" className="w-full h-full object-cover" />
+                  <NextImage src={`${logo}?t=${Date.now()}`} alt="לוגו המוסך" fill sizes="112px" className="object-cover" />
                   <button
                     onClick={handleDeleteLogo}
                     className="absolute top-1 left-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition"
@@ -475,7 +476,7 @@ export default function GarageSettingsPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {gallery.map((url, idx) => (
                 <div key={url} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-                  <img src={url} alt={`תמונה ${idx + 1}`} className="w-full h-full object-cover" />
+                  <NextImage src={url} alt={`תמונה ${idx + 1}`} fill sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw" className="object-cover" />
                   <button
                     onClick={() => handleDeleteGalleryImage(url)}
                     className="absolute top-1.5 left-1.5 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition shadow-md"

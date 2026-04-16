@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import Button from '@/components/ui/Button';
 import Badge, { StatusBadge } from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
@@ -59,6 +60,8 @@ function VehicleImage({ vehicleId, imageUrl, size = 'md', className = '' }: { ve
     lg: 'w-20 h-20',
   };
 
+  const pixelSize = size === 'sm' ? 48 : size === 'md' ? 64 : 80;
+
   if (!imageUrl || hasError) {
     return (
       <div className={`${sizeClasses[size]} bg-teal-50 rounded-xl flex items-center justify-center flex-shrink-0 ${className}`}>
@@ -68,12 +71,16 @@ function VehicleImage({ vehicleId, imageUrl, size = 'md', className = '' }: { ve
   }
 
   return (
-    <img
-      src={imageUrl}
-      alt="תמונת רכב"
-      className={`${sizeClasses[size]} rounded-xl object-cover flex-shrink-0 ${className}`}
-      onError={() => setHasError(true)}
-    />
+    <div className={`${sizeClasses[size]} relative rounded-xl overflow-hidden flex-shrink-0 ${className}`}>
+      <Image
+        src={imageUrl}
+        alt="תמונת רכב"
+        width={pixelSize}
+        height={pixelSize}
+        className="w-full h-full object-cover"
+        onError={() => setHasError(true)}
+      />
+    </div>
   );
 }
 

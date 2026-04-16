@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import NextImage from 'next/image';
 
 import { useState, useEffect } from 'react';
 import {
@@ -351,8 +352,8 @@ export default function AdminApplicationsPage() {
                             <p className="text-xs text-gray-500 mb-2 flex items-center gap-1"><Image size={12} /> תמונות מהמוסך:</p>
                             <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                               {imgs.map((url, idx) => (
-                                <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="aspect-square rounded-lg overflow-hidden border border-gray-200 hover:border-emerald-400 transition">
-                                  <img src={url} alt={`תמונת מוסך ${idx + 1}`} className="w-full h-full object-cover" />
+                                <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 hover:border-emerald-400 transition">
+                                  <NextImage src={url} alt={`תמונת מוסך ${idx + 1}`} fill sizes="(max-width: 640px) 33vw, 16vw" className="object-cover" />
                                 </a>
                               ))}
                             </div>
