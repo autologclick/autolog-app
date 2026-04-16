@@ -13,7 +13,9 @@ import {
   Camera, Image as ImageIcon, Zap, AlertTriangle, ChevronLeft, ChevronDown,
   Check, Flag, CheckCircle, Wrench, TrendingUp, MapPinIcon, Upload
 } from 'lucide-react';
-import Tesseract from 'tesseract.js';
+// Tesseract is dynamically imported inside handleScanReceipt() to keep it out of
+// the initial bundle. It's a heavy OCR library (~5MB) used only when the user
+// explicitly scans a receipt.
 
 interface Inspection {
   id: string;
@@ -364,6 +366,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
     setShowScanning(true);
 
     try {
+      const Tesseract = (await import('tesseract.js')).default;
       const { data: { text } } = await Tesseract.recognize(treatmentData.image, 'heb+eng');
 
       // Parse the OCR text to extract details (basic implementation)

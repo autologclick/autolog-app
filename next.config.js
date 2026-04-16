@@ -8,7 +8,17 @@ const nextConfig = {
     // Temporarily ignore build errors - pre-existing type issues uncovered by cache invalidation
     ignoreBuildErrors: true,
   },
-  experimental: {},
+  experimental: {
+    // Tree-shake icon libraries so only the imported icons end up in the
+    // client bundle. Without this, Next may include the entire library for
+    // some barrel-import patterns.
+    optimizePackageImports: ['lucide-react'],
+  },
+  // Compress responses with gzip / brotli for smaller transfer sizes.
+  compress: true,
+  // Drop source maps in production to reduce deploy size. Sentry still works
+  // via its own source map upload pipeline.
+  productionBrowserSourceMaps: false,
   images: {
     // Allow next/image to optimize remote images from Vercel Blob storage
     remotePatterns: [
