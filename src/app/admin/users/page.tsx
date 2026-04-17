@@ -259,10 +259,12 @@ export default function AdminUsersPage() {
             <tbody>
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center">
+                  <td colSpan={8} className="py-16 text-center">
                     <div className="flex flex-col items-center gap-2">
-                      <Users size={40} className="text-gray-300" />
-                      <p className="text-gray-500 font-medium">{search ? 'לא נמצאו משתמשים תואמים' : 'אין משתמשים במערכת'}</p>
+                      <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-2 border border-gray-200">
+                        <Users size={32} className="text-gray-300" />
+                      </div>
+                      <h3 className="text-lg font-bold text-gray-600">{search ? 'לא נמצאו משתמשים תואמים' : 'אין משתמשים במערכת'}</h3>
                       {search && <p className="text-gray-400 text-sm">נסה לחפש עם מילות מפתח אחרות</p>}
                     </div>
                   </td>

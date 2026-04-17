@@ -342,10 +342,12 @@ export default function GarageDashboard() {
                 </div>
               </div>
             )) : (
-              <div className="text-center py-12">
-                <Calendar size={40} className="mx-auto mb-3 text-gray-200" />
-                <p className="text-gray-500 font-medium">אין תורים להיום</p>
-                <p className="text-gray-400 text-sm mt-1">מקום פנוי לתורים חדשים</p>
+              <div className="text-center py-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
+                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm border border-gray-200">
+                  <Calendar size={28} className="text-gray-300" />
+                </div>
+                <h3 className="text-base font-bold text-gray-600 mb-1">אין תורים להיום</h3>
+                <p className="text-gray-400 text-sm">מקום פנוי לתורים חדשים</p>
               </div>
             )}
           </div>
@@ -431,11 +433,14 @@ export default function GarageDashboard() {
               </div>
             </>
           ) : (
-            <div className="text-center py-12">
-              <Shield size={40} className="mx-auto mb-3 text-gray-200" />
-              <p className="text-gray-500 font-medium">עדיין לא נעשו בדיקות</p>
+            <div className="text-center py-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
+              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm border border-gray-200">
+                <Shield size={28} className="text-gray-300" />
+              </div>
+              <h3 className="text-base font-bold text-gray-600 mb-1">עדיין לא נעשו בדיקות</h3>
+              <p className="text-gray-400 text-sm mb-4">צרו את הבדיקה הראשונה שלכם</p>
               <button onClick={() => router.push('/garage/new-inspection')}
-                className="mt-4 px-4 py-2 rounded-lg text-white font-medium transition hover:shadow-md" style={{backgroundColor: '#0d9488'}}>
+                className="px-4 py-2 rounded-lg text-white font-medium transition hover:shadow-md" style={{backgroundColor: '#0d9488'}}>
                 צור בדיקה ראשונה
               </button>
             </div>

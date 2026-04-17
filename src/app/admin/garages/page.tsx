@@ -190,10 +190,16 @@ export default function AdminGaragesPage() {
           <Loader2 size={32} className="animate-spin text-teal-600" />
         </div>
       ) : garages.length === 0 ? (
-        <div className="text-center py-12">
-          <Building2 size={48} className="mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500 text-lg">לא נמצאו מוסכים</p>
-        </div>
+        <Card className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100">
+          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-200">
+            <Building2 size={32} className="text-gray-300" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-600 mb-2">{search ? 'לא נמצאו מוסכים תואמים' : 'אין מוסכים במערכת'}</h3>
+          <p className="text-gray-400 text-sm mb-4">{search ? 'נסה לחפש עם מילות מפתח אחרות' : 'הוסיפו את המוסך הראשון כדי להתחיל'}</p>
+          {!search && (
+            <Button icon={<Plus size={16} />} onClick={() => { resetForm(); setShowAddModal(true); }}>הוסף מוסך ראשון</Button>
+          )}
+        </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {garages.map(g => (
