@@ -648,6 +648,7 @@ export default function GarageSettingsPage() {
         <Button
           onClick={handleSave}
           loading={saving}
+          disabled={!name.trim() || !city.trim() || !phone.trim()}
           icon={<Save size={16} />}
           className="bg-emerald-600 hover:bg-emerald-700 text-white"
         >

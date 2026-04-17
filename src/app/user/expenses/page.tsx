@@ -648,6 +648,8 @@ export default function ExpensesPage() {
                 label="סכום (₪)"
                 type="number"
                 placeholder="0"
+                min="0"
+                step="0.01"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
               />
@@ -669,7 +671,7 @@ export default function ExpensesPage() {
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <Button variant="ghost" onClick={() => { setShowAddModal(false); resetForm(); }} className="w-full sm:w-auto">סיום</Button>
-              <Button loading={saving} onClick={handleAddExpense} className="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-teal-600">הוסף הוצאה</Button>
+              <Button loading={saving} disabled={!formData.vehicleId || !formData.amount || !formData.category} onClick={handleAddExpense} className="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-teal-600">הוסף הוצאה</Button>
             </div>
           </div>
         </Modal>
@@ -720,6 +722,8 @@ export default function ExpensesPage() {
                 label="סכום (₪)"
                 type="number"
                 placeholder="0"
+                min="0"
+                step="0.01"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
               />
@@ -745,7 +749,7 @@ export default function ExpensesPage() {
                 setEditExpenseId(null);
                 resetForm();
               }} className="w-full sm:w-auto">ביטול</Button>
-              <Button loading={saving} onClick={handleEditExpense} className="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-teal-600">שמור שינויים</Button>
+              <Button loading={saving} disabled={!formData.amount || !formData.category} onClick={handleEditExpense} className="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-teal-600">שמור שינויים</Button>
             </div>
           </div>
         </Modal>

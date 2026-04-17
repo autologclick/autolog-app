@@ -72,7 +72,19 @@ export default function SettingsPage() {
     });
   }, []);
 
+  // Basic client-side validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^0\d{1,2}[-\s]?\d{3}[-\s]?\d{4}$/;
+  const isProfileValid = profile.fullName.trim().length > 0
+    && (!profile.email || emailRegex.test(profile.email))
+    && (!profile.phone || phoneRegex.test(profile.phone.replace(/[-\s]/g, '').length >= 10 ? profile.phone : ''));
+
   const handleSave = async () => {
+    if (profile.email && !emailRegex.test(profile.email)) {
+      setSaveMessage('כתובת אימייל לא תקינה');
+      setSaveSuccess(false);
+      return;
+    }
     setSaving(true);
     setSaveMessage('');
     setSaveSuccess(false);
@@ -262,7 +274,7 @@ export default function SettingsPage() {
 
             <button
               onClick={handleSave}
-              disabled={saving}
+              disabled={saving || !profile.fullName.trim()}
               className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-medium py-2 rounded-xl hover:from-teal-600 hover:to-teal-700 transition disabled:opacity-50"
             >
               {saving ? (
