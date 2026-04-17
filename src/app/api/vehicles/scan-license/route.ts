@@ -75,9 +75,10 @@ async function extractWithOpenAI(apiKey: string, imageDataUrl: string): Promise<
               {
                 type: 'text',
                 text: `This is a photo of an Israeli vehicle registration document (רישיון רכב).
-Extract ONLY the vehicle license plate number (מספר רכב).
-It is a 7 or 8 digit number, usually at the top of the document.
-Return ONLY the digits, nothing else. No dashes, no spaces, no explanation.
+Find the field labeled "מספר רכב" (vehicle number). It appears near the top-right of the document.
+The number is 7 or 8 digits, sometimes shown with a check digit after a dash (e.g. 5919270-2-5).
+Return ONLY the first 7 or 8 digits of the vehicle number, WITHOUT the check digit.
+No dashes, no spaces, no explanation — just the digits.
 If you cannot find it, return "NOT_FOUND".`,
               },
               {
@@ -105,8 +106,16 @@ If you cannot find it, return "NOT_FOUND".`,
 
     // Clean and validate
     const cleaned = text.replace(/[-–—\s.]/g, '');
+
+    // Exact 7-8 digits
     if (/^\d{7,8}$/.test(cleaned)) {
       return cleaned;
+    }
+
+    // AI returned extra digits (check digit) — take first 7 or 8
+    const digitMatch = cleaned.match(/^(\d{7,8})/);
+    if (digitMatch) {
+      return digitMatch[1];
     }
 
     return null;
@@ -152,9 +161,10 @@ async function extractWithAnthropic(apiKey: string, imageDataUrl: string): Promi
               {
                 type: 'text',
                 text: `This is a photo of an Israeli vehicle registration document (רישיון רכב).
-Extract ONLY the vehicle license plate number (מספר רכב).
-It is a 7 or 8 digit number, usually at the top of the document.
-Return ONLY the digits, nothing else. No dashes, no spaces, no explanation.
+Find the field labeled "מספר רכב" (vehicle number). It appears near the top-right of the document.
+The number is 7 or 8 digits, sometimes shown with a check digit after a dash (e.g. 5919270-2-5).
+Return ONLY the first 7 or 8 digits of the vehicle number, WITHOUT the check digit.
+No dashes, no spaces, no explanation — just the digits.
 If you cannot find it, return "NOT_FOUND".`,
               },
             ],
@@ -175,8 +185,15 @@ If you cannot find it, return "NOT_FOUND".`,
     if (text === 'NOT_FOUND' || !text) return null;
 
     const cleaned = text.replace(/[-–—\s.]/g, '');
+
     if (/^\d{7,8}$/.test(cleaned)) {
       return cleaned;
+    }
+
+    // AI returned extra digits (check digit) — take first 7 or 8
+    const digitMatch = cleaned.match(/^(\d{7,8})/);
+    if (digitMatch) {
+      return digitMatch[1];
     }
 
     return null;
