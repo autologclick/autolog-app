@@ -217,7 +217,7 @@ function PhotoGrid({ photos, labels }: { photos: Record<string, string>; labels:
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {entries.map(([key, src]) => (
           <div key={key} className="relative cursor-pointer group" onClick={() => setSelected(src)}>
-            <img src={src} alt={labels[key] || key} className="w-full h-24 sm:h-32 object-cover rounded-lg border border-gray-200 group-hover:border-teal-400 transition" />
+            <img src={src} alt={labels[key] || key} loading="lazy" className="w-full h-24 sm:h-32 object-cover rounded-lg border border-gray-200 group-hover:border-teal-400 transition" />
             <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent rounded-b-lg p-2">
               <span className="text-white text-xs font-medium">{labels[key] || key}</span>
             </div>
@@ -1197,7 +1197,7 @@ export default function InspectionReportPage() {
               )}
             </div>
             <div className="border-2 border-gray-200 rounded-xl overflow-hidden bg-white p-2">
-              <img src={inspection.customerSignature} alt="חתימת לקוח" className="max-h-24 mx-auto" />
+              <img src={inspection.customerSignature} alt="חתימת לקוח" loading="lazy" className="max-h-24 mx-auto" />
             </div>
             {inspection.signedAt && (
               <p className="text-xs text-gray-400 text-center">

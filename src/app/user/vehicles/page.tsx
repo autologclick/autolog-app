@@ -98,7 +98,7 @@ function ImageUploadSection({ imagePreview, onImageSelect, onImageRemove, onCame
       <label className="block text-sm font-medium text-gray-700">תמונת הרכב</label>
       {imagePreview ? (
         <div className="relative w-full h-40 rounded-xl overflow-hidden border border-gray-200">
-          <img src={imagePreview} alt="תצוגה מקדימה" className="w-full h-full object-cover" />
+          <img src={imagePreview} alt="תצוגה מקדימה" loading="lazy" className="w-full h-full object-cover" />
           <button
             type="button"
             onClick={onImageRemove}

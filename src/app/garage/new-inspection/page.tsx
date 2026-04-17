@@ -951,7 +951,7 @@ export default function NewInspectionPage() {
                   <div className="space-y-3 p-4 bg-blue-50/50 rounded-xl border border-blue-200">
                     {scanPreview && (
                       <div className="flex items-center gap-3 mb-2">
-                        <img src={scanPreview} alt="סריקה" className="w-16 h-12 object-cover rounded-lg border" />
+                        <img src={scanPreview} alt="סריקה" loading="lazy" className="w-16 h-12 object-cover rounded-lg border" />
                         <div className="flex-1">
                           {scanLoading ? (
                             <div className="flex items-center gap-2 text-sm text-teal-600">
@@ -1065,7 +1065,7 @@ export default function NewInspectionPage() {
                       </>
                     ) : scanPreview ? (
                       <>
-                        <img src={scanPreview} alt="scan" className="w-40 h-28 object-cover rounded-lg mb-3 border" />
+                        <img src={scanPreview} alt="scan" loading="lazy" className="w-40 h-28 object-cover rounded-lg mb-3 border" />
                         <p className="text-sm text-gray-600 mb-2">לא זוהו פרטים. הזן ידנית:</p>
                         <button onClick={() => setVehicleMode('manual')}
                           className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition">
@@ -1132,7 +1132,7 @@ export default function NewInspectionPage() {
               <button key={key} onClick={() => handlePhotoUpload('exterior', key)}
                 className="relative aspect-[4/3] bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 transition flex flex-col items-center justify-center overflow-hidden">
                 {exteriorPhotos[key] ? (
-                  <img src={exteriorPhotos[key]} alt={label} className="absolute inset-0 w-full h-full object-cover rounded-xl" />
+                  <img src={exteriorPhotos[key]} alt={label} loading="lazy" className="absolute inset-0 w-full h-full object-cover rounded-xl" />
                 ) : (
                   <Camera size={20} className="text-gray-400 mb-1" />
                 )}
@@ -1157,7 +1157,7 @@ export default function NewInspectionPage() {
               <button key={key} onClick={() => handlePhotoUpload('interior', key)}
                 className="relative aspect-[4/3] bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 transition flex flex-col items-center justify-center overflow-hidden">
                 {interiorPhotos[key] ? (
-                  <img src={interiorPhotos[key]} alt={label} className="absolute inset-0 w-full h-full object-cover rounded-xl" />
+                  <img src={interiorPhotos[key]} alt={label} loading="lazy" className="absolute inset-0 w-full h-full object-cover rounded-xl" />
                 ) : (
                   <Camera size={20} className="text-gray-400 mb-1" />
                 )}
@@ -1468,7 +1468,7 @@ export default function NewInspectionPage() {
                       {media.type === 'video' ? (
                         <video src={media.url} controls className="w-full max-h-48 object-contain bg-black" />
                       ) : (
-                        <img src={media.url} alt={media.name} className="w-full max-h-48 object-contain" />
+                        <img src={media.url} alt={media.name} loading="lazy" className="w-full max-h-48 object-contain" />
                       )}
                       <div className="flex items-center justify-between px-3 py-1.5 bg-white border-t border-gray-100">
                         <span className="text-xs text-gray-500 truncate">{media.name}</span>
@@ -1597,7 +1597,7 @@ export default function NewInspectionPage() {
               <p className="text-xs text-gray-500 text-right mb-2">תמונת רכב מקדימה</p>
               {vehiclePhoto ? (
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
-                  <img src={vehiclePhoto} alt="רכב" className="w-full h-full object-cover" />
+                  <img src={vehiclePhoto} alt="רכב" loading="lazy" className="w-full h-full object-cover" />
                   <button onClick={() => setVehiclePhoto('')}
                     className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">✕</button>
                 </div>
@@ -1624,7 +1624,7 @@ export default function NewInspectionPage() {
               <p className="text-xs text-gray-500 text-right mb-2">חשבונית / קבלה</p>
               {invoicePhoto ? (
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
-                  <img src={invoicePhoto} alt="חשבונית" className="w-full h-full object-cover" />
+                  <img src={invoicePhoto} alt="חשבונית" loading="lazy" className="w-full h-full object-cover" />
                   <button onClick={() => setInvoicePhoto('')}
                     className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">✕</button>
                 </div>
@@ -1851,7 +1851,7 @@ export default function NewInspectionPage() {
             <div className="grid grid-cols-3 gap-2 mt-2">
               {servicePhotos.map((photo, idx) => (
                 <div key={idx} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-                  <img src={photo} alt={`חלק ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={photo} alt={`חלק ${idx + 1}`} loading="lazy" className="w-full h-full object-cover" />
                   <button onClick={() => setServicePhotos(prev => prev.filter((_, i) => i !== idx))}
                     className="absolute top-1 start-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">✕</button>
                 </div>

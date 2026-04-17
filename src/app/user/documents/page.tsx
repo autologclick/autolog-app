@@ -588,7 +588,7 @@ export default function DocumentsPage() {
                 {/* File preview + cancel */}
                 <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
                   {uploadPreview ? (
-                    <img src={uploadPreview} alt="תצוגה מקדימה" className="w-12 h-12 object-cover rounded-lg border border-gray-200" />
+                    <img src={uploadPreview} alt="תצוגה מקדימה" loading="lazy" className="w-12 h-12 object-cover rounded-lg border border-gray-200" />
                   ) : (
                     <div className="w-12 h-12 bg-white rounded-lg border border-gray-200 flex items-center justify-center flex-shrink-0">
                       <FileText size={20} className="text-gray-400" />
@@ -793,7 +793,7 @@ export default function DocumentsPage() {
             </div>
             <div className="bg-white rounded-b-2xl overflow-auto flex-1 flex items-center justify-center p-2">
               {viewingDoc.fileUrl.startsWith('data:image') || viewingDoc.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                <img src={viewingDoc.fileUrl} alt={viewingDoc.title}
+                <img src={viewingDoc.fileUrl} alt={viewingDoc.title} loading="lazy"
                   className="max-w-full max-h-[70vh] object-contain rounded-lg" />
               ) : viewingDoc.fileUrl.startsWith('data:application/pdf') || viewingDoc.fileUrl.endsWith('.pdf') ? (
                 <iframe src={viewingDoc.fileUrl} className="w-full h-[70vh] rounded-lg" />

@@ -469,7 +469,7 @@ export default function GarageApplyPage() {
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-3">
                     {imagePreviews.map((img, idx) => (
                       <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-gray-200 group">
-                        <img src={img.preview} alt={`תמונה ${idx + 1}`} className="w-full h-full object-cover" />
+                        <img src={img.preview} alt={`תמונה ${idx + 1}`} loading="lazy" className="w-full h-full object-cover" />
                         <button
                           type="button"
                           onClick={() => removeImagePreview(idx)}

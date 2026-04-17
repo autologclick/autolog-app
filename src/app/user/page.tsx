@@ -992,7 +992,7 @@ export default function UserHomePage() {
 
               {treatmentImage && (
                 <div className="relative rounded-xl overflow-hidden border">
-                  <img src={treatmentImage} alt="קבלה" className="w-full max-h-40 object-cover" />
+                  <img src={treatmentImage} alt="קבלה" loading="lazy" className="w-full max-h-40 object-cover" />
                   <button onClick={() => setTreatmentImage(null)} className="absolute top-2 left-2 bg-black/50 text-white rounded-full p-1">
                     <X size={14} />
                   </button>
