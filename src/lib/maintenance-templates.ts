@@ -42,7 +42,7 @@ export interface MaintenanceTemplateData {
 
 // Bump this version whenever ISRAELI_MARKET_TEMPLATES changes.
 // Auto-seed will re-run when the deployed version differs from the DB.
-const TEMPLATE_VERSION = 3;
+const TEMPLATE_VERSION = 4;
 
 let tableChecked = false;
 let autoSeeded = false;
@@ -280,7 +280,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
     items: [
       { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '250-400 ₪', description: 'החלפת שמן סינטטי ומסנן שמן לשמירה על ביצועי המנוע' },
       { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '80-150 ₪', description: 'מסנן אוויר נקי מבטיח שריפה יעילה וחיסכון בדלק' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן תא נוסעים (מזגן)', intervalKm: 15000, intervalMonths: 12, estimatedCost: '60-120 ₪', description: 'מסנן תא הנוסעים מסנן אבק ומזהמים מהאוויר בתוך הרכב' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '60-120 ₪', description: 'מסנן תא הנוסעים מסנן אבק ומזהמים מהאוויר בתוך הרכב' },
       { category: 'בלמים', item: 'בדיקת רפידות בלמים קדמיות', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-800 ₪', description: 'בדיקת עובי רפידות הבלמים והחלפה במידת הצורך' },
       { category: 'בלמים', item: 'בדיקת רפידות בלמים אחוריות', intervalKm: 60000, intervalMonths: 48, estimatedCost: '350-700 ₪', description: 'בדיקת רפידות אחוריות — בלאי איטי יותר מקדמיות' },
       { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 60000, intervalMonths: 24, estimatedCost: '150-250 ₪', description: 'נוזל בלמים סופג לחות לאורך זמן ומאבד מיעילותו' },
@@ -292,7 +292,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '200-400 ₪', description: 'מצתים בלויים פוגעים בביצועי המנוע ובצריכת הדלק' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר (DSG/אוטומט)', intervalKm: 60000, intervalMonths: 48, estimatedCost: '500-900 ₪', description: 'החלפת שמן גיר DSG שומרת על תיבת ההילוכים ומונעת תקלות' },
-
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, estimatedCost: '0 ₪', description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -308,7 +308,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '220-380 ₪', description: 'החלפת שמן ומסנן — הטיפול הבסיסי ביותר לשמירה על המנוע' },
       { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '70-130 ₪', description: 'מסנן אוויר נקי חיוני לביצועי מנוע מיטביים' },
       { category: 'שמן ומסננים', item: 'החלפת מסנן דלק', intervalKm: 60000, intervalMonths: 48, estimatedCost: '100-200 ₪', description: 'מסנן דלק מגן על מערכת ההזרקה מפני זיהומים' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן תא נוסעים', intervalKm: 15000, intervalMonths: 12, estimatedCost: '50-100 ₪', description: 'מסנן קבינה לאוויר נקי ונעים בתוך הרכב' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '50-100 ₪', description: 'מסנן קבינה לאוויר נקי ונעים בתוך הרכב' },
       { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-800 ₪', description: 'בדיקת רפידות, דיסקים וצנרת בלמים' },
       { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, estimatedCost: '120-220 ₪', description: 'נוזל בלמים חדש מבטיח בלימה אפקטיבית' },
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 60, estimatedCost: '180-300 ₪', description: 'נוזל קירור מונע התחממות יתר של המנוע' },
@@ -318,7 +318,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, estimatedCost: '150-350 ₪', description: 'מצתים חדשים משפרים ביצועים וצריכת דלק' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, estimatedCost: '400-800 ₪', description: 'שמן גיר נקי מונע שחיקה מוקדמת של תיבת ההילוכים' },
-
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, estimatedCost: '0 ₪', description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -333,7 +333,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
     items: [
       { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '250-400 ₪', description: 'טויוטה ישראל — החלפה כל 15,000 ק"מ או שנה' },
       { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 45000, intervalMonths: 36, estimatedCost: '80-140 ₪', description: 'מסנן אוויר מנוע — החלפה כל 3 טיפולים' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן תא נוסעים', intervalKm: 15000, intervalMonths: 12, estimatedCost: '60-110 ₪', description: 'שמירה על אוויר נקי בתא הנוסעים — כל טיפול' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '60-110 ₪', description: 'שמירה על אוויר נקי בתא הנוסעים — כל טיפול' },
       { category: 'בלמים', item: 'בדיקת רפידות ודיסקי בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-900 ₪', description: 'בדיקה והחלפה לפי בלאי — בטיחות קריטית' },
       { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 36, estimatedCost: '130-230 ₪', description: 'מונע קורוזיה במערכת הבלמים' },
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 160000, intervalMonths: 84, estimatedCost: '200-350 ₪', description: 'טויוטה משתמשת בנוזל Super Long Life — החלפה נדירה' },
@@ -344,7 +344,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 105000, intervalMonths: 72, estimatedCost: '200-400 ₪', description: 'מצתי אירידיום של טויוטה מחזיקים עד 100,000 ק"מ' },
       { category: 'תיבת הילוכים', item: 'בדיקת שמן גיר CVT/אוטומט', intervalKm: 75000, intervalMonths: 60, estimatedCost: '400-700 ₪', description: 'בדיקה והחלפה לפי סוג התיבה' },
-
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, estimatedCost: '0 ₪', description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -359,7 +359,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
     items: [
       { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '220-370 ₪', description: 'טיפול בסיסי — שמירה על המנוע באחריות קיה 7 שנים' },
       { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '70-130 ₪', description: 'מסנן אוויר חדש לביצועי מנוע מיטביים' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן תא נוסעים', intervalKm: 15000, intervalMonths: 12, estimatedCost: '50-100 ₪', description: 'אוויר נקי בתא הנוסעים' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '50-100 ₪', description: 'אוויר נקי בתא הנוסעים' },
       { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '350-750 ₪', description: 'בדיקת רפידות ודיסקים' },
       { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, estimatedCost: '120-200 ₪', description: 'נוזל חדש לבלימה בטוחה' },
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 60, estimatedCost: '170-280 ₪', description: 'מניעת התחממות יתר' },
@@ -369,7 +369,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, estimatedCost: '150-300 ₪', description: 'מצתים חדשים לביצועים ויעילות' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, estimatedCost: '400-750 ₪', description: 'שמירה על תיבת ההילוכים' },
-
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, estimatedCost: '0 ₪', description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -384,7 +384,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
     items: [
       { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '250-400 ₪', description: 'שמן סינטטי 0W-20 מומלץ למנועי SkyActiv' },
       { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '80-140 ₪', description: 'מסנן אוויר נקי לטכנולוגיית SkyActiv' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן תא נוסעים', intervalKm: 20000, intervalMonths: 18, estimatedCost: '60-110 ₪', description: 'אוויר נקי ונעים' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 20000, intervalMonths: 18, estimatedCost: '60-110 ₪', description: 'אוויר נקי ונעים' },
       { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-850 ₪', description: 'בדיקה והחלפה לפי בלאי' },
       { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, estimatedCost: '130-220 ₪', description: 'שמירה על מערכת בלימה אפקטיבית' },
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, estimatedCost: '200-320 ₪', description: 'נוזל קירור FL22 ייעודי למאזדה' },
@@ -393,7 +393,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, estimatedCost: '180-350 ₪', description: 'מצתים ייעודיים למנועי SkyActiv' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, estimatedCost: '450-800 ₪', description: 'שמן SkyActiv-Drive ייעודי' },
-
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, estimatedCost: '0 ₪', description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -408,7 +408,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
     items: [
       { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '250-400 ₪', description: 'מרווח VW Group סטנדרטי' },
       { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '80-150 ₪', description: 'מסנן אוויר — מרווח VW Group' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן תא נוסעים', intervalKm: 15000, intervalMonths: 12, estimatedCost: '60-120 ₪', description: 'מסנן קבינה' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '60-120 ₪', description: 'מסנן קבינה' },
       { category: 'בלמים', item: 'בדיקת רפידות בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-800 ₪', description: 'בדיקת בלמים קדמיים ואחוריים' },
       { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 60000, intervalMonths: 24, estimatedCost: '150-250 ₪', description: 'החלפה כל שנתיים' },
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, estimatedCost: '200-350 ₪', description: 'נוזל קירור G13' },
@@ -417,7 +417,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '200-400 ₪', description: 'מצתים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DSG', intervalKm: 60000, intervalMonths: 48, estimatedCost: '500-900 ₪', description: 'שמן DSG — קריטי לתיבות כפולות' },
-
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, estimatedCost: '0 ₪', description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 ];

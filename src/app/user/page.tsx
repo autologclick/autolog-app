@@ -1198,7 +1198,11 @@ export default function UserHomePage() {
                     return Math.round(avg * mult / 10) * 10;
                   };
                   let total = 0;
-                  const rows = dueItems.map((item, idx) => {
+                  // Separate billable items from free inspection
+                  const billableItems = dueItems.filter(i => i.category !== 'כללי');
+                  const inspectionItem = dueItems.find(i => i.category === 'כללי');
+
+                  const rows = billableItems.map((item, idx) => {
                     const price = parseCost(item.estimatedCost);
                     if (price) total += price;
                     return (
@@ -1214,13 +1218,19 @@ export default function UserHomePage() {
                   return (
                     <>
                       {rows}
-                      {dueItems.length === 0 && (
+                      {billableItems.length === 0 && (
                         <div className="text-sm text-gray-500 text-center py-3">טיפול שגרתי — החלפת שמן ומסננים</div>
                       )}
                       {total > 0 && (
                         <div className="flex items-center justify-between mt-3 p-3 bg-teal-50 rounded-xl border border-teal-100">
                           <span className="text-sm font-bold text-teal-800">סה&quot;כ משוער</span>
                           <span className="text-base font-bold text-teal-800">≈ ₪{total.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {inspectionItem && (
+                        <div className="mt-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                          <div className="text-sm font-bold text-blue-800 mb-1">🔍 בדיקה כללית (ללא עלות)</div>
+                          <div className="text-xs text-blue-700 leading-relaxed">{inspectionItem.description}</div>
                         </div>
                       )}
                     </>
