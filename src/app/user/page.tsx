@@ -153,10 +153,10 @@ const expenseCatLabel = (c: string) => {
 // ── Components ─────────────────────────────────────
 const LicensePlate = ({ plate }: { plate: string }) => (
   <div
-    dir="ltr"
     className="inline-flex items-stretch rounded-md overflow-hidden border-2 border-black shadow-md bg-[#f7d417]"
+    style={{ direction: 'ltr', unicodeBidi: 'bidi-override' }}
   >
-    {/* Israeli blue strip */}
+    {/* Israeli blue strip — left side */}
     <div className="bg-[#1e56a8] text-white px-1.5 py-1 flex flex-col items-center justify-center gap-[2px] min-w-[30px]">
       <div className="w-5 h-3 bg-white flex items-center justify-center">
         <span className="text-[#1e56a8] text-[9px] leading-none">✡</span>
@@ -164,11 +164,11 @@ const LicensePlate = ({ plate }: { plate: string }) => (
       <span className="text-white text-[9px] font-bold leading-none tracking-wider">IL</span>
       <span className="text-white text-[7px] leading-none" style={{ fontFamily: "'Arial Hebrew', Arial, sans-serif" }}>ישראל</span>
     </div>
-    {/* Plate body */}
+    {/* Plate body — right side */}
     <div className="px-4 py-1 flex items-center border-l-2 border-black">
       <span
         className="text-[26px] font-black text-black tracking-[1px] leading-none"
-        style={{ fontFamily: "'Arial Black', 'Helvetica', sans-serif" }}
+        style={{ fontFamily: "'Arial Black', 'Helvetica', sans-serif", direction: 'ltr', unicodeBidi: 'bidi-override' }}
       >
         {formatPlate(plate)}
       </span>
