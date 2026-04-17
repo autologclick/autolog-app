@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button';
 import {
   Shield, Calendar, Star, Users, TrendingUp, Clock, FileText, Plus, Building2,
   Loader2, BarChart3, Phone, ChevronLeft, DollarSign, AlertCircle, CheckCircle2,
-  Wrench, User, AlertTriangle, Brain, Zap, Target, Activity, PenLine
+  Wrench, User, AlertTriangle, Brain, Zap, Target, Activity, PenLine, Search, X
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -46,12 +46,27 @@ const inspectionTypeLabels: Record<string, string> = {
   brakes: 'בדיקת בלמים',
 };
 
+interface CustomerResult {
+  id: string;
+  fullName: string;
+  phone?: string;
+  email?: string;
+  vehicles?: { licensePlate: string; manufacturer: string; model: string }[];
+}
+
 export default function GarageDashboard() {
   const router = useRouter();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [unreadNotifs, setUnreadNotifs] = useState(0);
+
+  // Quick search
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<CustomerResult[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const searchTimeout = useState<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -84,6 +99,28 @@ export default function GarageDashboard() {
       .then(d => { if (d.unreadCount) setUnreadNotifs(d.unreadCount); })
       .catch(() => {});
   }, []);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (searchTimeout[0]) clearTimeout(searchTimeout[0]);
+    if (!query.trim()) {
+      setSearchResults([]);
+      setShowSearch(false);
+      return;
+    }
+    setShowSearch(true);
+    searchTimeout[0] = setTimeout(async () => {
+      setSearchLoading(true);
+      try {
+        const res = await fetch(`/api/garage/customers?search=${encodeURIComponent(query.trim())}&limit=5`);
+        if (res.ok) {
+          const data = await res.json();
+          setSearchResults(data.customers || []);
+        }
+      } catch { /* silently fail */ }
+      setSearchLoading(false);
+    }, 300);
+  };
 
   if (loading) {
     return (
@@ -139,6 +176,78 @@ export default function GarageDashboard() {
               בדיקה חדשה
             </Button>
           </div>
+        </div>
+
+        {/* Quick Customer Search */}
+        <div className="relative mb-2">
+          <div className="relative">
+            <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="חפש לקוח — שם, טלפון או לוחית רישוי..."
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              onFocus={() => { if (searchQuery.trim()) setShowSearch(true); }}
+              className="w-full pr-10 pl-10 py-3 bg-white border border-gray-200 rounded-xl text-sm text-right placeholder:text-gray-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 transition shadow-sm"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => { setSearchQuery(''); setSearchResults([]); setShowSearch(false); }}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+          {showSearch && (
+            <div className="absolute top-full right-0 left-0 mt-1 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
+              {searchLoading ? (
+                <div className="flex items-center justify-center py-6 gap-2">
+                  <Loader2 size={16} className="animate-spin text-teal-500" />
+                  <span className="text-sm text-gray-400">מחפש...</span>
+                </div>
+              ) : searchResults.length > 0 ? (
+                <div>
+                  {searchResults.map(c => (
+                    <button
+                      key={c.id}
+                      onClick={() => {
+                        router.push('/garage/customers');
+                        setShowSearch(false);
+                        setSearchQuery('');
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-right hover:bg-[#fef7ed] transition border-b border-gray-50 last:border-b-0"
+                    >
+                      <div className="w-9 h-9 bg-teal-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <User size={16} className="text-teal-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-[#1e3a5f] truncate">{c.fullName}</div>
+                        <div className="text-xs text-gray-400 truncate">
+                          {c.phone && <span>{c.phone}</span>}
+                          {c.vehicles && c.vehicles.length > 0 && (
+                            <span>{c.phone ? ' • ' : ''}{c.vehicles[0].licensePlate} — {c.vehicles[0].manufacturer} {c.vehicles[0].model}</span>
+                          )}
+                        </div>
+                      </div>
+                      <ChevronLeft size={14} className="text-gray-300 flex-shrink-0" />
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => { router.push(`/garage/customers?search=${encodeURIComponent(searchQuery)}`); setShowSearch(false); }}
+                    className="w-full text-center py-2.5 text-xs font-medium text-teal-600 hover:bg-teal-50 transition"
+                  >
+                    הצג את כל התוצאות ←
+                  </button>
+                </div>
+              ) : searchQuery.trim() ? (
+                <div className="text-center py-6">
+                  <Users size={24} className="mx-auto text-gray-200 mb-2" />
+                  <p className="text-sm text-gray-400">לא נמצאו לקוחות</p>
+                </div>
+              ) : null}
+            </div>
+          )}
         </div>
 
         {/* Pending Appointments Banner */}

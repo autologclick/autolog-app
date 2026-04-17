@@ -56,10 +56,27 @@ export async function GET(req: NextRequest) {
       }),
     ]);
 
-    const customers = aggregateGarageCustomers(
+    let customers = aggregateGarageCustomers(
       appointments as AppointmentRow[],
       inspections as InspectionRow[],
     );
+
+    // Optional search filter
+    const search = req.nextUrl.searchParams.get('search')?.trim().toLowerCase();
+    if (search) {
+      customers = customers.filter(c =>
+        c.fullName.toLowerCase().includes(search) ||
+        (c.phone && c.phone.includes(search)) ||
+        (c.email && c.email.toLowerCase().includes(search)) ||
+        c.vehicles.some(v => v.licensePlate.includes(search))
+      );
+    }
+
+    // Optional limit
+    const limit = parseInt(req.nextUrl.searchParams.get('limit') || '0');
+    if (limit > 0) {
+      customers = customers.slice(0, limit);
+    }
 
     return jsonResponse({ customers });
   } catch (error) {
