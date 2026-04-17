@@ -196,7 +196,15 @@ export default function UserHomePage() {
 
   // State
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [selectedIdx, setSelectedIdx] = useState(0);
+  const [selectedIdx, setSelectedIdxRaw] = useState(0);
+
+  // Persist selected vehicle across refreshes
+  const setSelectedIdx = (idx: number, vehicleId?: string) => {
+    setSelectedIdxRaw(idx);
+    if (vehicleId) {
+      try { localStorage.setItem('autolog_selected_vehicle', vehicleId); } catch {}
+    }
+  };
   const [showVehicleList, setShowVehicleList] = useState(false);
   const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -261,8 +269,20 @@ export default function UserHomePage() {
         if (!data) return;
         if (data.vehicles?.length > 0) {
           setVehicles(data.vehicles);
-          const primaryIdx = data.vehicles.findIndex((v: Vehicle) => v.isPrimary);
-          if (primaryIdx >= 0) setSelectedIdx(primaryIdx);
+          // Restore last selected vehicle, fall back to primary
+          let restoredIdx = -1;
+          try {
+            const savedId = localStorage.getItem('autolog_selected_vehicle');
+            if (savedId) {
+              restoredIdx = data.vehicles.findIndex((v: Vehicle) => v.id === savedId);
+            }
+          } catch {}
+          if (restoredIdx >= 0) {
+            setSelectedIdxRaw(restoredIdx);
+          } else {
+            const primaryIdx = data.vehicles.findIndex((v: Vehicle) => v.isPrimary);
+            if (primaryIdx >= 0) setSelectedIdxRaw(primaryIdx);
+          }
         } else {
           setShowOnboarding(true);
         }
@@ -501,7 +521,7 @@ export default function UserHomePage() {
               {vehicles.map((v, i) => (
                 <button
                   key={v.id}
-                  onClick={() => { setSelectedIdx(i); setShowVehicleList(false); }}
+                  onClick={() => { setSelectedIdx(i, v.id); setShowVehicleList(false); }}
                   className={`w-full flex items-center gap-3 px-4 py-3 text-right hover:bg-gray-50 transition-colors ${i === selectedIdx ? 'bg-teal-50' : ''}`}
                 >
                   <Car size={18} className={i === selectedIdx ? 'text-teal-600' : 'text-gray-400'} />
