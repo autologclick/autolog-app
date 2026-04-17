@@ -671,6 +671,17 @@ export default function InspectionReportPage() {
             <button onClick={handleShare} aria-label="שתף דוח" className="w-8 h-8 sm:w-9 sm:h-9 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
               <Share2 size={16} />
             </button>
+            <button
+              aria-label="שתף בוואטסאפ"
+              onClick={() => {
+                const fullPdfUrl = `${window.location.origin}${pdfUrl}`;
+                const waText = `דוח בדיקת AutoLog 🚗\n${vehicleLabel} (${v.licensePlate})\nציון: ${score}/100\n\nצפה בדוח PDF:\n${fullPdfUrl}`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(waText)}`, '_blank');
+              }}
+              className="w-8 h-8 sm:w-9 sm:h-9 bg-[#25D366] rounded-lg flex items-center justify-center hover:bg-[#20BD5A] transition"
+            >
+              <MessageCircle size={16} />
+            </button>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs sm:text-sm opacity-90">דוח בדיקה</span>
@@ -1296,13 +1307,17 @@ export default function InspectionReportPage() {
               שמור PDF
             </Button>
           </div>
-          <Button variant="outline" className="w-full" icon={<MessageCircle size={16} />}
+          <button
             onClick={() => {
-              const text = `דוח בדיקת AutoLog\n${vehicleLabel} (${v.licensePlate})\nציון: ${score}/100\n${window.location.href}`;
-              window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-            }}>
-            שלח בוואטסאפ
-          </Button>
+              const fullPdfUrl = `${window.location.origin}${pdfUrl}`;
+              const waText = `דוח בדיקת AutoLog 🚗\n${vehicleLabel} (${v.licensePlate})\nציון: ${score}/100\n\nצפה בדוח PDF:\n${fullPdfUrl}`;
+              window.open(`https://wa.me/?text=${encodeURIComponent(waText)}`, '_blank');
+            }}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-xl font-medium text-sm transition shadow-sm"
+          >
+            <MessageCircle size={16} />
+            שלח בוואטסאפ עם PDF
+          </button>
         </div>
       </Card>
 
