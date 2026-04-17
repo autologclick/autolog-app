@@ -263,9 +263,16 @@ Given this vehicle:
 
 Based on the OFFICIAL manufacturer maintenance schedule for this specific vehicle, provide a detailed maintenance schedule.
 
+IMPORTANT RULES:
+- Include ONLY items that require REPLACEMENT or FLUID CHANGE (e.g., oil change, filter replacement, brake pad replacement, spark plugs, coolant change, transmission fluid, belts, tires).
+- Do NOT include inspection-only items (e.g., "בדיקת בלמים", "בדיקת צמיגים", "בדיקת מצבר"). Inspections are handled separately.
+- Israeli service interval is typically every 15,000 km.
+- Add exactly ONE item with category "כללי" (general) named "בדיקה כללית" with estimatedCost "0 ₪" and intervalKm 15000. Its description should list what to CHECK (not replace) at this specific service: fluids, tire pressure, lights, battery, brake pads thickness, suspension, belts, computer diagnostics.
+- The "פילטר מזגן" is the Israeli term for cabin air filter (not "מסנן תא נוסעים").
+
 Calculate:
 1. When the NEXT service is due (in km and approximate date assuming ~15,000 km/year)
-2. All maintenance items that should be checked/replaced at each service interval
+2. All REPLACEMENT items with their manufacturer-recommended intervals
 3. Priority level for each item based on current mileage
 
 Return ONLY valid JSON in this exact format (no markdown, no explanation):
@@ -276,7 +283,7 @@ Return ONLY valid JSON in this exact format (no markdown, no explanation):
   "items": [
     {
       "category": "<category in Hebrew: שמן ומסננים / בלמים / צמיגים / חשמל / מתלים / רצועות / נוזלים / מנוע / תיבת הילוכים / מיזוג / כללי>",
-      "item": "<specific item name in Hebrew>",
+      "item": "<specific item name in Hebrew — must be a REPLACEMENT action, e.g. החלפת שמן, החלפת מסנן, NOT בדיקת...>",
       "intervalKm": <manufacturer recommended interval in km>,
       "intervalMonths": <manufacturer recommended interval in months>,
       "nextAtKm": <next km this item is due>,
@@ -287,7 +294,7 @@ Return ONLY valid JSON in this exact format (no markdown, no explanation):
   ]
 }
 
-Include ALL relevant items (typically 8-15 items). Sort by priority (high first).
+Include 8-12 REPLACEMENT items plus the one free "בדיקה כללית" item. Sort by priority (high first).
 Use accurate manufacturer intervals — do NOT guess. If unsure about a specific interval for this model, use industry-standard intervals.
 All text fields should be in Hebrew.`;
 

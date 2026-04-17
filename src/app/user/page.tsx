@@ -215,6 +215,7 @@ export default function UserHomePage() {
   const [maintenanceLoading, setMaintenanceLoading] = useState(false);
   const [maintenanceError, setMaintenanceError] = useState(false);
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
+  const [showInspectionDetails, setShowInspectionDetails] = useState(false);
 
   // Fetch maintenance schedule (reusable)
   const fetchMaintenanceSchedule = async (vehicleId: string, forceRefresh = false) => {
@@ -594,6 +595,7 @@ export default function UserHomePage() {
                 if (maintenanceSchedule.nextServiceKm <= currentKm && vehicle) {
                   fetchMaintenanceSchedule(vehicle.id, true);
                 } else {
+                  setShowInspectionDetails(false);
                   setShowMaintenanceModal(true);
                 }
               } else if (vehicle) {
@@ -978,7 +980,7 @@ export default function UserHomePage() {
                 <ChevronLeft size={20} className="text-gray-400" />
               </button>
               <button
-                onClick={() => { setShowTreatmentsMenu(false); setShowMaintenanceModal(true); }}
+                onClick={() => { setShowTreatmentsMenu(false); setShowInspectionDetails(false); setShowMaintenanceModal(true); }}
                 className="w-full flex items-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl text-right transition-colors"
               >
                 <div className="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center flex-shrink-0">
@@ -1228,9 +1230,19 @@ export default function UserHomePage() {
                         </div>
                       )}
                       {inspectionItem && (
-                        <div className="mt-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                          <div className="text-sm font-bold text-blue-800 mb-1">🔍 בדיקה כללית (ללא עלות)</div>
-                          <div className="text-xs text-blue-700 leading-relaxed">{inspectionItem.description}</div>
+                        <div className="mt-4 rounded-xl border border-blue-100 overflow-hidden">
+                          <button
+                            onClick={() => setShowInspectionDetails(prev => !prev)}
+                            className="w-full p-3 bg-blue-50 flex items-center justify-between text-right hover:bg-blue-100 transition-colors"
+                          >
+                            <span className="text-sm font-bold text-blue-800">🔍 בדיקה כללית (ללא עלות)</span>
+                            <ChevronDown size={16} className={`text-blue-600 transition-transform ${showInspectionDetails ? 'rotate-180' : ''}`} />
+                          </button>
+                          {showInspectionDetails && (
+                            <div className="p-3 bg-blue-50/50 border-t border-blue-100">
+                              <div className="text-xs text-blue-700 leading-relaxed">{inspectionItem.description}</div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </>

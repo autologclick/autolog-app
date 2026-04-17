@@ -42,7 +42,43 @@ export interface MaintenanceTemplateData {
 
 // Bump this version whenever ISRAELI_MARKET_TEMPLATES changes.
 // Auto-seed will re-run when the deployed version differs from the DB.
-const TEMPLATE_VERSION = 4;
+const TEMPLATE_VERSION = 5;
+
+// ── Manufacturer name aliases for matching ──
+// Maps various spellings (Hebrew, English, common typos) to the canonical name used in templates.
+const MANUFACTURER_ALIASES: Record<string, string> = {
+  // Mazda
+  'מזדה': 'מאזדה', 'mazda': 'מאזדה', 'MAZDA': 'מאזדה', 'Mazda': 'מאזדה',
+  // Toyota
+  'toyota': 'טויוטה', 'TOYOTA': 'טויוטה', 'Toyota': 'טויוטה',
+  // Hyundai
+  'hyundai': 'יונדאי', 'HYUNDAI': 'יונדאי', 'Hyundai': 'יונדאי', 'יונדי': 'יונדאי', 'הונדאי': 'יונדאי',
+  // Kia
+  'kia': 'קיה', 'KIA': 'קיה', 'Kia': 'קיה',
+  // Skoda
+  'skoda': 'סקודה', 'SKODA': 'סקודה', 'Skoda': 'סקודה', 'שקודה': 'סקודה',
+  // Seat / Cupra
+  'seat': 'סיאט', 'SEAT': 'סיאט', 'Seat': 'סיאט', 'cupra': 'סיאט', 'CUPRA': 'סיאט', 'Cupra': 'סיאט', 'קופרה': 'סיאט',
+  // Volkswagen
+  'volkswagen': 'פולקסווגן', 'VW': 'פולקסווגן', 'vw': 'פולקסווגן', 'Volkswagen': 'פולקסווגן',
+  // Nissan
+  'nissan': 'ניסאן', 'NISSAN': 'ניסאן', 'Nissan': 'ניסאן',
+  // Mitsubishi
+  'mitsubishi': 'מיצובישי', 'MITSUBISHI': 'מיצובישי', 'Mitsubishi': 'מיצובישי',
+  // Suzuki
+  'suzuki': 'סוזוקי', 'SUZUKI': 'סוזוקי', 'Suzuki': 'סוזוקי',
+  // Honda
+  'honda': 'הונדה', 'HONDA': 'הונדה', 'Honda': 'הונדה',
+  // BMW
+  'bmw': 'ב.מ.וו', 'BMW': 'ב.מ.וו', 'Bmw': 'ב.מ.וו',
+  // Mercedes
+  'mercedes': 'מרצדס', 'MERCEDES': 'מרצדס', 'Mercedes': 'מרצדס', 'mercedes-benz': 'מרצדס',
+};
+
+function normalizeManufacturer(name: string): string {
+  const trimmed = name.trim();
+  return MANUFACTURER_ALIASES[trimmed] || trimmed;
+}
 
 let tableChecked = false;
 let autoSeeded = false;
@@ -134,8 +170,8 @@ export async function findMaintenanceTemplate(
 ): Promise<MaintenanceTemplateItem[] | null> {
   await ensureMaintenanceTemplateTable();
 
-  // Normalize inputs for matching
-  const mfr = manufacturer.trim();
+  // Normalize inputs for matching (resolve aliases like "מזדה" → "מאזדה")
+  const mfr = normalizeManufacturer(manufacturer);
   const mdl = model.trim();
 
   try {
