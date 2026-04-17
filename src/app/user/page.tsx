@@ -575,8 +575,17 @@ export default function UserHomePage() {
             <ReminderCard
               icon="🔧" title="טיפול הבא"
               value={maintenanceLoading ? '...' : maintenanceSchedule ? `${(maintenanceSchedule.nextServiceKm / 1000).toFixed(0)}K ק"מ` : maintenanceError ? 'נסה שוב' : 'חשב'}
-              subtitle={maintenanceLoading ? 'מחשב...' : maintenanceSchedule ? `בעוד ${Math.max(0, maintenanceSchedule.nextServiceKm - maintenanceSchedule.basedOnMileage).toLocaleString()} ק"מ` : maintenanceError ? 'נסה שוב' : 'לחץ לחישוב'}
-              status={maintenanceSchedule ? (maintenanceSchedule.items.some(i => i.priority === 'high') ? 'danger' : 'success') : maintenanceError ? 'danger' : 'warning'}
+              subtitle={maintenanceLoading ? 'מחשב...' : maintenanceSchedule ? (() => {
+                const currentKm = vehicle?.mileage || maintenanceSchedule.basedOnMileage;
+                const remaining = maintenanceSchedule.nextServiceKm - currentKm;
+                return remaining > 0 ? `בעוד ${remaining.toLocaleString()} ק"מ` : 'עבר מועד — מומלץ לטפל';
+              })() : maintenanceError ? 'נסה שוב' : 'לחץ לחישוב'}
+              status={maintenanceSchedule ? (() => {
+                const currentKm = vehicle?.mileage || maintenanceSchedule.basedOnMileage;
+                const remaining = maintenanceSchedule.nextServiceKm - currentKm;
+                if (remaining <= 0) return 'danger';
+                return maintenanceSchedule.items.some(i => i.priority === 'high') ? 'danger' : 'success';
+              })() : maintenanceError ? 'danger' : 'warning'}
             />
           </div>
         </div>
@@ -1127,7 +1136,11 @@ export default function UserHomePage() {
                 {maintenanceSchedule.nextServiceKm.toLocaleString()} ק&quot;מ
               </div>
               <div className="text-sm text-gray-600 mt-1">
-                נותרו {Math.max(0, maintenanceSchedule.nextServiceKm - maintenanceSchedule.basedOnMileage).toLocaleString()} ק&quot;מ
+                {(() => {
+                  const currentKm = vehicle?.mileage || maintenanceSchedule.basedOnMileage;
+                  const remaining = maintenanceSchedule.nextServiceKm - currentKm;
+                  return remaining > 0 ? `נותרו ${remaining.toLocaleString()} ק"מ` : 'עבר מועד — מומלץ לטפל בהקדם';
+                })()}
               </div>
             </div>
 

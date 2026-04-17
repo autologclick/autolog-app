@@ -116,8 +116,13 @@ export async function GET(
         const generatedAt = new Date(parsed.generatedAt);
         const daysSinceGenerated = (Date.now() - generatedAt.getTime()) / (1000 * 60 * 60 * 24);
 
-        // Cache valid for 30 days or until mileage changes significantly
-        if (daysSinceGenerated < 30 && Math.abs(parsed.basedOnMileage - (vehicle.mileage || 0)) < 5000) {
+        // Cache valid for 30 days, mileage hasn't changed much, AND nextService is still ahead
+        const currentMileage = vehicle.mileage || 0;
+        if (
+          daysSinceGenerated < 30 &&
+          Math.abs(parsed.basedOnMileage - currentMileage) < 5000 &&
+          parsed.nextServiceKm > currentMileage
+        ) {
           return jsonResponse({ schedule: parsed, cached: true });
         }
       } catch {
@@ -335,12 +340,12 @@ async function generateWithOpenAI(apiKey: string, prompt: string, mileage: numbe
   const cleaned = content.replace(/```json\n?/g, '').replace(/```/g, '').trim();
   try {
     const parsed = JSON.parse(cleaned);
-    return { ...parsed, generatedAt: new Date().toISOString(), basedOnMileage: mileage };
+    return sanitizeSchedule(parsed, mileage);
   } catch {
     const match = cleaned.match(/\{[\s\S]*\}/);
     if (match) {
       const parsed = JSON.parse(match[0]);
-      return { ...parsed, generatedAt: new Date().toISOString(), basedOnMileage: mileage };
+      return sanitizeSchedule(parsed, mileage);
     }
     throw new Error('No valid JSON found in OpenAI response: ' + cleaned.substring(0, 100));
   }
@@ -378,14 +383,73 @@ async function generateWithAnthropic(apiKey: string, prompt: string, mileage: nu
   const cleaned = content.replace(/```json\n?/g, '').replace(/```/g, '').trim();
   try {
     const parsed = JSON.parse(cleaned);
-    return { ...parsed, generatedAt: new Date().toISOString(), basedOnMileage: mileage };
+    return sanitizeSchedule(parsed, mileage);
   } catch {
     // Try extracting JSON object from text
     const match = cleaned.match(/\{[\s\S]*\}/);
     if (match) {
       const parsed = JSON.parse(match[0]);
-      return { ...parsed, generatedAt: new Date().toISOString(), basedOnMileage: mileage };
+      return sanitizeSchedule(parsed, mileage);
     }
     throw new Error('No valid JSON found in Anthropic response: ' + cleaned.substring(0, 100));
   }
+}
+
+/**
+ * Sanitize AI-generated schedule: ensure nextServiceKm is AHEAD of current mileage.
+ * AI sometimes returns the current interval milestone instead of the next one.
+ */
+function sanitizeSchedule(parsed: Record<string, unknown>, mileage: number): MaintenanceSchedule {
+  let nextKm = parsed.nextServiceKm as number;
+
+  // If AI returned a nextServiceKm that's already passed, find the correct next one
+  if (nextKm <= mileage) {
+    // Try to find the nearest future km from individual items
+    const items = (parsed.items as Array<{ nextAtKm?: number; intervalKm?: number }>) || [];
+    const futureKms = items
+      .map(item => {
+        if (item.nextAtKm && item.nextAtKm > mileage) return item.nextAtKm;
+        // Recalculate from intervalKm
+        if (item.intervalKm && item.intervalKm > 0) {
+          const passed = Math.floor(mileage / item.intervalKm);
+          return (passed + 1) * item.intervalKm;
+        }
+        return null;
+      })
+      .filter((km): km is number => km !== null && km > mileage);
+
+    if (futureKms.length > 0) {
+      nextKm = Math.min(...futureKms);
+    } else {
+      // Fallback: round up to next 5000 km
+      nextKm = Math.ceil(mileage / 5000) * 5000;
+      if (nextKm <= mileage) nextKm += 5000;
+    }
+  }
+
+  // Also fix individual items that are behind current mileage
+  const fixedItems = ((parsed.items as Array<Record<string, unknown>>) || []).map(item => {
+    const nextAtKm = item.nextAtKm as number;
+    const intervalKm = item.intervalKm as number;
+    if (nextAtKm && nextAtKm <= mileage && intervalKm && intervalKm > 0) {
+      const passed = Math.floor(mileage / intervalKm);
+      item.nextAtKm = (passed + 1) * intervalKm;
+    }
+    return item;
+  });
+
+  // Recalculate next service date
+  const kmToNext = nextKm - mileage;
+  const daysToNext = Math.max(1, Math.round((kmToNext / 15000) * 365));
+  const nextDate = new Date();
+  nextDate.setDate(nextDate.getDate() + daysToNext);
+
+  return {
+    ...parsed,
+    nextServiceKm: nextKm,
+    nextServiceDate: nextDate.toISOString().split('T')[0],
+    items: fixedItems,
+    generatedAt: new Date().toISOString(),
+    basedOnMileage: mileage,
+  } as MaintenanceSchedule;
 }
