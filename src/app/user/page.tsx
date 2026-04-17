@@ -1174,11 +1174,16 @@ export default function UserHomePage() {
               </div>
             </div>
 
-            {/* What to replace - concrete per-vehicle price */}
+            {/* What to do at this service — only items due at nextServiceKm */}
             <div className="p-4">
-              <h4 className="text-sm font-bold text-gray-700 mb-3">מה צריך להחליף?</h4>
+              <h4 className="text-sm font-bold text-gray-700 mb-3">מה כולל הטיפול?</h4>
               <div className="space-y-2">
                 {(() => {
+                  const nextKm = maintenanceSchedule.nextServiceKm;
+
+                  // Filter: only items whose nextAtKm matches this service milestone
+                  const dueItems = maintenanceSchedule.items.filter(item => item.nextAtKm === nextKm);
+
                   // Vehicle-class multiplier for Israeli market averages
                   const brand = (vehicle?.manufacturer || '').toLowerCase();
                   const luxury = ['bmw', 'mercedes', 'audi', 'volvo', 'lexus', 'porsche', 'land rover', 'jaguar', 'מרצדס', 'ב.מ.וו', 'אאודי'];
@@ -1193,16 +1198,12 @@ export default function UserHomePage() {
                     return Math.round(avg * mult / 10) * 10;
                   };
                   let total = 0;
-                  const rows = maintenanceSchedule.items.map((item, idx) => {
+                  const rows = dueItems.map((item, idx) => {
                     const price = parseCost(item.estimatedCost);
                     if (price) total += price;
                     return (
                       <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                          item.priority === 'high' ? 'bg-red-500' :
-                          item.priority === 'medium' ? 'bg-amber-500' :
-                          'bg-gray-400'
-                        }`} />
+                        <div className="w-2 h-2 rounded-full flex-shrink-0 bg-teal-500" />
                         <div className="flex-1 text-sm font-medium text-gray-800">{item.item}</div>
                         <div className="text-xs font-semibold text-teal-700 whitespace-nowrap">
                           {price ? `≈ ₪${price.toLocaleString()}` : item.estimatedCost}
@@ -1213,6 +1214,9 @@ export default function UserHomePage() {
                   return (
                     <>
                       {rows}
+                      {dueItems.length === 0 && (
+                        <div className="text-sm text-gray-500 text-center py-3">טיפול שגרתי — החלפת שמן ומסננים</div>
+                      )}
                       {total > 0 && (
                         <div className="flex items-center justify-between mt-3 p-3 bg-teal-50 rounded-xl border border-teal-100">
                           <span className="text-sm font-bold text-teal-800">סה&quot;כ משוער</span>
