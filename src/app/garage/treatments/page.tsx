@@ -345,6 +345,7 @@ export default function GarageTreatmentsPage() {
           )}
         </Card>
       ) : (
+        <>
         <div className="space-y-3">
           {paginatedTreatments.map(t => {
             const statusInfo = STATUS_MAP[t.status] || STATUS_MAP.pending_approval;
@@ -442,6 +443,7 @@ export default function GarageTreatmentsPage() {
           totalItems={filteredTreatments.length}
           itemsPerPage={ITEMS_PER_PAGE}
         />
+        </>
       )}
 
       {/* Floating Add Button */}

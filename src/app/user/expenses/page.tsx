@@ -561,6 +561,7 @@ export default function ExpensesPage() {
             </Button>
           </div>
         ) : (
+          <>
           <div className="space-y-3">
             {/* Mobile Cards View */}
             <div className="block sm:hidden space-y-3">
@@ -675,6 +676,7 @@ export default function ExpensesPage() {
             totalItems={filteredExpenses.length}
             itemsPerPage={ITEMS_PER_PAGE}
           />
+          </>
         )}
 
         {/* Add Expense Modal */}
