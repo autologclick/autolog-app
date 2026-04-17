@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'AutoLog - Smart Vehicle Management';
+export const alt = 'AutoLog - ניהול רכבים חכם';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -19,6 +19,7 @@ export default async function Image() {
           justifyContent: 'center',
           fontFamily: 'sans-serif',
           position: 'relative',
+          direction: 'rtl',
         }}
       >
         {/* Top accent bar */}
@@ -54,13 +55,13 @@ export default async function Image() {
           <div style={{ width: 160, height: 5, background: '#2a9d9e', borderRadius: 3, marginTop: 16, marginBottom: 16, display: 'flex' }} />
 
           {/* Subtitle */}
-          <div style={{ fontSize: 28, color: '#4a5568', display: 'flex', marginBottom: 30 }}>
-            Smart Vehicle Management Platform
+          <div style={{ fontSize: 30, color: '#4a5568', display: 'flex', marginBottom: 30 }}>
+            ניהול רכבים חכם — בחינם
           </div>
 
           {/* Feature pills */}
           <div style={{ display: 'flex', gap: 16 }}>
-            {['Reminders', 'Insurance', 'Inspections', 'Garages'].map((feat) => (
+            {['תזכורות', 'ביטוח', 'בדיקות', 'מוסכים'].map((feat) => (
               <div
                 key={feat}
                 style={{
@@ -68,7 +69,7 @@ export default async function Image() {
                   borderRadius: 20,
                   border: '2px solid #2a9d9e',
                   color: '#2a9d9e',
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: 600,
                   display: 'flex',
                 }}
@@ -80,7 +81,7 @@ export default async function Image() {
         </div>
 
         {/* Domain */}
-        <div style={{ position: 'absolute', bottom: 30, right: 60, fontSize: 24, fontWeight: 700, color: '#2a9d9e', display: 'flex' }}>
+        <div style={{ position: 'absolute', bottom: 30, left: 60, fontSize: 24, fontWeight: 700, color: '#2a9d9e', display: 'flex' }}>
           autolog.click
         </div>
 
