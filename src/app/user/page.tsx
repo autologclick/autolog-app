@@ -565,7 +565,13 @@ export default function UserHomePage() {
             onClick={() => {
               if (maintenanceLoading) return;
               if (maintenanceSchedule) {
-                setShowMaintenanceModal(true);
+                // If schedule seems stale (next service already passed), force recalculate
+                const currentKm = vehicle?.mileage || 0;
+                if (maintenanceSchedule.nextServiceKm <= currentKm && vehicle) {
+                  fetchMaintenanceSchedule(vehicle.id, true);
+                } else {
+                  setShowMaintenanceModal(true);
+                }
               } else if (vehicle) {
                 fetchMaintenanceSchedule(vehicle.id);
               }
