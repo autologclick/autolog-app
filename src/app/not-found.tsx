@@ -26,18 +26,28 @@ export default function NotFound() {
           הדף שחיפשת לא קיים או שהוסר. אנא בדוק את הכתובת ונסה שוב.
         </p>
 
-        {/* Button */}
-        <Link href="/">
-          <Button className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-semibold">
-            חזרה לדף הבית
-          </Button>
-        </Link>
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link href="/" className="flex-1">
+            <Button className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-semibold">
+              חזרה לדף הבית
+            </Button>
+          </Link>
+          <Link href="/auth/login" className="flex-1">
+            <Button variant="outline" className="w-full">
+              כניסה למערכת
+            </Button>
+          </Link>
+        </div>
 
         {/* Additional Info */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
+        <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col items-center gap-2">
           <p className="text-sm text-gray-500">
             אם הבעיה מתמשכת, אנא <a href="mailto:info@autolog.click" className="text-teal-600 hover:text-teal-700 font-semibold">צור קשר</a>
           </p>
+          <Link href="/garage-apply" className="text-sm text-teal-600 hover:text-teal-700 font-medium">
+            בעל מוסך? הצטרף כשותף
+          </Link>
         </div>
       </div>
     </div>

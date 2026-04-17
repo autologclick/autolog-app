@@ -83,11 +83,11 @@ export default function LoginPage() {
         return;
       }
 
-      // Register flow (no OTP) — straight redirect
+      // Redirect based on role — add welcome flag for new registrations
       const role = data.user?.role;
       if (role === 'admin') router.push('/admin');
       else if (role === 'garage_owner') router.push('/garage');
-      else router.push('/user');
+      else router.push(isRegister ? '/user?welcome=1' : '/user');
     } catch (err: unknown) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Form submit error:', err);
