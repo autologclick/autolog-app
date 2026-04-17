@@ -253,11 +253,14 @@ export default function UserHomePage() {
 
   // ── Data Fetching ──
   useEffect(() => {
-    fetch('/api/vehicles').then(r => r.json())
+    fetch('/api/vehicles').then(r => {
+        if (r.status === 401) { window.location.href = '/auth/login'; return null; }
+        return r.json();
+      })
       .then(data => {
+        if (!data) return;
         if (data.vehicles?.length > 0) {
           setVehicles(data.vehicles);
-          // Auto-select primary vehicle
           const primaryIdx = data.vehicles.findIndex((v: Vehicle) => v.isPrimary);
           if (primaryIdx >= 0) setSelectedIdx(primaryIdx);
         } else {
@@ -272,11 +275,17 @@ export default function UserHomePage() {
   useEffect(() => {
     if (!vehicle) return;
     const id = vehicle.id;
+    const safeFetch = (url: string, fallback: Record<string, unknown[]>) =>
+      fetch(url).then(r => {
+        if (r.status === 401) { window.location.href = '/auth/login'; return fallback; }
+        return r.json();
+      }).catch(() => fallback);
+
     Promise.all([
-      fetch(`/api/treatments?vehicleId=${id}`).then(r => r.json()).catch(() => ({ treatments: [] })),
-      fetch(`/api/documents?vehicleId=${id}`).then(r => r.json()).catch(() => ({ documents: [] })),
-      fetch(`/api/expenses?vehicleId=${id}&limit=10`).then(r => r.json()).catch(() => ({ expenses: [] })),
-      fetch(`/api/appointments?vehicleId=${id}`).then(r => r.json()).catch(() => ({ appointments: [] })),
+      safeFetch(`/api/treatments?vehicleId=${id}`, { treatments: [] }),
+      safeFetch(`/api/documents?vehicleId=${id}`, { documents: [] }),
+      safeFetch(`/api/expenses?vehicleId=${id}&limit=10`, { expenses: [] }),
+      safeFetch(`/api/appointments?vehicleId=${id}`, { appointments: [] }),
     ]).then(([tData, dData, eData, aData]) => {
       setTreatments(tData.treatments || []);
       setDocuments(dData.documents || []);
@@ -350,6 +359,7 @@ export default function UserHomePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: dataUrl, context: 'adding treatment record' }),
+        signal: AbortSignal.timeout(35000),
       });
 
       if (res.ok) {
@@ -364,9 +374,16 @@ export default function UserHomePage() {
             ...(data.description ? { description: data.description } : {}),
             ...(data.documentTypeHebrew ? { title: data.documentTypeHebrew } : {}),
           }));
+          toast.success('פרטי הקבלה זוהו בהצלחה');
+        } else {
+          toast('לא זוהו פרטים — מלא ידנית', { icon: 'ℹ️' });
         }
+      } else {
+        toast.error('שגיאה בסריקה — מלא ידנית');
       }
-    } catch { /* silently fail */ }
+    } catch {
+      toast.error('שגיאה בסריקה — מלא ידנית');
+    }
     setScanning(false);
   };
 

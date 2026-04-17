@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import { Card, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -378,6 +379,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: dataUrl, context: 'adding treatment record' }),
+        signal: AbortSignal.timeout(35000),
       });
 
       if (res.ok) {
@@ -392,12 +394,17 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
             ...(data.businessName ? { garageName: data.businessName } : {}),
             ...(data.description ? { description: data.description } : {}),
           }));
+          toast.success('פרטי הקבלה זוהו בהצלחה');
+        } else {
+          toast('לא זוהו פרטים — מלא ידנית', { icon: 'ℹ️' });
         }
+      } else {
+        toast.error('שגיאה בסריקה — מלא ידנית');
       }
 
       setShowScanning(false);
     } catch (err) {
-      setError('שגיאה בסריקת הקבלה');
+      toast.error('שגיאה בסריקת הקבלה');
       setShowScanning(false);
     }
   };

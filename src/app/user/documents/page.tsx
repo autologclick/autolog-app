@@ -216,6 +216,7 @@ export default function DocumentsPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ image: imageDataUrl, context: 'uploading document' }),
+          signal: AbortSignal.timeout(35000),
         });
 
         if (res.ok) {
@@ -307,9 +308,13 @@ export default function DocumentsPage() {
       if (!res.ok) { setError(data.error || 'שגיאה בהעלאת מסמך'); setSaving(false); return; }
       resetUploadForm();
       // Refresh documents list
-      const fetchRes = await fetch(`/api/documents?vehicleId=${selectedVehicle}`);
-      const fetchData = await fetchRes.json();
-      setDocuments(fetchData.documents || []);
+      try {
+        const fetchRes = await fetch(`/api/documents?vehicleId=${selectedVehicle}`);
+        if (fetchRes.ok) {
+          const fetchData = await fetchRes.json();
+          setDocuments(fetchData.documents || []);
+        }
+      } catch { /* refresh failed — document was saved successfully */ }
     } catch (err) {
       console.error('Upload error:', err);
       setError('שגיאת חיבור — נסה שוב או צלם מחדש בפורמט קטן יותר');
