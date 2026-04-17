@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/warranty',
   },
+  openGraph: {
+    title: 'תנאי אחריות | AutoLog',
+    description: 'מידע על אחריות השירות, הגבלות וזכויות המשתמש.',
+    url: 'https://autolog.click/warranty',
+    type: 'website',
+    locale: 'he_IL',
+    siteName: 'AutoLog',
+  },
 };
 
 export default function WarrantyLayout({

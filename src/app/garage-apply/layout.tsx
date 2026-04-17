@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/garage-apply',
   },
+  openGraph: {
+    title: 'הצטרפו כמוסך שותף ל-AutoLog',
+    description: 'הגדילו את החשיפה שלכם, קבלו לקוחות חדשים ונהלו את המוסך בצורה חכמה ודיגיטלית.',
+    url: 'https://autolog.click/garage-apply',
+    type: 'website',
+    locale: 'he_IL',
+    siteName: 'AutoLog',
+  },
 };
 
 export default function GarageApplyLayout({

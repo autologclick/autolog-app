@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/accessibility',
   },
+  openGraph: {
+    title: 'הצהרת נגישות | AutoLog',
+    description: 'מחויבות להנגשת האפליקציה בהתאם לתקן WCAG 2.1 AA.',
+    url: 'https://autolog.click/accessibility',
+    type: 'website',
+    locale: 'he_IL',
+    siteName: 'AutoLog',
+  },
 };
 
 export default function AccessibilityLayout({

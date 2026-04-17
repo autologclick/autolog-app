@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/terms',
   },
+  openGraph: {
+    title: 'תנאי שימוש | AutoLog',
+    description: 'הסכם השימוש באפליקציית AutoLog - כללים, אחריות וזכויות.',
+    url: 'https://autolog.click/terms',
+    type: 'website',
+    locale: 'he_IL',
+    siteName: 'AutoLog',
+  },
 };
 
 export default function TermsLayout({
