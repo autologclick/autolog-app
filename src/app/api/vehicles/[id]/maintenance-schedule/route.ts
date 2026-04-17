@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, handleApiError } from '@/lib/api-helpers';
-import { findMaintenanceTemplate, calculateScheduleFromTemplate } from '@/lib/maintenance-templates';
+import { findMaintenanceTemplate, calculateScheduleFromTemplate, ensureTemplatesUpToDate } from '@/lib/maintenance-templates';
 
 /**
  * GET /api/vehicles/[id]/maintenance-schedule
@@ -95,6 +95,9 @@ export async function GET(
     if (!vehicle.mileage || vehicle.mileage <= 0) {
       return jsonResponse({ error: 'יש לעדכן קילומטראז\' לפני חישוב טיפול הבא' }, 400);
     }
+
+    // Ensure OEM templates are up-to-date (clears cache if re-seeded)
+    const reSeeded = await ensureTemplatesUpToDate();
 
     // Try to get cached data
     await ensureColumn();
