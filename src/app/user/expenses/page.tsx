@@ -10,7 +10,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import PageSkeleton from '@/components/ui/PageSkeleton';
 import {
   Plus, Edit, Trash2, Car, TrendingUp, Fuel, Wrench, Shield,
-  AlertTriangle, MapPin, DollarSign, Calendar,
+  AlertTriangle, MapPin, DollarSign, Calendar, Download,
   Loader2, BarChart3, Zap, TrendingDown, Brain, Lightbulb, Activity
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -290,6 +290,29 @@ export default function ExpensesPage() {
     setError('');
   };
 
+  const exportCSV = () => {
+    if (filteredExpenses.length === 0) return;
+    const BOM = '\uFEFF';
+    const header = 'תאריך,קטגוריה,תיאור,סכום,רכב';
+    const rows = filteredExpenses
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .map(exp => {
+        const cat = CATEGORIES[exp.category]?.label || exp.category;
+        const desc = (exp.description || '').replace(/,/g, ' ').replace(/"/g, '""');
+        const vehicleName = (exp.vehicle?.nickname || exp.vehicle?.model || '').replace(/,/g, ' ');
+        return `${exp.date},"${cat}","${desc}",${exp.amount},"${vehicleName}"`;
+      });
+    const csv = BOM + [header, ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `expenses_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`יוצאו ${filteredExpenses.length} הוצאות לקובץ CSV`);
+  };
+
   if (loading) {
     return <PageSkeleton />;
   }
@@ -306,17 +329,29 @@ export default function ExpensesPage() {
           subtitle={currentMonth}
         />
 
-        {/* CTA Button */}
-        <Button
-          icon={<Plus size={16} />}
-          onClick={() => {
-            resetForm(selectedCategory);
-            setShowAddModal(true);
-          }}
-          className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700"
-        >
-          הוסף הוצאה
-        </Button>
+        {/* CTA Buttons */}
+        <div className="flex gap-3">
+          <Button
+            icon={<Plus size={16} />}
+            onClick={() => {
+              resetForm(selectedCategory);
+              setShowAddModal(true);
+            }}
+            className="flex-1 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700"
+          >
+            הוסף הוצאה
+          </Button>
+          {expenses.length > 0 && (
+            <button
+              onClick={exportCSV}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium text-[#1e3a5f] hover:bg-gray-50 hover:border-gray-300 transition shadow-sm"
+              title="ייצוא לקובץ CSV"
+            >
+              <Download size={16} />
+              <span className="hidden sm:inline">CSV</span>
+            </button>
+          )}
+        </div>
 
         {/* Vehicle Selector */}
         {vehicles.length > 0 && (
