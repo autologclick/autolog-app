@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import { Card } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -118,6 +119,8 @@ const ProgressBar = ({ currentStep }: { currentStep: number }) => {
 
 export default function BookGaragePage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const modalContentRef = useRef<HTMLDivElement>(null);
   const [garages, setGarages] = useState<Garage[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [search, setSearch] = useState('');
@@ -247,10 +250,22 @@ export default function BookGaragePage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || 'שגיאה בהזמנת התור'); setSubmitting(false); return; }
-      setBookingStep('success');
+      if (!res.ok) {
+        setError(data.error || 'שגיאה בהזמנת התור');
+        setSubmitting(false);
+        // Scroll to top of modal so error is visible
+        modalContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
       setSubmitting(false);
-    } catch { setError('שגיאת חיבור'); setSubmitting(false); }
+      setShowBookingModal(false);
+      toast.success('התור נקבע בהצלחה! המוסך יאשר בקרוב');
+      router.push('/user');
+    } catch {
+      setError('שגיאת חיבור');
+      setSubmitting(false);
+      modalContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   // Review handlers
