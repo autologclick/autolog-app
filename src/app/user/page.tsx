@@ -611,6 +611,70 @@ export default function UserHomePage() {
           </button>
         </div>
 
+        {/* ═══ Expiry Alerts — all vehicles ═══ */}
+        {(() => {
+          const alerts: { vehicleName: string; vehicleId: string; type: string; label: string; icon: string; days: number; date: string }[] = [];
+          vehicles.forEach(v => {
+            const name = v.nickname || `${v.manufacturer} ${v.model}`;
+            if (v.testExpiryDate) {
+              const d = daysUntil(v.testExpiryDate);
+              if (d !== null && d <= 45) {
+                alerts.push({ vehicleName: name, vehicleId: v.id, type: 'test', label: 'טסט', icon: '🧪', days: d, date: v.testExpiryDate });
+              }
+            }
+            if (v.insuranceExpiry) {
+              const d = daysUntil(v.insuranceExpiry);
+              if (d !== null && d <= 45) {
+                alerts.push({ vehicleName: name, vehicleId: v.id, type: 'insurance', label: 'ביטוח', icon: '🛡️', days: d, date: v.insuranceExpiry });
+              }
+            }
+          });
+          alerts.sort((a, b) => a.days - b.days);
+
+          if (alerts.length === 0) return null;
+
+          return (
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-red-100">
+              <div className="flex items-center gap-2 px-4 pt-4 pb-2">
+                <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
+                  <AlertTriangle size={16} className="text-red-500" />
+                </div>
+                <h3 className="text-sm font-bold text-[#1e3a5f]">התראות תפוגה</h3>
+                <span className="mr-auto bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{alerts.length}</span>
+              </div>
+              <div className="divide-y divide-gray-50">
+                {alerts.map((a, i) => {
+                  const isExpired = a.days < 0;
+                  const isUrgent = a.days >= 0 && a.days <= 7;
+                  const isWarning = a.days > 7 && a.days <= 30;
+                  const bgColor = isExpired ? 'bg-red-50' : isUrgent ? 'bg-orange-50' : isWarning ? 'bg-amber-50' : 'bg-yellow-50';
+                  const textColor = isExpired ? 'text-red-600' : isUrgent ? 'text-orange-600' : isWarning ? 'text-amber-600' : 'text-yellow-600';
+                  const badgeBg = isExpired ? 'bg-red-100' : isUrgent ? 'bg-orange-100' : isWarning ? 'bg-amber-100' : 'bg-yellow-100';
+
+                  return (
+                    <button
+                      key={`${a.vehicleId}-${a.type}-${i}`}
+                      onClick={() => router.push(`/user/vehicles/${a.vehicleId}`)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-right hover:opacity-80 transition ${i === 0 ? bgColor : ''}`}
+                    >
+                      <span className="text-lg flex-shrink-0">{a.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-[#1e3a5f]">{a.label} — {a.vehicleName}</div>
+                        <div className="text-xs text-gray-400">{new Date(a.date).toLocaleDateString('he-IL')}</div>
+                      </div>
+                      <div className={`px-2.5 py-1 rounded-lg ${badgeBg} flex-shrink-0`}>
+                        <span className={`text-xs font-bold ${textColor}`}>
+                          {isExpired ? `פג לפני ${Math.abs(a.days)} יום` : a.days === 0 ? 'היום!' : `${a.days} יום`}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Recent Treatments - hidden */}
         {false && (
         <div className="bg-white rounded-2xl p-4 shadow-sm">
