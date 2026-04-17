@@ -24,172 +24,31 @@ interface LicenseScanButtonProps {
 }
 
 /**
- * Load image from file into an HTMLImageElement.
+ * Compress image to base64 data URL for API upload.
  */
-function loadImage(file: File): Promise<HTMLImageElement> {
+function compressImage(file: File, maxDim = 1200): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
-    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement('canvas');
+      let w = img.width, h = img.height;
+      if (w > maxDim || h > maxDim) {
+        const ratio = Math.min(maxDim / w, maxDim / h);
+        w = Math.round(w * ratio);
+        h = Math.round(h * ratio);
+      }
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) { reject(new Error('Canvas not supported')); return; }
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.8));
+    };
     img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load image')); };
     img.src = url;
   });
-}
-
-/**
- * Preprocess the full image: resize for OCR, return as blob URL.
- */
-function preprocessFullImage(img: HTMLImageElement, maxWidth = 1800): string {
-  const canvas = document.createElement('canvas');
-  let w = img.width, h = img.height;
-  if (w > maxWidth || h > maxWidth) {
-    const ratio = Math.min(maxWidth / w, maxWidth / h);
-    w = Math.round(w * ratio);
-    h = Math.round(h * ratio);
-  }
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext('2d')!;
-  ctx.drawImage(img, 0, 0, w, h);
-  return canvas.toDataURL('image/png');
-}
-
-/**
- * Crop a region from the image, apply preprocessing for OCR:
- * - Extract ROI
- * - Upscale 3x for better digit recognition
- * - Grayscale
- * - Increase contrast
- * - Binary threshold (Otsu-like simple threshold)
- * Returns a data URL ready for Tesseract.
- */
-function cropAndPreprocess(
-  img: HTMLImageElement,
-  region: { x: number; y: number; w: number; h: number },
-  scale = 3
-): string {
-  const canvas = document.createElement('canvas');
-  const outW = Math.round(region.w * scale);
-  const outH = Math.round(region.h * scale);
-  canvas.width = outW;
-  canvas.height = outH;
-  const ctx = canvas.getContext('2d')!;
-
-  // Draw cropped region upscaled
-  ctx.drawImage(img, region.x, region.y, region.w, region.h, 0, 0, outW, outH);
-
-  // Get pixel data
-  const imageData = ctx.getImageData(0, 0, outW, outH);
-  const data = imageData.data;
-
-  // Convert to grayscale and find histogram for threshold
-  const gray = new Uint8Array(outW * outH);
-  for (let i = 0; i < gray.length; i++) {
-    const r = data[i * 4], g = data[i * 4 + 1], b = data[i * 4 + 2];
-    // Luminance formula
-    gray[i] = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
-  }
-
-  // Compute Otsu threshold
-  const histogram = new Array(256).fill(0);
-  for (let i = 0; i < gray.length; i++) histogram[gray[i]]++;
-  const total = gray.length;
-  let sum = 0;
-  for (let i = 0; i < 256; i++) sum += i * histogram[i];
-  let sumB = 0, wB = 0, wF = 0, maxVariance = 0, threshold = 128;
-  for (let t = 0; t < 256; t++) {
-    wB += histogram[t];
-    if (wB === 0) continue;
-    wF = total - wB;
-    if (wF === 0) break;
-    sumB += t * histogram[t];
-    const mB = sumB / wB;
-    const mF = (sum - sumB) / wF;
-    const variance = wB * wF * (mB - mF) * (mB - mF);
-    if (variance > maxVariance) {
-      maxVariance = variance;
-      threshold = t;
-    }
-  }
-
-  // Apply contrast enhancement + binary threshold
-  for (let i = 0; i < gray.length; i++) {
-    // Contrast stretch
-    let v = gray[i];
-    v = Math.round(((v - 128) * 1.5) + 128);
-    v = Math.max(0, Math.min(255, v));
-    // Binary threshold
-    const bw = v > threshold ? 255 : 0;
-    data[i * 4] = bw;
-    data[i * 4 + 1] = bw;
-    data[i * 4 + 2] = bw;
-    data[i * 4 + 3] = 255;
-  }
-
-  ctx.putImageData(imageData, 0, 0);
-  return canvas.toDataURL('image/png');
-}
-
-/**
- * Define multiple crop regions to search for the plate number.
- * Israeli רישיון רכב has the plate number (מספר רכב) in the top-right area.
- * We try several regions to maximize chances.
- */
-function getPlateRegions(imgW: number, imgH: number): Array<{ x: number; y: number; w: number; h: number; label: string }> {
-  return [
-    // Top-right quadrant — most likely location for מספר רכב
-    { x: Math.round(imgW * 0.45), y: 0, w: Math.round(imgW * 0.55), h: Math.round(imgH * 0.2), label: 'top-right' },
-    // Top strip — full width, top 15%
-    { x: 0, y: 0, w: imgW, h: Math.round(imgH * 0.15), label: 'top-strip' },
-    // Upper-right area — slightly lower
-    { x: Math.round(imgW * 0.4), y: Math.round(imgH * 0.1), w: Math.round(imgW * 0.6), h: Math.round(imgH * 0.2), label: 'upper-right' },
-    // Top-left quadrant (some licenses might be oriented differently)
-    { x: 0, y: 0, w: Math.round(imgW * 0.55), h: Math.round(imgH * 0.2), label: 'top-left' },
-    // Upper half — broader search
-    { x: 0, y: 0, w: imgW, h: Math.round(imgH * 0.35), label: 'upper-half' },
-  ];
-}
-
-/**
- * Extract license plate number from OCR text.
- * Israeli plates are 7-8 digits, possibly with dashes or spaces.
- * Returns all candidates sorted by likelihood.
- */
-function extractAllPlates(text: string): string[] {
-  const candidates: string[] = [];
-  const cleaned = text.replace(/[OoQD]/g, (ch) => {
-    // Common OCR confusions: O/o → 0, Q → 0, D → 0 (only in digit context)
-    return ch === 'D' ? '0' : '0';
-  });
-
-  const patterns = [
-    /(\d{2,3}[-–—\s.]?\d{2,3}[-–—\s.]?\d{2,3})/g,
-    /(\d{7,8})/g,
-    /(\d{2,3}[-–—\s.]?\d{2}[-–—\s.]?\d{3})/g,
-  ];
-
-  for (const pattern of patterns) {
-    const matches = cleaned.matchAll(pattern);
-    for (const match of matches) {
-      const plate = match[1].replace(/[-–—\s.]/g, '');
-      if (plate.length >= 7 && plate.length <= 8 && !candidates.includes(plate)) {
-        candidates.push(plate);
-      }
-    }
-  }
-
-  // Also try the original text without character replacements
-  for (const pattern of patterns) {
-    const matches = text.matchAll(pattern);
-    for (const match of matches) {
-      const plate = match[1].replace(/[-–—\s.]/g, '');
-      if (plate.length >= 7 && plate.length <= 8 && !candidates.includes(plate)) {
-        candidates.push(plate);
-      }
-    }
-  }
-
-  return candidates;
 }
 
 /**
@@ -271,96 +130,46 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
     setStatusMessage('מעבד תמונה...');
 
     try {
-      // Step 1: Load and preprocess image
-      const img = await loadImage(file);
-      setScanProgress(20);
-
-      // Step 2: OCR — scan multiple regions to find plate number
-      setStatusMessage('מזהה מספר רכב...');
-      const { createWorker } = await import('tesseract.js');
+      // Step 1: Compress image to base64
+      const imageDataUrl = await compressImage(file);
       setScanProgress(30);
 
-      const worker = await createWorker('eng', undefined, {
-        logger: (m: { status: string; progress: number }) => {
-          if (m.status === 'recognizing text') {
-            setScanProgress(30 + Math.round(m.progress * 30));
-          }
-        },
+      // Step 2: Send to AI Vision API for plate extraction
+      setStatusMessage('מזהה מספר רכב עם AI...');
+      const res = await fetch('/api/vehicles/scan-license', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageDataUrl }),
       });
+      setScanProgress(70);
 
-      const regions = getPlateRegions(img.width, img.height);
-      let candidates: string[] = [];
-
-      // Try each region with preprocessing (binary threshold)
-      for (let i = 0; i < regions.length && candidates.length === 0; i++) {
-        const croppedDataUrl = cropAndPreprocess(img, regions[i]);
-        const result = await worker.recognize(croppedDataUrl);
-        candidates = extractAllPlates(result.data.text);
-        setScanProgress(30 + Math.round(((i + 1) / regions.length) * 25));
+      let plate: string | null = null;
+      if (res.ok) {
+        const data = await res.json();
+        plate = data.licensePlate || null;
       }
 
-      // Fallback: try full preprocessed image (no crop) if no candidates found
-      if (candidates.length === 0) {
-        setStatusMessage('סורק תמונה מלאה...');
-        const fullDataUrl = preprocessFullImage(img);
-        const fullResult = await worker.recognize(fullDataUrl);
-        candidates = extractAllPlates(fullResult.data.text);
-      }
-
-      // Fallback 2: try top-right region WITHOUT binary threshold (just resize)
-      if (candidates.length === 0) {
-        const canvas = document.createElement('canvas');
-        const r = regions[0];
-        const scale = 3;
-        canvas.width = Math.round(r.w * scale);
-        canvas.height = Math.round(r.h * scale);
-        const ctx = canvas.getContext('2d')!;
-        ctx.drawImage(img, r.x, r.y, r.w, r.h, 0, 0, canvas.width, canvas.height);
-        const rawDataUrl = canvas.toDataURL('image/png');
-        const rawResult = await worker.recognize(rawDataUrl);
-        candidates = extractAllPlates(rawResult.data.text);
-      }
-
-      await worker.terminate();
-      setScanProgress(75);
-
-      // Step 3: Try candidates against MOT API
-      let foundVehicle: ScanResult | null = null;
-      let foundPlate: string | null = null;
-
-      for (const plate of candidates) {
+      // Step 3: Lookup plate in MOT API
+      if (plate) {
         setStatusMessage(`בודק מספר ${plate} במשרד התחבורה...`);
         setScanProgress(85);
-        const vehicleData = await lookupVehicleByPlate(plate);
-        if (vehicleData) {
-          foundPlate = plate;
-          foundVehicle = vehicleData;
-          break;
+        const found = await tryLookupAndResult(plate);
+        if (!found) {
+          // Plate found but no MOT data — let user confirm/edit
+          setScanStatus('manual');
+          setManualPlate(plate);
+          setStatusMessage(`זוהה מספר ${plate} אך לא אומת. תקן אם צריך:`);
         }
-        if (!foundPlate) foundPlate = plate;
-      }
-
-      setScanProgress(100);
-
-      if (foundVehicle) {
-        const fieldsFound = Object.values(foundVehicle).filter(Boolean).length;
-        setScanStatus('success');
-        setStatusMessage(`נמצאו ${fieldsFound} פרטים! הנתונים מולאו אוטומטית.`);
-        onScanResult(foundVehicle);
-        setTimeout(() => { setScanStatus('idle'); setStatusMessage(''); setScanProgress(0); }, 5000);
-      } else if (foundPlate) {
-        setScanStatus('manual');
-        setManualPlate(foundPlate);
-        setStatusMessage(`זוהה מספר ${foundPlate} אך לא אומת. תקן אם צריך:`);
       } else {
+        // No plate detected — manual entry
         setScanStatus('manual');
         setManualPlate('');
         setStatusMessage('לא זוהה מספר רכב. הזן ידנית:');
       }
 
+      setScanProgress(100);
     } catch (err) {
       console.error('Scan error:', err);
-      // Fall back to manual entry on any error
       setScanStatus('manual');
       setManualPlate('');
       setStatusMessage('שגיאה בסריקה. הזן מספר רכב ידנית:');
