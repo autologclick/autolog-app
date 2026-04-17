@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { useParams, useRouter } from 'next/navigation';
 import {
   FileText, Download, Share2, ArrowRight, Loader2,
@@ -166,8 +167,8 @@ export default function VehicleReportPage() {
       }
       const data = await res.json();
       setReport(data);
-    } catch (err: any) {
-      setError(err.message || 'שגיאה בטעינת הדוח');
+    } catch {
+      setError('לא הצלחנו לטעון את הדוח. בדוק את החיבור לאינטרנט ונסה שוב.');
     } finally {
       setLoading(false);
     }
@@ -228,7 +229,7 @@ export default function VehicleReportPage() {
       pdf.save(`vehicle-report-${plateNum}.pdf`);
     } catch (err) {
       console.error('PDF generation error:', err);
-      alert('\u05e9\u05d2\u05d9\u05d0\u05d4 \u05d1\u05d9\u05e6\u05d9\u05e8\u05ea PDF');
+      toast.error('לא הצלחנו ליצור את קובץ ה־PDF. נסה שוב.');
     } finally {
       setGeneratingPdf(false);
     }

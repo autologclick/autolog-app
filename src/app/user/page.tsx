@@ -8,6 +8,7 @@ import {
   Camera, Image as ImageIcon, AlertTriangle, CheckCircle,
   Gauge, Fuel, X, MapPin, Upload, Trash2, ClipboardCheck
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import OnboardingWizard from '@/components/shared/OnboardingWizard';
 import GlobalSearch from '@/components/ui/GlobalSearch';
 // Tesseract loaded dynamically in handleScanReceipt to avoid SSR issues
@@ -308,7 +309,7 @@ export default function UserHomePage() {
         router.push('/user/vehicles/add');
       }
     } catch {
-      alert('שגיאה במחיקת הרכב');
+      toast.error('לא הצלחנו למחוק את הרכב. נסה שוב מאוחר יותר.');
     } finally {
       setDeletingVehicle(false);
     }

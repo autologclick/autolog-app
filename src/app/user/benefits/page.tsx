@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Modal from '@/components/ui/Modal';
@@ -170,7 +171,7 @@ export default function BenefitsPage() {
       setCurrentRedemption(redemption);
       setShowRedemptionModal(true);
     } catch {
-      alert('שגיאה ביצירת קוד הטבה');
+      toast.error('לא הצלחנו ליצור את קוד ההטבה. נסה שוב.');
     } finally {
       setRedeemingId(null);
     }

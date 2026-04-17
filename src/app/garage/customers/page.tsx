@@ -71,8 +71,8 @@ export default function CustomersPage() {
       const data = await response.json();
       setCustomers(data.customers || []);
       setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'שגיאה בטעינה');
+    } catch {
+      setError('לא הצלחנו לטעון את רשימת הלקוחות. נסה לרענן את הדף.');
     } finally {
       setLoading(false);
     }

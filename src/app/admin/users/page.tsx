@@ -86,8 +86,8 @@ export default function AdminUsersPage() {
       ));
       setEditModal(false);
       setEditingUser(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'שגיאה בעדכון משתמש');
+    } catch {
+      setError('לא הצלחנו לעדכן את המשתמש. נסה שוב.');
     } finally {
       setUpdating(false);
     }
@@ -106,8 +106,8 @@ export default function AdminUsersPage() {
       if (!res.ok) throw new Error(data.error || 'שגיאה באיפוס סיסמה');
       setCredentialsInfo({ email: data.email, password: data.tempPassword });
       setEditModal(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'שגיאה באיפוס סיסמה');
+    } catch {
+      setError('לא הצלחנו לאפס את הסיסמה. נסה שוב מאוחר יותר.');
     } finally {
       setPasswordLoading(false);
     }
@@ -126,8 +126,8 @@ export default function AdminUsersPage() {
       if (!res.ok) throw new Error(data.error || 'שגיאה בשליחת מייל');
       setActionMsg(data.message);
       setEditModal(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'שגיאה בשליחת מייל');
+    } catch {
+      setError('לא הצלחנו לשלוח מייל לאיפוס סיסמה. נסה שוב.');
     } finally {
       setPasswordLoading(false);
     }

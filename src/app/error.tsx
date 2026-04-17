@@ -37,8 +37,9 @@ export default function Error({
           מצטערים, משהו השתבש. אנא נסה שוב או חזור לדף הבית.
         </p>
 
-        {error.message && (
-          <p className="text-sm text-red-600 mb-6 font-mono bg-red-50 p-3 rounded border border-red-200">
+        {/* Show raw error only in development; in production users see the Hebrew text above */}
+        {process.env.NODE_ENV === 'development' && error.message && (
+          <p className="text-sm text-red-600 mb-6 font-mono bg-red-50 p-3 rounded border border-red-200" dir="ltr">
             {error.message}
           </p>
         )}

@@ -40,8 +40,8 @@ export default function AdminAlertsPage() {
       if (!res.ok) throw new Error('שגיאה בטעינת התראות');
       const data = await res.json();
       setAlerts(data.alerts || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'שגיאה בטעינה');
+    } catch {
+      setError('לא הצלחנו לטעון את ההתראות. נסה לרענן את הדף.');
     } finally {
       setLoading(false);
       setRefreshing(false);

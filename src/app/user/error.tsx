@@ -35,8 +35,8 @@ export default function UserError({
           מצטערים, משהו השתבש בפורטל המשתמש. אנא נסה שוב.
         </p>
 
-        {error.message && (
-          <p className="text-sm text-red-600 mb-6 font-mono bg-red-50 p-3 rounded border border-red-200">
+        {process.env.NODE_ENV === 'development' && error.message && (
+          <p className="text-sm text-red-600 mb-6 font-mono bg-red-50 p-3 rounded border border-red-200" dir="ltr">
             {error.message}
           </p>
         )}

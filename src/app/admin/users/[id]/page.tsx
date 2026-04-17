@@ -86,8 +86,8 @@ export default function UserDetailPage() {
         if (!res.ok) throw new Error('שגיאה בטעינת פרטי המשתמש');
         const data = await res.json();
         setUser(data.user);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'שגיאה לא צפויה');
+      } catch {
+        setError('לא הצלחנו לטעון את פרטי המשתמש. נסה לרענן את הדף.');
       } finally {
         setLoading(false);
       }

@@ -198,8 +198,8 @@ export default function GarageSettingsPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setLogo(data.logo);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'שגיאה בהעלאת הלוגו');
+    } catch {
+      setError('לא הצלחנו להעלות את הלוגו. ודא שהקובץ הוא תמונה תקינה ונסה שוב.');
     } finally {
       setUploadingLogo(false);
       e.target.value = '';
@@ -249,8 +249,8 @@ export default function GarageSettingsPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setGallery(prev => [...prev, ...(data.uploaded || [])]);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'שגיאה בהעלאת התמונות');
+    } catch {
+      setError('לא הצלחנו להעלות את התמונות. ודא שהקבצים תקינים ונסה שוב.');
     } finally {
       setUploadingGallery(false);
       e.target.value = '';
@@ -302,8 +302,8 @@ export default function GarageSettingsPage() {
 
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'שגיאה בשמירת הפרופיל');
+    } catch {
+      setError('לא הצלחנו לשמור את הפרופיל. בדוק את החיבור לאינטרנט ונסה שוב.');
     } finally {
       setSaving(false);
     }
