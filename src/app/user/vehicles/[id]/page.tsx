@@ -366,26 +366,34 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
     setShowScanning(true);
 
     try {
-      const Tesseract = (await import('tesseract.js')).default;
-      const { data: { text } } = await Tesseract.recognize(treatmentData.image, 'heb+eng');
+      // Convert File to base64 data URL
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(treatmentData.image!);
+      });
 
-      // Parse the OCR text to extract details (basic implementation)
-      const lines = text.split('\n');
-      let extractedTitle = '';
-      let extractedCost = '';
-      let extractedDate = '';
+      const res = await fetch('/api/ai/scan-document', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: dataUrl, context: 'adding treatment record' }),
+      });
 
-      // Simple extraction logic
-      for (const line of lines) {
-        if (line.includes('₪') || line.includes('שקל')) {
-          const match = line.match(/\d+/);
-          if (match) extractedCost = match[0];
+      if (res.ok) {
+        const { data } = await res.json();
+        if (data) {
+          setTreatmentData(prev => ({
+            ...prev,
+            ...(data.documentTypeHebrew ? { title: data.documentTypeHebrew } : {}),
+            ...(data.totalAmount ? { cost: String(data.totalAmount) } : {}),
+            ...(data.date ? { date: data.date } : {}),
+            ...(data.mileage ? { mileage: String(data.mileage) } : {}),
+            ...(data.businessName ? { garageName: data.businessName } : {}),
+            ...(data.description ? { description: data.description } : {}),
+          }));
         }
       }
-
-      // Auto-fill extracted data
-      if (extractedTitle) setTreatmentData(prev => ({ ...prev, title: extractedTitle }));
-      if (extractedCost) setTreatmentData(prev => ({ ...prev, cost: extractedCost }));
 
       setShowScanning(false);
     } catch (err) {

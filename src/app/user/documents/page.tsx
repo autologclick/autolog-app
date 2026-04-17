@@ -60,112 +60,8 @@ function mapOldType(type: string): string {
 }
 
 // =============================================
-// OCR Helpers
+// Helpers
 // =============================================
-
-function parseDocumentText(text: string) {
-  const result: { expiryDate?: string; category?: string; licensePlate?: string } = {};
-  const lower = text.toLowerCase();
-
-  // Labeled dates
-  const labeledDatePatterns = [
-    /תוקף[\s:]*(?:עד)?[\s:]*(\d{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{2,4})/,
-    /בתוקף[\s:]*(?:עד)?[\s:]*(\d{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{2,4})/,
-    /valid[\s]*(?:until|to|thru)?[\s:]*(\d{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{2,4})/i,
-  ];
-  for (const pattern of labeledDatePatterns) {
-    const match = text.match(pattern);
-    if (match) {
-      let [, day, month, year] = match;
-      if (year.length === 2) year = '20' + year;
-      result.expiryDate = year + '-' + month.padStart(2, '0') + '-' + day.padStart(2, '0');
-      break;
-    }
-  }
-
-  // Latest future date fallback
-  if (!result.expiryDate) {
-    const allDates = [...text.matchAll(/(\d{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{2,4})/g)];
-    const today = new Date();
-    let latestFuture = '';
-    for (const match of allDates) {
-      let [, day, month, year] = match;
-      if (year.length === 2) year = '20' + year;
-      const y = parseInt(year), m = parseInt(month), d = parseInt(day);
-      if (m >= 1 && m <= 12 && d >= 1 && d <= 31 && y >= 2024 && y <= 2035) {
-        const dateStr = year + '-' + month.padStart(2, '0') + '-' + day.padStart(2, '0');
-        const date = new Date(dateStr);
-        if (date > today && (!latestFuture || dateStr > latestFuture)) latestFuture = dateStr;
-      }
-    }
-    if (latestFuture) result.expiryDate = latestFuture;
-  }
-
-  // Detect license plate early for scoring
-  const plateMatch = text.match(/(\d{2,3}[-\s]?\d{2,3}[-\s]?\d{2,3})/);
-  let detectedPlate = '';
-  if (plateMatch) {
-    const plate = plateMatch[1].replace(/[-\s]/g, '');
-    if (plate.length >= 7 && plate.length <= 8) detectedPlate = plate;
-  }
-
-  // Category — score-based approach for better accuracy
-  const scores: Record<string, number> = { driving_license: 0, insurance: 0, receipt: 0, vehicle_license: 0 };
-
-  // Driving license signals
-  if (lower.includes('רישיון נהיגה')) scores.driving_license += 10;
-  if (lower.includes('driving license') || lower.includes('driver')) scores.driving_license += 8;
-  if (lower.includes('דרגה') || lower.includes('רשות הרישוי')) scores.driving_license += 4;
-
-  // Insurance signals
-  if (lower.includes('פוליס')) scores.insurance += 10;
-  if (lower.includes('ביטוח')) scores.insurance += 6;
-  if (lower.includes('insurance')) scores.insurance += 8;
-  if (lower.includes('חובה') || lower.includes('מקיף') || lower.includes('צד ג')) scores.insurance += 5;
-  if (lower.includes('מבוטח') || lower.includes('פרמיה') || lower.includes('תביע')) scores.insurance += 4;
-
-  // Receipt / invoice signals — financial keywords
-  if (lower.includes('קבלה')) scores.receipt += 10;
-  if (lower.includes('חשבונית')) scores.receipt += 10;
-  if (lower.includes('receipt') || lower.includes('invoice')) scores.receipt += 8;
-  if (lower.includes('סה"כ') || lower.includes('סה״כ') || lower.includes('סהכ')) scores.receipt += 7;
-  if (lower.includes('מע"מ') || lower.includes('מע״מ') || lower.includes('vat')) scores.receipt += 6;
-  if (lower.includes('₪') || lower.includes('ש"ח') || lower.includes('ש״ח') || lower.includes('שח')) scores.receipt += 5;
-  if (lower.includes('תשלום') || lower.includes('מזומן') || lower.includes('אשראי')) scores.receipt += 5;
-  if (lower.includes('דלק') || lower.includes('בנזין') || lower.includes('סולר') || lower.includes('ליטר')) scores.receipt += 6;
-  if (lower.includes('תדלוק') || lower.includes('sonol') || lower.includes('paz') || lower.includes('delek') || lower.includes('פז') || lower.includes('סונול') || lower.includes('דור אלון') || lower.includes('ten')) scores.receipt += 7;
-  if (lower.includes('עסקה') || lower.includes('כרטיס') || lower.includes('visa') || lower.includes('mastercard') || lower.includes('ישראכרט') || lower.includes('לאומי קארד') || lower.includes('כאל') || lower.includes('מקס')) scores.receipt += 6;
-  if (lower.includes('מחיר') || lower.includes('סכום') || lower.includes('יחידה')) scores.receipt += 3;
-
-  // Vehicle license signals
-  if (lower.includes('רישיון רכב')) scores.vehicle_license += 12;
-  if (lower.includes('רשיון רכב')) scores.vehicle_license += 12;
-  if (lower.includes('משרד התחבורה')) scores.vehicle_license += 10;
-  if (lower.includes('רשות הרישוי')) scores.vehicle_license += 8;
-  if (lower.includes('סוג רכב') || lower.includes('מספר רכב') || lower.includes('בעל הרכב')) scores.vehicle_license += 7;
-  if (lower.includes('שנת ייצור') || lower.includes('מס רכב') || lower.includes('נפח מנוע')) scores.vehicle_license += 6;
-  if (lower.includes('מספר שלדה') || lower.includes('צבע') || lower.includes('דגם')) scores.vehicle_license += 4;
-  if (lower.includes('תוקף') && (lower.includes('רישיון') || lower.includes('רשיון'))) scores.vehicle_license += 6;
-  if (lower.includes('רישיון') && !lower.includes('נהיגה')) scores.vehicle_license += 4;
-  if (lower.includes('רשיון') && !lower.includes('נהיגה')) scores.vehicle_license += 4;
-  if (lower.includes('רישום')) scores.vehicle_license += 2;
-  // If license plate detected AND no strong receipt signals, boost vehicle license
-  if (detectedPlate && scores.receipt < 5) scores.vehicle_license += 5;
-
-  // Pick highest scoring category
-  const best = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
-  if (best[1] >= 3) {
-    result.category = best[0];
-  }
-
-  if (detectedPlate) {
-    result.licensePlate = detectedPlate;
-    if (!result.category) result.category = 'vehicle_license';
-  }
-
-
-  return result;
-}
 
 function classifyByFilename(fileName: string): string {
   const name = fileName.toLowerCase();
@@ -174,33 +70,6 @@ function classifyByFilename(fileName: string): string {
   if (name.includes('ביטוח') || name.includes('insurance') || name.includes('פוליס')) return 'insurance';
   if (name.includes('קבלה') || name.includes('receipt') || name.includes('חשבונית')) return 'receipt';
   return '';
-}
-
-function resizeImageForOCR(file: File, maxWidth = 1600): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      if (img.width <= maxWidth && img.height <= maxWidth) {
-        resolve(URL.createObjectURL(file));
-        return;
-      }
-      const canvas = document.createElement('canvas');
-      const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
-      canvas.width = Math.round(img.width * ratio);
-      canvas.height = Math.round(img.height * ratio);
-      const ctx = canvas.getContext('2d');
-      if (!ctx) { reject(new Error('Canvas not supported')); return; }
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob((blob) => {
-        if (!blob) { reject(new Error('Failed to resize')); return; }
-        resolve(URL.createObjectURL(blob));
-      }, 'image/jpeg', 0.85);
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load image')); };
-    img.src = url;
-  });
 }
 
 // =============================================
@@ -232,7 +101,11 @@ export default function DocumentsPage() {
   const [uploadTitle, setUploadTitle] = useState<string>('');
   const [uploadExpiry, setUploadExpiry] = useState<string>('');
   const [uploadDescription, setUploadDescription] = useState<string>('');
-  const [scanResults, setScanResults] = useState<{ licensePlate?: string; expiryDate?: string } | null>(null);
+  const [scanResults, setScanResults] = useState<{
+    licensePlate?: string; expiryDate?: string; totalAmount?: number;
+    businessName?: string; mileage?: number; date?: string;
+    invoiceNumber?: string; description?: string;
+  } | null>(null);
   const [viewingDoc, setViewingDoc] = useState<{ fileUrl: string; title: string } | null>(null);
 
   // Derived: is upload form visible?
@@ -274,84 +147,7 @@ export default function DocumentsPage() {
     }
   }, [isUploading]);
 
-  const handleFileSelected = async (file: File) => {
-    if (file.size > 10 * 1024 * 1024) {
-      setError('גודל הקובץ חייב להיות קטן מ-10MB');
-      return;
-    }
-    setUploadFile(file);
-    setError('');
-    setScanResults(null);
-    setDetectedCategory('');
-    setSelectedCategory('');
-    setUploadTitle('');
-    setUploadExpiry('');
-    setUploadDescription('');
-
-    // Preview
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => setUploadPreview(e.target?.result as string);
-      reader.readAsDataURL(file);
-    } else {
-      setUploadPreview('');
-    }
-
-    // OCR for images
-    if (file.type.startsWith('image/')) {
-      setScanning(true);
-      setScanProgress('מכין תמונה לסריקה...');
-      let imageUrl = '';
-      try {
-        imageUrl = await resizeImageForOCR(file);
-        setScanProgress('טוען מנוע סריקה...');
-        const { createWorker } = await import('tesseract.js');
-        setScanProgress('מאתחל סריקה...');
-        const worker = await createWorker('heb+eng', undefined, {
-          logger: (m: { status: string; progress: number }) => {
-            if (m.status === 'recognizing text') setScanProgress(`סורק... ${Math.round(m.progress * 100)}%`);
-            else if (m.status === 'loading language traineddata') setScanProgress(`טוען נתוני שפה... ${Math.round(m.progress * 100)}%`);
-          },
-        });
-        setScanProgress('סורק את המסמך...');
-        const ocrResult = await worker.recognize(imageUrl);
-        await worker.terminate();
-        URL.revokeObjectURL(imageUrl);
-        const ocrText = ocrResult.data.text;
-
-        if (ocrText && ocrText.trim().length >= 5) {
-          const parsed = parseDocumentText(ocrText);
-          if (parsed.category) {
-            setDetectedCategory(parsed.category);
-            setSelectedCategory(parsed.category);
-            if (CATEGORY_MAP[parsed.category]) setUploadTitle(CATEGORY_MAP[parsed.category].label);
-          } else {
-            const byName = classifyByFilename(file.name);
-            if (byName) { setDetectedCategory(byName); setSelectedCategory(byName); if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label); }
-          }
-          if (parsed.expiryDate) setUploadExpiry(parsed.expiryDate);
-          setScanResults({ licensePlate: parsed.licensePlate, expiryDate: parsed.expiryDate });
-          setScanProgress('הסריקה הושלמה!');
-        } else {
-          const byName = classifyByFilename(file.name);
-          if (byName) { setDetectedCategory(byName); setSelectedCategory(byName); if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label); }
-          setScanProgress('לא זוהה טקסט, נא לבחור קטגוריה ידנית');
-        }
-      } catch (err) {
-        console.error('OCR Error:', err);
-        if (imageUrl) URL.revokeObjectURL(imageUrl);
-        const byName = classifyByFilename(file.name);
-        if (byName) { setDetectedCategory(byName); setSelectedCategory(byName); if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label); }
-        setScanProgress('שגיאה בסריקה, נא לבחור קטגוריה ידנית');
-      }
-      setScanning(false);
-    } else {
-      const byName = classifyByFilename(file.name);
-      if (byName) { setDetectedCategory(byName); setSelectedCategory(byName); if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label); }
-    }
-  };
-
-  // Compress image for upload (max 800px, quality 0.6) to stay under API body limit
+  // Compress image for upload (max 1200px, quality 0.7) to stay under API body limit
   const compressForUpload = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       if (!file.type.startsWith('image/')) {
@@ -383,6 +179,104 @@ export default function DocumentsPage() {
       img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load')); };
       img.src = url;
     });
+  };
+
+  const handleFileSelected = async (file: File) => {
+    if (file.size > 10 * 1024 * 1024) {
+      setError('גודל הקובץ חייב להיות קטן מ-10MB');
+      return;
+    }
+    setUploadFile(file);
+    setError('');
+    setScanResults(null);
+    setDetectedCategory('');
+    setSelectedCategory('');
+    setUploadTitle('');
+    setUploadExpiry('');
+    setUploadDescription('');
+
+    // Preview
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => setUploadPreview(e.target?.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setUploadPreview('');
+    }
+
+    // AI scan for images
+    if (file.type.startsWith('image/')) {
+      setScanning(true);
+      setScanProgress('מכין תמונה לסריקה...');
+      try {
+        const imageDataUrl = await compressForUpload(file);
+        setScanProgress('סורק מסמך עם AI...');
+
+        const res = await fetch('/api/ai/scan-document', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: imageDataUrl, context: 'uploading document' }),
+        });
+
+        if (res.ok) {
+          const { data } = await res.json();
+          if (data) {
+            // Map AI category to documents page categories
+            const categoryMap: Record<string, string> = {
+              insurance: 'insurance', receipt: 'receipt',
+              test: 'vehicle_license', registration: 'vehicle_license', other: 'receipt',
+            };
+            const mapped = categoryMap[data.suggestedCategory] || 'receipt';
+            setDetectedCategory(mapped);
+            setSelectedCategory(mapped);
+
+            // Auto-fill title from document type or description
+            if (data.documentTypeHebrew) {
+              setUploadTitle(data.documentTypeHebrew);
+            } else if (CATEGORY_MAP[mapped]) {
+              setUploadTitle(CATEGORY_MAP[mapped].label);
+            }
+
+            // Auto-fill expiry date
+            if (data.expiryDate) setUploadExpiry(data.expiryDate);
+
+            // Auto-fill description from summary
+            if (data.summary) setUploadDescription(data.summary);
+
+            // Store all scan results for display
+            setScanResults({
+              licensePlate: data.licensePlate || undefined,
+              expiryDate: data.expiryDate || undefined,
+              totalAmount: data.totalAmount || undefined,
+              businessName: data.businessName || undefined,
+              mileage: data.mileage || undefined,
+              date: data.date || undefined,
+              invoiceNumber: data.invoiceNumber || undefined,
+              description: data.description || undefined,
+            });
+            setScanProgress('הסריקה הושלמה!');
+          } else {
+            const byName = classifyByFilename(file.name);
+            if (byName) { setDetectedCategory(byName); setSelectedCategory(byName); if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label); }
+            setScanProgress('לא זוהו פרטים, נא לבחור קטגוריה ידנית');
+          }
+        } else {
+          // API error — fall back to filename classification
+          const byName = classifyByFilename(file.name);
+          if (byName) { setDetectedCategory(byName); setSelectedCategory(byName); if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label); }
+          setScanProgress('שגיאה בסריקה, נא לבחור קטגוריה ידנית');
+        }
+      } catch (err) {
+        console.error('AI Scan Error:', err);
+        const byName = classifyByFilename(file.name);
+        if (byName) { setDetectedCategory(byName); setSelectedCategory(byName); if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label); }
+        setScanProgress('שגיאה בסריקה, נא לבחור קטגוריה ידנית');
+      }
+      setScanning(false);
+    } else {
+      const byName = classifyByFilename(file.name);
+      if (byName) { setDetectedCategory(byName); setSelectedCategory(byName); if (CATEGORY_MAP[byName]) setUploadTitle(CATEGORY_MAP[byName].label); }
+    }
   };
 
   const handleUploadSubmit = async () => {
@@ -605,20 +499,47 @@ export default function DocumentsPage() {
                 </div>
 
                 {/* Scan results banner */}
-                {(detectedCategory || scanResults?.expiryDate) && (
+                {(detectedCategory || scanResults?.expiryDate || scanResults?.totalAmount) && (
                   <div className="bg-purple-50 border border-purple-200 rounded-xl p-3 space-y-1">
                     <div className="flex items-center gap-2">
                       <CheckCircle size={16} className="text-purple-600" />
-                      <span className="text-sm font-semibold text-purple-800">תוצאות סריקה:</span>
+                      <span className="text-sm font-semibold text-purple-800">
+                        תוצאות סריקת AI:
+                      </span>
                     </div>
                     {detectedCategory && (
                       <p className="text-sm text-purple-700 mr-6">
                         סוג מסמך: <strong>{CATEGORY_MAP[detectedCategory]?.label}</strong>
                       </p>
                     )}
+                    {scanResults?.date && (
+                      <p className="text-sm text-purple-700 mr-6">
+                        תאריך: <strong>{new Date(scanResults.date).toLocaleDateString('he-IL')}</strong>
+                      </p>
+                    )}
                     {scanResults?.expiryDate && (
                       <p className="text-sm text-purple-700 mr-6">
                         תוקף: <strong>{new Date(scanResults.expiryDate).toLocaleDateString('he-IL')}</strong>
+                      </p>
+                    )}
+                    {scanResults?.totalAmount != null && (
+                      <p className="text-sm text-purple-700 mr-6">
+                        סכום: <strong>₪{scanResults.totalAmount.toLocaleString('he-IL')}</strong>
+                      </p>
+                    )}
+                    {scanResults?.businessName && (
+                      <p className="text-sm text-purple-700 mr-6">
+                        עסק: <strong>{scanResults.businessName}</strong>
+                      </p>
+                    )}
+                    {scanResults?.mileage && (
+                      <p className="text-sm text-purple-700 mr-6">
+                        קילומטראז׳: <strong>{scanResults.mileage.toLocaleString('he-IL')} ק״מ</strong>
+                      </p>
+                    )}
+                    {scanResults?.invoiceNumber && (
+                      <p className="text-sm text-purple-700 mr-6">
+                        מס׳ חשבונית: <strong>{scanResults.invoiceNumber}</strong>
                       </p>
                     )}
                     {scanResults?.licensePlate && (

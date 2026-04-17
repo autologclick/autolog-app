@@ -339,23 +339,32 @@ export default function UserHomePage() {
     });
   };
 
-  // ── OCR Scan ──
+  // ── AI Document Scan ──
   const handleScanReceipt = async (file: File) => {
     setScanning(true);
     try {
       const dataUrl = await compressImage(file, 1200, 0.85);
       setTreatmentImage(dataUrl);
-      const Tesseract = (await import('tesseract.js')).default;
-      const { data } = await Tesseract.recognize(dataUrl, 'heb+eng');
-      const text = data.text;
-      // Try extracting cost
-      const costMatch = text.match(/סה[״"]?כ[^0-9]*([0-9,.]+)/i) || text.match(/total[^0-9]*([0-9,.]+)/i) || text.match(/₪\s*([0-9,.]+)/);
-      if (costMatch) setTreatmentForm(f => ({ ...f, cost: costMatch[1].replace(',', '') }));
-      // Try extracting date
-      const dateMatch = text.match(/(\d{1,2})[./](\d{1,2})[./](\d{2,4})/);
-      if (dateMatch) {
-        const y = dateMatch[3].length === 2 ? '20' + dateMatch[3] : dateMatch[3];
-        setTreatmentForm(f => ({ ...f, date: `${y}-${dateMatch[2].padStart(2, '0')}-${dateMatch[1].padStart(2, '0')}` }));
+
+      const res = await fetch('/api/ai/scan-document', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: dataUrl, context: 'adding treatment record' }),
+      });
+
+      if (res.ok) {
+        const { data } = await res.json();
+        if (data) {
+          setTreatmentForm(f => ({
+            ...f,
+            ...(data.totalAmount ? { cost: String(data.totalAmount) } : {}),
+            ...(data.date ? { date: data.date } : {}),
+            ...(data.mileage ? { mileage: String(data.mileage) } : {}),
+            ...(data.businessName ? { garageName: data.businessName } : {}),
+            ...(data.description ? { description: data.description } : {}),
+            ...(data.documentTypeHebrew ? { title: data.documentTypeHebrew } : {}),
+          }));
+        }
       }
     } catch { /* silently fail */ }
     setScanning(false);
