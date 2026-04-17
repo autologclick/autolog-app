@@ -7,6 +7,7 @@ import Badge from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import VoiceInput from '@/components/ui/VoiceInput';
+import Pagination from '@/components/ui/Pagination';
 import {
   Wrench, Send, Loader2, AlertCircle, Clock,
   CheckCircle, XCircle, Calendar, DollarSign, Car,
@@ -60,6 +61,8 @@ export default function GarageTreatmentsPage() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const [form, setForm] = useState({
     licensePlate: '',
@@ -84,12 +87,18 @@ export default function GarageTreatmentsPage() {
 
   useEffect(() => { fetchTreatments(); }, []);
 
+  // Reset page on filter change
+  useEffect(() => { setCurrentPage(1); }, [filterStatus, searchQuery]);
+
   const filteredTreatments = treatments.filter(t => {
     const matchStatus = filterStatus === 'all' || t.status === filterStatus;
     const matchSearch = !searchQuery || t.title.includes(searchQuery) ||
       t.mechanicName?.includes(searchQuery) || t.description?.includes(searchQuery);
     return matchStatus && matchSearch;
   });
+
+  const totalPages = Math.ceil(filteredTreatments.length / ITEMS_PER_PAGE);
+  const paginatedTreatments = filteredTreatments.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const stats = {
     total: treatments.length,
@@ -337,7 +346,7 @@ export default function GarageTreatmentsPage() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {filteredTreatments.map(t => {
+          {paginatedTreatments.map(t => {
             const statusInfo = STATUS_MAP[t.status] || STATUS_MAP.pending_approval;
             const StatusIcon = statusInfo.icon;
             const typeInfo = TREATMENT_TYPES[t.type] || TREATMENT_TYPES.other;
@@ -424,6 +433,15 @@ export default function GarageTreatmentsPage() {
             );
           })}
         </div>
+
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          totalItems={filteredTreatments.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+        />
       )}
 
       {/* Floating Add Button */}

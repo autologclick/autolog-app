@@ -14,6 +14,7 @@ import {
   Loader2, BarChart3, Zap, TrendingDown, Brain, Lightbulb, Activity
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import Pagination from '@/components/ui/Pagination';
 
 interface Expense {
   id: string;
@@ -55,6 +56,8 @@ export default function ExpensesPage() {
   const [editExpenseId, setEditExpenseId] = useState<string | null>(null);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [aiExpenseAnalysis, setAiExpenseAnalysis] = useState<any>(null);
@@ -123,12 +126,20 @@ export default function ExpensesPage() {
       .catch(() => setAiExpenseLoading(false));
   }, [expenses.length, selectedVehicleId]);
 
+  // Reset page on filter change
+  useEffect(() => { setCurrentPage(1); }, [selectedVehicleId, selectedCategory]);
+
   // Filter expenses
   const filteredExpenses = expenses.filter(exp => {
     const matchesVehicle = !selectedVehicleId || exp.vehicleId === selectedVehicleId;
     const matchesCategory = selectedCategory === 'all' || exp.category === selectedCategory;
     return matchesVehicle && matchesCategory;
   });
+
+  // Sorted and paginated
+  const sortedExpenses = [...filteredExpenses].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const totalPages = Math.ceil(sortedExpenses.length / ITEMS_PER_PAGE);
+  const paginatedExpenses = sortedExpenses.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   // Calculate statistics
   const totalExpenses = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
@@ -583,7 +594,7 @@ export default function ExpensesPage() {
           <div className="space-y-3">
             {/* Mobile Cards View */}
             <div className="block sm:hidden space-y-3">
-              {filteredExpenses.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(exp => {
+              {paginatedExpenses.map(exp => {
                 const catData = CATEGORIES[exp.category];
                 return (
                   <div key={exp.id} className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition flex items-start gap-3">
@@ -639,10 +650,10 @@ export default function ExpensesPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredExpenses.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((exp, idx) => {
+                    {paginatedExpenses.map((exp, idx) => {
                       const catData = CATEGORIES[exp.category];
                       return (
-                        <tr key={exp.id} className={`${idx < filteredExpenses.length - 1 ? 'border-b border-gray-100' : ''} hover:bg-[#fef7ed] transition`}>
+                        <tr key={exp.id} className={`${idx < paginatedExpenses.length - 1 ? 'border-b border-gray-100' : ''} hover:bg-[#fef7ed] transition`}>
                           <td className="py-3 px-4 text-sm text-gray-600">
                             {new Date(exp.date).toLocaleDateString('he-IL')}
                           </td>
@@ -685,6 +696,15 @@ export default function ExpensesPage() {
               </div>
             </div>
           </div>
+
+          {/* Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            totalItems={filteredExpenses.length}
+            itemsPerPage={ITEMS_PER_PAGE}
+          />
         )}
 
         {/* Add Expense Modal */}

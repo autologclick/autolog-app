@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
+import Pagination from '@/components/ui/Pagination';
 import {
   Users, Search, Phone, Mail, Car, Calendar, ChevronDown, ChevronUp,
   FileText, AlertCircle, Loader2, Star, Clock, TrendingUp, Eye,
@@ -56,6 +57,8 @@ export default function CustomersPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCustomer, setExpandedCustomer] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 15;
   const [expandedVehicles, setExpandedVehicles] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<SortOption>('recent');
 
@@ -100,6 +103,12 @@ export default function CustomersPage() {
 
     return result;
   })();
+
+  // Reset page on filter change
+  useEffect(() => { setCurrentPage(1); }, [searchQuery, sortBy]);
+
+  const totalPages = Math.ceil(filteredCustomers.length / ITEMS_PER_PAGE);
+  const paginatedCustomers = filteredCustomers.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const toggleVehicle = (vehicleId: string) => {
     const next = new Set(expandedVehicles);
@@ -269,7 +278,7 @@ export default function CustomersPage() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {filteredCustomers.map(customer => {
+          {paginatedCustomers.map(customer => {
             const isExpanded = expandedCustomer === customer.id;
             const initials = customer.fullName.split(' ').map(n => n[0]).join('').slice(0, 2);
             const visitScore = customer.totalVisits >= 5 ? 'gold' : customer.totalVisits >= 3 ? 'silver' : 'normal';
@@ -465,6 +474,15 @@ export default function CustomersPage() {
               </Card>
             );
           })}
+
+          {/* Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            totalItems={filteredCustomers.length}
+            itemsPerPage={ITEMS_PER_PAGE}
+          />
         </div>
       )}
     </div>
