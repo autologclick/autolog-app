@@ -6,10 +6,11 @@ import {
   Car, ChevronDown, ChevronLeft, Loader2, Plus, Flag,
   Wrench, FileText, Receipt, Calendar, Shield, Clock,
   Camera, Image as ImageIcon, AlertTriangle, CheckCircle,
-  Gauge, Fuel, X, MapPin, Upload, Trash2, ClipboardCheck
+  Gauge, Fuel, X, MapPin, Upload, Trash2, MessageCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import OnboardingWizard from '@/components/shared/OnboardingWizard';
+import VehicleAssistant from '@/components/chat/VehicleAssistant';
 import GlobalSearch from '@/components/ui/GlobalSearch';
 // Tesseract loaded dynamically in handleScanReceipt to avoid SSR issues
 
@@ -216,6 +217,7 @@ export default function UserHomePage() {
   const [maintenanceError, setMaintenanceError] = useState(false);
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const [showInspectionDetails, setShowInspectionDetails] = useState(false);
+  const [showChat, setShowChat] = useState(false);
 
   // Fetch maintenance schedule (reusable)
   const fetchMaintenanceSchedule = async (vehicleId: string, forceRefresh = false) => {
@@ -622,13 +624,13 @@ export default function UserHomePage() {
           </div>
         </div>
 
-        {/* Vehicle Inspection Booking CTA */}
+        {/* AI Vehicle Assistant CTA */}
         {vehicle && (
           <button
-            onClick={() => router.push('/user/book-garage?service=inspection')}
+            onClick={() => setShowChat(true)}
             className="w-full relative overflow-hidden rounded-2xl py-5 px-6 shadow-lg active:scale-[0.98] transition-all duration-200"
             style={{
-              background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #115e59 100%)',
+              background: 'linear-gradient(135deg, #1e3a5f 0%, #2a5a8f 50%, #1e3a5f 100%)',
             }}
           >
             <div className="absolute inset-0 opacity-10">
@@ -638,13 +640,12 @@ export default function UserHomePage() {
             <div className="relative flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                  <ClipboardCheck size={24} className="text-white" />
+                  <MessageCircle size={24} className="text-white" />
                 </div>
                 <div className="text-right">
-                  <h3 className="text-white font-bold text-base">הזמן בדיקה מקצועית לרכב</h3>
-                  <p className="text-teal-100 text-xs mt-0.5 leading-relaxed">
-                    בדיקת AutoLog מקיפה ע&quot;י טכנאי מוסמך — כוללת מנוע, בלמים, שלדה, חשמל ועוד.
-                    קבל דוח מפורט עם ציון בריאות הרכב והמלצות לטיפול
+                  <h3 className="text-white font-bold text-base">שאל את AutoLog AI</h3>
+                  <p className="text-blue-100 text-xs mt-0.5 leading-relaxed">
+                    בוט מומחה שמכיר את הרכב שלך — שאל על תחזוקה, תקלות, עלויות או כל שאלה אחרת
                   </p>
                 </div>
               </div>
@@ -1300,6 +1301,16 @@ export default function UserHomePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ═══ AI Vehicle Assistant Chat ═══ */}
+      {vehicle && (
+        <VehicleAssistant
+          isOpen={showChat}
+          onClose={() => setShowChat(false)}
+          vehicleId={vehicle.id}
+          vehicleName={vehicle.nickname || `${vehicle.manufacturer} ${vehicle.model}`}
+        />
       )}
     </div>
   );
