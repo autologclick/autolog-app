@@ -443,10 +443,10 @@ export default function AdminDashboard() {
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
                 <th className="text-right py-3 px-3 font-semibold text-gray-700">מוסך</th>
-                <th className="text-right py-3 px-3 font-semibold text-gray-700">עיר</th>
+                <th className="text-right py-3 px-3 font-semibold text-gray-700 hidden sm:table-cell">עיר</th>
                 <th className="text-center py-3 px-3 font-semibold text-gray-700">דירוג</th>
                 <th className="text-center py-3 px-3 font-semibold text-gray-700">בדיקות</th>
-                <th className="text-center py-3 px-3 font-semibold text-gray-700">סטטוס</th>
+                <th className="text-center py-3 px-3 font-semibold text-gray-700 hidden sm:table-cell">סטטוס</th>
               </tr>
             </thead>
             <tbody>
@@ -458,7 +458,7 @@ export default function AdminDashboard() {
                 data.topGarages.map((g, idx) => (
                   <tr key={g.id} className={`border-b border-gray-100 hover:bg-[#fef7ed] transition ${idx === data.topGarages.length - 1 ? 'border-b-0' : ''}`}>
                     <td className="py-3 px-3 font-medium text-[#1e3a5f]">{g.name}</td>
-                    <td className="py-3 px-3 text-gray-600">{g.city}</td>
+                    <td className="py-3 px-3 text-gray-600 hidden sm:table-cell">{g.city}</td>
                     <td className="py-3 px-3 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <Star size={16} className="text-amber-500 fill-amber-500" />
@@ -470,7 +470,7 @@ export default function AdminDashboard() {
                         {g.inspectionCount}
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-center">
+                    <td className="py-3 px-3 text-center hidden sm:table-cell">
                       <Badge variant={g.isActive ? 'success' : 'warning'}>{g.isActive ? 'פעיל' : 'מושהה'}</Badge>
                     </td>
                   </tr>

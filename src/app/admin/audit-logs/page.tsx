@@ -80,10 +80,10 @@ export default function AuditLogsPage() {
               <tr>
                 <th className="p-2 text-right">זמן</th>
                 <th className="p-2 text-right">פעולה</th>
-                <th className="p-2 text-right">סוג</th>
-                <th className="p-2 text-right">משאב</th>
-                <th className="p-2 text-right">משתמש</th>
-                <th className="p-2 text-right">IP</th>
+                <th className="p-2 text-right hidden sm:table-cell">סוג</th>
+                <th className="p-2 text-right hidden lg:table-cell">משאב</th>
+                <th className="p-2 text-right hidden md:table-cell">משתמש</th>
+                <th className="p-2 text-right hidden lg:table-cell">IP</th>
               </tr>
             </thead>
             <tbody>
@@ -91,10 +91,10 @@ export default function AuditLogsPage() {
                 <tr key={r.id} className="border-t">
                   <td className="p-2 whitespace-nowrap">{new Date(r.timestamp).toLocaleString('he-IL')}</td>
                   <td className="p-2">{r.action}</td>
-                  <td className="p-2">{r.resourceType}</td>
-                  <td className="p-2 font-mono text-xs">{r.resourceId}</td>
-                  <td className="p-2 font-mono text-xs">{r.userId}</td>
-                  <td className="p-2">{r.ip || '-'}</td>
+                  <td className="p-2 hidden sm:table-cell">{r.resourceType}</td>
+                  <td className="p-2 font-mono text-xs hidden lg:table-cell">{r.resourceId}</td>
+                  <td className="p-2 font-mono text-xs hidden md:table-cell">{r.userId}</td>
+                  <td className="p-2 hidden lg:table-cell">{r.ip || '-'}</td>
                 </tr>
               ))}
               {rows.length === 0 && (

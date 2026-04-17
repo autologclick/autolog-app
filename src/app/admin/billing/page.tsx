@@ -335,10 +335,10 @@ export default function AdminBillingPage() {
                       <thead>
                         <tr className="border-b border-gray-200">
                           <th className="text-right py-2 px-2 font-semibold text-gray-500">רכב</th>
-                          <th className="text-right py-2 px-2 font-semibold text-gray-500">סוג</th>
+                          <th className="text-right py-2 px-2 font-semibold text-gray-500 hidden sm:table-cell">סוג</th>
                           <th className="text-right py-2 px-2 font-semibold text-gray-500">תאריך</th>
-                          <th className="text-right py-2 px-2 font-semibold text-gray-500">ציון</th>
-                          <th className="text-right py-2 px-2 font-semibold text-gray-500">עבודות</th>
+                          <th className="text-right py-2 px-2 font-semibold text-gray-500 hidden md:table-cell">ציון</th>
+                          <th className="text-right py-2 px-2 font-semibold text-gray-500 hidden lg:table-cell">עבודות</th>
                           <th className="text-right py-2 px-2 font-semibold text-gray-500">עלות</th>
                           <th className="text-right py-2 px-2 font-semibold text-gray-500"></th>
                         </tr>
@@ -359,7 +359,7 @@ export default function AdminBillingPage() {
                                 </div>
                                 <span className="text-gray-400 text-xs font-mono">{i.vehicle.licensePlate}</span>
                               </td>
-                              <td className="py-2 px-2">
+                              <td className="py-2 px-2 hidden sm:table-cell">
                                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                                   i.inspectionType === 'pre_test' ? 'bg-blue-100 text-blue-700' :
                                   i.inspectionType === 'full' ? 'bg-green-100 text-green-700' :
@@ -374,7 +374,7 @@ export default function AdminBillingPage() {
                                   {new Date(i.date).toLocaleDateString('he-IL')}
                                 </div>
                               </td>
-                              <td className="py-2 px-2">
+                              <td className="py-2 px-2 hidden md:table-cell">
                                 {i.overallScore != null ? (
                                   <span className={`font-bold ${
                                     i.overallScore >= 80 ? 'text-green-600' :
@@ -383,7 +383,7 @@ export default function AdminBillingPage() {
                                   }`}>{i.overallScore}</span>
                                 ) : '—'}
                               </td>
-                              <td className="py-2 px-2">
+                              <td className="py-2 px-2 hidden lg:table-cell">
                                 {workCount > 0 ? (
                                   <span className="text-xs font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
                                     {workCount} פריטים
