@@ -13,6 +13,7 @@ import {
   AlertTriangle, MapPin, DollarSign, Calendar,
   Loader2, BarChart3, Zap, TrendingDown, Brain, Lightbulb, Activity
 } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 interface Expense {
   id: string;
@@ -147,22 +148,39 @@ export default function ExpensesPage() {
   }, {} as Record<string, number>);
 
   // Monthly data for chart
-  const monthlyData = (() => {
-    const data: Record<number, number> = {};
+  const MONTH_NAMES = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
+  const MONTH_SHORT = ['ינו׳', 'פבר׳', 'מרץ', 'אפר׳', 'מאי', 'יוני', 'יולי', 'אוג׳', 'ספט׳', 'אוק׳', 'נוב׳', 'דצמ׳'];
+
+  const monthlyChartData = (() => {
     const now = new Date();
+    const result = [];
     for (let i = 5; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      data[date.getMonth()] = filteredExpenses
-        .filter(exp => {
-          const expDate = new Date(exp.date);
-          return expDate.getMonth() === date.getMonth() && expDate.getFullYear() === date.getFullYear();
-        })
-        .reduce((sum, exp) => sum + exp.amount, 0);
-    }
-    return data;
-  })();
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      const monthExpenses = filteredExpenses.filter(exp => {
+        const expDate = new Date(exp.date);
+        return expDate.getMonth() === month && expDate.getFullYear() === year;
+      });
+      const total = monthExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
-  const maxMonthlyExpense = Math.max(...Object.values(monthlyData), 1);
+      // Category breakdown for this month
+      const byCategory: Record<string, number> = {};
+      CATEGORY_KEYS.forEach(cat => {
+        const catTotal = monthExpenses.filter(e => e.category === cat).reduce((s, e) => s + e.amount, 0);
+        if (catTotal > 0) byCategory[cat] = catTotal;
+      });
+
+      result.push({
+        name: MONTH_SHORT[month],
+        fullName: MONTH_NAMES[month],
+        total,
+        isCurrent: i === 0,
+        ...byCategory,
+      });
+    }
+    return result;
+  })();
 
   const handleAddExpense = async () => {
     if (!formData.vehicleId || !formData.amount || !formData.category) {
@@ -361,24 +379,52 @@ export default function ExpensesPage() {
         <div>
           <h3 className="text-sm font-semibold text-[#1e3a5f] mb-3 text-right">טרנד חודשי</h3>
           <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="flex items-end justify-center gap-2 h-40">
-              {Object.entries(monthlyData).map(([month, amount]) => {
-                const months = ['ינו', 'פבר', 'מרץ', 'אפר', 'מאי', 'יוני', 'יולי', 'אוג', 'ספ', 'אוק', 'נוב', 'דצ'];
-                const monthLabel = months[parseInt(month)];
-                const height = maxMonthlyExpense > 0 ? (amount / maxMonthlyExpense) * 100 : 0;
-                return (
-                  <div key={month} className="flex-1 flex flex-col items-center gap-2">
-                    <div className="relative w-full h-full flex flex-col justify-end">
-                      <div
-                        className="w-full bg-gradient-to-t from-teal-600 to-teal-400 rounded-t-lg transition-all hover:from-teal-700 hover:to-teal-500 hover:shadow-lg"
-                        style={{ height: `${Math.max(height, 8)}%` }}
-                        title={`₪${amount}`}
-                      />
-                    </div>
-                    <span className="text-xs font-medium text-gray-600">{monthLabel}</span>
-                  </div>
-                );
-              })}
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={monthlyChartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: '#6b7280', fontWeight: 500 }}
+                  reversed
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 11, fill: '#9ca3af' }}
+                  tickFormatter={(v) => v > 0 ? `₪${v >= 1000 ? `${(v/1000).toFixed(1)}k` : v}` : ''}
+                  width={55}
+                />
+                <Tooltip
+                  cursor={{ fill: 'rgba(13, 148, 136, 0.06)', radius: 8 }}
+                  contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', direction: 'rtl', textAlign: 'right' }}
+                  formatter={(value: number) => [`₪${value.toLocaleString()}`, 'סה״כ']}
+                  labelFormatter={(label) => {
+                    const item = monthlyChartData.find(d => d.name === label);
+                    return item?.fullName || label;
+                  }}
+                />
+                <Bar dataKey="total" radius={[8, 8, 0, 0]} maxBarSize={48}>
+                  {monthlyChartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.isCurrent ? '#0d9488' : '#99f6e4'}
+                      opacity={entry.total === 0 ? 0.3 : 1}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            {/* Legend */}
+            <div className="flex items-center justify-center gap-4 mt-2 text-xs text-gray-500">
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-sm bg-teal-600" />
+                <span>החודש הנוכחי</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-sm bg-teal-200" />
+                <span>חודשים קודמים</span>
+              </div>
             </div>
           </div>
         </div>
