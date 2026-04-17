@@ -111,6 +111,9 @@ export async function GET(req: NextRequest) {
       rearTire: record.zmig_ahori || '',
       pollutionGroup: record.kvutzat_zihum || null,
       safetyLevel: record.ramat_eivzur_betihuty || null,
+      // Useful technical data
+      engineDisplacement: record.nefah_manoa || null,  // נפח מנוע (סמ"ק)
+      greenIndex: record.rank_green || null,            // מדד ירוק
       source: 'data.gov.il - משרד התחבורה',
     };
 

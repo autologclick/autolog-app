@@ -171,6 +171,15 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
   const [treatmentLoading, setTreatmentLoading] = useState(false);
   const [expandedDetails, setExpandedDetails] = useState(false);
   const [selectedReminderIndex, setSelectedReminderIndex] = useState(0);
+  const [motData, setMotData] = useState<{
+    frontTire?: string;
+    rearTire?: string;
+    pollutionGroup?: number | null;
+    greenIndex?: number | null;
+    firstRegistrationDate?: string | null;
+    engineDisplacement?: number | null;
+  } | null>(null);
+  const [motLoading, setMotLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -235,6 +244,31 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
         if (documentsRes.ok) {
           const documentsData = await documentsRes.json();
           setDocuments(documentsData.documents || []);
+        }
+
+        // Fetch MOT data from Ministry of Transport
+        if (vehicleData.vehicle.licensePlate) {
+          setMotLoading(true);
+          try {
+            const motRes = await fetch(`/api/vehicles/lookup?plate=${vehicleData.vehicle.licensePlate}`);
+            if (motRes.ok) {
+              const motResult = await motRes.json();
+              if (motResult.vehicle) {
+                setMotData({
+                  frontTire: motResult.vehicle.frontTire,
+                  rearTire: motResult.vehicle.rearTire,
+                  pollutionGroup: motResult.vehicle.pollutionGroup,
+                  greenIndex: motResult.vehicle.greenIndex,
+                  firstRegistrationDate: motResult.vehicle.firstRegistrationDate,
+                  engineDisplacement: motResult.vehicle.engineDisplacement,
+                });
+              }
+            }
+          } catch {
+            // MOT data is non-critical, silently fail
+          } finally {
+            setMotLoading(false);
+          }
         }
       } catch {
         setError('שגיאת חיבור');
@@ -538,7 +572,9 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1">נפח מנוע</p>
-              <p className="font-bold text-gray-800">{vehicle.fuelType || '—'}</p>
+              <p className="font-bold text-gray-800">
+                {motData?.engineDisplacement ? `${motData.engineDisplacement.toLocaleString()} סמ"ק` : vehicle.fuelType || '—'}
+              </p>
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1">רמת גימור</p>
@@ -571,6 +607,62 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
                 <span className="text-sm text-gray-600">דלק</span>
                 <span className="font-medium text-gray-800">{vehicle.fuelType || '—'}</span>
               </div>
+
+              {/* MOT Data - Ministry of Transport */}
+              {motLoading ? (
+                <div className="flex items-center justify-center py-3">
+                  <Loader2 size={16} className="animate-spin text-gray-400" />
+                  <span className="text-xs text-gray-400 mr-2">טוען נתוני משרד התחבורה...</span>
+                </div>
+              ) : motData && (
+                <>
+                  <div className="pt-2 pb-1">
+                    <span className="text-xs font-medium text-gray-400">נתוני משרד התחבורה</span>
+                  </div>
+                  {motData.firstRegistrationDate && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">עלייה לכביש</span>
+                      <span className="font-medium text-gray-800">
+                        {new Date(motData.firstRegistrationDate).toLocaleDateString('he-IL')}
+                      </span>
+                    </div>
+                  )}
+                  {motData.frontTire && motData.frontTire === motData.rearTire ? (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">צמיגים</span>
+                      <span className="font-medium text-gray-800" dir="ltr">{motData.frontTire}</span>
+                    </div>
+                  ) : (
+                    <>
+                      {motData.frontTire && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600">צמיג קדמי</span>
+                          <span className="font-medium text-gray-800" dir="ltr">{motData.frontTire}</span>
+                        </div>
+                      )}
+                      {motData.rearTire && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600">צמיג אחורי</span>
+                          <span className="font-medium text-gray-800" dir="ltr">{motData.rearTire}</span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  {motData.pollutionGroup != null && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">קבוצת זיהום</span>
+                      <span className="font-medium text-gray-800">{motData.pollutionGroup}</span>
+                    </div>
+                  )}
+                  {motData.greenIndex != null && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">מדד ירוק</span>
+                      <span className="font-medium text-gray-800">{motData.greenIndex}</span>
+                    </div>
+                  )}
+                </>
+              )}
+
               <button
                 onClick={() => setShowEditModal(true)}
                 className="w-full flex items-center justify-center gap-2 mt-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-medium transition-colors"
