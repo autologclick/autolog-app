@@ -150,8 +150,18 @@ export default function AdminUsersPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="animate-spin text-[#1e3a5f]" size={32} />
+      <div className="space-y-6 pt-12 lg:pt-0 animate-pulse" dir="rtl">
+        <div className="flex items-center justify-between"><div className="h-8 bg-gray-200 rounded-lg w-36" /><div className="h-10 w-28 bg-gray-100 rounded-lg" /></div>
+        <div className="h-10 bg-white rounded-lg" />
+        <div className="bg-white rounded-xl p-4 space-y-3">
+          {[1,2,3,4,5].map(i => (
+            <div key={i} className="flex items-center gap-3 py-3 border-b border-gray-50 last:border-b-0">
+              <div className="w-8 h-8 bg-gray-100 rounded-full" />
+              <div className="flex-1 space-y-2"><div className="h-4 bg-gray-100 rounded w-1/3" /><div className="h-3 bg-gray-50 rounded w-1/4" /></div>
+              <div className="h-6 w-14 bg-gray-100 rounded-full" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

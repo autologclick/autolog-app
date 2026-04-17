@@ -648,8 +648,16 @@ function GaragePerformancePanel({
 }) {
   if (loading) {
     return (
-      <Card className="flex items-center justify-center py-16">
-        <Loader2 size={28} className="animate-spin text-purple-600" />
+      <Card className="py-4 animate-pulse">
+        <div className="space-y-3 px-4">
+          {[1,2,3,4,5].map(i => (
+            <div key={i} className="flex items-center gap-4 py-3 border-b border-gray-50 last:border-b-0">
+              <div className="w-10 h-10 bg-gray-100 rounded-lg flex-shrink-0" />
+              <div className="flex-1 space-y-2"><div className="h-4 bg-gray-100 rounded w-3/4" /><div className="h-3 bg-gray-50 rounded w-1/2" /></div>
+              <div className="h-6 w-16 bg-gray-100 rounded-full" />
+            </div>
+          ))}
+        </div>
       </Card>
     );
   }

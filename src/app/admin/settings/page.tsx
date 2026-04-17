@@ -142,8 +142,14 @@ export default function AdminSettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-teal-600" size={32} />
+      <div className="space-y-6 pt-12 lg:pt-0 animate-pulse" dir="rtl">
+        <div className="h-8 bg-gray-200 rounded-lg w-36" />
+        {[1,2].map(i => (
+          <div key={i} className="bg-white rounded-xl p-6 space-y-4">
+            <div className="h-5 bg-gray-100 rounded w-1/4" />
+            <div className="space-y-3">{[1,2,3].map(j => <div key={j} className="h-10 bg-gray-50 rounded-lg" />)}</div>
+          </div>
+        ))}
       </div>
     );
   }

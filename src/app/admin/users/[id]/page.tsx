@@ -98,8 +98,11 @@ export default function UserDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="animate-spin text-teal-600" size={32} />
+      <div className="space-y-6 pt-12 lg:pt-0 animate-pulse" dir="rtl">
+        <div className="flex items-center gap-3"><div className="w-12 h-12 bg-gray-200 rounded-full" /><div className="space-y-2"><div className="h-6 bg-gray-200 rounded w-40" /><div className="h-4 bg-gray-100 rounded w-28" /></div></div>
+        <div className="bg-white rounded-xl p-6 space-y-4">
+          {[1,2,3,4].map(i => <div key={i} className="h-10 bg-gray-50 rounded-lg" />)}
+        </div>
       </div>
     );
   }

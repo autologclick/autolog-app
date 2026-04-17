@@ -124,9 +124,15 @@ export default function GarageDashboard() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <Loader2 size={32} className="animate-spin" style={{color: '#0d9488'}} />
-        <p className="text-sm text-gray-500">טוען את הדשבורד...</p>
+      <div className="space-y-6 pt-12 lg:pt-0 animate-pulse" dir="rtl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
+          <div className="flex items-center gap-3"><div className="w-12 h-12 bg-gray-200 rounded-lg" /><div className="space-y-2"><div className="h-7 bg-gray-200 rounded w-48" /><div className="h-4 bg-gray-100 rounded w-32" /></div></div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="bg-white rounded-xl p-6 h-28" />)}</div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl p-6 space-y-3">{[1,2,3].map(i => <div key={i} className="h-14 bg-gray-50 rounded-lg" />)}</div>
+            <div className="bg-white rounded-xl p-6 space-y-3">{[1,2,3].map(i => <div key={i} className="h-14 bg-gray-50 rounded-lg" />)}</div>
+          </div>
+        </div>
       </div>
     );
   }

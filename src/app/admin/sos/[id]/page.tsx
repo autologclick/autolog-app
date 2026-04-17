@@ -75,8 +75,11 @@ export default function AdminSosDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+      <div className="space-y-6 pt-12 lg:pt-0 animate-pulse" dir="rtl">
+        <div className="h-8 bg-gray-200 rounded-lg w-40" />
+        <div className="bg-white rounded-xl p-6 space-y-4">
+          {[1,2,3].map(i => <div key={i} className="h-10 bg-gray-50 rounded-lg" />)}
+        </div>
       </div>
     );
   }

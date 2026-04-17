@@ -339,9 +339,15 @@ export default function GarageSettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
-        <p className="text-sm text-gray-500">טוען הגדרות...</p>
+      <div className="space-y-6 pt-12 lg:pt-0 animate-pulse" dir="rtl">
+        <div className="flex items-center gap-3"><div className="w-10 h-10 bg-gray-200 rounded-lg" /><div className="h-6 bg-gray-200 rounded w-36" /></div>
+        <div className="bg-white rounded-xl p-6 space-y-4">
+          <div className="flex justify-center"><div className="w-24 h-24 bg-gray-100 rounded-xl" /></div>
+          {[1,2,3,4,5].map(i => <div key={i} className="h-10 bg-gray-50 rounded-lg" />)}
+        </div>
+        <div className="bg-white rounded-xl p-6 space-y-3">
+          {[1,2].map(i => <div key={i} className="h-10 bg-gray-50 rounded-lg" />)}
+        </div>
       </div>
     );
   }
