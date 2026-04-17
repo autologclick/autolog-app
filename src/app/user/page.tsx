@@ -199,11 +199,8 @@ export default function UserHomePage() {
   const [selectedIdx, setSelectedIdxRaw] = useState(0);
 
   // Persist selected vehicle across refreshes
-  const setSelectedIdx = (idx: number, vehicleId?: string) => {
+  const setSelectedIdx = (idx: number) => {
     setSelectedIdxRaw(idx);
-    if (vehicleId) {
-      try { localStorage.setItem('autolog_selected_vehicle', vehicleId); } catch {}
-    }
   };
   const [showVehicleList, setShowVehicleList] = useState(false);
   const [treatments, setTreatments] = useState<Treatment[]>([]);
@@ -258,6 +255,13 @@ export default function UserHomePage() {
   const scanRef = useRef<HTMLInputElement>(null);
 
   const vehicle = vehicles[selectedIdx] || null;
+
+  // Save selected vehicle to localStorage whenever it changes
+  useEffect(() => {
+    if (vehicle?.id) {
+      try { localStorage.setItem('autolog_selected_vehicle', vehicle.id); } catch {}
+    }
+  }, [vehicle?.id]);
 
   // ── Data Fetching ──
   useEffect(() => {
@@ -521,7 +525,7 @@ export default function UserHomePage() {
               {vehicles.map((v, i) => (
                 <button
                   key={v.id}
-                  onClick={() => { setSelectedIdx(i, v.id); setShowVehicleList(false); }}
+                  onClick={() => { setSelectedIdx(i); setShowVehicleList(false); }}
                   className={`w-full flex items-center gap-3 px-4 py-3 text-right hover:bg-gray-50 transition-colors ${i === selectedIdx ? 'bg-teal-50' : ''}`}
                 >
                   <Car size={18} className={i === selectedIdx ? 'text-teal-600' : 'text-gray-400'} />
