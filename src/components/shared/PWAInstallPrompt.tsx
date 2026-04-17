@@ -34,8 +34,8 @@ export default function PWAInstallPrompt() {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // Show banner after 30 seconds of usage
-      setTimeout(() => setShowBanner(true), 30000);
+      // Show banner after 8 seconds of usage
+      setTimeout(() => setShowBanner(true), 8000);
     };
 
     window.addEventListener('beforeinstallprompt', handler);

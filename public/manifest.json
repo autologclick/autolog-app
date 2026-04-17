@@ -32,5 +32,31 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "הרכבים שלי",
+      "short_name": "רכבים",
+      "url": "/user/vehicles",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "מסמכים",
+      "short_name": "מסמכים",
+      "url": "/user/documents",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "הוצאות",
+      "short_name": "הוצאות",
+      "url": "/user/expenses",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "SOS חירום",
+      "short_name": "SOS",
+      "url": "/user/sos",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
   ]
 }
