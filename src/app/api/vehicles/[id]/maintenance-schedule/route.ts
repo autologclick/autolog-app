@@ -446,10 +446,11 @@ function sanitizeSchedule(parsed: Record<string, unknown>, mileage: number): Mai
 
   return {
     ...parsed,
+    summary: (parsed.summary as string) || `טיפול שגרתי ב-${nextKm.toLocaleString()} ק"מ`,
     nextServiceKm: nextKm,
     nextServiceDate: nextDate.toISOString().split('T')[0],
     items: fixedItems,
     generatedAt: new Date().toISOString(),
     basedOnMileage: mileage,
-  } as MaintenanceSchedule;
+  } as unknown as MaintenanceSchedule;
 }
