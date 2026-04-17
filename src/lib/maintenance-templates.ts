@@ -40,7 +40,12 @@ export interface MaintenanceTemplateData {
 // DB Operations
 // ============================================================
 
+// Bump this version whenever ISRAELI_MARKET_TEMPLATES changes.
+// Auto-seed will re-run when the deployed version differs from the DB.
+const TEMPLATE_VERSION = 2;
+
 let tableChecked = false;
+let autoSeeded = false;
 
 async function ensureMaintenanceTemplateTable() {
   if (tableChecked) return;
@@ -85,6 +90,43 @@ export async function findMaintenanceTemplate(
   fuelType: string | null
 ): Promise<MaintenanceTemplateItem[] | null> {
   await ensureMaintenanceTemplateTable();
+
+  // Auto-seed: on first call per serverless instance, check if templates need updating
+  if (!autoSeeded) {
+    autoSeeded = true;
+    try {
+      const countRows = await prisma.$queryRawUnsafe<Array<{ count: bigint }>>(
+        `SELECT COUNT(*) as count FROM "MaintenanceTemplate"`
+      );
+      const dbCount = Number(countRows[0]?.count || 0);
+      const codeCount = ISRAELI_MARKET_TEMPLATES.length;
+
+      // Re-seed if DB is empty, count mismatch, or version marker missing
+      let needsSeed = dbCount === 0 || dbCount < codeCount;
+
+      if (!needsSeed) {
+        // Check version marker stored in a template's source field
+        const versionCheck = await prisma.$queryRawUnsafe<Array<{ source: string }>>(
+          `SELECT "source" FROM "MaintenanceTemplate" LIMIT 1`
+        );
+        const storedSource = versionCheck[0]?.source || '';
+        needsSeed = !storedSource.includes(`v${TEMPLATE_VERSION}`);
+      }
+
+      if (needsSeed) {
+        console.log(`[maintenance-templates] Auto-seeding templates (v${TEMPLATE_VERSION})...`);
+        await seedAllTemplates();
+        // Clear cached vehicle maintenance data so they recalculate
+        try {
+          await prisma.$executeRawUnsafe(
+            `UPDATE "Vehicle" SET "maintenanceData" = NULL WHERE "maintenanceData" IS NOT NULL`
+          );
+        } catch { /* non-fatal */ }
+      }
+    } catch (e) {
+      console.error('Auto-seed check failed (non-fatal):', e);
+    }
+  }
 
   // Normalize inputs for matching
   const mfr = manufacturer.trim();
@@ -209,7 +251,7 @@ export async function seedMaintenanceTemplate(template: MaintenanceTemplateData)
        ON CONFLICT ("manufacturer", "model", "yearFrom", "yearTo", "fuelType")
        DO UPDATE SET "items" = $7, "source" = $6, "updatedAt" = CURRENT_TIMESTAMP`,
       template.manufacturer, template.model, template.yearFrom, template.yearTo,
-      template.fuelType, template.source, JSON.stringify(template.items)
+      template.fuelType, `${template.source}_v${TEMPLATE_VERSION}`, JSON.stringify(template.items)
     );
   } catch (e) {
     console.error('Error seeding maintenance template:', e);
