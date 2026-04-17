@@ -3,10 +3,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
-  Shield, AlertCircle, Zap, MapPin, Users, Menu, X,
+  Shield, AlertCircle, Zap, MapPin, Menu, X,
   FileText, Bell, Wrench, Clock, Star, ChevronDown,
   Smartphone, Car, CalendarCheck, BarChart3, Lock,
-  Phone, Mail, CheckCircle2, ArrowLeft, TrendingUp,
+  Mail, CheckCircle2, ArrowLeft, TrendingUp,
   ClipboardCheck, HeartPulse, Calendar
 } from 'lucide-react';
 import Logo, { LogoIcon } from '@/components/ui/Logo';
@@ -41,35 +41,6 @@ function useInView(threshold = 0.05) {
   }, [threshold]);
 
   return { ref, isVisible };
-}
-
-// Animated counter component
-function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  const { ref, isVisible } = useInView(0.1);
-
-  useEffect(() => {
-    if (!isVisible) return;
-    let start = 0;
-    const duration = 2000;
-    const step = Math.ceil(target / (duration / 16));
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(start);
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [isVisible, target]);
-
-  return (
-    <span ref={ref}>
-      {count.toLocaleString('he-IL')}{suffix}
-    </span>
-  );
 }
 
 // Feature card
@@ -128,12 +99,12 @@ export default function Home() {
                 url: 'https://autolog.click',
                 logo: 'https://autolog.click/logo.png',
                 description: 'הפלטפורמה המובילה בישראל לניהול רכבים חכם',
-                sameAs: [],
+                sameAs: ['https://autolog.click'],
                 contactPoint: {
                   '@type': 'ContactPoint',
                   contactType: 'Customer Service',
-                  telephone: '+972-2-999-9999',
                   email: 'info@autolog.click',
+                  url: 'https://autolog.click',
                 },
               },
               {
@@ -144,10 +115,10 @@ export default function Home() {
                 operatingSystem: 'Web, iOS, Android',
                 url: 'https://autolog.click',
                 description: 'ניהול רכבים חכם עם תזכורות, מסמכים וטיפול חירום',
-                aggregateRating: {
-                  '@type': 'AggregateRating',
-                  ratingValue: '4.8',
-                  ratingCount: '150',
+                offers: {
+                  '@type': 'Offer',
+                  price: '0',
+                  priceCurrency: 'ILS',
                 },
               },
               {
@@ -322,16 +293,20 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Social proof mini */}
+              {/* Trust badges */}
               <div className="flex items-center gap-4 text-gray-400 text-sm">
-                <div className="flex -space-x-2 rtl:space-x-reverse">
-                  {['bg-blue-400','bg-green-400','bg-purple-400','bg-orange-400'].map((c, i) => (
-                    <div key={i} className={`w-8 h-8 ${c} rounded-full border-2 border-[#1e3a5f] flex items-center justify-center text-white text-xs font-bold`}>
-                      {['פ','ד','מ','ש'][i]}
-                    </div>
-                  ))}
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={16} className="text-teal-400" />
+                  <span>חינם לחלוטין</span>
                 </div>
-                <span>מצטרפים ל-<strong className="text-white">2,500+</strong> משתמשים</span>
+                <div className="flex items-center gap-2">
+                  <Shield size={16} className="text-teal-400" />
+                  <span>מאובטח ומוצפן</span>
+                </div>
+                <div className="hidden sm:flex items-center gap-2">
+                  <Zap size={16} className="text-teal-400" />
+                  <span>ללא הורדה</span>
+                </div>
               </div>
             </div>
 
@@ -561,22 +536,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============ STATS ============ */}
+      {/* ============ HIGHLIGHTS ============ */}
       <section ref={stats.ref} className="py-16 bg-[#1e3a5f]">
         <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-1000 ${stats.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
             {[
-              { value: 2500, suffix: '+', label: 'משתמשים פעילים', icon: Users },
-              { value: 150, suffix: '+', label: 'מוסכים שותפים', icon: Wrench },
-              { value: 10000, suffix: '+', label: 'בדיקות שבוצעו', icon: ClipboardCheck },
-              { value: 98, suffix: '%', label: 'שביעות רצון', icon: Star },
-            ].map(({ value, suffix, label, icon: Icon }) => (
+              { icon: Shield, label: 'הצפנה בנקאית', desc: 'SSL/TLS מלא' },
+              { icon: Smartphone, label: 'עובד מכל מכשיר', desc: 'ללא הורדה' },
+              { icon: Clock, label: 'תזכורות אוטומטיות', desc: 'טסט, ביטוח, רישיון' },
+              { icon: Wrench, label: 'רשת מוסכים', desc: 'הצטרפו בחינם' },
+            ].map(({ icon: Icon, label, desc }) => (
               <div key={label}>
                 <Icon className="w-8 h-8 mx-auto mb-3 text-teal-300 opacity-80" />
-                <div className="text-3xl sm:text-4xl font-extrabold mb-1">
-                  <Counter target={value} suffix={suffix} />
-                </div>
-                <p className="text-sm text-gray-300">{label}</p>
+                <div className="text-lg sm:text-xl font-extrabold mb-1">{label}</div>
+                <p className="text-sm text-gray-300">{desc}</p>
               </div>
             ))}
           </div>
@@ -808,16 +781,11 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <a
-                href="https://wa.me/972299999999"
-                className="px-6 py-2.5 bg-[#0d9488] text-white font-bold rounded-lg hover:bg-[#0b7e74] transition"
-              >
-                צור קשר דרך WhatsApp
-              </a>
-              <a
                 href="mailto:info@autolog.click"
-                className="px-6 py-2.5 bg-white text-[#0d9488] font-bold rounded-lg hover:bg-gray-50 transition border border-teal-200"
+                className="px-6 py-2.5 bg-[#0d9488] text-white font-bold rounded-lg hover:bg-[#0b7e74] transition inline-flex items-center justify-center gap-2"
               >
-                שלח מייל
+                <Mail size={16} />
+                שלח לנו מייל
               </a>
             </div>
           </div>
@@ -838,7 +806,7 @@ export default function Home() {
                 מוכן לנהל את הרכב שלך חכם?
               </h2>
               <p className="text-lg text-gray-300 mb-8 max-w-lg mx-auto">
-                הצטרף לאלפי ישראלים שכבר חוסכים זמן וכסף עם AutoLog. הרשמה חינמית ותמיד תישאר כזו.
+                הצטרף לבעלי רכב שכבר חוסכים זמן וכסף עם AutoLog. הרשמה חינמית ותמיד תישאר כזו.
               </p>
               <Link
                 href="/auth/signup"
@@ -894,15 +862,11 @@ export default function Home() {
               <ul className="space-y-3 text-gray-400 text-sm">
                 <li className="flex items-center gap-2">
                   <Mail size={14} />
-                  <span>info@autolog.click</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Phone size={14} />
-                  <a href="tel:+972299999999" className="hover:text-white transition">+972 2 999 9999</a>
+                  <a href="mailto:info@autolog.click" className="hover:text-white transition">info@autolog.click</a>
                 </li>
                 <li className="flex items-center gap-2">
                   <MapPin size={14} />
-                  <span>תל אביב, ישראל</span>
+                  <span>ישראל</span>
                 </li>
               </ul>
             </div>
@@ -913,15 +877,10 @@ export default function Home() {
               <p className="text-gray-400 text-sm">
                 © 2026 AutoLog. כל הזכויות שמורות.
               </p>
-              <div className="flex gap-4">
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition">
-                  פייסבוק
-                </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition">
-                  X
-                </a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition">
-                  LinkedIn
+              <div className="flex gap-4 text-gray-400 text-sm">
+                <a href="mailto:info@autolog.click" className="hover:text-white transition flex items-center gap-1.5">
+                  <Mail size={14} />
+                  info@autolog.click
                 </a>
               </div>
             </div>
