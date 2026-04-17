@@ -1,14 +1,5 @@
-'use client';
-
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 export default function SignupRedirect() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace('/auth/login?mode=register');
-  }, [router]);
-
-  return null;
+  redirect('/auth/login?mode=register');
 }
