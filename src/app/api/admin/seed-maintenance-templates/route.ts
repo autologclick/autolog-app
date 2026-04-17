@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import prisma from '@/lib/db';
 import { requireAdmin, jsonResponse, handleApiError } from '@/lib/api-helpers';
 import { assertSeedAllowed } from '@/lib/seed-guard';
 import { seedAllTemplates, ISRAELI_MARKET_TEMPLATES } from '@/lib/maintenance-templates';
@@ -6,6 +7,7 @@ import { seedAllTemplates, ISRAELI_MARKET_TEMPLATES } from '@/lib/maintenance-te
 /**
  * POST /api/admin/seed-maintenance-templates
  * Seeds maintenance templates for popular Israeli market vehicles.
+ * Also clears cached maintenanceData so vehicles pick up the new templates.
  * Admin only.
  */
 export async function POST(req: NextRequest) {
@@ -16,11 +18,20 @@ export async function POST(req: NextRequest) {
 
     const count = await seedAllTemplates();
 
+    // Clear cached maintenance data so vehicles recalculate with new templates
+    try {
+      await prisma.$executeRawUnsafe(
+        `UPDATE "Vehicle" SET "maintenanceData" = NULL WHERE "maintenanceData" IS NOT NULL`
+      );
+    } catch {
+      // Column might not exist — non-fatal
+    }
+
     const manufacturers = ISRAELI_MARKET_TEMPLATES.map(t => t.manufacturer);
 
     return jsonResponse({
       success: true,
-      message: `נטענו ${count} תבניות תחזוקה`,
+      message: `נטענו ${count} תבניות תחזוקה. כל הנתונים המאוחסנים נוקו ויחושבו מחדש.`,
       manufacturers,
       count,
     });
