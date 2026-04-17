@@ -391,8 +391,9 @@ export default function InspectionReportPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <Loader2 className="animate-spin text-teal-600" size={40} />
+        <p className="text-sm text-gray-500">טוען דוח בדיקה...</p>
       </div>
     );
   }

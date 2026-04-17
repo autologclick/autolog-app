@@ -87,8 +87,9 @@ export default function GarageDashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <Loader2 size={32} className="animate-spin" style={{color: '#0d9488'}} />
+        <p className="text-sm text-gray-500">טוען את הדשבורד...</p>
       </div>
     );
   }

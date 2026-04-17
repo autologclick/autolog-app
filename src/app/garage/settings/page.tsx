@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import NextImage from 'next/image';
 import { Card } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -198,6 +199,7 @@ export default function GarageSettingsPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setLogo(data.logo);
+      toast.success('הלוגו הועלה בהצלחה');
     } catch {
       setError('לא הצלחנו להעלות את הלוגו. ודא שהקובץ הוא תמונה תקינה ונסה שוב.');
     } finally {
@@ -302,6 +304,7 @@ export default function GarageSettingsPage() {
 
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+      toast.success('הפרופיל נשמר בהצלחה');
     } catch {
       setError('לא הצלחנו לשמור את הפרופיל. בדוק את החיבור לאינטרנט ונסה שוב.');
     } finally {
@@ -336,8 +339,9 @@ export default function GarageSettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
+      <div className="flex flex-col items-center justify-center py-20 gap-3">
         <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+        <p className="text-sm text-gray-500">טוען הגדרות...</p>
       </div>
     );
   }

@@ -439,8 +439,9 @@ export default function AppointmentsPage() {
           </div>
           <h1 className="text-2xl font-bold text-[#1e3a5f]">ניהול תורים</h1>
         </div>
-        <Card className="flex items-center justify-center py-20">
+        <Card className="flex flex-col items-center justify-center py-20 gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+          <p className="text-sm text-gray-500">טוען תורים...</p>
         </Card>
       </div>
     );

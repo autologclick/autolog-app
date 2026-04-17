@@ -100,8 +100,9 @@ export default function PublicGaragePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center min-h-screen gap-3">
         <Loader2 size={32} className="animate-spin text-teal-600" />
+        <p className="text-sm text-gray-500">טוען פרטי מוסך...</p>
       </div>
     );
   }

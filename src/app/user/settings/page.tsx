@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
 import PageSkeleton from '@/components/ui/PageSkeleton';
 import Button from '@/components/ui/Button';
@@ -84,13 +85,14 @@ export default function SettingsPage() {
       if (res.ok) {
         setSaveMessage('הפרטים נשמרו בהצלחה!');
         setSaveSuccess(true);
+        toast.success('הפרטים נשמרו בהצלחה');
         setTimeout(() => setSaveMessage(''), 3000);
       } else {
         const data = await res.json();
-        setSaveMessage(data.error || 'שגיאה בשמירה');
+        setSaveMessage(data.error || 'לא הצלחנו לשמור את הפרטים. נסה שוב.');
       }
     } catch {
-      setSaveMessage('שגיאת חיבור');
+      setSaveMessage('שגיאת חיבור. בדוק את האינטרנט ונסה שוב.');
     }
     setSaving(false);
   };

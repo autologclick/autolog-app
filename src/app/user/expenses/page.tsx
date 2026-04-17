@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Card, CardTitle, StatCard } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -224,8 +225,9 @@ export default function ExpensesPage() {
       setShowEditModal(false);
       setEditExpenseId(null);
       resetForm();
+      toast.success('ההוצאה עודכנה בהצלחה');
     } catch {
-      setError('שגיאת חיבור');
+      setError('שגיאת חיבור. בדוק את האינטרנט ונסה שוב.');
     }
     setSaving(false);
   };
@@ -237,11 +239,12 @@ export default function ExpensesPage() {
       const res = await fetch(`/api/expenses/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setExpenses(expenses.filter(e => e.id !== id));
+        toast.success('ההוצאה נמחקה בהצלחה');
+      } else {
+        toast.error('לא הצלחנו למחוק את ההוצאה. נסה שוב.');
       }
     } catch {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error deleting expense');
-      }
+      toast.error('שגיאת חיבור. בדוק את האינטרנט ונסה שוב.');
     }
   };
 

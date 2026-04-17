@@ -449,8 +449,9 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
+      <div className="flex flex-col items-center justify-center py-20 gap-3">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <p className="text-sm text-gray-500">טוען פרטי רכב...</p>
       </div>
     );
   }
