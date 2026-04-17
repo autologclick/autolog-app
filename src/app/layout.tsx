@@ -1,9 +1,17 @@
 import type { Metadata, Viewport } from 'next';
+import { Heebo } from 'next/font/google';
 import * as Sentry from '@sentry/nextjs';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import PWAInstallPrompt from '@/components/shared/PWAInstallPrompt';
 import MaintenanceGate from '@/components/shared/MaintenanceGate';
+
+const heebo = Heebo({
+  subsets: ['hebrew', 'latin'],
+  weight: ['300', '400', '500', '600', '700', '800'],
+  display: 'swap',
+  variable: '--font-heebo',
+});
 
 export function generateMetadata(): Metadata {
   return {
@@ -65,8 +73,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl">
-      <body className="bg-[#fef7ed] text-gray-800 min-h-screen">
+    <html lang="he" dir="rtl" className={heebo.variable}>
+      <body className={`${heebo.className} bg-[#fef7ed] text-gray-800 min-h-screen`}>
         {children}
         <Toaster
           position="top-center"
@@ -76,7 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             duration: 3000,
             style: {
               direction: 'rtl',
-              fontFamily: 'Heebo, sans-serif',
+              fontFamily: 'var(--font-heebo), sans-serif',
               borderRadius: '12px',
               padding: '12px 16px',
               fontSize: '14px',

@@ -13,8 +13,13 @@ import {
   AlertTriangle, MapPin, DollarSign, Calendar, Download,
   Loader2, BarChart3, Zap, TrendingDown, Brain, Lightbulb, Activity
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import dynamic from 'next/dynamic';
 import Pagination from '@/components/ui/Pagination';
+
+const ExpenseChart = dynamic(() => import('@/components/charts/ExpenseChart'), {
+  loading: () => <div className="h-[220px] bg-gray-100 rounded-xl animate-pulse" />,
+  ssr: false,
+});
 
 interface Expense {
   id: string;
@@ -425,42 +430,7 @@ export default function ExpensesPage() {
         <div>
           <h3 className="text-sm font-semibold text-[#1e3a5f] mb-3 text-right">טרנד חודשי</h3>
           <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={monthlyChartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 12, fill: '#6b7280', fontWeight: 500 }}
-                  reversed
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 11, fill: '#9ca3af' }}
-                  tickFormatter={(v) => v > 0 ? `₪${v >= 1000 ? `${(v/1000).toFixed(1)}k` : v}` : ''}
-                  width={55}
-                />
-                <Tooltip
-                  cursor={{ fill: 'rgba(13, 148, 136, 0.06)', radius: 8 }}
-                  contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', direction: 'rtl', textAlign: 'right' }}
-                  formatter={(value: number) => [`₪${value.toLocaleString()}`, 'סה״כ']}
-                  labelFormatter={(label) => {
-                    const item = monthlyChartData.find(d => d.name === label);
-                    return item?.fullName || label;
-                  }}
-                />
-                <Bar dataKey="total" radius={[8, 8, 0, 0]} maxBarSize={48}>
-                  {monthlyChartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={entry.isCurrent ? '#0d9488' : '#99f6e4'}
-                      opacity={entry.total === 0 ? 0.3 : 1}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <ExpenseChart data={monthlyChartData} />
             {/* Legend */}
             <div className="flex items-center justify-center gap-4 mt-2 text-xs text-gray-500">
               <div className="flex items-center gap-1.5">
