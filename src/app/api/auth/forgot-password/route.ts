@@ -34,14 +34,25 @@ export async function POST(req: NextRequest) {
     const hashedToken = createHash('sha256').update(resetToken).digest('hex');
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
-    // Store token using parameterized Prisma query
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        resetToken: hashedToken,
-        resetTokenExpiry: expiresAt,
-      },
-    });
+    // Store token — wrapped in try/catch so DB issues don't break the endpoint
+    try {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          resetToken: hashedToken,
+          resetTokenExpiry: expiresAt,
+        },
+      });
+    } catch (dbError) {
+      logger.error('Failed to store reset token', {
+        error: dbError instanceof Error ? dbError.message : String(dbError),
+        userId: user.id,
+      });
+      // Still return success message to prevent email enumeration
+      return jsonResponse({
+        message: 'אם הכתובת קיימת במערכת, נשלח אליך קישור לאיפוס סיסמה',
+      });
+    }
 
     // Send password reset email
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';

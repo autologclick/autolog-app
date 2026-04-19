@@ -56,7 +56,8 @@ export default function ForgotPasswordPage() {
           }, 2000);
         }
       } else {
-        setError(data.error || 'שגיאה');
+        console.error('Forgot password error:', res.status, data);
+        setError(data.error || 'שגיאה בשליחת הבקשה. אנא נסה שוב.');
       }
     } catch {
       setError('שגיאת חיבור. אנא נסה שוב.');
