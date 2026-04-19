@@ -374,7 +374,7 @@ export default function UserTreatmentsPage() {
     <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
       <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Page Header */}
-        <PageHeader title="טיפולים" subtitle="הסיטרואן שלי" />
+        <PageHeader title="טיפולים" />
 
         {/* Error */}
         {error && (

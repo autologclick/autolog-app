@@ -280,7 +280,7 @@ export default function SettingsPage() {
               {saving ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 size={16} className="animate-spin" />
-                  جارٍ الحفظ
+                  שומר...
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-2">

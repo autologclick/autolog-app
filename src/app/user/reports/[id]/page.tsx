@@ -71,7 +71,7 @@ function ScoreCircle({ score }: { score: number }) {
   };
 
   const getLabel = () => {
-    if (score >= 80) return 'ممتاز';
+    if (score >= 80) return 'מצוין';
     if (score >= 60) return 'טוב';
     return 'דורש תשומת לב';
   };

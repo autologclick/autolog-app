@@ -95,19 +95,7 @@ export default function ExpensesPage() {
           setSelectedVehicleId(vehiclesData.vehicles[0].id);
         }
       } catch {
-        // Use demo data
-        setVehicles([
-          { id: '1', nickname: 'ספורטז\' לבנה', manufacturer: 'KIA', model: 'SPORTAGE', licensePlate: '7198738' },
-          { id: '2', nickname: 'פורד פוקוס', manufacturer: 'FORD', model: 'FOCUS', licensePlate: '8746868' },
-        ]);
-        setExpenses([
-          { id: '1', vehicleId: '1', category: 'fuel', amount: 180, description: 'תדלוק דלק סולר', date: '2026-03-15', vehicle: { id: '1', nickname: 'ספורטז\' לבנה', model: 'SPORTAGE' } },
-          { id: '2', vehicleId: '1', category: 'maintenance', amount: 450, description: 'החלפת שמן מנוע', date: '2026-03-10', vehicle: { id: '1', nickname: 'ספורטז\' לבנה', model: 'SPORTAGE' } },
-          { id: '3', vehicleId: '2', category: 'insurance', amount: 1200, description: 'ביטוח שנתי', date: '2026-03-01', vehicle: { id: '2', nickname: 'פורד פוקוס', model: 'FOCUS' } },
-          { id: '4', vehicleId: '1', category: 'parking', amount: 50, description: 'דמי חניה', date: '2026-03-18', vehicle: { id: '1', nickname: 'ספורטז\' לבנה', model: 'SPORTAGE' } },
-          { id: '5', vehicleId: '1', category: 'fuel', amount: 190, description: 'תדלוק דלק סולר', date: '2026-03-12', vehicle: { id: '1', nickname: 'ספורטז\' לבנה', model: 'SPORTAGE' } },
-        ]);
-        setSelectedVehicleId('1');
+        setError('שגיאת חיבור. בדוק את האינטרנט ונסה שוב.');
       }
       setLoading(false);
     };

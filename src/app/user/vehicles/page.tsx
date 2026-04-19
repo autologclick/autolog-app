@@ -196,7 +196,7 @@ export default function VehiclesPage() {
         } catch {}
       }
     }
-  }, []);  const [imageVersion, setImageVersion] = useState(0); // for forcing re-render of vehicle images
+  }, []);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const fetchVehicles = async () => {
