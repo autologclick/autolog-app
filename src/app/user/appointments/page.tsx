@@ -797,7 +797,11 @@ function DetailAndCancelModals({
                   <X size={16} className="text-red-600" />
                   <span className="font-bold text-red-800 text-sm">ההזמנה נדחתה</span>
                 </div>
-                <p className="text-xs text-red-700">המוסך דחה את ההזמנה. ניתן לנסות מוסך אחר או לבחור זמן אחר.</p>
+                {selectedAppointment.completionNotes ? (
+                  <p className="text-xs text-red-700">סיבה: {selectedAppointment.completionNotes}</p>
+                ) : (
+                  <p className="text-xs text-red-700">המוסך דחה את ההזמנה. ניתן לנסות מוסך אחר או לבחור זמן אחר.</p>
+                )}
               </div>
             )}
 

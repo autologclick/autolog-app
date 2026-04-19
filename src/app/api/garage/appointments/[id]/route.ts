@@ -95,6 +95,11 @@ export async function PUT(
       }
     }
 
+    // Persist rejection reason so it appears in customer history
+    if (status === 'rejected' && rejectionReason) {
+      updateData.completionNotes = rejectionReason;
+    }
+
     // Update the appointment
     const updated = await prisma.appointment.update({
       where: { id },

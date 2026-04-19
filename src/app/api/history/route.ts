@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
               where: { vehicleId: { in: vehicleIds } },
               select: {
                 id: true, vehicleId: true, date: true, serviceType: true,
-                status: true, notes: true,
+                status: true, notes: true, completionNotes: true,
                 garage: { select: { name: true } },
               },
             }),

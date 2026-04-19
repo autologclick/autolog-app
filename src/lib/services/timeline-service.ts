@@ -113,6 +113,7 @@ interface AppointmentRow {
   status: string;
   garage?: { name: string } | null;
   notes: string | null;
+  completionNotes?: string | null;
 }
 
 export function buildAppointmentEvents(
@@ -123,12 +124,14 @@ export function buildAppointmentEvents(
   for (const appointment of appointments) {
     const vehicle = vehicleMap.get(appointment.vehicleId);
     if (!vehicle) continue;
+    const garageName = appointment.garage?.name || 'מוסך';
+    const serviceLabel = INSPECTION_TYPE_HEB[appointment.serviceType] || appointment.serviceType;
     events.push({
       id: `appointment_${appointment.id}`,
       type: 'appointment',
       date: appointment.date,
-      title: HISTORY_EVENT_TITLES.appointment,
-      description: `תור ל${INSPECTION_TYPE_HEB[appointment.serviceType] || appointment.serviceType} ב${appointment.garage?.name || 'סדנה'}`,
+      title: `תור ב${garageName}`,
+      description: `${serviceLabel} — ${garageName}`,
       vehicleId: appointment.vehicleId,
       vehicleName: getVehicleLabel(vehicle),
       status: appointment.status,
@@ -136,7 +139,7 @@ export function buildAppointmentEvents(
         entityId: appointment.id,
         subType: appointment.serviceType,
         garageName: appointment.garage?.name,
-        notes: appointment.notes,
+        notes: appointment.completionNotes || appointment.notes,
       },
     });
   }

@@ -19,6 +19,15 @@ interface Vehicle {
   model: string;
 }
 
+interface HistoryEventMetadata {
+  entityId?: string;
+  subType?: string;
+  garageName?: string | null;
+  numericValue?: number | null;
+  notes?: string | null;
+  priority?: string | null;
+}
+
 interface HistoryEvent {
   id: string;
   type: 'inspection' | 'appointment' | 'expense' | 'sos';
@@ -27,9 +36,11 @@ interface HistoryEvent {
   date: string;
   status: string;
   vehicleId?: string;
+  vehicleName?: string;
   vehicle?: { nickname: string; licensePlate: string };
   amount?: number;
   currency?: string;
+  metadata?: HistoryEventMetadata;
 }
 
 export default function HistoryPage() {
@@ -218,6 +229,7 @@ export default function HistoryPage() {
       pending: 'info',
       in_progress: 'warning',
       cancelled: 'danger',
+      rejected: 'danger',
       open: 'danger',
     };
     return map[status] || 'default';
@@ -231,6 +243,7 @@ export default function HistoryPage() {
       pending: 'ממתין',
       in_progress: 'בביצוע',
       cancelled: 'בוטל',
+      rejected: 'נדחה',
       open: 'פתוח',
     };
     return map[status] || status;
@@ -408,7 +421,7 @@ export default function HistoryPage() {
                             <h3 className="font-bold text-gray-800 text-sm sm:text-base">{event.title}</h3>
                             <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                               {getEventTypeLabel(event.type)}
-                              {event.vehicle && ` • ${event.vehicle.nickname || event.vehicle.licensePlate}`}
+                              {(event.vehicleName || event.vehicle) && ` • ${event.vehicleName || event.vehicle?.nickname || event.vehicle?.licensePlate}`}
                             </p>
                           </div>
                           <Badge variant={getStatusBadgeVariant(event.status)} size="sm" className="flex-shrink-0">
@@ -418,6 +431,20 @@ export default function HistoryPage() {
 
                         {event.description && (
                           <p className="text-xs sm:text-sm text-gray-600 mt-2 line-clamp-2">{event.description}</p>
+                        )}
+
+                        {/* Show rejection reason or completion notes */}
+                        {event.metadata?.notes && (event.status === 'rejected' || event.status === 'completed') && (
+                          <div className={`flex items-start gap-2 mt-2 p-2 rounded-lg text-xs sm:text-sm ${
+                            event.status === 'rejected'
+                              ? 'bg-red-50 text-red-700 border border-red-100'
+                              : 'bg-green-50 text-green-700 border border-green-100'
+                          }`}>
+                            <span className="font-medium flex-shrink-0">
+                              {event.status === 'rejected' ? 'סיבת דחייה:' : 'סיכום:'}
+                            </span>
+                            <span>{event.metadata.notes}</span>
+                          </div>
                         )}
 
                         {event.amount && (
