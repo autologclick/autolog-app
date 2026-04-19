@@ -95,10 +95,9 @@ export default function SettingsPage() {
         body: JSON.stringify(profile),
       });
       if (res.ok) {
-        setSaveMessage('הפרטים נשמרו בהצלחה!');
-        setSaveSuccess(true);
         toast.success('הפרטים נשמרו בהצלחה');
-        setTimeout(() => setSaveMessage(''), 3000);
+        setTimeout(() => router.push('/user'), 600);
+        return;
       } else {
         const data = await res.json();
         setSaveMessage(data.error || 'לא הצלחנו לשמור את הפרטים. נסה שוב.');

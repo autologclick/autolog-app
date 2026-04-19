@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import NextImage from 'next/image';
 import { Card } from '@/components/ui/Card';
@@ -100,6 +101,7 @@ const languageOptions = [
 ];
 
 export default function GarageSettingsPage() {
+  const router = useRouter();
   const [profile, setProfile] = useState<GarageProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -302,9 +304,9 @@ export default function GarageSettingsPage() {
         throw new Error(data.error || 'שגיאה בשמירה');
       }
 
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
       toast.success('הפרופיל נשמר בהצלחה');
+      setTimeout(() => router.push('/garage'), 600);
+      return;
     } catch {
       setError('לא הצלחנו לשמור את הפרופיל. בדוק את החיבור לאינטרנט ונסה שוב.');
     } finally {

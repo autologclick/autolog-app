@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Card, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -77,8 +78,9 @@ export default function AdminSettingsPage() {
         body: JSON.stringify(adminProfile),
       });
       if (res.ok) {
-        setSaveMessage('ההגדרות נשמרו בהצלחה!');
-        setTimeout(() => setSaveMessage(''), 3000);
+        toast.success('ההגדרות נשמרו בהצלחה');
+        setTimeout(() => router.push('/admin'), 600);
+        return;
       } else {
         setSaveMessage('שגיאה בשמירה');
       }
