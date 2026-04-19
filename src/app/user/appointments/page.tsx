@@ -639,6 +639,28 @@ function AppointmentCard({
             </div>
           )}
 
+          {/* Rejection reason - shown when rejected */}
+          {appointment.status === 'rejected' && (
+            <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
+              <div className="flex items-center gap-1.5 mb-1">
+                <X size={12} className="text-red-600" />
+                <span className="text-xs font-bold text-red-700">ההזמנה נדחתה</span>
+              </div>
+              {appointment.completionNotes && (
+                <p className="text-xs text-red-700">סיבה: {appointment.completionNotes}</p>
+              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.location.href = '/user/book-garage';
+                }}
+                className="mt-2 w-full text-center bg-teal-600 hover:bg-teal-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors"
+              >
+                קבע תור במוסך אחר
+              </button>
+            </div>
+          )}
+
           {/* Treatment Summary - shown when completed */}
           {appointment.status === 'completed' && appointment.completionNotes && (
             <div className="mt-3 p-3 bg-teal-50 border border-teal-200 rounded-xl">
@@ -849,6 +871,15 @@ function DetailAndCancelModals({
                   className="flex-1"
                 >
                   בטל תור
+                </Button>
+              )}
+              {selectedAppointment.status === 'rejected' && (
+                <Button
+                  icon={<Plus size={16} />}
+                  onClick={() => { window.location.href = '/user/book-garage'; }}
+                  className="flex-1"
+                >
+                  קבע תור במוסך אחר
                 </Button>
               )}
             </div>
