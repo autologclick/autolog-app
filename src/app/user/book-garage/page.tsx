@@ -26,6 +26,12 @@ interface GarageReview {
   createdAt: string;
 }
 
+interface WorkingHoursDay {
+  open: string;
+  close: string;
+  closed?: boolean;
+}
+
 interface Garage {
   id: string;
   name: string;
@@ -41,6 +47,7 @@ interface Garage {
   distance?: number | null;
   amenities?: string[];
   reviews?: GarageReview[];
+  workingHours?: string | Record<string, WorkingHoursDay> | null;
 }
 
 const amenityLabels: Record<string, { label: string; icon: typeof Coffee }> = {
@@ -76,7 +83,48 @@ const serviceValueToLabel: Record<string, string> = {
   spare_parts: 'חלקי חילוף',
 };
 
-const timeSlots = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
+const ALL_TIME_SLOTS = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'];
+
+/** Map JS getDay() (0=Sun) to Hebrew day keys used in garage workingHours */
+const DAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+/**
+ * Filter time slots based on the selected garage's working hours for a given date.
+ * Returns only slots that fall within the garage's open–close range.
+ * If no working hours data is available, returns all slots (backward compatible).
+ */
+function getAvailableTimeSlots(garage: Garage | undefined, dateStr: string): { slots: string[]; closed: boolean; hours?: { open: string; close: string } } {
+  if (!garage || !dateStr) return { slots: ALL_TIME_SLOTS, closed: false };
+
+  // Parse workingHours — could be a JSON string or already an object
+  let wh: Record<string, WorkingHoursDay> | null = null;
+  if (typeof garage.workingHours === 'string') {
+    try { wh = JSON.parse(garage.workingHours); } catch { /* ignore */ }
+  } else if (garage.workingHours && typeof garage.workingHours === 'object') {
+    wh = garage.workingHours as Record<string, WorkingHoursDay>;
+  }
+
+  if (!wh) return { slots: ALL_TIME_SLOTS, closed: false };
+
+  // Determine day of week from the selected date
+  const date = new Date(dateStr + 'T00:00:00');
+  const dayIndex = date.getDay(); // 0 = Sunday
+  const dayKey = DAY_KEYS[dayIndex];
+  const dayData = wh[dayKey];
+
+  if (!dayData) return { slots: ALL_TIME_SLOTS, closed: false };
+
+  // Check if closed
+  if (dayData.closed || (dayData.open === '00:00' && dayData.close === '00:00')) {
+    return { slots: [], closed: true };
+  }
+
+  const open = dayData.open || '08:00';
+  const close = dayData.close || '18:00';
+
+  const filtered = ALL_TIME_SLOTS.filter(slot => slot >= open && slot < close);
+  return { slots: filtered, closed: false, hours: { open, close } };
+}
 
 type SortOption = 'nearest' | 'rating' | 'reviewCount' | 'name';
 
@@ -148,8 +196,28 @@ export default function BookGaragePage() {
   const [bookingStep, setBookingStep] = useState<'details' | 'success'>('details');
   const [bookingData, setBookingData] = useState({ vehicleId: '', date: '', time: '', notes: '' });
   const [showNotesInput, setShowNotesInput] = useState(false);
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
 
   const selectedGarage = garages.find(g => g.id === selectedGarageId);
+
+  // Fetch booked slots when garage + date are selected
+  useEffect(() => {
+    if (!selectedGarageId || !bookingData.date) {
+      setBookedSlots([]);
+      return;
+    }
+    let cancelled = false;
+    setLoadingSlots(true);
+    fetch(`/api/garages/${selectedGarageId}/slots?date=${bookingData.date}`)
+      .then(r => r.json())
+      .then(data => {
+        if (!cancelled && data.bookedSlots) setBookedSlots(data.bookedSlots);
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoadingSlots(false); });
+    return () => { cancelled = true; };
+  }, [selectedGarageId, bookingData.date]);
   const selectedVehicle = vehicles.find(v => v.id === bookingData.vehicleId);
 
   // Geolocation
@@ -552,28 +620,53 @@ export default function BookGaragePage() {
                 בחר תאריך
               </label>
               <Input type="date" min={minDate} value={bookingData.date}
-                onChange={e => setBookingData({ ...bookingData, date: e.target.value })} />
+                onChange={e => setBookingData({ ...bookingData, date: e.target.value, time: '' })} />
             </div>
 
-            {/* Time Selection - Rounded button grid */}
-            {bookingData.date && (
-              <div>
-                <label className="block text-sm font-bold text-gray-800 mb-3">
-                  בחר שעה
-                </label>
-                <div className="grid grid-cols-4 gap-2">
-                  {timeSlots.map(time => (
-                    <button key={time}
-                      onClick={() => setBookingData({ ...bookingData, time })}
-                      className={`py-3 px-2 rounded-xl text-sm font-bold text-center transition ${
-                        bookingData.time === time
-                          ? 'bg-teal-600 text-white shadow-md'
-                          : 'bg-white text-gray-700 border border-gray-200 hover:border-teal-600'
-                      }`}>{time}</button>
-                  ))}
+            {/* Time Selection - Filtered by garage working hours */}
+            {bookingData.date && (() => {
+              const selectedGarage = garages.find(g => g.id === selectedGarageId);
+              const { slots, closed, hours } = getAvailableTimeSlots(selectedGarage, bookingData.date);
+              const dayName = bookingData.date ? new Date(bookingData.date + 'T00:00:00').toLocaleDateString('he-IL', { weekday: 'long' }) : '';
+
+              if (closed) {
+                return (
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+                    <p className="text-amber-800 font-bold text-sm">🚫 המוסך סגור ביום {dayName}</p>
+                    <p className="text-amber-600 text-xs mt-1">אנא בחר תאריך אחר</p>
+                  </div>
+                );
+              }
+
+              return (
+                <div>
+                  <label className="block text-sm font-bold text-gray-800 mb-1">
+                    בחר שעה
+                  </label>
+                  {hours && (
+                    <p className="text-xs text-gray-500 mb-3">שעות פעילות ביום {dayName}: {hours.open}–{hours.close}</p>
+                  )}
+                  {loadingSlots && <p className="text-xs text-gray-400 mb-2">בודק זמינות...</p>}
+                  <div className="grid grid-cols-4 gap-2">
+                    {slots.map(time => {
+                      const isBooked = bookedSlots.includes(time);
+                      return (
+                        <button key={time}
+                          disabled={isBooked}
+                          onClick={() => !isBooked && setBookingData({ ...bookingData, time })}
+                          className={`py-3 px-2 rounded-xl text-sm font-bold text-center transition ${
+                            isBooked
+                              ? 'bg-gray-100 text-gray-300 border border-gray-100 cursor-not-allowed line-through'
+                              : bookingData.time === time
+                                ? 'bg-teal-600 text-white shadow-md'
+                                : 'bg-white text-gray-700 border border-gray-200 hover:border-teal-600'
+                          }`}>{time}</button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Notes Section - Collapsed by default */}
             <div>
