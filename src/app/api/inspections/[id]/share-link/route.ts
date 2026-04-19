@@ -6,7 +6,7 @@ import { createShareToken } from '@/lib/share-tokens';
 /**
  * POST /api/inspections/[id]/share-link
  * Returns a signed public URL for downloading the inspection PDF.
- * Only the vehicle owner (or admin) can create one.
+ * Allowed for: vehicle owner, garage that performed the inspection, or admin.
  */
 export async function POST(
   req: NextRequest,
@@ -18,10 +18,19 @@ export async function POST(
 
     const inspection = await prisma.inspection.findUnique({
       where: { id },
-      select: { vehicle: { select: { userId: true } } },
+      select: {
+        vehicle: { select: { userId: true } },
+        garage: { select: { ownerId: true } },
+      },
     });
     if (!inspection) return errorResponse('בדיקה לא נמצאה', 404);
-    if (payload.role !== 'admin' && inspection.vehicle.userId !== payload.userId) {
+
+    // Allow: admin, vehicle owner, or garage owner who performed the inspection
+    const isAdmin = payload.role === 'admin';
+    const isVehicleOwner = inspection.vehicle.userId === payload.userId;
+    const isGarageOwner = inspection.garage?.ownerId === payload.userId;
+
+    if (!isAdmin && !isVehicleOwner && !isGarageOwner) {
       return errorResponse('אין הרשאה', 403);
     }
 

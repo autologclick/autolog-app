@@ -821,9 +821,22 @@ export default function NewInspectionPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'awaiting_signature' }),
       });
-      // Open WhatsApp with inspection link
-      const url = `${window.location.origin}/inspection/${successId}`;
-      const text = `שלום, דוח הבדיקה שלך מוכן. אנא חתום לאישור קבלת הדוח:\n${url}`;
+
+      // Get a signed PDF link that works without login
+      let pdfLink = '';
+      try {
+        const shareRes = await fetch(`/api/inspections/${successId}/share-link`, { method: 'POST' });
+        if (shareRes.ok) {
+          const shareData = await shareRes.json();
+          pdfLink = shareData.url;
+        }
+      } catch {}
+
+      // Open WhatsApp with inspection link + PDF
+      const inspectionUrl = `${window.location.origin}/inspection/${successId}`;
+      const text = pdfLink
+        ? `שלום, דוח הבדיקה שלך מוכן.\n\nצפה בדוח PDF:\n${pdfLink}\n\nצפה בדוח באתר:\n${inspectionUrl}`
+        : `שלום, דוח הבדיקה שלך מוכן. אנא חתום לאישור קבלת הדוח:\n${inspectionUrl}`;
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     } catch {}
   };
