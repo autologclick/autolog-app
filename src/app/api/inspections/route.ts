@@ -172,47 +172,57 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      // For periodic/troubleshoot: auto-create a Treatment pending customer approval
-      if (['periodic', 'troubleshoot'].includes(data.inspectionType)) {
-        const totalCost = data.workPerformed?.reduce((sum, w) => sum + (w.cost || 0), 0) || 0;
-        const treatmentTitle = data.inspectionType === 'periodic'
-          ? `טיפול תקופתי - ${vehicle.nickname || vehicle.licensePlate}`
-          : `אבחון תקלה - ${vehicle.nickname || vehicle.licensePlate}`;
-        const treatmentType = data.inspectionType === 'periodic' ? 'maintenance' : 'repair';
+      // Auto-create a Treatment record for ALL inspection types so it appears
+      // in the customer's treatments history
+      const totalCost = data.workPerformed?.reduce((sum, w) => sum + (w.cost || 0), 0) || 0;
+      const typeLabel = INSPECTION_TYPE_HEB[data.inspectionType] || data.inspectionType;
+      const vehicleLabel = vehicle.nickname || vehicle.licensePlate;
 
-        await tx.treatment.create({
+      const treatmentTypeMap: Record<string, string> = {
+        full: 'inspection',
+        pre_test: 'inspection',
+        periodic: 'maintenance',
+        troubleshoot: 'repair',
+        rot: 'inspection',
+        engine: 'inspection',
+        tires: 'maintenance',
+        brakes: 'maintenance',
+      };
+      const treatmentType = treatmentTypeMap[data.inspectionType] || 'inspection';
+
+      await tx.treatment.create({
+        data: {
+          vehicleId: vehicle.id,
+          userId: vehicleOwnerId,
+          garageId: garage.id,
+          garageName: garage.name,
+          mechanicName: data.mechanicName || null,
+          type: treatmentType,
+          title: `${typeLabel} - ${vehicleLabel}`,
+          description: data.summary || null,
+          items: data.serviceItems ? JSON.stringify(data.serviceItems) :
+                 data.workPerformed ? JSON.stringify(data.workPerformed) : null,
+          mileage: data.mileage || null,
+          cost: totalCost > 0 ? totalCost : null,
+          date: new Date().toISOString().split('T')[0],
+          status: isOwnedByGarage ? 'completed' : 'pending_approval',
+          sentByGarage: true,
+          notes: JSON.stringify({ inspectionId: newInspection.id }),
+        },
+      });
+
+      // Send treatment notification only to real customers (not garage-owned vehicles)
+      if (!isOwnedByGarage) {
+        const treatmentAction = treatmentType === 'inspection' ? 'בדיקה' : treatmentType === 'maintenance' ? 'תחזוקה' : 'תיקון';
+        await tx.notification.create({
           data: {
-            vehicleId: vehicle.id,
             userId: vehicleOwnerId,
-            garageId: garage.id,
-            garageName: garage.name,
-            mechanicName: data.mechanicName || null,
-            type: treatmentType,
-            title: treatmentTitle,
-            description: data.summary || null,
-            items: data.serviceItems ? JSON.stringify(data.serviceItems) :
-                   data.workPerformed ? JSON.stringify(data.workPerformed) : null,
-            mileage: data.mileage || null,
-            cost: totalCost > 0 ? totalCost : null,
-            date: new Date().toISOString().split('T')[0],
-            status: isOwnedByGarage ? 'completed' : 'pending_approval',
-            sentByGarage: true,
-            notes: JSON.stringify({ inspectionId: newInspection.id }),
+            type: 'system',
+            title: 'טיפול חדש ממתין לאישורך',
+            message: `${garage.name} שלח/ה ${treatmentAction} מסוג ${typeLabel} לרכב ${vehicleLabel}. לחץ כאן לצפייה ואישור.`,
+            link: '/user/treatments',
           },
         });
-
-        // Send approval notification only to real customers (not garage-owned vehicles)
-        if (!isOwnedByGarage) {
-          await tx.notification.create({
-            data: {
-              userId: vehicleOwnerId,
-              type: 'system',
-              title: 'טיפול חדש ממתין לאישורך',
-              message: `${garage.name} שלח/ה טיפול מסוג ${treatmentType === 'maintenance' ? 'תחזוקה' : 'תיקון'} לרכב ${vehicle.nickname || vehicle.licensePlate}. לחץ כאן לאישור או דחייה.`,
-              link: '/user/treatments',
-            },
-          });
-        }
       }
 
       return await tx.inspection.findUnique({

@@ -52,6 +52,12 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
     icon: <XCircle size={16} className="text-red-600" />,
     bg: 'bg-red-50 border-red-200',
   },
+  completed: {
+    label: 'הושלם',
+    color: 'text-blue-600',
+    icon: <CheckCircle size={16} className="text-blue-600" />,
+    bg: 'bg-blue-50 border-blue-200',
+  },
   draft: {
     label: 'טיוטה',
     color: 'text-gray-500',
@@ -70,6 +76,7 @@ const TYPE_LABELS: Record<string, string> = {
 const TYPE_ICONS: Record<string, string> = {
   maintenance: '🔧',
   repair: '🛠️',
+  inspection: '📋',
   oil_change: '🛢️',
   tires: '🔄',
   brakes: '🛑',
