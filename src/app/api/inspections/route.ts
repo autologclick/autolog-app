@@ -90,11 +90,12 @@ export async function POST(req: NextRequest) {
       });
 
       if (!vehicle) {
-        // Create a new vehicle record linked to the garage owner temporarily
-        // (In production, this would be linked to the actual customer)
+        // Create a new vehicle record linked to the garage owner.
+        // The vehicle will be transferred to the actual customer when they
+        // register/claim it via the inspection link.
         vehicle = await prisma.vehicle.create({
           data: {
-            userId: payload.userId, // temporary owner - garage
+            userId: payload.userId,
             licensePlate: data.manualVehicle.licensePlate,
             manufacturer: data.manualVehicle.manufacturer || 'לא צוין',
             model: data.manualVehicle.model || 'לא צוין',
@@ -119,7 +120,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Build the inspection data object
-    const inspectionData = buildInspectionData(data as ValidatedInspectionInput, vehicle.id, garage.id);
+    let inspectionData;
+    try {
+      inspectionData = buildInspectionData(data as ValidatedInspectionInput, vehicle.id, garage.id);
+    } catch (buildErr) {
+      console.error('[Inspection] Failed to build inspection data:', buildErr);
+      return errorResponse('שגיאה בבניית נתוני הבדיקה', 500);
+    }
 
     // Create inspection and items in a transaction
     const inspection = await prisma.$transaction(async (tx) => {
@@ -148,17 +155,22 @@ export async function POST(req: NextRequest) {
         await tx.inspectionItem.createMany({ data: autoItems });
       }
 
-      // Create notification for the vehicle owner
-      await tx.notification.create({
-        data: {
-          userId: vehicle.userId,
-          type: 'system',
-          title: 'דוח בדיקה חדש!',
-          message: `דוח בדיקה מסוג ${INSPECTION_TYPE_HEB[data.inspectionType] || data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
-          link: `/inspection/${newInspection.id}`,
-        },
-      });
+      // Send notification to the vehicle owner only if it's a real customer
+      // (not the garage owner who created the vehicle manually)
+      const vehicleOwnerId = vehicle.userId;
+      const isOwnedByGarage = vehicleOwnerId === payload.userId;
 
+      if (!isOwnedByGarage) {
+        await tx.notification.create({
+          data: {
+            userId: vehicleOwnerId,
+            type: 'system',
+            title: 'דוח בדיקה חדש!',
+            message: `דוח בדיקה מסוג ${INSPECTION_TYPE_HEB[data.inspectionType] || data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
+            link: `/inspection/${newInspection.id}`,
+          },
+        });
+      }
 
       // For periodic/troubleshoot: auto-create a Treatment pending customer approval
       if (['periodic', 'troubleshoot'].includes(data.inspectionType)) {
@@ -171,7 +183,7 @@ export async function POST(req: NextRequest) {
         await tx.treatment.create({
           data: {
             vehicleId: vehicle.id,
-            userId: vehicle.userId,
+            userId: vehicleOwnerId,
             garageId: garage.id,
             garageName: garage.name,
             mechanicName: data.mechanicName || null,
@@ -183,22 +195,24 @@ export async function POST(req: NextRequest) {
             mileage: data.mileage || null,
             cost: totalCost > 0 ? totalCost : null,
             date: new Date().toISOString().split('T')[0],
-            status: 'pending_approval',
+            status: isOwnedByGarage ? 'completed' : 'pending_approval',
             sentByGarage: true,
             notes: JSON.stringify({ inspectionId: newInspection.id }),
           },
         });
 
-        // Send approval notification to customer
-        await tx.notification.create({
-          data: {
-            userId: vehicle.userId,
-            type: 'system',
-            title: 'טיפול חדש ממתין לאישורך',
-            message: `${garage.name} שלח/ה טיפול מסוג ${treatmentType === 'maintenance' ? 'תחזוקה' : 'תיקון'} לרכב ${vehicle.nickname || vehicle.licensePlate}. לחץ כאן לאישור או דחייה.`,
-            link: '/user/treatments',
-          },
-        });
+        // Send approval notification only to real customers (not garage-owned vehicles)
+        if (!isOwnedByGarage) {
+          await tx.notification.create({
+            data: {
+              userId: vehicleOwnerId,
+              type: 'system',
+              title: 'טיפול חדש ממתין לאישורך',
+              message: `${garage.name} שלח/ה טיפול מסוג ${treatmentType === 'maintenance' ? 'תחזוקה' : 'תיקון'} לרכב ${vehicle.nickname || vehicle.licensePlate}. לחץ כאן לאישור או דחייה.`,
+              link: '/user/treatments',
+            },
+          });
+        }
       }
 
       return await tx.inspection.findUnique({

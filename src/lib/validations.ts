@@ -132,13 +132,14 @@ export const comprehensiveInspectionSchema = z.object({
   exteriorPhotos: z.record(z.string()).optional(),
   interiorPhotos: z.record(z.string()).optional(),
 
-  // Tires & Lights
+  // Tires & Lights — passthrough() preserves extra fields the frontend may send
   tiresData: z.object({
     frontLeft: z.string().optional(),
     frontRight: z.string().optional(),
     rearLeft: z.string().optional(),
     rearRight: z.string().optional(),
-  }).optional(),
+  }).passthrough().optional(),
+  tiresNotes: z.string().optional(),
   lightsData: z.object({
     brakes: z.string().optional(),
     reverse: z.string().optional(),
@@ -148,62 +149,71 @@ export const comprehensiveInspectionSchema = z.object({
     rearSignal: z.string().optional(),
     highBeam: z.string().optional(),
     plate: z.string().optional(),
-  }).optional(),
+  }).passthrough().optional(),
+  lightsNotes: z.string().optional(),
 
-  // Mechanical systems
+  // Mechanical systems — passthrough() to accept frontend's {items, notes} shape
   frontAxle: z.object({
     status: z.string().optional(),
     ballBearings: z.string().optional(),
+    items: z.array(z.record(z.unknown())).optional(),
     notes: z.string().optional(),
-  }).optional(),
+  }).passthrough().optional(),
   steeringData: z.object({
     status: z.string().optional(),
     alignment: z.string().optional(),
+    items: z.array(z.record(z.unknown())).optional(),
     notes: z.string().optional(),
-  }).optional(),
+  }).passthrough().optional(),
   shocksData: z.object({
     frontLeft: z.string().optional(),
     frontRight: z.string().optional(),
     rearLeft: z.string().optional(),
     rearRight: z.string().optional(),
+    items: z.array(z.record(z.unknown())).optional(),
     notes: z.string().optional(),
-  }).optional(),
+  }).passthrough().optional(),
   bodyData: z.object({
     condition: z.string().optional(),
     tags: z.array(z.string()).optional(),
     notes: z.string().optional(),
-  }).optional(),
+  }).passthrough().optional(),
   batteryData: z.object({
     isOriginal: z.boolean().optional(),
+    status: z.string().optional(),
     date: z.string().optional(),
-  }).optional(),
+  }).passthrough().optional(),
 
   // Fluids & Interior
   fluidsData: z.object({
     brakeFluid: z.string().optional(),
     engineOil: z.string().optional(),
     coolant: z.string().optional(),
-  }).optional(),
+  }).passthrough().optional(),
+  fluidsNotes: z.string().optional(),
   interiorSystems: z.object({
     acCold: z.string().optional(),
     acHot: z.string().optional(),
     audio: z.string().optional(),
-  }).optional(),
+    notes: z.string().optional(),
+  }).passthrough().optional(),
   windowsData: z.object({
     frontLeft: z.string().optional(),
     frontRight: z.string().optional(),
     rearLeft: z.string().optional(),
     rearRight: z.string().optional(),
-  }).optional(),
+  }).passthrough().optional(),
+  windowsNotes: z.string().optional(),
 
   // Engine & Gearbox
   engineIssues: z.object({
     issues: z.array(z.string()).optional(),
     notes: z.string().optional(),
-  }).optional(),
+  }).passthrough().optional(),
   gearboxIssues: z.object({
+    issues: z.array(z.string()).optional(),
     notes: z.string().optional(),
-  }).optional(),
+  }).passthrough().optional(),
 
   // Braking system percentages
   brakingSystem: z.object({
@@ -211,7 +221,8 @@ export const comprehensiveInspectionSchema = z.object({
     rearDiscs: z.number().optional(),
     frontPads: z.number().optional(),
     rearPads: z.number().optional(),
-  }).optional(),
+  }).passthrough().optional(),
+  brakeNotes: z.string().optional(),
 
   // Summary & Notes
   summary: z.string().optional(),
@@ -224,7 +235,7 @@ export const comprehensiveInspectionSchema = z.object({
     undercarriage: z.string().optional(),
     engine: z.string().optional(),
     general: z.string().optional(),
-  }).optional(),
+  }).passthrough().optional(),
 
   // Customer signature
   customerName: z.string().optional(),
@@ -274,7 +285,7 @@ export const comprehensiveInspectionSchema = z.object({
 
   // Pre-test item-level notes
   preTestItemNotes: z.record(z.string()).optional(),
-});
+}).passthrough();
 
 // ============================================================
 // SOS EVENT SCHEMAS

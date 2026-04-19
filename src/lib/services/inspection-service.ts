@@ -32,21 +32,26 @@ export interface ValidatedInspectionInput {
   mileage?: number;
   engineNumber?: string;
   engineVerified?: boolean;
-  exteriorPhotos?: string[];
-  interiorPhotos?: string[];
+  exteriorPhotos?: Record<string, string>;
+  interiorPhotos?: Record<string, string>;
   tiresData?: Record<string, string>;
+  tiresNotes?: string;
   lightsData?: Record<string, string>;
+  lightsNotes?: string;
   frontAxle?: unknown;
   steeringData?: unknown;
   shocksData?: unknown;
   bodyData?: unknown;
   batteryData?: unknown;
   fluidsData?: Record<string, string>;
+  fluidsNotes?: string;
   interiorSystems?: unknown;
   windowsData?: unknown;
+  windowsNotes?: string;
   engineIssues?: unknown;
   gearboxIssues?: unknown;
   brakingSystem?: unknown;
+  brakeNotes?: string;
   summary?: string;
   recommendations?: unknown;
   notes?: unknown;
@@ -80,6 +85,9 @@ export interface ValidatedInspectionInput {
 
   // Pre-test item-level notes
   preTestItemNotes?: Record<string, string>;
+
+  // Allow additional fields from passthrough
+  [key: string]: unknown;
 }
 
 export interface InspectionItemInput {
@@ -143,7 +151,19 @@ export function buildInspectionData(
     // Summary & results
     summary: data.summary || null,
     recommendations: jsonOrNull(data.recommendations),
-    notes: jsonOrNull(data.notes),
+    // Merge system-level notes (tiresNotes, lightsNotes, etc.) into the notes JSON
+    notes: jsonOrNull(
+      data.notes || data.tiresNotes || data.lightsNotes || data.fluidsNotes || data.windowsNotes || data.brakeNotes
+        ? {
+            ...(data.notes && typeof data.notes === 'object' ? data.notes : {}),
+            ...(data.tiresNotes ? { tires: data.tiresNotes } : {}),
+            ...(data.lightsNotes ? { lights: data.lightsNotes } : {}),
+            ...(data.fluidsNotes ? { fluids: data.fluidsNotes } : {}),
+            ...(data.windowsNotes ? { windows: data.windowsNotes } : {}),
+            ...(data.brakeNotes ? { brakes: data.brakeNotes } : {}),
+          }
+        : null
+    ),
     detailedScores: jsonOrNull(data.detailedScores),
 
     // Customer signature

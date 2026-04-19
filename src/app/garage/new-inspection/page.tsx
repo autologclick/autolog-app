@@ -752,20 +752,49 @@ export default function NewInspectionPage() {
         payload = basePayload;
       }
 
+      // Strip base64 photos if payload is too large (Vercel 4.5MB limit)
+      const payloadStr = JSON.stringify(payload);
+      const payloadSizeMB = new Blob([payloadStr]).size / (1024 * 1024);
+
+      let finalPayload = payload;
+      if (payloadSizeMB > 4) {
+        // Remove large base64 photo data to stay under Vercel's limit
+        console.warn(`[Inspection] Payload too large (${payloadSizeMB.toFixed(1)}MB), stripping photos`);
+        const stripped = { ...payload };
+        delete stripped.exteriorPhotos;
+        delete stripped.interiorPhotos;
+        delete stripped.vehiclePhoto;
+        delete stripped.invoicePhoto;
+        delete stripped.servicePhotos;
+        finalPayload = stripped;
+      }
+
       const res = await fetch('/api/inspections', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(finalPayload),
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        if (data.details) {
-          const fieldErrors = Object.values(data.details).join(', ');
-          setError(fieldErrors || data.error || 'שגיאה בשמירת הבדיקה');
-        } else {
-          setError(data.error || 'שגיאה בשמירת הבדיקה');
+        let errorMsg = 'שגיאה בשמירת הבדיקה';
+        try {
+          const data = await res.json();
+          console.error('[Inspection] API error:', res.status, data);
+          if (data.details) {
+            const fieldErrors = Object.values(data.details).join(', ');
+            errorMsg = fieldErrors || data.error || errorMsg;
+          } else if (data.error) {
+            errorMsg = data.error;
+          }
+        } catch {
+          console.error('[Inspection] API error (non-JSON):', res.status, res.statusText);
+          if (res.status === 413) {
+            errorMsg = 'הקובץ גדול מדי. נסה להסיר תמונות ולשלוח שוב.';
+          } else if (res.status === 401) {
+            errorMsg = 'פג תוקף החיבור. יש להתחבר מחדש.';
+          }
         }
+        setError(errorMsg);
         return;
       }
 
@@ -773,10 +802,11 @@ export default function NewInspectionPage() {
       setSuccessId(data.inspection.id);
       setSuccessModal(true);
     } catch (err) {
-      setError('שגיאה בשמירת הבדיקה');
-      if (process.env.NODE_ENV === 'development') {
-        console.error(err);
-      }
+      console.error('[Inspection] Submit error:', err);
+      const errMsg = err instanceof Error ? err.message : 'שגיאה בשמירת הבדיקה';
+      setError(errMsg.includes('Failed to fetch') || errMsg.includes('NetworkError')
+        ? 'שגיאת רשת. בדוק את החיבור לאינטרנט ונסה שוב.'
+        : 'שגיאה בשמירת הבדיקה. נסה שוב.');
     } finally { setLoading(false); }
   };
 
