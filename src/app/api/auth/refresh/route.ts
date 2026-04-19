@@ -74,13 +74,13 @@ export async function POST(req: NextRequest) {
       path: '/',
     });
 
-    // Set new longer-lived refresh token (7 days)
+    // Set new longer-lived refresh token (30 days)
     // Old refresh token is automatically blacklisted by rotateTokens()
     response.cookies.set('refresh-token', newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 30, // 30 days
       path: '/',
     });
 

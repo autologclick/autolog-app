@@ -34,14 +34,14 @@ const JWT_SECRET = getJwtSecret();
 // Token expiry constants following OWASP guidelines
 // Short-lived access tokens reduce exposure if compromised
 export const TOKEN_EXPIRY = '2h'; // 2 hours - longer for forms like inspections
-export const REFRESH_TOKEN_EXPIRY = '7d'; // 7 days
-export const REFRESH_TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+export const REFRESH_TOKEN_EXPIRY = '30d'; // 30 days - keeps users logged in
+export const REFRESH_TOKEN_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
 
 // ============================================================================
 // Token Blacklist - Uses CacheStore (in-memory or Redis)
 // To switch to Redis: update getCacheStore() in cache-store.ts
 // ============================================================================
-const BLACKLIST_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days (matches refresh token expiry)
+const BLACKLIST_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days (matches refresh token expiry)
 
 export function blacklistToken(tokenId: string): void {
   const cache = getCacheStore();
