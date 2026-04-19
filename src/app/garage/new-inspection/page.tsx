@@ -834,9 +834,17 @@ export default function NewInspectionPage() {
 
       // Open WhatsApp with inspection link + PDF
       const inspectionUrl = `${window.location.origin}/inspection/${successId}`;
-      const text = pdfLink
-        ? `שלום, דוח הבדיקה שלך מוכן.\n\nצפה בדוח PDF:\n${pdfLink}\n\nצפה בדוח באתר:\n${inspectionUrl}`
-        : `שלום, דוח הבדיקה שלך מוכן. אנא חתום לאישור קבלת הדוח:\n${inspectionUrl}`;
+      const lines = [
+        `שלום רב 👋`,
+        ``,
+        `דוח הבדיקה לרכב שלך הושלם ומוכן לצפייה.`,
+        ``,
+        pdfLink ? `📄 *לצפייה בדוח:*` : `📄 *לצפייה ואישור הדוח:*`,
+        pdfLink || inspectionUrl,
+        ``,
+        `_בברכה, הצוות שלנו_ 🚗`,
+      ];
+      const text = lines.join('\n');
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     } catch {}
   };

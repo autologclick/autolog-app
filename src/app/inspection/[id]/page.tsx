@@ -620,9 +620,21 @@ export default function InspectionReportPage() {
     return `${window.location.origin}${pdfUrl}`;
   };
 
-  const handleShare = async () => {
-    const text = `דוח בדיקת AutoLog - ${vehicleLabel} (${v.licensePlate}) - ציון: ${score}/100`;
+  const buildShareText = (pdfLink?: string) => {
+    const lines = [
+      `🚗 *דוח בדיקת רכב — ${vehicleLabel}*`,
+      `📋 לוחית רישוי: ${v.licensePlate}`,
+      score > 0 ? `✅ ציון כללי: *${score}/100*` : '',
+      '',
+      pdfLink ? `📄 לצפייה בדוח המלא:` : '',
+      pdfLink || '',
+      '',
+      `_הדוח הופק באמצעות AutoLog — ניהול רכב חכם_`,
+    ].filter(Boolean);
+    return lines.join('\n');
+  };
 
+  const handleShare = async () => {
     try {
       // Try to fetch PDF and share as file
       const res = await fetch(pdfUrl);
@@ -632,7 +644,7 @@ export default function InspectionReportPage() {
 
         // Use Web Share API with PDF file if supported
         if (navigator.share && navigator.canShare) {
-          const shareData = { title: 'דוח בדיקת AutoLog', text, files: [file] };
+          const shareData = { title: `דוח בדיקה — ${vehicleLabel}`, text: buildShareText(), files: [file] };
           if (navigator.canShare(shareData)) {
             await navigator.share(shareData);
             return;
@@ -644,21 +656,16 @@ export default function InspectionReportPage() {
       const fullPdfUrl = await getSignedPdfUrl();
       if (navigator.share) {
         await navigator.share({
-          title: 'דוח בדיקת AutoLog',
-          text: text + '\n\nצפה בדוח PDF:',
-          url: fullPdfUrl,
+          title: `דוח בדיקה — ${vehicleLabel}`,
+          text: buildShareText(fullPdfUrl),
         });
       } else {
-        // Desktop fallback: WhatsApp with signed PDF link
-        const waText = `${text}\n\nצפה בדוח PDF:\n${fullPdfUrl}`;
-        const waUrl = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+        const waUrl = `https://wa.me/?text=${encodeURIComponent(buildShareText(fullPdfUrl))}`;
         window.open(waUrl, '_blank');
       }
     } catch {
-      // If share failed/cancelled, try WhatsApp with signed PDF link
       const fullPdfUrl = await getSignedPdfUrl();
-      const waText = `${text}\n\nצפה בדוח PDF:\n${fullPdfUrl}`;
-      const waUrl = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(buildShareText(fullPdfUrl))}`;
       window.open(waUrl, '_blank');
     }
   };
@@ -688,8 +695,7 @@ export default function InspectionReportPage() {
               aria-label="שתף בוואטסאפ"
               onClick={async () => {
                 const fullPdfUrl = await getSignedPdfUrl();
-                const waText = `דוח בדיקת AutoLog 🚗\n${vehicleLabel} (${v.licensePlate})\nציון: ${score}/100\n\nצפה בדוח PDF:\n${fullPdfUrl}`;
-                window.open(`https://wa.me/?text=${encodeURIComponent(waText)}`, '_blank');
+                window.open(`https://wa.me/?text=${encodeURIComponent(buildShareText(fullPdfUrl))}`, '_blank');
               }}
               className="w-8 h-8 sm:w-9 sm:h-9 bg-[#25D366] rounded-lg flex items-center justify-center hover:bg-[#20BD5A] transition"
             >
@@ -1323,8 +1329,7 @@ export default function InspectionReportPage() {
           <button
             onClick={async () => {
               const fullPdfUrl = await getSignedPdfUrl();
-              const waText = `דוח בדיקת AutoLog 🚗\n${vehicleLabel} (${v.licensePlate})\nציון: ${score}/100\n\nצפה בדוח PDF:\n${fullPdfUrl}`;
-              window.open(`https://wa.me/?text=${encodeURIComponent(waText)}`, '_blank');
+              window.open(`https://wa.me/?text=${encodeURIComponent(buildShareText(fullPdfUrl))}`, '_blank');
             }}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-xl font-medium text-sm transition shadow-sm"
           >

@@ -331,7 +331,7 @@ export default function GarageInspectionsPage() {
                             });
                           }
                           const signUrl = `${window.location.origin}/inspection/${i.id}`;
-                          const msg = encodeURIComponent(`שלום, דוח הבדיקה שלך מוכן לצפייה וחתימה:\n${signUrl}`);
+                          const msg = encodeURIComponent(`שלום רב 👋\n\nדוח הבדיקה לרכב שלך הושלם ומוכן לצפייה וחתימה.\n\n📄 *לצפייה בדוח:*\n${signUrl}\n\n_בברכה, הצוות שלנו_ 🚗`);
                           window.open(`https://wa.me/?text=${msg}`, '_blank');
                         }}
                         className="p-2 rounded-lg text-green-500 hover:text-green-700 hover:bg-green-50 transition"
@@ -351,7 +351,7 @@ export default function GarageInspectionsPage() {
                         onClick={(e) => {
                           e.stopPropagation();
                           const url = `${window.location.origin}/inspection/${i.id}`;
-                          const msg = `שלום, דוח הבדיקה שלך מוכן. אנא חתום לאישור קבלת הדוח:\n${url}`;
+                          const msg = `שלום רב 👋\n\nדוח הבדיקה לרכב שלך מוכן לחתימה.\n\n📄 *לצפייה ואישור:*\n${url}\n\n_בברכה, הצוות שלנו_ 🚗`;
                           window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
                         }}
                         className="p-2 rounded-lg text-green-500 hover:text-green-700 hover:bg-green-50 transition"
