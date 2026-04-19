@@ -9,7 +9,15 @@ import { z } from 'zod';
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { id } = params;
-    const payload = requireAuth(req);
+
+    // Try auth — but allow unauthenticated access for awaiting_signature inspections
+    // (customers receive a WhatsApp link to view & sign without logging in)
+    let payload: { userId: string; role: string } | null = null;
+    try {
+      payload = requireAuth(req);
+    } catch {
+      // Not authenticated — will check below if public access is allowed
+    }
 
     const inspection = await prisma.inspection.findUnique({
       where: { id },
@@ -34,8 +42,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return errorResponse('בדיקה לא נמצאה', 404);
     }
 
-    // Verify access
-    if (payload.role === 'user') {
+    // Access control
+    if (!payload) {
+      // Unauthenticated: only allow viewing inspections awaiting customer signature
+      if (inspection.status !== 'awaiting_signature') {
+        return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
+      }
+      // Allowed — customer is viewing via shared WhatsApp link to sign
+    } else if (payload.role === 'user') {
       if (inspection.vehicle.userId !== payload.userId) {
         return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
       }

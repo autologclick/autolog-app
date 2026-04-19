@@ -48,6 +48,9 @@ const PUBLIC_ROUTES = [
   '/api/benefits',
   '/api/garages',
   '/api/garage-applications',
+  '/api/public', // HMAC-signed share links (PDF, vehicle history) — tokens verified in route handlers
+  '/api/inspections', // Inspection APIs — route handlers enforce auth; public access for awaiting_signature
+  '/inspection', // Inspection view page — accessible for customer signature via shared links
   '/garage-apply',
   '/terms',
   '/privacy',
