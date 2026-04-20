@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       role: 'user',
     }, { req });
 
-    // Generate short-lived access token (15 minutes) and longer-lived refresh token (7 days)
+    // Generate access token (2 hours) and refresh token (30 days) — same as login
     const accessToken = generateToken({
       userId: user.id,
       email: user.email,
@@ -102,21 +102,21 @@ export async function POST(req: NextRequest) {
       message: SUCCESS_MESSAGES.REGISTERED,
     }, 201);
 
-    // Set short-lived access token (15 minutes)
+    // Set access token (2 hours) — same as login flow
     response.cookies.set('auth-token', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 15 * 60, // 15 minutes
+      maxAge: 2 * 60 * 60, // 2 hours
       path: '/',
     });
 
-    // Set longer-lived refresh token (7 days) in separate httpOnly cookie
+    // Set refresh token (30 days) — keeps user logged in across sessions
     response.cookies.set('refresh-token', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 30, // 30 days
       path: '/',
     });
 
