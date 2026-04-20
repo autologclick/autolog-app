@@ -11,6 +11,7 @@ import {
 } from '@/lib/api-helpers';
 import { SERVICE_TYPE_HEB, APPOINTMENT_STATUS_HEB } from '@/lib/constants/translations';
 import { sendEmail, buildCustomerStatusEmailHtml } from '@/lib/email';
+import { sendPushToUser } from '@/lib/push-sender';
 
 const updateSchema = z.object({
   status: z.enum(['confirmed', 'rejected', 'in_progress', 'completed', 'cancelled']),
@@ -223,6 +224,31 @@ export async function PUT(
           }),
         }).catch(() => { /* silent */ });
       }
+    }
+
+    // Push notification to customer for status changes
+    if (['confirmed', 'rejected', 'in_progress', 'completed', 'cancelled'].includes(status)) {
+      const pushTitles: Record<string, string> = {
+        confirmed: 'התור אושר!',
+        rejected: 'ההזמנה נדחתה',
+        in_progress: 'הרכב נכנס לטיפול',
+        completed: 'הטיפול הושלם!',
+        cancelled: 'התור בוטל',
+      };
+      const pushBodies: Record<string, string> = {
+        confirmed: `התור שלך ב${appointment.garage.name} אושר — ${new Date(appointment.date).toLocaleDateString('he-IL')} בשעה ${appointment.time}`,
+        rejected: `ההזמנה שלך ב${appointment.garage.name} נדחתה${rejectionReason ? '. סיבה: ' + rejectionReason : ''}`,
+        in_progress: `הרכב שלך נכנס עכשיו לטיפול ב${appointment.garage.name}`,
+        completed: `הטיפול ב${appointment.garage.name} הושלם בהצלחה!`,
+        cancelled: `התור שלך ב${appointment.garage.name} בוטל`,
+      };
+      sendPushToUser(appointment.user.id, {
+        title: pushTitles[status] || 'עדכון תור',
+        body: pushBodies[status] || `עדכון סטטוס תור ב${appointment.garage.name}`,
+        tag: `appointment-${id}-${status}`,
+        requireInteraction: status === 'confirmed' || status === 'rejected',
+        data: { link: '/user/appointments', type: 'appointment_status' },
+      }).catch(() => {});
     }
 
     return jsonResponse({

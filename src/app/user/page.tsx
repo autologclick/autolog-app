@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import OnboardingWizard from '@/components/shared/OnboardingWizard';
+import PushPermissionBanner from '@/components/shared/PushPermissionBanner';
 import VehicleAssistant from '@/components/chat/VehicleAssistant';
 import GlobalSearch from '@/components/ui/GlobalSearch';
 // Tesseract loaded dynamically in handleScanReceipt to avoid SSR issues
@@ -736,6 +737,9 @@ export default function UserHomePage() {
             <span className="text-xs font-semibold">הרכבים שלי</span>
           </button>
         </div>
+
+        {/* ═══ Push Permission Banner ═══ */}
+        <PushPermissionBanner />
 
         {/* ═══ Expiry Alerts — all vehicles ═══ */}
         {(() => {
