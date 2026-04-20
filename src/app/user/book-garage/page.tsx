@@ -289,7 +289,9 @@ export default function BookGaragePage() {
 
   const openBooking = (garage: Garage) => {
     setSelectedGarageId(garage.id);
-    setBookingData({ vehicleId: '', date: '', time: '', notes: '' });
+    // Auto-select vehicle if user has exactly one
+    const autoVehicleId = vehicles.length === 1 ? vehicles[0].id : '';
+    setBookingData({ vehicleId: autoVehicleId, date: '', time: '', notes: '' });
     setShowNotesInput(false);
     setError('');
     setBookingStep('details');
@@ -578,10 +580,10 @@ export default function BookGaragePage() {
               </div>
             </div>
 
-            {/* Vehicle Selection - Horizontal Scrollable Cards */}
+            {/* Vehicle Selection */}
             <div>
               <label className="block text-sm font-bold text-gray-800 mb-3">
-                בחר את הרכב שלך
+                {vehicles.length === 1 ? 'הרכב שלך' : 'בחר את הרכב שלך'}
               </label>
               {vehicles.length === 0 ? (
                 <div className="text-center py-6 bg-[#fef7ed] rounded-2xl border-2 border-dashed border-gray-300">
@@ -589,27 +591,53 @@ export default function BookGaragePage() {
                   <p className="text-gray-600 text-sm font-bold">אין רכבים</p>
                   <p className="text-gray-400 text-xs mt-1">הוסף רכב קודם לפני הזמנת תור</p>
                 </div>
+              ) : vehicles.length === 1 ? (
+                /* Single vehicle — shown as selected, no tap needed */
+                <div className="bg-teal-50 border-2 border-teal-600 rounded-xl p-3 flex items-center gap-3">
+                  <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Check size={18} className="text-white" />
+                  </div>
+                  <div className="flex-1 text-right">
+                    <div className="font-bold text-gray-800 text-sm">{vehicles[0].nickname}</div>
+                    <div className="text-xs text-gray-500">{vehicles[0].manufacturer} {vehicles[0].model}</div>
+                  </div>
+                  <Car size={18} className="text-teal-600" />
+                </div>
               ) : (
-                <div className="flex gap-2 overflow-x-auto pb-2">
-                  {vehicles.map(v => (
-                    <button
-                      key={v.id}
-                      onClick={() => setBookingData({ ...bookingData, vehicleId: v.id })}
-                      className={`flex-shrink-0 w-32 p-3 rounded-xl border-2 transition text-center flex flex-col items-center gap-2 ${
-                        bookingData.vehicleId === v.id
-                          ? 'border-teal-600 bg-teal-50'
-                          : 'border-gray-200 bg-white hover:border-teal-600'
-                      }`}
-                    >
-                      <div className="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Car size={16} className="text-teal-600" />
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold text-gray-800 text-xs">{v.nickname}</div>
-                        <div className="text-xs text-gray-500 mt-0.5">{v.manufacturer} {v.model}</div>
-                      </div>
-                    </button>
-                  ))}
+                /* Multiple vehicles — tap to select */
+                <div className="space-y-2">
+                  {!bookingData.vehicleId && (
+                    <p className="text-xs text-amber-600 font-medium mb-1">לחץ על הרכב הרצוי כדי להמשיך</p>
+                  )}
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {vehicles.map(v => {
+                      const isSelected = bookingData.vehicleId === v.id;
+                      return (
+                        <button
+                          key={v.id}
+                          onClick={() => setBookingData({ ...bookingData, vehicleId: v.id })}
+                          className={`flex-shrink-0 w-36 p-3 rounded-xl border-2 transition text-center flex flex-col items-center gap-2 relative ${
+                            isSelected
+                              ? 'border-teal-600 bg-teal-50 shadow-md'
+                              : 'border-gray-200 bg-white hover:border-teal-400 hover:bg-teal-50/30'
+                          }`}
+                        >
+                          {isSelected && (
+                            <div className="absolute top-1.5 left-1.5 w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center">
+                              <Check size={12} className="text-white" />
+                            </div>
+                          )}
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${isSelected ? 'bg-teal-600' : 'bg-teal-50'}`}>
+                            <Car size={16} className={isSelected ? 'text-white' : 'text-teal-600'} />
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-gray-800 text-xs">{v.nickname}</div>
+                            <div className="text-xs text-gray-500 mt-0.5">{v.manufacturer} {v.model}</div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
