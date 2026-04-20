@@ -101,6 +101,14 @@ model Vehicle {
   insuranceStatus   String    @default("valid") // valid | expiring | expired
   registrationDate  DateTime?
 
+  // Insurance details (extracted by AI from uploaded document)
+  insuranceCompany     String?   // e.g. "הראל", "מגדל", "כלל"
+  insuranceType        String?   // compulsory | comprehensive | third_party
+  insuranceStart       DateTime? // policy start date
+  insuranceCost        Float?    // annual premium in NIS
+  insurancePolicyNumber String?  // policy number
+  insuranceDocUrl      String?   // uploaded document URL (Vercel Blob)
+
   // Metadata
   isPrimary         Boolean   @default(false)
   mileage           Int?
