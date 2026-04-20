@@ -27,6 +27,8 @@ interface Vehicle {
   testExpiryDate?: string;
   insuranceStatus: string;
   insuranceExpiry?: string;
+  compulsoryInsuranceExpiry?: string;
+  compulsoryInsuranceStatus?: string;
   isPrimary: boolean;
   imageUrl?: string;
   mileage?: number;
@@ -271,11 +273,21 @@ export default function UserHomePage() {
 
   // Insurance upload modal
   const [showInsuranceModal, setShowInsuranceModal] = useState(false);
+  const [insuranceTab, setInsuranceTab] = useState<'compulsory' | 'comprehensive'>('compulsory');
   const [insuranceScanning, setInsuranceScanning] = useState(false);
   const [insuranceSaving, setInsuranceSaving] = useState(false);
+  // Comprehensive / third-party form
   const [insuranceForm, setInsuranceForm] = useState({
     insuranceCompany: '',
     insuranceType: 'comprehensive',
+    insuranceStart: '',
+    insuranceExpiry: '',
+    insuranceCost: '',
+    insurancePolicyNumber: '',
+  });
+  // Compulsory (ביטוח חובה) form
+  const [compulsoryForm, setCompulsoryForm] = useState({
+    insuranceCompany: '',
     insuranceStart: '',
     insuranceExpiry: '',
     insuranceCost: '',
@@ -380,7 +392,24 @@ export default function UserHomePage() {
 
   // ── Computed values ──
   const testDays = daysUntil(vehicle?.testExpiryDate);
-  const insuranceDays = daysUntil(vehicle?.insuranceExpiry);
+  const comprehensiveInsuranceDays = daysUntil(vehicle?.insuranceExpiry);
+  const compulsoryInsuranceDays = daysUntil(vehicle?.compulsoryInsuranceExpiry);
+  // Show whichever insurance expires sooner (or the one that exists)
+  const insuranceDays = (() => {
+    if (comprehensiveInsuranceDays !== null && compulsoryInsuranceDays !== null) {
+      return Math.min(comprehensiveInsuranceDays, compulsoryInsuranceDays);
+    }
+    return comprehensiveInsuranceDays ?? compulsoryInsuranceDays;
+  })();
+  const insuranceLabel = (() => {
+    if (comprehensiveInsuranceDays !== null && compulsoryInsuranceDays !== null) {
+      if (compulsoryInsuranceDays <= comprehensiveInsuranceDays) return 'חובה';
+      return 'מקיף';
+    }
+    if (compulsoryInsuranceDays !== null) return 'חובה';
+    if (comprehensiveInsuranceDays !== null) return 'מקיף';
+    return '';
+  })();
   const thisMonthExpenses = expenses
     .filter(e => new Date(e.date).getMonth() === new Date().getMonth() && new Date(e.date).getFullYear() === new Date().getFullYear())
     .reduce((sum, e) => sum + e.amount, 0);
@@ -390,7 +419,6 @@ export default function UserHomePage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Convert to base64
     const reader = new FileReader();
     reader.onload = async () => {
       const dataUrl = reader.result as string;
@@ -407,17 +435,30 @@ export default function UserHomePage() {
         const data = await res.json();
         if (data.success && data.data) {
           const d = data.data;
-          setInsuranceForm({
+          const isCompulsory = d.description?.includes('חובה') || insuranceTab === 'compulsory';
+          const extracted = {
             insuranceCompany: d.businessName || '',
-            insuranceType: d.suggestedCategory === 'insurance'
-              ? (d.description?.includes('חובה') ? 'compulsory'
-                : d.description?.includes('צד ג') ? 'third_party' : 'comprehensive')
-              : 'comprehensive',
             insuranceStart: d.date || '',
             insuranceExpiry: d.expiryDate || '',
             insuranceCost: d.totalAmount ? String(d.totalAmount) : '',
             insurancePolicyNumber: d.invoiceNumber || '',
-          });
+          };
+
+          if (isCompulsory && insuranceTab === 'compulsory') {
+            setCompulsoryForm(extracted);
+          } else if (insuranceTab === 'comprehensive') {
+            setInsuranceForm({
+              ...extracted,
+              insuranceType: d.description?.includes('צד ג') ? 'third_party' : 'comprehensive',
+            });
+          } else {
+            // AI detected compulsory but user is on comprehensive tab — put it in current tab
+            if (insuranceTab === 'compulsory') {
+              setCompulsoryForm(extracted);
+            } else {
+              setInsuranceForm({ ...extracted, insuranceType: 'comprehensive' });
+            }
+          }
           toast.success('הפרטים חולצו בהצלחה! בדוק ואשר.');
         } else {
           setInsuranceError('לא הצלחנו לחלץ פרטים. מלא ידנית.');
@@ -436,38 +477,52 @@ export default function UserHomePage() {
     setInsuranceSaving(true);
     setInsuranceError('');
 
+    const isCompulsory = insuranceTab === 'compulsory';
+    const form = isCompulsory ? compulsoryForm : insuranceForm;
+
     try {
-      const res = await fetch(`/api/vehicles/${vehicle.id}/insurance`, {
+      const bodyData: Record<string, unknown> = {
+        insuranceCompany: form.insuranceCompany || null,
+        insuranceStart: form.insuranceStart || null,
+        insuranceExpiry: form.insuranceExpiry || null,
+        insuranceCost: form.insuranceCost ? parseFloat(form.insuranceCost) : null,
+        insurancePolicyNumber: form.insurancePolicyNumber || null,
+      };
+      if (!isCompulsory) {
+        bodyData.insuranceType = insuranceForm.insuranceType || null;
+      }
+
+      const res = await fetch(`/api/vehicles/${vehicle.id}/insurance?type=${insuranceTab}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          insuranceCompany: insuranceForm.insuranceCompany || null,
-          insuranceType: insuranceForm.insuranceType || null,
-          insuranceStart: insuranceForm.insuranceStart || null,
-          insuranceExpiry: insuranceForm.insuranceExpiry || null,
-          insuranceCost: insuranceForm.insuranceCost ? parseFloat(insuranceForm.insuranceCost) : null,
-          insurancePolicyNumber: insuranceForm.insurancePolicyNumber || null,
-        }),
+        body: JSON.stringify(bodyData),
       });
       const data = await res.json();
       if (!res.ok) {
         setInsuranceError(data.error || 'שגיאה בשמירה');
         return;
       }
-      setInsuranceSuccess('פרטי הביטוח נשמרו בהצלחה!');
-      toast.success('פרטי הביטוח עודכנו!');
+
+      const label = isCompulsory ? 'ביטוח חובה' : 'ביטוח מקיף/צד ג\'';
+      setInsuranceSuccess(`פרטי ${label} נשמרו בהצלחה!`);
+      toast.success(`${label} עודכן!`);
 
       // Update local vehicle data
-      if (insuranceForm.insuranceExpiry) {
-        setVehicles(prev => prev.map(v =>
-          v.id === vehicle.id ? { ...v, insuranceExpiry: insuranceForm.insuranceExpiry } : v
-        ));
+      if (form.insuranceExpiry) {
+        if (isCompulsory) {
+          setVehicles(prev => prev.map(v =>
+            v.id === vehicle.id ? { ...v, compulsoryInsuranceExpiry: form.insuranceExpiry } : v
+          ));
+        } else {
+          setVehicles(prev => prev.map(v =>
+            v.id === vehicle.id ? { ...v, insuranceExpiry: form.insuranceExpiry } : v
+          ));
+        }
       }
 
       setTimeout(() => {
-        setShowInsuranceModal(false);
         setInsuranceSuccess('');
-      }, 1500);
+      }, 2000);
     } catch {
       setInsuranceError('שגיאת רשת');
     } finally {
@@ -784,7 +839,12 @@ export default function UserHomePage() {
             <ReminderCard
               icon="🛡️" title="ביטוח"
               value={insuranceDays !== null ? (insuranceDays < 0 ? 'פג תוקף!' : `${insuranceDays} יום`) : 'העלה ביטוח'}
-              subtitle={vehicle.insuranceExpiry ? new Date(vehicle.insuranceExpiry).toLocaleDateString('he-IL') : 'לחץ להעלאה'}
+              subtitle={insuranceDays !== null
+                ? `${insuranceLabel} · ${(() => {
+                    const d = insuranceLabel === 'חובה' ? vehicle.compulsoryInsuranceExpiry : vehicle.insuranceExpiry;
+                    return d ? new Date(d).toLocaleDateString('he-IL') : '';
+                  })()}`
+                : 'לחץ להעלאה'}
               status={insuranceDays !== null ? (insuranceDays < 0 ? 'danger' : insuranceDays < 30 ? 'warning' : 'success') : 'warning'}
             />
           </div>
@@ -955,7 +1015,13 @@ export default function UserHomePage() {
             if (v.insuranceExpiry) {
               const d = daysUntil(v.insuranceExpiry);
               if (d !== null && d <= 45) {
-                alerts.push({ vehicleName: name, vehicleId: v.id, type: 'insurance', label: 'ביטוח', icon: '🛡️', days: d, date: v.insuranceExpiry });
+                alerts.push({ vehicleName: name, vehicleId: v.id, type: 'insurance', label: 'ביטוח מקיף', icon: '🛡️', days: d, date: v.insuranceExpiry });
+              }
+            }
+            if (v.compulsoryInsuranceExpiry) {
+              const d = daysUntil(v.compulsoryInsuranceExpiry);
+              if (d !== null && d <= 45) {
+                alerts.push({ vehicleName: name, vehicleId: v.id, type: 'compulsory_insurance', label: 'ביטוח חובה', icon: '🛡️', days: d, date: v.compulsoryInsuranceExpiry });
               }
             }
           });
@@ -1576,18 +1642,49 @@ export default function UserHomePage() {
       )}
 
       {/* ═══ Insurance Upload Modal ═══ */}
-      {showInsuranceModal && vehicle && (
+      {showInsuranceModal && vehicle && (() => {
+        const currentForm = insuranceTab === 'compulsory' ? compulsoryForm : insuranceForm;
+        const setCurrentForm = insuranceTab === 'compulsory'
+          ? (val: typeof compulsoryForm) => setCompulsoryForm(val)
+          : (val: typeof insuranceForm) => setInsuranceForm(val as typeof insuranceForm);
+        return (
         <div className="fixed inset-0 bg-black/50 z-[60] flex items-end sm:items-center justify-center" onClick={() => setShowInsuranceModal(false)}>
           <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[90vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
-            <div className="sticky top-0 bg-white p-4 border-b flex items-center justify-between rounded-t-2xl">
-              <h3 className="text-lg font-bold">🛡️ פרטי ביטוח</h3>
-              <button onClick={() => setShowInsuranceModal(false)} className="p-1 hover:bg-gray-100 rounded-lg">
-                <X size={20} />
-              </button>
+            <div className="sticky top-0 bg-white rounded-t-2xl z-10">
+              <div className="p-4 border-b flex items-center justify-between">
+                <h3 className="text-lg font-bold">🛡️ פרטי ביטוח</h3>
+                <button onClick={() => setShowInsuranceModal(false)} className="p-1 hover:bg-gray-100 rounded-lg">
+                  <X size={20} />
+                </button>
+              </div>
+              {/* Tabs */}
+              <div className="flex border-b" dir="rtl">
+                <button
+                  onClick={() => { setInsuranceTab('compulsory'); setInsurancePreview(null); setInsuranceError(''); setInsuranceSuccess(''); }}
+                  className={`flex-1 py-3 text-sm font-bold text-center transition-colors ${
+                    insuranceTab === 'compulsory'
+                      ? 'text-teal-700 border-b-2 border-teal-600 bg-teal-50'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  ביטוח חובה
+                </button>
+                <button
+                  onClick={() => { setInsuranceTab('comprehensive'); setInsurancePreview(null); setInsuranceError(''); setInsuranceSuccess(''); }}
+                  className={`flex-1 py-3 text-sm font-bold text-center transition-colors ${
+                    insuranceTab === 'comprehensive'
+                      ? 'text-blue-700 border-b-2 border-blue-600 bg-blue-50'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  מקיף / צד ג׳
+                </button>
+              </div>
             </div>
+
             <div className="p-4 space-y-4" dir="rtl">
               {/* Upload Section */}
-              <div className="bg-blue-50 border-2 border-dashed border-blue-200 rounded-xl p-4 text-center">
+              <div className={`border-2 border-dashed rounded-xl p-4 text-center ${insuranceTab === 'compulsory' ? 'bg-teal-50 border-teal-200' : 'bg-blue-50 border-blue-200'}`}>
                 <input
                   ref={insuranceFileRef}
                   type="file"
@@ -1598,9 +1695,9 @@ export default function UserHomePage() {
                 />
                 {insuranceScanning ? (
                   <div className="flex flex-col items-center gap-2 py-4">
-                    <Loader2 size={32} className="animate-spin text-blue-600" />
-                    <p className="text-sm font-semibold text-blue-700">סורק את המסמך...</p>
-                    <p className="text-xs text-blue-500">ה-AI מחלץ את פרטי הביטוח</p>
+                    <Loader2 size={32} className={`animate-spin ${insuranceTab === 'compulsory' ? 'text-teal-600' : 'text-blue-600'}`} />
+                    <p className={`text-sm font-semibold ${insuranceTab === 'compulsory' ? 'text-teal-700' : 'text-blue-700'}`}>סורק את המסמך...</p>
+                    <p className="text-xs text-gray-500">ה-AI מחלץ את פרטי הביטוח</p>
                   </div>
                 ) : (
                   <>
@@ -1633,7 +1730,12 @@ export default function UserHomePage() {
                         צלם מסמך
                       </button>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2">צלם או העלה את פוליסת הביטוח — AI יחלץ את הפרטים אוטומטית</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      {insuranceTab === 'compulsory'
+                        ? 'צלם או העלה תעודת ביטוח חובה'
+                        : 'צלם או העלה פוליסת ביטוח מקיף / צד ג׳'}
+                      {' '}— AI יחלץ את הפרטים
+                    </p>
                   </>
                 )}
               </div>
@@ -1656,33 +1758,35 @@ export default function UserHomePage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">חברת ביטוח</label>
                   <input
                     type="text"
-                    value={insuranceForm.insuranceCompany}
-                    onChange={e => setInsuranceForm({ ...insuranceForm, insuranceCompany: e.target.value })}
-                    placeholder="לדוגמה: הראל, מגדל, כלל"
+                    value={currentForm.insuranceCompany}
+                    onChange={e => setCurrentForm({ ...currentForm, insuranceCompany: e.target.value })}
+                    placeholder={insuranceTab === 'compulsory' ? 'לדוגמה: הפול, הראל, מגדל' : 'לדוגמה: הראל, מגדל, כלל'}
                     className="w-full border-2 rounded-xl p-2.5 text-sm"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">סוג ביטוח</label>
-                  <select
-                    value={insuranceForm.insuranceType}
-                    onChange={e => setInsuranceForm({ ...insuranceForm, insuranceType: e.target.value })}
-                    className="w-full border-2 rounded-xl p-2.5 text-sm bg-white"
-                  >
-                    <option value="comprehensive">מקיף</option>
-                    <option value="third_party">צד ג׳</option>
-                    <option value="compulsory">חובה</option>
-                  </select>
-                </div>
+                {/* Type selector — only for comprehensive tab */}
+                {insuranceTab === 'comprehensive' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">סוג ביטוח</label>
+                    <select
+                      value={insuranceForm.insuranceType}
+                      onChange={e => setInsuranceForm({ ...insuranceForm, insuranceType: e.target.value })}
+                      className="w-full border-2 rounded-xl p-2.5 text-sm bg-white"
+                    >
+                      <option value="comprehensive">מקיף</option>
+                      <option value="third_party">צד ג׳</option>
+                    </select>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">תחילת ביטוח</label>
                     <input
                       type="date"
-                      value={insuranceForm.insuranceStart}
-                      onChange={e => setInsuranceForm({ ...insuranceForm, insuranceStart: e.target.value })}
+                      value={currentForm.insuranceStart}
+                      onChange={e => setCurrentForm({ ...currentForm, insuranceStart: e.target.value })}
                       className="w-full border-2 rounded-xl p-2.5 text-sm"
                     />
                   </div>
@@ -1690,8 +1794,8 @@ export default function UserHomePage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">תפוגת ביטוח</label>
                     <input
                       type="date"
-                      value={insuranceForm.insuranceExpiry}
-                      onChange={e => setInsuranceForm({ ...insuranceForm, insuranceExpiry: e.target.value })}
+                      value={currentForm.insuranceExpiry}
+                      onChange={e => setCurrentForm({ ...currentForm, insuranceExpiry: e.target.value })}
                       className="w-full border-2 rounded-xl p-2.5 text-sm"
                     />
                   </div>
@@ -1702,8 +1806,8 @@ export default function UserHomePage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">עלות שנתית (₪)</label>
                     <input
                       type="number"
-                      value={insuranceForm.insuranceCost}
-                      onChange={e => setInsuranceForm({ ...insuranceForm, insuranceCost: e.target.value })}
+                      value={currentForm.insuranceCost}
+                      onChange={e => setCurrentForm({ ...currentForm, insuranceCost: e.target.value })}
                       placeholder="0"
                       className="w-full border-2 rounded-xl p-2.5 text-sm"
                       dir="ltr"
@@ -1713,8 +1817,8 @@ export default function UserHomePage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">מספר פוליסה</label>
                     <input
                       type="text"
-                      value={insuranceForm.insurancePolicyNumber}
-                      onChange={e => setInsuranceForm({ ...insuranceForm, insurancePolicyNumber: e.target.value })}
+                      value={currentForm.insurancePolicyNumber}
+                      onChange={e => setCurrentForm({ ...currentForm, insurancePolicyNumber: e.target.value })}
                       placeholder="מספר פוליסה"
                       className="w-full border-2 rounded-xl p-2.5 text-sm"
                       dir="ltr"
@@ -1726,16 +1830,19 @@ export default function UserHomePage() {
               {/* Save Button */}
               <button
                 onClick={handleSaveInsurance}
-                disabled={insuranceSaving || (!insuranceForm.insuranceExpiry && !insuranceForm.insuranceCompany)}
-                className="w-full bg-green-600 text-white rounded-xl py-3 font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                disabled={insuranceSaving || (!currentForm.insuranceExpiry && !currentForm.insuranceCompany)}
+                className={`w-full text-white rounded-xl py-3 font-semibold disabled:opacity-50 flex items-center justify-center gap-2 ${
+                  insuranceTab === 'compulsory' ? 'bg-teal-600' : 'bg-green-600'
+                }`}
               >
                 {insuranceSaving ? <Loader2 size={18} className="animate-spin" /> : <Shield size={18} />}
-                {insuranceSaving ? 'שומר...' : 'שמור פרטי ביטוח'}
+                {insuranceSaving ? 'שומר...' : insuranceTab === 'compulsory' ? 'שמור ביטוח חובה' : 'שמור ביטוח מקיף / צד ג׳'}
               </button>
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
 
       {/* ═══ AI Vehicle Assistant Chat ═══ */}
       {vehicle && (

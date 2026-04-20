@@ -101,13 +101,22 @@ model Vehicle {
   insuranceStatus   String    @default("valid") // valid | expiring | expired
   registrationDate  DateTime?
 
-  // Insurance details (extracted by AI from uploaded document)
+  // Insurance — comprehensive / third-party (מקיף / צד ג')
   insuranceCompany     String?   // e.g. "הראל", "מגדל", "כלל"
-  insuranceType        String?   // compulsory | comprehensive | third_party
+  insuranceType        String?   // comprehensive | third_party
   insuranceStart       DateTime? // policy start date
   insuranceCost        Float?    // annual premium in NIS
   insurancePolicyNumber String?  // policy number
   insuranceDocUrl      String?   // uploaded document URL (Vercel Blob)
+
+  // Insurance — compulsory (ביטוח חובה)
+  compulsoryInsuranceCompany     String?   // e.g. "הפול", "הראל", "מגדל"
+  compulsoryInsuranceExpiry      DateTime? // expiry date
+  compulsoryInsuranceStart       DateTime? // policy start date
+  compulsoryInsuranceCost        Float?    // annual premium in NIS
+  compulsoryInsurancePolicyNumber String?  // policy number
+  compulsoryInsuranceDocUrl      String?   // uploaded document URL
+  compulsoryInsuranceStatus      String    @default("valid") // valid | expiring | expired
 
   // Metadata
   isPrimary         Boolean   @default(false)
@@ -130,6 +139,7 @@ model Vehicle {
   @@index([licensePlate])
   @@index([testExpiryDate])
   @@index([insuranceExpiry])
+  @@index([compulsoryInsuranceExpiry])
   @@index([userId, isPrimary])
 }
 

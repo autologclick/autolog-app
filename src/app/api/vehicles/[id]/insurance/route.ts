@@ -10,7 +10,10 @@ import {
 import { NOT_FOUND } from '@/lib/messages';
 import { getExpiryStatus } from '@/lib/utils';
 
-// PUT /api/vehicles/[id]/insurance — Update insurance details (from AI scan or manual)
+/**
+ * PUT /api/vehicles/[id]/insurance — Update insurance details
+ * Query param: ?type=compulsory | comprehensive (default: comprehensive)
+ */
 export async function PUT(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -19,6 +22,7 @@ export async function PUT(
     const payload = requireAuth(req);
     const { id } = params;
     const body = await req.json();
+    const insuranceCategory = req.nextUrl.searchParams.get('type') || 'comprehensive';
 
     // Verify ownership
     const vehicle = await prisma.vehicle.findUnique({
@@ -32,55 +36,82 @@ export async function PUT(
 
     requireOwnership(payload.userId, vehicle.userId);
 
-    const {
-      insuranceCompany,
-      insuranceType,
-      insuranceStart,
-      insuranceExpiry,
-      insuranceCost,
-      insurancePolicyNumber,
-      insuranceDocUrl,
-    } = body;
-
-    // Build update data
     const updateData: Record<string, unknown> = {};
 
-    if (insuranceCompany !== undefined) {
-      updateData.insuranceCompany = insuranceCompany || null;
-    }
+    if (insuranceCategory === 'compulsory') {
+      // ביטוח חובה
+      const {
+        insuranceCompany,
+        insuranceStart,
+        insuranceExpiry,
+        insuranceCost,
+        insurancePolicyNumber,
+        insuranceDocUrl,
+      } = body;
 
-    if (insuranceType !== undefined) {
-      updateData.insuranceType = insuranceType || null;
-    }
-
-    if (insuranceStart !== undefined && insuranceStart) {
-      const d = new Date(insuranceStart);
-      if (!isNaN(d.getTime())) {
-        updateData.insuranceStart = d;
+      if (insuranceCompany !== undefined) {
+        updateData.compulsoryInsuranceCompany = insuranceCompany || null;
       }
-    }
-
-    if (insuranceExpiry !== undefined && insuranceExpiry) {
-      const d = new Date(insuranceExpiry);
-      if (!isNaN(d.getTime())) {
-        updateData.insuranceExpiry = d;
-        updateData.insuranceStatus = getExpiryStatus(d);
+      if (insuranceStart !== undefined && insuranceStart) {
+        const d = new Date(insuranceStart);
+        if (!isNaN(d.getTime())) updateData.compulsoryInsuranceStart = d;
       }
-    }
-
-    if (insuranceCost !== undefined) {
-      const cost = typeof insuranceCost === 'string' ? parseFloat(insuranceCost) : insuranceCost;
-      if (cost !== null && !isNaN(cost) && cost >= 0) {
-        updateData.insuranceCost = cost;
+      if (insuranceExpiry !== undefined && insuranceExpiry) {
+        const d = new Date(insuranceExpiry);
+        if (!isNaN(d.getTime())) {
+          updateData.compulsoryInsuranceExpiry = d;
+          updateData.compulsoryInsuranceStatus = getExpiryStatus(d);
+        }
       }
-    }
+      if (insuranceCost !== undefined) {
+        const cost = typeof insuranceCost === 'string' ? parseFloat(insuranceCost) : insuranceCost;
+        if (cost !== null && !isNaN(cost) && cost >= 0) updateData.compulsoryInsuranceCost = cost;
+      }
+      if (insurancePolicyNumber !== undefined) {
+        updateData.compulsoryInsurancePolicyNumber = insurancePolicyNumber || null;
+      }
+      if (insuranceDocUrl !== undefined) {
+        updateData.compulsoryInsuranceDocUrl = insuranceDocUrl || null;
+      }
+    } else {
+      // מקיף / צד ג'
+      const {
+        insuranceCompany,
+        insuranceType,
+        insuranceStart,
+        insuranceExpiry,
+        insuranceCost,
+        insurancePolicyNumber,
+        insuranceDocUrl,
+      } = body;
 
-    if (insurancePolicyNumber !== undefined) {
-      updateData.insurancePolicyNumber = insurancePolicyNumber || null;
-    }
-
-    if (insuranceDocUrl !== undefined) {
-      updateData.insuranceDocUrl = insuranceDocUrl || null;
+      if (insuranceCompany !== undefined) {
+        updateData.insuranceCompany = insuranceCompany || null;
+      }
+      if (insuranceType !== undefined) {
+        updateData.insuranceType = insuranceType || null;
+      }
+      if (insuranceStart !== undefined && insuranceStart) {
+        const d = new Date(insuranceStart);
+        if (!isNaN(d.getTime())) updateData.insuranceStart = d;
+      }
+      if (insuranceExpiry !== undefined && insuranceExpiry) {
+        const d = new Date(insuranceExpiry);
+        if (!isNaN(d.getTime())) {
+          updateData.insuranceExpiry = d;
+          updateData.insuranceStatus = getExpiryStatus(d);
+        }
+      }
+      if (insuranceCost !== undefined) {
+        const cost = typeof insuranceCost === 'string' ? parseFloat(insuranceCost) : insuranceCost;
+        if (cost !== null && !isNaN(cost) && cost >= 0) updateData.insuranceCost = cost;
+      }
+      if (insurancePolicyNumber !== undefined) {
+        updateData.insurancePolicyNumber = insurancePolicyNumber || null;
+      }
+      if (insuranceDocUrl !== undefined) {
+        updateData.insuranceDocUrl = insuranceDocUrl || null;
+      }
     }
 
     if (Object.keys(updateData).length === 0) {
@@ -92,6 +123,7 @@ export async function PUT(
       data: updateData,
       select: {
         id: true,
+        // Comprehensive / third-party
         insuranceCompany: true,
         insuranceType: true,
         insuranceStart: true,
@@ -100,11 +132,21 @@ export async function PUT(
         insurancePolicyNumber: true,
         insuranceDocUrl: true,
         insuranceStatus: true,
+        // Compulsory
+        compulsoryInsuranceCompany: true,
+        compulsoryInsuranceExpiry: true,
+        compulsoryInsuranceStart: true,
+        compulsoryInsuranceCost: true,
+        compulsoryInsurancePolicyNumber: true,
+        compulsoryInsuranceDocUrl: true,
+        compulsoryInsuranceStatus: true,
       },
     });
 
     return jsonResponse({
-      message: 'פרטי הביטוח עודכנו בהצלחה',
+      message: insuranceCategory === 'compulsory'
+        ? 'פרטי ביטוח חובה עודכנו בהצלחה'
+        : 'פרטי הביטוח עודכנו בהצלחה',
       insurance: updated,
     });
 
@@ -113,7 +155,9 @@ export async function PUT(
   }
 }
 
-// GET /api/vehicles/[id]/insurance — Get insurance details
+/**
+ * GET /api/vehicles/[id]/insurance — Get all insurance details (both types)
+ */
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -126,6 +170,7 @@ export async function GET(
       where: { id },
       select: {
         userId: true,
+        // Comprehensive / third-party
         insuranceCompany: true,
         insuranceType: true,
         insuranceStart: true,
@@ -134,6 +179,14 @@ export async function GET(
         insurancePolicyNumber: true,
         insuranceDocUrl: true,
         insuranceStatus: true,
+        // Compulsory
+        compulsoryInsuranceCompany: true,
+        compulsoryInsuranceExpiry: true,
+        compulsoryInsuranceStart: true,
+        compulsoryInsuranceCost: true,
+        compulsoryInsurancePolicyNumber: true,
+        compulsoryInsuranceDocUrl: true,
+        compulsoryInsuranceStatus: true,
       },
     });
 
@@ -143,7 +196,27 @@ export async function GET(
 
     requireOwnership(payload.userId, vehicle.userId);
 
-    return jsonResponse({ insurance: vehicle });
+    return jsonResponse({
+      comprehensive: {
+        insuranceCompany: vehicle.insuranceCompany,
+        insuranceType: vehicle.insuranceType,
+        insuranceStart: vehicle.insuranceStart,
+        insuranceExpiry: vehicle.insuranceExpiry,
+        insuranceCost: vehicle.insuranceCost,
+        insurancePolicyNumber: vehicle.insurancePolicyNumber,
+        insuranceDocUrl: vehicle.insuranceDocUrl,
+        insuranceStatus: vehicle.insuranceStatus,
+      },
+      compulsory: {
+        insuranceCompany: vehicle.compulsoryInsuranceCompany,
+        insuranceStart: vehicle.compulsoryInsuranceStart,
+        insuranceExpiry: vehicle.compulsoryInsuranceExpiry,
+        insuranceCost: vehicle.compulsoryInsuranceCost,
+        insurancePolicyNumber: vehicle.compulsoryInsurancePolicyNumber,
+        insuranceDocUrl: vehicle.compulsoryInsuranceDocUrl,
+        insuranceStatus: vehicle.compulsoryInsuranceStatus,
+      },
+    });
 
   } catch (error) {
     return handleApiError(error);
