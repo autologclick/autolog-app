@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Calendar, MapPin, Wrench, AlertTriangle, ChevronLeft,
-  Clock, CheckCircle, Loader2, Phone, Search, Shield
+  Clock, CheckCircle, Loader2, Shield, Search
 } from 'lucide-react';
 
 interface Appointment {
@@ -17,6 +17,13 @@ interface Appointment {
   garage?: { id: string; name: string; city?: string; address?: string; phone?: string };
   vehicle?: { id: string; nickname: string; licensePlate: string };
 }
+
+const serviceOptions = [
+  { value: 'inspection', label: 'בדיקת AutoLog', icon: <Shield size={22} className="text-teal-600" />, price: '₪350', addon: '+ ₪100 בדיקת מחשב' },
+  { value: 'test_prep', label: 'הכנה לטסט', icon: <Search size={22} className="text-blue-600" />, price: '₪250' },
+  { value: 'repair', label: 'אבחון תקלות', icon: <Wrench size={22} className="text-orange-500" />, price: '₪150' },
+  { value: 'maintenance', label: 'טיפול תקופתי', icon: <Calendar size={22} className="text-purple-500" />, price: 'החל מ-₪550' },
+];
 
 const serviceTypeLabel = (t: string) => {
   const map: Record<string, string> = {
@@ -58,47 +65,30 @@ export default function ServicePage() {
       {/* Header */}
       <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white px-4 pt-6 pb-6 rounded-b-3xl">
         <h1 className="text-2xl font-bold mb-1">שירות</h1>
-        <p className="text-sm text-white/70">הזמנת מוסך, תורים ומצבי חירום</p>
+        <p className="text-sm text-white/70">בחר שירות והזמן תור למוסך</p>
       </div>
 
       <div className="px-4 mt-4 space-y-5">
-        {/* Book New Service — primary CTA */}
-        <button
-          onClick={() => router.push('/user/book-garage')}
-          className="w-full bg-gradient-to-l from-teal-500 to-teal-600 text-white rounded-2xl p-5 flex items-center gap-4 shadow-lg hover:shadow-xl transition-all active:scale-[0.98]"
-        >
-          <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-            <Calendar size={28} />
-          </div>
-          <div className="flex-1 text-right">
-            <div className="text-lg font-bold">הזמן שירות חדש</div>
-            <div className="text-sm text-white/80">בדיקה, טיפול, תיקון או הכנה לטסט</div>
-          </div>
-          <ChevronLeft size={20} className="text-white/60" />
-        </button>
-
-        {/* Pricing Grid */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
-            <Shield size={22} className="mx-auto text-teal-600 mb-2" />
-            <div className="font-bold text-sm text-[#1e3a5f]">בדיקת AutoLog</div>
-            <div className="text-teal-600 font-bold text-lg mt-1">₪350</div>
-            <div className="text-[10px] text-gray-400 mt-0.5">+ ₪100 בדיקת מחשב</div>
-          </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
-            <Search size={22} className="mx-auto text-blue-600 mb-2" />
-            <div className="font-bold text-sm text-[#1e3a5f]">הכנה לטסט</div>
-            <div className="text-teal-600 font-bold text-lg mt-1">₪250</div>
-          </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
-            <Wrench size={22} className="mx-auto text-orange-500 mb-2" />
-            <div className="font-bold text-sm text-[#1e3a5f]">אבחון תקלות</div>
-            <div className="text-teal-600 font-bold text-lg mt-1">₪150</div>
-          </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
-            <Calendar size={22} className="mx-auto text-purple-500 mb-2" />
-            <div className="font-bold text-sm text-[#1e3a5f]">טיפול תקופתי</div>
-            <div className="text-teal-600 font-bold text-lg mt-1">החל מ-₪550</div>
+        {/* Service Cards — direct selection */}
+        <div>
+          <h2 className="text-lg font-bold text-[#1e3a5f] mb-3">באיזה שירות אתה מעוניין?</h2>
+          <div className="grid grid-cols-2 gap-3">
+            {serviceOptions.map(service => (
+              <button
+                key={service.value}
+                onClick={() => router.push(`/user/book-garage?service=${service.value}`)}
+                className="bg-white rounded-2xl p-4 shadow-sm border-2 border-gray-100 hover:border-teal-500 transition-all text-center active:scale-[0.97]"
+              >
+                <div className="mb-2">{service.icon}</div>
+                <div className="font-bold text-sm text-[#1e3a5f]">{service.label}</div>
+                <div className="mt-2 pt-2 border-t border-gray-100">
+                  <span className="text-teal-600 font-bold text-sm">{service.price}</span>
+                  {service.addon && (
+                    <div className="text-[10px] text-gray-400 mt-0.5">{service.addon}</div>
+                  )}
+                </div>
+              </button>
+            ))}
           </div>
         </div>
 
@@ -117,12 +107,6 @@ export default function ServicePage() {
             <div className="bg-white rounded-2xl p-6 text-center shadow-sm">
               <Calendar size={40} className="mx-auto text-gray-300 mb-3" />
               <p className="text-gray-500 text-sm">אין תורים קרובים</p>
-              <button
-                onClick={() => router.push('/user/book-garage')}
-                className="mt-3 text-teal-600 text-sm font-semibold"
-              >
-                הזמן עכשיו ←
-              </button>
             </div>
           ) : (
             <div className="space-y-3">
@@ -202,15 +186,6 @@ export default function ServicePage() {
             </div>
           </div>
         )}
-
-        {/* SOS Emergency Button */}
-        <button
-          onClick={() => router.push('/user/sos')}
-          className="w-full bg-gradient-to-l from-red-500 to-red-600 text-white rounded-2xl p-4 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all active:scale-[0.98]"
-        >
-          <AlertTriangle size={24} />
-          <span className="text-lg font-bold">SOS — מצב חירום</span>
-        </button>
       </div>
     </div>
   );

@@ -1056,6 +1056,13 @@ export default function UserHomePage() {
             <Car size={20} />
             <span className="text-xs font-semibold">הרכבים שלי</span>
           </button>
+          <button
+            onClick={() => router.push('/user/sos')}
+            className="flex-1 bg-red-500 text-white rounded-xl py-3 flex flex-col items-center gap-1 shadow-md active:scale-[0.97] transition-transform"
+          >
+            <AlertTriangle size={20} />
+            <span className="text-xs font-semibold">SOS</span>
+          </button>
         </div>
 
         {/* ═══ Push Permission Banner ═══ */}
@@ -2089,29 +2096,8 @@ export default function UserHomePage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">תחנת טסט</label>
-                  <input
-                    type="text"
-                    value={testForm.testStation}
-                    onChange={e => setTestForm({ ...testForm, testStation: e.target.value })}
-                    placeholder="שם התחנה"
-                    className="w-full border-2 rounded-xl p-2.5 text-sm"
-                  />
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">בעלים קודמים</label>
-                  <input
-                    type="number"
-                    value={testForm.previousOwners}
-                    onChange={e => setTestForm({ ...testForm, previousOwners: e.target.value })}
-                    placeholder="0"
-                    className="w-full border-2 rounded-xl p-2.5 text-sm"
-                    dir="ltr"
-                    min="0"
-                  />
-                </div>
+
               </div>
 
               {/* Save Button */}
