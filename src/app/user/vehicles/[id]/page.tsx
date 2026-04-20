@@ -666,10 +666,10 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
               <div className="flex gap-2 mt-4">
                 <button
                   onClick={() => setShowEditModal(true)}
-                  className="flex-1 flex items-center justify-center gap-2 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-medium transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-sm"
                 >
                   <Edit size={16} />
-                  עריכה
+                  ערוך פרטי רכב
                 </button>
                 <button
                   onClick={() => router.push('/user/vehicles/transfer')}
