@@ -207,10 +207,10 @@ export default function AdminDashboard() {
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                 <Shield size={20} className="text-blue-600" />
               </div>
-              {data && data.stats.inspectionTrend >= 0 && (
-                <div className="flex items-center gap-1 text-sm font-medium text-green-600">
-                  <ArrowUpRight size={14} />
-                  <span className="text-xs">{data.stats.inspectionTrend}%</span>
+              {data && data.stats.inspectionTrend !== 0 && (
+                <div className={`flex items-center gap-1 text-sm font-medium ${data.stats.inspectionTrend > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                  {data.stats.inspectionTrend > 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+                  <span className="text-xs">{Math.abs(data.stats.inspectionTrend)}%</span>
                 </div>
               )}
             </div>
@@ -262,10 +262,10 @@ export default function AdminDashboard() {
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                 <DollarSign size={20} className="text-green-600" />
               </div>
-              {data && data.stats.revenueTrend >= 0 && (
-                <div className="flex items-center gap-1 text-sm font-medium text-green-600">
-                  <ArrowUpRight size={14} />
-                  <span className="text-xs">{data.stats.revenueTrend}%</span>
+              {data && data.stats.revenueTrend !== 0 && (
+                <div className={`flex items-center gap-1 text-sm font-medium ${data.stats.revenueTrend > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                  {data.stats.revenueTrend > 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+                  <span className="text-xs">{Math.abs(data.stats.revenueTrend)}%</span>
                 </div>
               )}
             </div>

@@ -82,21 +82,7 @@ export default function PaymentsPage() {
         setData(paymentData);
         setFilteredPayments(paymentData.payments);
       } catch {
-        const demoData: PaymentSummary = {
-          totalThisMonth: 1250,
-          totalThisYear: 8500,
-          averageMonthlySpend: 1420,
-          payments: [
-            { id: '1', date: '2026-03-20', garageName: 'מוסך זהב', serviceType: 'inspection', amount: 350, currency: '₪', status: 'paid', source: 'inspection', vehicleNickname: 'ספורטז\' לבנה', description: 'בדיקה שנתית מלאה' },
-            { id: '2', date: '2026-03-18', garageName: 'מוסך אל-דיין', serviceType: 'maintenance', amount: 450, currency: '₪', status: 'pending', source: 'appointment', vehicleNickname: 'ספורטז\' לבנה', description: 'החלפת שמן מנוע וסינונים' },
-            { id: '3', date: '2026-03-15', garageName: 'דור אלון', serviceType: 'fuel', amount: 180, currency: '₪', status: 'paid', source: 'expense', vehicleNickname: 'ספורטז\' לבנה', description: 'תדלוק דלק סולר' },
-            { id: '4', date: '2026-03-12', garageName: 'מוסך זהב', serviceType: 'repair', amount: 750, currency: '₪', status: 'paid', source: 'appointment', vehicleNickname: 'פורד פוקוס', description: 'החלפת רפידות בלמים קדמיות' },
-            { id: '5', date: '2026-03-05', garageName: 'מוסך אל-דיין', serviceType: 'test_prep', amount: 280, currency: '₪', status: 'overdue', source: 'appointment', vehicleNickname: 'פורד פוקוס', description: 'הכנה לטסט שנתי' },
-            { id: '6', date: '2026-02-28', garageName: 'מגדל ביטוח', serviceType: 'insurance', amount: 3200, currency: '₪', status: 'paid', source: 'expense', vehicleNickname: 'ספורטז\' לבנה', description: 'ביטוח מקיף שנתי' },
-          ],
-        };
-        setData(demoData);
-        setFilteredPayments(demoData.payments);
+        setError('לא הצלחנו לטעון את נתוני התשלומים. נסה לרענן את הדף.');
       } finally {
         setLoading(false);
       }
