@@ -210,7 +210,7 @@ export default function AdminSettingsPage() {
               value={adminProfile.phone}
               onChange={e => setAdminProfile({ ...adminProfile, phone: e.target.value })}
             />
-            <Input label="טלפון תמיכה" defaultValue="053-313-1310" disabled />
+            <Input label="טלפון תמיכה" defaultValue="054-316-1610" disabled />
           </div>
 
           {saveMessage && (
