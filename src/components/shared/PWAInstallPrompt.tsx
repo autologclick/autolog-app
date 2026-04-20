@@ -30,6 +30,12 @@ export default function PWAInstallPrompt() {
       return;
     }
 
+    // Check if user already dismissed twice — stop showing
+    try {
+      const dismissCount = parseInt(localStorage.getItem('pwa-dismiss-count') || '0', 10);
+      if (dismissCount >= 2) return;
+    } catch {}
+
     // Listen for install prompt
     const handler = (e: Event) => {
       e.preventDefault();
@@ -65,10 +71,12 @@ export default function PWAInstallPrompt() {
 
   const handleDismiss = useCallback(() => {
     setShowBanner(false);
-    // Don't show again for 7 days
+    setDeferredPrompt(null);
+    // Increment dismiss counter — stop showing after 2 dismissals
     try {
-      sessionStorage.setItem('pwa-dismissed', Date.now().toString());
-    } catch (e) {}
+      const count = parseInt(localStorage.getItem('pwa-dismiss-count') || '0', 10);
+      localStorage.setItem('pwa-dismiss-count', String(count + 1));
+    } catch {}
   }, []);
 
   if (isInstalled || !showBanner || !deferredPrompt) return null;
