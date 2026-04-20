@@ -17,7 +17,6 @@ interface MaintenanceItem {
   intervalMonths: number;
   nextAtKm: number;
   priority: 'high' | 'medium' | 'low';
-  estimatedCost: string;
   description: string;
 }
 
@@ -267,8 +266,9 @@ IMPORTANT RULES:
 - Include ONLY items that require REPLACEMENT or FLUID CHANGE (e.g., oil change, filter replacement, brake pad replacement, spark plugs, coolant change, transmission fluid, belts, tires).
 - Do NOT include inspection-only items (e.g., "בדיקת בלמים", "בדיקת צמיגים", "בדיקת מצבר"). Inspections are handled separately.
 - Israeli service interval is typically every 15,000 km.
-- Add exactly ONE item with category "כללי" (general) named "בדיקה כללית" with estimatedCost "0 ₪" and intervalKm 15000. Its description should list what to CHECK (not replace) at this specific service: fluids, tire pressure, lights, battery, brake pads thickness, suspension, belts, computer diagnostics.
+- Add exactly ONE item with category "כללי" (general) named "בדיקה כללית" with intervalKm 15000. Its description should list what to CHECK (not replace) at this specific service: fluids, tire pressure, lights, battery, brake pads thickness, suspension, belts, computer diagnostics.
 - The "פילטר מזגן" is the Israeli term for cabin air filter (not "מסנן תא נוסעים").
+- Do NOT include any cost estimates or prices.
 
 Calculate:
 1. When the NEXT service is due (in km and approximate date assuming ~15,000 km/year)
@@ -288,13 +288,12 @@ Return ONLY valid JSON in this exact format (no markdown, no explanation):
       "intervalMonths": <manufacturer recommended interval in months>,
       "nextAtKm": <next km this item is due>,
       "priority": "<high/medium/low based on urgency at current mileage>",
-      "estimatedCost": "<estimated cost range in ILS, e.g. 200-400 ₪>",
       "description": "<brief description in Hebrew of why this is needed>"
     }
   ]
 }
 
-Include 8-12 REPLACEMENT items plus the one free "בדיקה כללית" item. Sort by priority (high first).
+Include 8-12 REPLACEMENT items plus the one "בדיקה כללית" item. Sort by priority (high first).
 Use accurate manufacturer intervals — do NOT guess. If unsure about a specific interval for this model, use industry-standard intervals.
 All text fields should be in Hebrew.`;
 

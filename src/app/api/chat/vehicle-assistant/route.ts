@@ -55,8 +55,8 @@ async function loadVehicleContext(vehicleId: string, userId: string) {
       const nextKm = schedule.nextServiceKm;
       const items = (schedule.items || [])
         .filter((i: { nextAtKm: number }) => i.nextAtKm === nextKm)
-        .map((i: { item: string; estimatedCost: string; category: string }) =>
-          `${i.item} (${i.estimatedCost})`
+        .map((i: { item: string; category: string }) =>
+          i.item
         );
       maintenanceInfo = `הטיפול הבא ב-${nextKm?.toLocaleString()} ק"מ. פריטים: ${items.join(', ') || 'טיפול שגרתי'}.`;
     }

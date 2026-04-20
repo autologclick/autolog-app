@@ -11,7 +11,7 @@
  *   - item: Hebrew item name
  *   - intervalKm: manufacturer-recommended km interval
  *   - intervalMonths: manufacturer-recommended month interval
- *   - estimatedCost: estimated cost range in ILS
+ *   (no pricing — only replacement items and intervals)
  *   - description: Hebrew description of why this is needed
  */
 
@@ -22,7 +22,6 @@ export interface MaintenanceTemplateItem {
   item: string;
   intervalKm: number;
   intervalMonths: number;
-  estimatedCost: string;
   description: string;
 }
 
@@ -42,7 +41,7 @@ export interface MaintenanceTemplateData {
 
 // Bump this version whenever ISRAELI_MARKET_TEMPLATES changes.
 // Auto-seed will re-run when the deployed version differs from the DB.
-const TEMPLATE_VERSION = 5;
+const TEMPLATE_VERSION = 6;
 
 // ── Manufacturer name aliases for matching ──
 // Maps various spellings (Hebrew, English, common typos) to the canonical name used in templates.
@@ -314,21 +313,21 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
     fuelType: null,
     source: 'manual',
     items: [
-      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '250-400 ₪', description: 'החלפת שמן סינטטי ומסנן שמן לשמירה על ביצועי המנוע' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '80-150 ₪', description: 'מסנן אוויר נקי מבטיח שריפה יעילה וחיסכון בדלק' },
-      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '60-120 ₪', description: 'מסנן תא הנוסעים מסנן אבק ומזהמים מהאוויר בתוך הרכב' },
-      { category: 'בלמים', item: 'בדיקת רפידות בלמים קדמיות', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-800 ₪', description: 'בדיקת עובי רפידות הבלמים והחלפה במידת הצורך' },
-      { category: 'בלמים', item: 'בדיקת רפידות בלמים אחוריות', intervalKm: 60000, intervalMonths: 48, estimatedCost: '350-700 ₪', description: 'בדיקת רפידות אחוריות — בלאי איטי יותר מקדמיות' },
-      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 60000, intervalMonths: 24, estimatedCost: '150-250 ₪', description: 'נוזל בלמים סופג לחות לאורך זמן ומאבד מיעילותו' },
-      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, estimatedCost: '200-350 ₪', description: 'נוזל קירור מונע התחממות יתר והקפאה של המנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'החלפת שמן סינטטי ומסנן שמן לשמירה על ביצועי המנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר נקי מבטיח שריפה יעילה וחיסכון בדלק' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן תא הנוסעים מסנן אבק ומזהמים מהאוויר בתוך הרכב' },
+      { category: 'בלמים', item: 'בדיקת רפידות בלמים קדמיות', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת עובי רפידות הבלמים והחלפה במידת הצורך' },
+      { category: 'בלמים', item: 'בדיקת רפידות בלמים אחוריות', intervalKm: 60000, intervalMonths: 48, description: 'בדיקת רפידות אחוריות — בלאי איטי יותר מקדמיות' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 60000, intervalMonths: 24, description: 'נוזל בלמים סופג לחות לאורך זמן ומאבד מיעילותו' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור מונע התחממות יתר והקפאה של המנוע' },
 
-      { category: 'צמיגים', item: 'החלפת צמיגים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '1,200-2,400 ₪', description: 'החלפת 4 צמיגים בהתאם לבלאי — בטיחות קריטית' },
-      { category: 'רצועות', item: 'בדיקת רצועת טיימינג', intervalKm: 90000, intervalMonths: 60, estimatedCost: '1,500-2,500 ₪', description: 'קריעת רצועת טיימינג עלולה לגרום לנזק חמור למנוע' },
-      { category: 'מתלים', item: 'בדיקת בולמי זעזועים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '800-1,600 ₪', description: 'בולמי זעזועים משפיעים על יציבות הרכב ונוחות הנסיעה' },
+      { category: 'צמיגים', item: 'החלפת צמיגים', intervalKm: 60000, intervalMonths: 48, description: 'החלפת 4 צמיגים בהתאם לבלאי — בטיחות קריטית' },
+      { category: 'רצועות', item: 'בדיקת רצועת טיימינג', intervalKm: 90000, intervalMonths: 60, description: 'קריעת רצועת טיימינג עלולה לגרום לנזק חמור למנוע' },
+      { category: 'מתלים', item: 'בדיקת בולמי זעזועים', intervalKm: 60000, intervalMonths: 48, description: 'בולמי זעזועים משפיעים על יציבות הרכב ונוחות הנסיעה' },
 
-      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '200-400 ₪', description: 'מצתים בלויים פוגעים בביצועי המנוע ובצריכת הדלק' },
-      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר (DSG/אוטומט)', intervalKm: 60000, intervalMonths: 48, estimatedCost: '500-900 ₪', description: 'החלפת שמן גיר DSG שומרת על תיבת ההילוכים ומונעת תקלות' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, estimatedCost: '0 ₪', description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים בלויים פוגעים בביצועי המנוע ובצריכת הדלק' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר (DSG/אוטומט)', intervalKm: 60000, intervalMonths: 48, description: 'החלפת שמן גיר DSG שומרת על תיבת ההילוכים ומונעת תקלות' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -341,20 +340,20 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
     fuelType: null,
     source: 'manual',
     items: [
-      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '220-380 ₪', description: 'החלפת שמן ומסנן — הטיפול הבסיסי ביותר לשמירה על המנוע' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '70-130 ₪', description: 'מסנן אוויר נקי חיוני לביצועי מנוע מיטביים' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן דלק', intervalKm: 60000, intervalMonths: 48, estimatedCost: '100-200 ₪', description: 'מסנן דלק מגן על מערכת ההזרקה מפני זיהומים' },
-      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '50-100 ₪', description: 'מסנן קבינה לאוויר נקי ונעים בתוך הרכב' },
-      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-800 ₪', description: 'בדיקת רפידות, דיסקים וצנרת בלמים' },
-      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, estimatedCost: '120-220 ₪', description: 'נוזל בלמים חדש מבטיח בלימה אפקטיבית' },
-      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 60, estimatedCost: '180-300 ₪', description: 'נוזל קירור מונע התחממות יתר של המנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'החלפת שמן ומסנן — הטיפול הבסיסי ביותר לשמירה על המנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר נקי חיוני לביצועי מנוע מיטביים' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן דלק', intervalKm: 60000, intervalMonths: 48, description: 'מסנן דלק מגן על מערכת ההזרקה מפני זיהומים' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה לאוויר נקי ונעים בתוך הרכב' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות, דיסקים וצנרת בלמים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'נוזל בלמים חדש מבטיח בלימה אפקטיבית' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 60, description: 'נוזל קירור מונע התחממות יתר של המנוע' },
 
-      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר (V-belt)', intervalKm: 60000, intervalMonths: 48, estimatedCost: '300-600 ₪', description: 'רצועת עזר מפעילה מזגן, הגה כוח ואלטרנטור' },
-      { category: 'מתלים', item: 'בדיקת מתלים ובולמי זעזועים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '700-1,400 ₪', description: 'מתלים תקינים חיוניים לבטיחות ונוחות' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר (V-belt)', intervalKm: 60000, intervalMonths: 48, description: 'רצועת עזר מפעילה מזגן, הגה כוח ואלטרנטור' },
+      { category: 'מתלים', item: 'בדיקת מתלים ובולמי זעזועים', intervalKm: 60000, intervalMonths: 48, description: 'מתלים תקינים חיוניים לבטיחות ונוחות' },
 
-      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, estimatedCost: '150-350 ₪', description: 'מצתים חדשים משפרים ביצועים וצריכת דלק' },
-      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, estimatedCost: '400-800 ₪', description: 'שמן גיר נקי מונע שחיקה מוקדמת של תיבת ההילוכים' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, estimatedCost: '0 ₪', description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים חדשים משפרים ביצועים וצריכת דלק' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, description: 'שמן גיר נקי מונע שחיקה מוקדמת של תיבת ההילוכים' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -367,20 +366,20 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
     fuelType: null,
     source: 'manual',
     items: [
-      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '250-400 ₪', description: 'טויוטה ישראל — החלפה כל 15,000 ק"מ או שנה' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 45000, intervalMonths: 36, estimatedCost: '80-140 ₪', description: 'מסנן אוויר מנוע — החלפה כל 3 טיפולים' },
-      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '60-110 ₪', description: 'שמירה על אוויר נקי בתא הנוסעים — כל טיפול' },
-      { category: 'בלמים', item: 'בדיקת רפידות ודיסקי בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-900 ₪', description: 'בדיקה והחלפה לפי בלאי — בטיחות קריטית' },
-      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 36, estimatedCost: '130-230 ₪', description: 'מונע קורוזיה במערכת הבלמים' },
-      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 160000, intervalMonths: 84, estimatedCost: '200-350 ₪', description: 'טויוטה משתמשת בנוזל Super Long Life — החלפה נדירה' },
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'טויוטה ישראל — החלפה כל 15,000 ק"מ או שנה' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 45000, intervalMonths: 36, description: 'מסנן אוויר מנוע — החלפה כל 3 טיפולים' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'שמירה על אוויר נקי בתא הנוסעים — כל טיפול' },
+      { category: 'בלמים', item: 'בדיקת רפידות ודיסקי בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקה והחלפה לפי בלאי — בטיחות קריטית' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 36, description: 'מונע קורוזיה במערכת הבלמים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 160000, intervalMonths: 84, description: 'טויוטה משתמשת בנוזל Super Long Life — החלפה נדירה' },
 
-      { category: 'צמיגים', item: 'החלפת צמיגים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '1,000-2,200 ₪', description: 'החלפת סט צמיגים בהתאם למידת הבלאי' },
-      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 105000, intervalMonths: 72, estimatedCost: '250-500 ₪', description: 'רצועת עזר מפעילה מערכות עזר במנוע' },
-      { category: 'מתלים', item: 'בדיקת מתלים ובולמים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '800-1,500 ₪', description: 'יציבות ונוחות נסיעה' },
+      { category: 'צמיגים', item: 'החלפת צמיגים', intervalKm: 60000, intervalMonths: 48, description: 'החלפת סט צמיגים בהתאם למידת הבלאי' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 105000, intervalMonths: 72, description: 'רצועת עזר מפעילה מערכות עזר במנוע' },
+      { category: 'מתלים', item: 'בדיקת מתלים ובולמים', intervalKm: 60000, intervalMonths: 48, description: 'יציבות ונוחות נסיעה' },
 
-      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 105000, intervalMonths: 72, estimatedCost: '200-400 ₪', description: 'מצתי אירידיום של טויוטה מחזיקים עד 100,000 ק"מ' },
-      { category: 'תיבת הילוכים', item: 'בדיקת שמן גיר CVT/אוטומט', intervalKm: 75000, intervalMonths: 60, estimatedCost: '400-700 ₪', description: 'בדיקה והחלפה לפי סוג התיבה' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, estimatedCost: '0 ₪', description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 105000, intervalMonths: 72, description: 'מצתי אירידיום של טויוטה מחזיקים עד 100,000 ק"מ' },
+      { category: 'תיבת הילוכים', item: 'בדיקת שמן גיר CVT/אוטומט', intervalKm: 75000, intervalMonths: 60, description: 'בדיקה והחלפה לפי סוג התיבה' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -393,19 +392,19 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
     fuelType: null,
     source: 'manual',
     items: [
-      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '220-370 ₪', description: 'טיפול בסיסי — שמירה על המנוע באחריות קיה 7 שנים' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '70-130 ₪', description: 'מסנן אוויר חדש לביצועי מנוע מיטביים' },
-      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '50-100 ₪', description: 'אוויר נקי בתא הנוסעים' },
-      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '350-750 ₪', description: 'בדיקת רפידות ודיסקים' },
-      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, estimatedCost: '120-200 ₪', description: 'נוזל חדש לבלימה בטוחה' },
-      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 60, estimatedCost: '170-280 ₪', description: 'מניעת התחממות יתר' },
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'טיפול בסיסי — שמירה על המנוע באחריות קיה 7 שנים' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר חדש לביצועי מנוע מיטביים' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'אוויר נקי בתא הנוסעים' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'נוזל חדש לבלימה בטוחה' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 60, description: 'מניעת התחממות יתר' },
 
-      { category: 'רצועות', item: 'בדיקת רצועת עזר', intervalKm: 60000, intervalMonths: 48, estimatedCost: '300-550 ₪', description: 'בדיקה ויזואלית והחלפה לפי מצב' },
-      { category: 'מתלים', item: 'בדיקת מתלים ובולמים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '700-1,300 ₪', description: 'שמירה על יציבות ובטיחות' },
+      { category: 'רצועות', item: 'בדיקת רצועת עזר', intervalKm: 60000, intervalMonths: 48, description: 'בדיקה ויזואלית והחלפה לפי מצב' },
+      { category: 'מתלים', item: 'בדיקת מתלים ובולמים', intervalKm: 60000, intervalMonths: 48, description: 'שמירה על יציבות ובטיחות' },
 
-      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, estimatedCost: '150-300 ₪', description: 'מצתים חדשים לביצועים ויעילות' },
-      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, estimatedCost: '400-750 ₪', description: 'שמירה על תיבת ההילוכים' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, estimatedCost: '0 ₪', description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים חדשים לביצועים ויעילות' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, description: 'שמירה על תיבת ההילוכים' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -418,18 +417,18 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
     fuelType: null,
     source: 'manual',
     items: [
-      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '250-400 ₪', description: 'שמן סינטטי 0W-20 מומלץ למנועי SkyActiv' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '80-140 ₪', description: 'מסנן אוויר נקי לטכנולוגיית SkyActiv' },
-      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 20000, intervalMonths: 18, estimatedCost: '60-110 ₪', description: 'אוויר נקי ונעים' },
-      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-850 ₪', description: 'בדיקה והחלפה לפי בלאי' },
-      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, estimatedCost: '130-220 ₪', description: 'שמירה על מערכת בלימה אפקטיבית' },
-      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, estimatedCost: '200-320 ₪', description: 'נוזל קירור FL22 ייעודי למאזדה' },
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן סינטטי 0W-20 מומלץ למנועי SkyActiv' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר נקי לטכנולוגיית SkyActiv' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 20000, intervalMonths: 18, description: 'אוויר נקי ונעים' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקה והחלפה לפי בלאי' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'שמירה על מערכת בלימה אפקטיבית' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור FL22 ייעודי למאזדה' },
 
-      { category: 'מתלים', item: 'בדיקת מתלים ובולמים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '800-1,400 ₪', description: 'בדיקת מערכת המתלים' },
+      { category: 'מתלים', item: 'בדיקת מתלים ובולמים', intervalKm: 60000, intervalMonths: 48, description: 'בדיקת מערכת המתלים' },
 
-      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, estimatedCost: '180-350 ₪', description: 'מצתים ייעודיים למנועי SkyActiv' },
-      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, estimatedCost: '450-800 ₪', description: 'שמן SkyActiv-Drive ייעודי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, estimatedCost: '0 ₪', description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים ייעודיים למנועי SkyActiv' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, description: 'שמן SkyActiv-Drive ייעודי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -442,18 +441,18 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
     fuelType: null,
     source: 'manual',
     items: [
-      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '250-400 ₪', description: 'מרווח VW Group סטנדרטי' },
-      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, estimatedCost: '80-150 ₪', description: 'מסנן אוויר — מרווח VW Group' },
-      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, estimatedCost: '60-120 ₪', description: 'מסנן קבינה' },
-      { category: 'בלמים', item: 'בדיקת רפידות בלמים', intervalKm: 30000, intervalMonths: 24, estimatedCost: '400-800 ₪', description: 'בדיקת בלמים קדמיים ואחוריים' },
-      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 60000, intervalMonths: 24, estimatedCost: '150-250 ₪', description: 'החלפה כל שנתיים' },
-      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, estimatedCost: '200-350 ₪', description: 'נוזל קירור G13' },
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'מרווח VW Group סטנדרטי' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר — מרווח VW Group' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת רפידות בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת בלמים קדמיים ואחוריים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 60000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור G13' },
 
-      { category: 'רצועות', item: 'בדיקת רצועת טיימינג', intervalKm: 90000, intervalMonths: 60, estimatedCost: '1,500-2,500 ₪', description: 'קריטי — רצועה קרועה = נזק למנוע' },
+      { category: 'רצועות', item: 'בדיקת רצועת טיימינג', intervalKm: 90000, intervalMonths: 60, description: 'קריטי — רצועה קרועה = נזק למנוע' },
 
-      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, estimatedCost: '200-400 ₪', description: 'מצתים' },
-      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DSG', intervalKm: 60000, intervalMonths: 48, estimatedCost: '500-900 ₪', description: 'שמן DSG — קריטי לתיבות כפולות' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, estimatedCost: '0 ₪', description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DSG', intervalKm: 60000, intervalMonths: 48, description: 'שמן DSG — קריטי לתיבות כפולות' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 ];

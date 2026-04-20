@@ -78,7 +78,6 @@ interface MaintenanceItem {
   intervalMonths: number;
   nextAtKm: number;
   priority: 'high' | 'medium' | 'low';
-  estimatedCost: string;
   description: string;
 }
 
@@ -1236,9 +1235,9 @@ export default function UserHomePage() {
               </div>
             </div>
 
-            {/* What to do at this service — only items due at nextServiceKm */}
+            {/* What needs to be replaced at this service — only items due at nextServiceKm */}
             <div className="p-4">
-              <h4 className="text-sm font-bold text-gray-700 mb-3">מה כולל הטיפול?</h4>
+              <h4 className="text-sm font-bold text-gray-700 mb-3">מה צריך להחליף?</h4>
               <div className="space-y-2">
                 {(() => {
                   const nextKm = maintenanceSchedule.nextServiceKm;
@@ -1246,48 +1245,25 @@ export default function UserHomePage() {
                   // Filter: only items whose nextAtKm matches this service milestone
                   const dueItems = maintenanceSchedule.items.filter(item => item.nextAtKm === nextKm);
 
-                  // Vehicle-class multiplier for Israeli market averages
-                  const brand = (vehicle?.manufacturer || '').toLowerCase();
-                  const luxury = ['bmw', 'mercedes', 'audi', 'volvo', 'lexus', 'porsche', 'land rover', 'jaguar', 'מרצדס', 'ב.מ.וו', 'אאודי'];
-                  const economy = ['kia', 'hyundai', 'suzuki', 'dacia', 'skoda', 'seat', 'קיה', 'יונדאי', 'סוזוקי'];
-                  const mult = luxury.some(b => brand.includes(b)) ? 1.5
-                             : economy.some(b => brand.includes(b)) ? 0.9
-                             : 1.0;
-                  const parseCost = (s: string): number | null => {
-                    const nums = (s.match(/\d+/g) || []).map(Number);
-                    if (nums.length === 0) return null;
-                    const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
-                    return Math.round(avg * mult / 10) * 10;
-                  };
-                  let total = 0;
-                  // Separate billable items from free inspection
-                  const billableItems = dueItems.filter(i => i.category !== 'כללי');
+                  // Separate replacement items from general inspection
+                  const replacementItems = dueItems.filter(i => i.category !== 'כללי');
                   const inspectionItem = dueItems.find(i => i.category === 'כללי');
 
-                  const rows = billableItems.map((item, idx) => {
-                    const price = parseCost(item.estimatedCost);
-                    if (price) total += price;
-                    return (
-                      <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                        <div className="w-2 h-2 rounded-full flex-shrink-0 bg-teal-500" />
-                        <div className="flex-1 text-sm font-medium text-gray-800">{item.item}</div>
-                        <div className="text-xs font-semibold text-teal-700 whitespace-nowrap">
-                          {price ? `≈ ₪${price.toLocaleString()}` : item.estimatedCost}
-                        </div>
-                      </div>
-                    );
-                  });
                   return (
                     <>
-                      {rows}
-                      {billableItems.length === 0 && (
-                        <div className="text-sm text-gray-500 text-center py-3">טיפול שגרתי — החלפת שמן ומסננים</div>
-                      )}
-                      {total > 0 && (
-                        <div className="flex items-center justify-between mt-3 p-3 bg-teal-50 rounded-xl border border-teal-100">
-                          <span className="text-sm font-bold text-teal-800">סה&quot;כ משוער</span>
-                          <span className="text-base font-bold text-teal-800">≈ ₪{total.toLocaleString()}</span>
+                      {replacementItems.map((item, idx) => (
+                        <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+                          <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${
+                            item.priority === 'high' ? 'bg-red-500' : item.priority === 'medium' ? 'bg-amber-500' : 'bg-teal-500'
+                          }`} />
+                          <div className="flex-1">
+                            <div className="text-sm font-medium text-gray-800">{item.item}</div>
+                            <div className="text-xs text-gray-500 mt-0.5">כל {item.intervalKm.toLocaleString()} ק&quot;מ · {item.description}</div>
+                          </div>
                         </div>
+                      ))}
+                      {replacementItems.length === 0 && (
+                        <div className="text-sm text-gray-500 text-center py-3">טיפול שגרתי — החלפת שמן ומסננים</div>
                       )}
                       {inspectionItem && (
                         <div className="mt-4 rounded-xl border border-blue-100 overflow-hidden">
@@ -1295,7 +1271,7 @@ export default function UserHomePage() {
                             onClick={() => setShowInspectionDetails(prev => !prev)}
                             className="w-full p-3 bg-blue-50 flex items-center justify-between text-right hover:bg-blue-100 transition-colors"
                           >
-                            <span className="text-sm font-bold text-blue-800">🔍 בדיקה כללית (ללא עלות)</span>
+                            <span className="text-sm font-bold text-blue-800">בדיקה כללית</span>
                             <ChevronDown size={16} className={`text-blue-600 transition-transform ${showInspectionDetails ? 'rotate-180' : ''}`} />
                           </button>
                           {showInspectionDetails && (
@@ -1314,7 +1290,7 @@ export default function UserHomePage() {
             {/* Footer */}
             <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4">
               <p className="text-[10px] text-gray-400 text-center mb-2">
-                הערכת מחיר ממוצעת לשוק הישראלי • מותאם לסוג הרכב • מומלץ להתייעץ עם מוסך
+                לפי הוראות יצרן · מסונכרן לפי הקילומטראז׳ של הרכב שלך
               </p>
               <button
                 onClick={() => setShowMaintenanceModal(false)}
