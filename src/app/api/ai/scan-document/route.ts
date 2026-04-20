@@ -67,13 +67,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'לא נשלחה תמונה' }, { status: 400 });
     }
 
-    if (!image.startsWith('data:image/')) {
-      return NextResponse.json({ error: 'פורמט תמונה לא תקין' }, { status: 400 });
+    const isPdf = image.startsWith('data:application/pdf');
+    const isImage = image.startsWith('data:image/');
+
+    if (!isImage && !isPdf) {
+      return NextResponse.json({ error: 'פורמט קובץ לא תקין. נתמכים: תמונות ו-PDF' }, { status: 400 });
     }
 
-    // Check image size (max ~10MB base64)
+    // Check file size (max ~10MB base64)
     if (image.length > 14_000_000) {
-      return NextResponse.json({ error: 'התמונה גדולה מדי. מקסימום 10MB' }, { status: 400 });
+      return NextResponse.json({ error: 'הקובץ גדול מדי. מקסימום 10MB' }, { status: 400 });
     }
 
     const openaiKey = process.env.OPENAI_API_KEY;
@@ -88,12 +91,25 @@ export async function POST(req: NextRequest) {
 
     let result: ScanResult | null = null;
 
-    if (openaiKey) {
-      result = await scanWithOpenAI(openaiKey, image, context);
-    }
+    if (isPdf) {
+      // PDF files — use Anthropic's native document support (OpenAI doesn't support PDF in vision)
+      if (anthropicKey) {
+        result = await scanPdfWithAnthropic(anthropicKey, image, context);
+      } else {
+        return NextResponse.json(
+          { error: 'סריקת PDF דורשת הגדרת ANTHROPIC_API_KEY' },
+          { status: 501 }
+        );
+      }
+    } else {
+      // Image files — try OpenAI first, fall back to Anthropic
+      if (openaiKey) {
+        result = await scanWithOpenAI(openaiKey, image, context);
+      }
 
-    if (!result && anthropicKey) {
-      result = await scanWithAnthropic(anthropicKey, image, context);
+      if (!result && anthropicKey) {
+        result = await scanWithAnthropic(anthropicKey, image, context);
+      }
     }
 
     if (result) {
@@ -250,6 +266,58 @@ async function scanWithAnthropic(apiKey: string, imageDataUrl: string, context?:
     return parseAndValidate(text);
   } catch (error) {
     console.error('Anthropic scan-document failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Scan a PDF document using Anthropic's native document support.
+ * Anthropic Claude natively processes PDF files — no external parsing library needed.
+ */
+async function scanPdfWithAnthropic(apiKey: string, pdfDataUrl: string, context?: string): Promise<ScanResult | null> {
+  try {
+    const match = pdfDataUrl.match(/^data:application\/pdf;base64,(.+)$/i);
+    if (!match) return null;
+    const base64Data = match[1];
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'document',
+                source: { type: 'base64', media_type: 'application/pdf', data: base64Data },
+              },
+              { type: 'text', text: buildPrompt(context) },
+            ],
+          },
+        ],
+      }),
+      signal: AbortSignal.timeout(30000),
+    });
+
+    if (!response.ok) {
+      console.error('Anthropic PDF scan error:', response.status, await response.text());
+      return null;
+    }
+
+    const data = await response.json();
+    const text = data.content?.[0]?.text?.trim();
+    if (!text) return null;
+
+    return parseAndValidate(text);
+  } catch (error) {
+    console.error('Anthropic PDF scan failed:', error);
     return null;
   }
 }

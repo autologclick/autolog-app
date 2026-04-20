@@ -204,10 +204,10 @@ export default function DocumentsPage() {
       setUploadPreview('');
     }
 
-    // AI scan for images
-    if (file.type.startsWith('image/')) {
+    // AI scan for images and PDFs
+    if (file.type.startsWith('image/') || file.type === 'application/pdf') {
       setScanning(true);
-      setScanProgress('מכין תמונה לסריקה...');
+      setScanProgress(file.type === 'application/pdf' ? 'מכין PDF לסריקה...' : 'מכין תמונה לסריקה...');
       try {
         const imageDataUrl = await compressForUpload(file);
         setScanProgress('סורק מסמך עם AI...');
