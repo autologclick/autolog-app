@@ -29,13 +29,13 @@ export interface PaymentSummary {
 // =============================================
 
 const DEFAULT_SERVICE_COSTS: Record<string, number> = {
-  inspection: 350,
-  maintenance: 450,
-  repair: 600,
-  test_prep: 280,
+  inspection: 350,   // בדיקת AutoLog
+  maintenance: 550,  // טיפול תקופתי (החל מ-)
+  repair: 150,       // אבחון תקלות
+  test_prep: 250,    // הכנה לטסט
 };
 
-const DEFAULT_COST = 400;
+const DEFAULT_COST = 350;
 
 export function estimateAppointmentCost(serviceType: string): number {
   return DEFAULT_SERVICE_COSTS[serviceType] || DEFAULT_COST;

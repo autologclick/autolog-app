@@ -68,12 +68,12 @@ interface Vehicle {
   licensePlate: string;
 }
 
-// Service types with Hebrew labels, English values, and emojis
+// Service types with Hebrew labels, English values, emojis, and pricing
 const serviceOptions = [
-  { value: 'inspection', label: 'בדיקה', emoji: '🔍', description: 'בדיקת רכב מקיפה' },
-  { value: 'maintenance', label: 'טיפול', emoji: '🔧', description: 'טיפול שוטף ותחזוקה' },
-  { value: 'repair', label: 'תיקון', emoji: '🛠️', description: 'תיקון תקלה ספציפית' },
-  { value: 'test_prep', label: 'הכנה לטסט', emoji: '🧪', description: 'הכנת הרכב לטסט שנתי' },
+  { value: 'inspection', label: 'בדיקת AutoLog', emoji: '🔍', description: 'בדיקה מקיפה של 200+ פרמטרים עם דוח AI', price: '₪350', addon: '+ ₪100 בדיקת מחשב' },
+  { value: 'test_prep', label: 'הכנה לטסט', emoji: '🧪', description: 'הכנת הרכב לטסט שנתי', price: '₪250' },
+  { value: 'repair', label: 'אבחון תקלות', emoji: '🛠️', description: 'אבחון ואיתור תקלות ברכב', price: '₪150' },
+  { value: 'maintenance', label: 'טיפול תקופתי', emoji: '🔧', description: 'טיפול שוטף ותחזוקה מונעת', price: 'החל מ-₪550' },
 ];
 
 const serviceValueToLabel: Record<string, string> = {
@@ -483,13 +483,19 @@ export default function BookGaragePage() {
                   <button
                     key={service.value}
                     onClick={() => setSelectedService(service.value)}
-                    className="bg-white rounded-2xl p-6 shadow-sm border-2 border-gray-200 hover:border-teal-600 transition-all text-center group"
+                    className="bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-200 hover:border-teal-600 transition-all text-center group relative overflow-hidden"
                   >
-                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform inline-block">
+                    <div className="text-4xl mb-2 group-hover:scale-110 transition-transform inline-block">
                       {service.emoji}
                     </div>
                     <div className="font-bold text-gray-800 text-sm">{service.label}</div>
                     <div className="text-xs text-gray-500 mt-1">{service.description}</div>
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <span className="text-teal-600 font-bold text-sm">{service.price}</span>
+                      {service.addon && (
+                        <div className="text-[10px] text-gray-400 mt-0.5">{service.addon}</div>
+                      )}
+                    </div>
                   </button>
                 ))}
               </div>
@@ -625,8 +631,12 @@ export default function BookGaragePage() {
                 <span className="text-gray-600">מוסך:</span>
               </div>
               <div className="flex justify-between">
-                <span className="font-bold text-gray-800">{serviceValueToLabel[selectedService]}</span>
+                <span className="font-bold text-gray-800">{serviceOptions.find(s => s.value === selectedService)?.label || serviceValueToLabel[selectedService]}</span>
                 <span className="text-gray-600">שירות:</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-bold text-teal-600">{serviceOptions.find(s => s.value === selectedService)?.price || ''}</span>
+                <span className="text-gray-600">מחיר:</span>
               </div>
               <div className="flex justify-between">
                 <span className="font-bold text-gray-800">{selectedVehicle?.nickname}</span>
@@ -664,7 +674,8 @@ export default function BookGaragePage() {
               <div className="flex items-center gap-2 text-sm">
                 <ClipboardCheck size={16} className="text-teal-600 flex-shrink-0" />
                 <span className="text-gray-600">שירות:</span>
-                <span className="font-bold text-gray-800">{serviceValueToLabel[selectedService]}</span>
+                <span className="font-bold text-gray-800">{serviceOptions.find(s => s.value === selectedService)?.label || serviceValueToLabel[selectedService]}</span>
+                <span className="font-bold text-teal-600 mr-auto">{serviceOptions.find(s => s.value === selectedService)?.price}</span>
               </div>
             </div>
 

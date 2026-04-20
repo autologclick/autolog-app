@@ -42,10 +42,10 @@ const statusOptions = [
 ];
 
 const inspectionTypes = [
-  { value: 'full', label: 'בדיקת AutoLog' },
-  { value: 'pre_test', label: 'הכנה לטסט' },
-  { value: 'troubleshoot', label: 'תיקון/אבחון תקלה' },
-  { value: 'periodic', label: 'טיפול תקופתי' },
+  { value: 'full', label: 'בדיקת AutoLog', price: '₪350' },
+  { value: 'pre_test', label: 'הכנה לטסט', price: '₪250' },
+  { value: 'troubleshoot', label: 'אבחון תקלות', price: '₪150' },
+  { value: 'periodic', label: 'טיפול תקופתי', price: 'החל מ-₪550' },
 ];
 
 // ====== Status Selector Component ======
@@ -936,6 +936,7 @@ export default function NewInspectionPage() {
                 {t.value === 'troubleshoot' && <Wrench size={24} className="mx-auto mb-1.5 sm:mb-2 text-orange-600" />}
                 {t.value === 'periodic' && <Settings size={24} className="mx-auto mb-1.5 sm:mb-2 text-teal-600" />}
                 {t.label}
+                <div className="text-teal-600 font-bold text-xs mt-1">{t.price}</div>
               </button>
             ))}
           </div>

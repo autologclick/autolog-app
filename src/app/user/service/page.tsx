@@ -77,6 +77,31 @@ export default function ServicePage() {
           <ChevronLeft size={20} className="text-white/60" />
         </button>
 
+        {/* Pricing Grid */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
+            <Shield size={22} className="mx-auto text-teal-600 mb-2" />
+            <div className="font-bold text-sm text-[#1e3a5f]">בדיקת AutoLog</div>
+            <div className="text-teal-600 font-bold text-lg mt-1">₪350</div>
+            <div className="text-[10px] text-gray-400 mt-0.5">+ ₪100 בדיקת מחשב</div>
+          </div>
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
+            <Search size={22} className="mx-auto text-blue-600 mb-2" />
+            <div className="font-bold text-sm text-[#1e3a5f]">הכנה לטסט</div>
+            <div className="text-teal-600 font-bold text-lg mt-1">₪250</div>
+          </div>
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
+            <Wrench size={22} className="mx-auto text-orange-500 mb-2" />
+            <div className="font-bold text-sm text-[#1e3a5f]">אבחון תקלות</div>
+            <div className="text-teal-600 font-bold text-lg mt-1">₪150</div>
+          </div>
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
+            <Calendar size={22} className="mx-auto text-purple-500 mb-2" />
+            <div className="font-bold text-sm text-[#1e3a5f]">טיפול תקופתי</div>
+            <div className="text-teal-600 font-bold text-lg mt-1">החל מ-₪550</div>
+          </div>
+        </div>
+
         {/* Upcoming Appointments */}
         <div>
           <h2 className="text-lg font-bold text-[#1e3a5f] mb-3 flex items-center gap-2">

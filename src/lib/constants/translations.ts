@@ -15,6 +15,58 @@ export const SERVICE_TYPE_HEB: Record<string, string> = {
 };
 
 // =============================================
+// Official service pricing (uniform for all garages)
+// =============================================
+
+export interface ServicePricing {
+  price: number;
+  label: string;
+  description: string;
+  priceLabel: string; // e.g. "₪350" or "החל מ-₪550"
+  addons?: { label: string; price: number }[];
+}
+
+export const SERVICE_PRICING: Record<string, ServicePricing> = {
+  full: {
+    price: 350,
+    label: 'בדיקת AutoLog',
+    description: 'בדיקה מקיפה של 200+ פרמטרים עם דוח AI',
+    priceLabel: '₪350',
+    addons: [{ label: 'בדיקת מחשב רכב', price: 100 }],
+  },
+  troubleshoot: {
+    price: 150,
+    label: 'אבחון תקלות',
+    description: 'אבחון ואיתור תקלות ברכב',
+    priceLabel: '₪150',
+  },
+  pre_test: {
+    price: 250,
+    label: 'הכנה לטסט',
+    description: 'הכנת הרכב לטסט שנתי',
+    priceLabel: '₪250',
+  },
+  periodic: {
+    price: 550,
+    label: 'טיפול תקופתי',
+    description: 'טיפול שוטף ותחזוקה מונעת',
+    priceLabel: 'החל מ-₪550',
+  },
+};
+
+// Mapping from appointment service types to inspection types for pricing
+export const APPOINTMENT_TO_INSPECTION_TYPE: Record<string, string> = {
+  inspection: 'full',
+  maintenance: 'periodic',
+  repair: 'troubleshoot',
+  test_prep: 'pre_test',
+};
+
+export function getServicePrice(serviceType: string): ServicePricing | null {
+  return SERVICE_PRICING[serviceType] || SERVICE_PRICING[APPOINTMENT_TO_INSPECTION_TYPE[serviceType]] || null;
+}
+
+// =============================================
 // Appointment statuses
 // =============================================
 
