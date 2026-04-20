@@ -7,8 +7,12 @@ import {
   ChevronDown, ChevronUp, Car, MapPin, User, Calendar,
   FileText, DollarSign, Eye, Loader2, Plus
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
 import PageSkeleton from '@/components/ui/PageSkeleton';
+import Modal from '@/components/ui/Modal';
+import Input from '@/components/ui/Input';
+import Button from '@/components/ui/Button';
 
 interface Treatment {
   id: string;
@@ -95,6 +99,19 @@ export default function UserTreatmentsPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [vehicles, setVehicles] = useState<{ id: string; nickname: string; licensePlate: string }[]>([]);
+  const [addForm, setAddForm] = useState({
+    vehicleId: '',
+    type: 'maintenance' as string,
+    title: '',
+    description: '',
+    garageName: '',
+    mileage: '',
+    cost: '',
+    date: new Date().toISOString().split('T')[0],
+  });
 
   const fetchTreatments = useCallback(async () => {
     try {
@@ -111,6 +128,14 @@ export default function UserTreatmentsPage() {
 
   useEffect(() => {
     fetchTreatments();
+    fetch('/api/vehicles').then(r => r.json()).then(data => {
+      if (data.vehicles) {
+        setVehicles(data.vehicles);
+        if (data.vehicles.length === 1) {
+          setAddForm(prev => ({ ...prev, vehicleId: data.vehicles[0].id }));
+        }
+      }
+    }).catch(() => {});
   }, [fetchTreatments]);
 
   const handleApprove = async (id: string) => {
@@ -147,6 +172,49 @@ export default function UserTreatmentsPage() {
     } finally {
       setActionLoading(null);
     }
+  };
+
+  const handleAddTreatment = async () => {
+    if (!addForm.vehicleId || !addForm.title || !addForm.type || !addForm.date) {
+      setError('נא למלא רכב, סוג טיפול, כותרת ותאריך');
+      return;
+    }
+    setSaving(true);
+    setError('');
+    try {
+      const res = await fetch('/api/treatments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          vehicleId: addForm.vehicleId,
+          type: addForm.type,
+          title: addForm.title,
+          description: addForm.description || undefined,
+          garageName: addForm.garageName || undefined,
+          mileage: addForm.mileage ? Number(addForm.mileage) : undefined,
+          cost: addForm.cost ? Number(addForm.cost) : undefined,
+          date: addForm.date,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'שגיאה בהוספת טיפול');
+        setSaving(false);
+        return;
+      }
+      toast.success('הטיפול נוסף בהצלחה!');
+      setShowAddModal(false);
+      setAddForm({
+        vehicleId: vehicles.length === 1 ? vehicles[0].id : '',
+        type: 'maintenance', title: '', description: '',
+        garageName: '', mileage: '', cost: '',
+        date: new Date().toISOString().split('T')[0],
+      });
+      fetchTreatments();
+    } catch {
+      setError('שגיאת חיבור');
+    }
+    setSaving(false);
   };
 
   const pendingTreatments = treatments.filter(t => t.status === 'pending_approval');
@@ -395,7 +463,10 @@ export default function UserTreatmentsPage() {
         {/* CTA Button */}
         {treatments.length > 0 && (
           <div className="mb-6">
-            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-bold hover:from-teal-600 hover:to-teal-700 transition-all shadow-md">
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-bold hover:from-teal-600 hover:to-teal-700 transition-all shadow-md"
+            >
               <Plus size={20} />
               הוסף טיפול חדש
             </button>
@@ -457,13 +528,142 @@ export default function UserTreatmentsPage() {
             </div>
             <h3 className="text-lg font-bold text-[#1e3a5f] mb-2">אין טיפולים עדיין</h3>
             <p className="text-sm text-gray-400 mb-6">כאשר מוסך ישלח טיפול, הוא יופיע כאן לאישור</p>
-            <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-bold hover:from-teal-600 hover:to-teal-700 transition-all shadow-md">
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-bold hover:from-teal-600 hover:to-teal-700 transition-all shadow-md"
+            >
               <Plus size={18} />
               הוסף טיפול חדש
             </button>
           </div>
         )}
       </div>
+
+      {/* Add Treatment Modal */}
+      <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)} title="הוספת טיפול" size="lg">
+        <div className="space-y-4">
+          {/* Vehicle selector */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">רכב *</label>
+            <select
+              value={addForm.vehicleId}
+              onChange={e => setAddForm({ ...addForm, vehicleId: e.target.value })}
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-sm"
+            >
+              <option value="">בחר רכב</option>
+              {vehicles.map(v => (
+                <option key={v.id} value={v.id}>{v.nickname} ({v.licensePlate})</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Type selector */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">סוג טיפול *</label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { value: 'maintenance', label: 'תחזוקה', icon: '🔧' },
+                { value: 'repair', label: 'תיקון', icon: '🛠️' },
+                { value: 'oil_change', label: 'החלפת שמן', icon: '🛢️' },
+                { value: 'tires', label: 'צמיגים', icon: '🔄' },
+                { value: 'brakes', label: 'בלמים', icon: '🛑' },
+                { value: 'electrical', label: 'חשמל', icon: '⚡' },
+                { value: 'ac', label: 'מיזוג', icon: '❄️' },
+                { value: 'bodywork', label: 'פחחות', icon: '🚗' },
+                { value: 'other', label: 'אחר', icon: '📋' },
+              ].map(t => (
+                <button
+                  key={t.value}
+                  type="button"
+                  onClick={() => setAddForm({ ...addForm, type: t.value, title: addForm.title || t.label })}
+                  className={`p-2 rounded-xl border-2 text-center transition text-xs font-medium ${
+                    addForm.type === t.value
+                      ? 'border-teal-500 bg-teal-50 text-teal-700'
+                      : 'border-gray-200 hover:border-teal-300'
+                  }`}
+                >
+                  <span className="text-lg block mb-0.5">{t.icon}</span>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Title */}
+          <Input
+            label="כותרת *"
+            placeholder="למשל: החלפת שמן + פילטר"
+            value={addForm.title}
+            onChange={e => setAddForm({ ...addForm, title: e.target.value })}
+          />
+
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">תיאור (אופציונלי)</label>
+            <textarea
+              placeholder="פרטים נוספים על הטיפול..."
+              value={addForm.description}
+              onChange={e => setAddForm({ ...addForm, description: e.target.value })}
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-sm resize-none"
+              rows={2}
+              dir="rtl"
+            />
+          </div>
+
+          {/* Garage, Mileage, Cost, Date */}
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              label="שם מוסך"
+              placeholder="למשל: מוסך יוסי"
+              value={addForm.garageName}
+              onChange={e => setAddForm({ ...addForm, garageName: e.target.value })}
+            />
+            <Input
+              label="תאריך *"
+              type="date"
+              value={addForm.date}
+              onChange={e => setAddForm({ ...addForm, date: e.target.value })}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              label="ק״מ"
+              type="number"
+              placeholder="45000"
+              value={addForm.mileage}
+              onChange={e => setAddForm({ ...addForm, mileage: e.target.value })}
+            />
+            <Input
+              label="עלות (₪)"
+              type="number"
+              placeholder="350"
+              value={addForm.cost}
+              onChange={e => setAddForm({ ...addForm, cost: e.target.value })}
+            />
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+              <AlertTriangle size={16} />
+              {error}
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
+            <Button variant="ghost" onClick={() => setShowAddModal(false)} className="flex-1">ביטול</Button>
+            <Button
+              loading={saving}
+              onClick={handleAddTreatment}
+              className="flex-1 bg-gradient-to-r from-teal-500 to-teal-600"
+              disabled={!addForm.vehicleId || !addForm.title || !addForm.type}
+            >
+              הוסף טיפול
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -245,7 +245,7 @@ export default function SettingsPage() {
                 <input
                   id="settings-phone"
                   type="tel"
-                  placeholder="050-000-0000"
+                  placeholder="054-000-0000"
                   value={profile.phone}
                   onChange={e => setProfile({ ...profile, phone: e.target.value })}
                   className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"

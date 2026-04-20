@@ -15,27 +15,27 @@ const contactMethods = [
   {
     icon: <Phone size={24} className="text-white" />,
     title: 'טלפון',
-    detail: '*6840',
+    detail: '053-313-1310',
     sub: 'ימים א׳-ה׳ 08:00-18:00',
-    action: 'tel:*6840',
+    action: 'tel:0533131310',
     actionLabel: 'חייג עכשיו',
     gradient: 'from-teal-500 to-teal-600',
   },
   {
     icon: <MessageCircle size={24} className="text-white" />,
     title: 'וואטסאפ',
-    detail: '050-000-0000',
+    detail: '054-316-1610',
     sub: 'מענה מהיר בצ׳אט',
-    action: 'https://wa.me/972500000000',
+    action: 'https://wa.me/972543161610',
     actionLabel: 'פתח צ׳אט',
     gradient: 'from-green-500 to-green-600',
   },
   {
     icon: <Mail size={24} className="text-white" />,
     title: 'אימייל',
-    detail: 'support@autolog.co.il',
+    detail: 'info@autolog.click',
     sub: 'מענה תוך 24 שעות',
-    action: 'mailto:support@autolog.co.il',
+    action: 'mailto:info@autolog.click',
     actionLabel: 'שלח מייל',
     gradient: 'from-blue-500 to-blue-600',
   },
@@ -59,7 +59,7 @@ const faqItems = [
   },
   {
     q: 'מה לעשות במקרה חירום?',
-    a: 'לחץ על כפתור SOS האדום בדף הבית. המערכת תאתר את מיקומך ותשלח הודעה למוקד. ניתן גם לחייג ישירות ל-*6840.',
+    a: 'לחץ על כפתור SOS האדום בדף הבית. המערכת תאתר את מיקומך ותשלח הודעה למוקד. ניתן גם לחייג ישירות ל-053-313-1310.',
     icon: AlertTriangle,
   },
   {
@@ -89,12 +89,30 @@ export default function SupportPage() {
   const [sending, setSending] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
+  const [ticketNumber, setTicketNumber] = useState('');
+  const [submitError, setSubmitError] = useState('');
+
   const handleSubmit = async () => {
     if (!formData.topic || !formData.message) return;
     setSending(true);
-    await new Promise(r => setTimeout(r, 1500));
+    setSubmitError('');
+    try {
+      const res = await fetch('/api/support', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setTicketNumber(data.ticketNumber || '');
+        setSubmitted(true);
+      } else {
+        setSubmitError(data.error || 'שגיאה בשליחת ההודעה. נסה שוב.');
+      }
+    } catch {
+      setSubmitError('שגיאת חיבור. בדוק את האינטרנט ונסה שוב.');
+    }
     setSending(false);
-    setSubmitted(true);
   };
 
   return (
@@ -146,7 +164,7 @@ export default function SupportPage() {
               <CheckCircle2 size={40} className="text-green-600" />
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-2">ההודעה נשלחה בהצלחה!</h3>
-            <p className="text-gray-500 mb-2">מספר פנייה: #{Math.floor(Math.random() * 9000 + 1000)}</p>
+            {ticketNumber && <p className="text-gray-500 mb-2">מספר פנייה: #{ticketNumber}</p>}
             <p className="text-gray-400 text-sm mb-6">נחזור אליך תוך 24 שעות עסקיות</p>
             <Button variant="outline" onClick={() => { setSubmitted(false); setFormData({ topic: '', message: '' }); }}>
               שלח הודעה נוספת
@@ -190,6 +208,13 @@ export default function SupportPage() {
                 rows={4}
               />
             </div>
+
+            {submitError && (
+              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+                <AlertTriangle size={16} className="flex-shrink-0" />
+                {submitError}
+              </div>
+            )}
 
             <Button
               onClick={handleSubmit}
@@ -246,7 +271,7 @@ export default function SupportPage() {
         </div>
         <div className="flex-1">
           <p className="font-bold text-sm">במקרה חירום?</p>
-          <p className="text-red-100 text-xs">לחץ על כפתור SOS או חייג ישירות ל-*6840</p>
+          <p className="text-red-100 text-xs">לחץ על כפתור SOS או חייג ישירות ל-053-313-1310</p>
         </div>
         <a href="/user/sos" className="px-4 py-2 bg-white text-red-600 rounded-xl text-sm font-bold hover:bg-red-50 transition flex-shrink-0 shadow">
           SOS

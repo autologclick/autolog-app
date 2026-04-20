@@ -221,7 +221,7 @@ export default function SosPage() {
           </div>
         )}
 
-        {loading && <PageSkeleton count={3} />}
+        {loading && <PageSkeleton cards={3} />}
 
         {!loading && (
           <>
@@ -248,9 +248,9 @@ export default function SosPage() {
 
             {/* Quick Call & Emergency Numbers */}
             <div className="mx-4 lg:mx-0 grid grid-cols-2 gap-3">
-              <a href="tel:+97246840000" className="w-full">
+              <a href="tel:0533131310" className="w-full">
                 <Button variant="outline" size="lg" icon={<Phone size={18} />} className="py-4 w-full">
-                  חייג למוקד: *6840
+                  חייג למוקד: 053-313-1310
                 </Button>
               </a>
               <Button variant="outline" size="lg" icon={<MapPin size={18} />} className="py-4" onClick={handleDetectLocation} disabled={geoLocating}>
