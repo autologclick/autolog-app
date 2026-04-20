@@ -78,7 +78,7 @@ export default function PushPermissionBanner() {
       </div>
       <div className="flex-1">
         <p className="text-sm font-bold text-gray-800">הפעל התראות</p>
-        <p className="text-xs text-gray-500">קבל צלצול בטלפון כשמוזמן תור חדש</p>
+        <p className="text-xs text-gray-500">תזכורות לטסט, ביטוח, תורים ועדכוני טיפולים</p>
       </div>
       <div className="flex items-center gap-2">
         <button
