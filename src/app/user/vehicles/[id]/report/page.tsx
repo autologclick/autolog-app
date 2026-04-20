@@ -225,7 +225,7 @@ export default function VehicleReportPage() {
         heightLeft -= (pdfHeight - 16);
       }
 
-      const plateNum = data?.vehicle?.licensePlate || 'vehicle';
+      const plateNum = report?.vehicle?.licensePlate || 'vehicle';
       pdf.save(`vehicle-report-${plateNum}.pdf`);
     } catch (err) {
       console.error('PDF generation error:', err);
