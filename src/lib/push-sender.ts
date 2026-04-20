@@ -152,6 +152,55 @@ export async function sendPushToRole(role: string, payload: PushPayload): Promis
 }
 
 /**
+ * De-duplication: Create an in-app notification only if a similar one
+ * hasn't been sent to this user in the last `cooldownDays` days.
+ * Prevents notification spam for recurring events (test expiry, insurance, etc.).
+ *
+ * @param userId    - Target user
+ * @param type      - Notification type (e.g. "test_expiry", "insurance_expiry")
+ * @param title     - Notification title (Hebrew)
+ * @param message   - Notification body (Hebrew)
+ * @param link      - Optional deep link
+ * @param cooldownDays - Minimum days between same-type notifications (default 7)
+ * @returns true if notification was created, false if suppressed (duplicate)
+ */
+export async function createNotificationIfNew(
+  userId: string,
+  type: string,
+  title: string,
+  message: string,
+  link?: string,
+  cooldownDays = 7
+): Promise<boolean> {
+  try {
+    const since = new Date(Date.now() - cooldownDays * 24 * 60 * 60 * 1000);
+
+    // Check if a similar notification was already sent recently
+    const existing = await prisma.notification.findFirst({
+      where: {
+        userId,
+        type,
+        title,
+        createdAt: { gte: since },
+      },
+      select: { id: true },
+    });
+
+    if (existing) {
+      return false; // Skip — already sent recently
+    }
+
+    await prisma.notification.create({
+      data: { userId, type, title, message, link },
+    });
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Send push notification to a specific garage owner by garageId.
  */
 export async function sendPushToGarageOwner(garageId: string, payload: PushPayload): Promise<number> {
