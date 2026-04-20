@@ -12,7 +12,7 @@ import {
   Edit, Trash2, Shield, Calendar, Fuel, Gauge, Clock, Bell, Plus, X,
   Loader2, ChevronRight, AlertCircle, MapPin, Settings, Car, FileText,
   Camera, Image as ImageIcon, Zap, AlertTriangle, ChevronLeft, ChevronDown,
-  Check, Flag, CheckCircle, Wrench, TrendingUp, MapPinIcon, Upload
+  Check, Flag, CheckCircle, Wrench, TrendingUp, MapPinIcon, Upload, ArrowLeftRight
 } from 'lucide-react';
 // Tesseract is dynamically imported inside handleScanReceipt() to keep it out of
 // the initial bundle. It's a heavy OCR library (~5MB) used only when the user
@@ -663,13 +663,22 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
                 </>
               )}
 
-              <button
-                onClick={() => setShowEditModal(true)}
-                className="w-full flex items-center justify-center gap-2 mt-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-medium transition-colors"
-              >
-                <Edit size={16} />
-                עריכה
-              </button>
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={() => setShowEditModal(true)}
+                  className="flex-1 flex items-center justify-center gap-2 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-medium transition-colors"
+                >
+                  <Edit size={16} />
+                  עריכה
+                </button>
+                <button
+                  onClick={() => router.push('/user/vehicles/transfer')}
+                  className="flex-1 flex items-center justify-center gap-2 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg font-medium transition-colors"
+                >
+                  <ArrowLeftRight size={16} />
+                  העבר בעלות
+                </button>
+              </div>
             </div>
           )}
         </Card>

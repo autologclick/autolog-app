@@ -6,7 +6,7 @@ import {
   Car, ChevronDown, ChevronLeft, Loader2, Plus, Flag,
   Wrench, FileText, Receipt, Calendar, Shield, Clock,
   Camera, Image as ImageIcon, AlertTriangle, CheckCircle, ClipboardCheck,
-  Gauge, Fuel, X, MapPin, Upload, Trash2, MessageCircle
+  Gauge, Fuel, X, MapPin, Upload, Trash2, MessageCircle, ArrowLeftRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import OnboardingWizard from '@/components/shared/OnboardingWizard';
@@ -212,6 +212,19 @@ export default function UserHomePage() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showInspectBanner, setShowInspectBanner] = useState(false);
 
+  // Transfer notifications
+  const [pendingTransfers, setPendingTransfers] = useState<{
+    id: string;
+    vehicleId: string;
+    status: string;
+    fromUser: { fullName: string } | null;
+    vehicle: { nickname: string; licensePlate: string; manufacturer: string; model: string } | null;
+    isSender: boolean;
+    isExpired: boolean;
+    cancelRequestedBy: string | null;
+    createdAt: string;
+  }[]>([]);
+
   // Maintenance schedule
   const [maintenanceSchedule, setMaintenanceSchedule] = useState<MaintenanceSchedule | null>(null);
   const [maintenanceLoading, setMaintenanceLoading] = useState(false);
@@ -307,6 +320,18 @@ export default function UserHomePage() {
       })
       .catch(() => setShowOnboarding(true))
       .finally(() => setLoading(false));
+
+    // Fetch pending transfers for dashboard alerts
+    fetch('/api/vehicles/transfer?type=all')
+      .then(r => r.ok ? r.json() : { transfers: [] })
+      .then(data => {
+        const active = (data.transfers || []).filter(
+          (t: { status: string; isExpired: boolean }) =>
+            ['pending', 'accepted'].includes(t.status) && !t.isExpired
+        );
+        setPendingTransfers(active);
+      })
+      .catch(() => {});
   }, []);
 
   // Fetch vehicle-specific data when selected vehicle changes
@@ -740,6 +765,65 @@ export default function UserHomePage() {
 
         {/* ═══ Push Permission Banner ═══ */}
         <PushPermissionBanner />
+
+        {/* ═══ Vehicle Transfer Alerts ═══ */}
+        {pendingTransfers.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-blue-200">
+            <div className="flex items-center gap-2 px-4 pt-4 pb-2">
+              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                <ArrowLeftRight size={16} className="text-blue-600" />
+              </div>
+              <h3 className="text-sm font-bold text-[#1e3a5f]">העברות בעלות</h3>
+              <span className="mr-auto bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                {pendingTransfers.length}
+              </span>
+            </div>
+            <div className="divide-y divide-gray-50">
+              {pendingTransfers.map((t) => {
+                const vehicleName = t.vehicle
+                  ? (t.vehicle.nickname || `${t.vehicle.manufacturer} ${t.vehicle.model}`)
+                  : 'רכב';
+                const isIncoming = !t.isSender;
+                const statusLabel =
+                  t.status === 'accepted' ? 'מאושר — ממתין להשלמה'
+                    : t.cancelRequestedBy ? 'בקשת ביטול — נדרש אישורך'
+                    : isIncoming ? 'ממתין לאישורך' : 'ממתין לאישור הקונה';
+                const bgColor = isIncoming && t.status === 'pending' ? 'bg-blue-50' : '';
+
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => router.push(
+                      isIncoming && t.status === 'pending'
+                        ? '/user/vehicles/transfer/accept'
+                        : '/user/vehicles/transfer'
+                    )}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-right hover:opacity-80 transition ${bgColor}`}
+                  >
+                    <span className="text-lg flex-shrink-0">{isIncoming ? '📥' : '📤'}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-[#1e3a5f]">
+                        {isIncoming ? `${t.fromUser?.fullName || 'מוכר'} רוצה להעביר לך` : `העברת ${vehicleName}`}
+                      </div>
+                      <div className="text-xs text-gray-500">{vehicleName}</div>
+                    </div>
+                    <div className={`px-2.5 py-1 rounded-lg flex-shrink-0 ${
+                      isIncoming && t.status === 'pending' ? 'bg-blue-100' :
+                      t.status === 'accepted' ? 'bg-green-100' : 'bg-amber-100'
+                    }`}>
+                      <span className={`text-xs font-bold ${
+                        isIncoming && t.status === 'pending' ? 'text-blue-700' :
+                        t.status === 'accepted' ? 'text-green-700' : 'text-amber-700'
+                      }`}>
+                        {statusLabel}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* ═══ Expiry Alerts — all vehicles ═══ */}
         {(() => {

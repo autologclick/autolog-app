@@ -85,8 +85,10 @@ export default function LoginPage() {
 
       // Redirect based on role — add welcome flag for new registrations
       const role = data.user?.role;
+      const transferCode = searchParams.get('transfer');
       if (role === 'admin') router.push('/admin');
       else if (role === 'garage_owner') router.push('/garage');
+      else if (transferCode) router.push(`/user/vehicles/transfer/accept?code=${transferCode}`);
       else router.push(isRegister ? '/user?welcome=1' : '/user');
     } catch (err: unknown) {
       if (process.env.NODE_ENV === 'development') {

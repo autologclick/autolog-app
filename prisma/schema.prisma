@@ -608,6 +608,46 @@ model AuditLog {
 }
 
 // ============================================================
+// VEHICLE OWNERSHIP TRANSFERS
+// ============================================================
+
+model VehicleTransfer {
+  id              String    @id @default(cuid())
+  vehicleId       String
+  fromUserId      String
+  toEmail         String    // buyer email (for notification / registration link)
+  toUserId        String?   // filled when buyer is a registered user
+  status          String    @default("pending") // pending | accepted | completed | cancelled
+  verificationCode String   @unique // 6-char code sent to buyer
+  expiresAt       DateTime  // transfer request expiry (e.g. 7 days)
+
+  // Selective transfer — which data categories to include
+  includeInspections Boolean @default(true)
+  includeTreatments  Boolean @default(true)
+  includeExpenses    Boolean @default(true)
+  includeDocuments   Boolean @default(true)
+
+  // Cancellation requires both parties
+  cancelRequestedBy String?  // userId who requested cancellation
+  cancelConfirmedBy String?  // userId who confirmed cancellation
+  cancelledAt       DateTime?
+
+  // Completion
+  completedAt     DateTime?
+  sellerPdfUrl    String?   // PDF copy saved for seller before deletion
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([vehicleId])
+  @@index([fromUserId])
+  @@index([toEmail])
+  @@index([toUserId])
+  @@index([status])
+  @@index([verificationCode])
+}
+
+// ============================================================
 // MAINTENANCE MODE (global kill-switch by admin)
 // ============================================================
 
