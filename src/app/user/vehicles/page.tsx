@@ -151,6 +151,7 @@ export default function VehiclesPage() {
   const [error, setError] = useState('');
   const [lookingUp, setLookingUp] = useState(false);
   const [lookupMessage, setLookupMessage] = useState('');
+  const lookupDoneRef = useRef<string>(''); // tracks last plate that was looked up
   const emptyForm = { nickname: '', licensePlate: '', manufacturer: '', model: '', year: '', testExpiryDate: '', insuranceExpiry: '', mileage: '', fuelType: '', color: '' };
 
   // Restore draft from sessionStorage if exists
@@ -300,10 +301,23 @@ export default function VehiclesPage() {
     setLookingUp(false);
   };
 
+  // Auto-trigger lookup when license plate reaches valid length (7+ chars)
+  useEffect(() => {
+    const plate = formData.licensePlate.replace(/[-\s]/g, '');
+    if (plate.length >= 7 && plate !== lookupDoneRef.current && !lookingUp) {
+      const timer = setTimeout(() => {
+        lookupDoneRef.current = plate;
+        handleLookup();
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [formData.licensePlate]);
+
   const resetForm = () => {
     setFormData(emptyForm);
     setError('');
     setLookupMessage('');
+    lookupDoneRef.current = '';
     setImagePreview(null);
     setImageData(null);
     setShareState('idle');
@@ -949,24 +963,32 @@ export default function VehiclesPage() {
       <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)} title="הוספת רכב חדש" size="lg">
         <div className="space-y-4">
           {/* MOT Lookup Section */}
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
-            <div className="flex items-center gap-2 mb-3">
+          <div className="bg-blue-50 border-2 border-blue-300 rounded-2xl p-4 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
               <Search size={16} className="text-blue-600" />
               <h4 className="font-bold text-blue-800 text-sm">חיפוש אוטומטי ממשרד התחבורה</h4>
             </div>
+            <p className="text-xs text-blue-600 mb-3">הזן מספר רישוי והפרטים ימולאו אוטומטית</p>
             <div className="flex gap-2">
               <div className="flex-1">
                 <Input placeholder="הכנס מספר רישוי..." value={formData.licensePlate}
                   onChange={e => setFormData({ ...formData, licensePlate: e.target.value })} />
               </div>
               <Button variant="primary" size="md" loading={lookingUp} onClick={handleLookup}
-                icon={<Search size={16} />}>
+                icon={<Search size={16} />}
+                className={formData.licensePlate.length >= 5 && !lookupMessage ? 'animate-pulse' : ''}>
                 חפש
               </Button>
             </div>
+            {lookingUp && (
+              <p className="text-sm mt-2 text-blue-600 flex items-center gap-2">
+                <Loader2 size={14} className="animate-spin" />
+                מחפש נתוני רכב ממשרד התחבורה...
+              </p>
+            )}
             {lookupMessage && (
-              <p className={`text-sm mt-2 ${lookupMessage.includes('הנתונים נטענו') ? 'text-green-600' : 'text-amber-600'}`}>
-                {lookupMessage}
+              <p className={`text-sm mt-2 ${lookupMessage.includes('הנתונים נטענו') ? 'text-green-600 font-medium' : 'text-amber-600'}`}>
+                {lookupMessage.includes('הנתונים נטענו') ? '✓ ' : ''}{lookupMessage}
               </p>
             )}
           </div>
