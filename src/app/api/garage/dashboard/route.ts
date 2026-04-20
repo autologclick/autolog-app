@@ -44,6 +44,8 @@ export async function GET(req: NextRequest) {
       totalInspections,
       inspectionsWithScoreThisMonth,
       inspectionsWithCostThisMonth,
+      uniqueCustomers,
+      awaitingSignatureCount,
     ] = await Promise.all([
       prisma.inspection.count({
         where: { garageId: garage.id, date: { gte: startOfMonth } },
@@ -95,6 +97,15 @@ export async function GET(req: NextRequest) {
         where: { garageId: garage.id, date: { gte: startOfMonth }, cost: { not: null } },
         select: { cost: true },
       }),
+      // Count unique customers via appointments at this garage
+      prisma.appointment.groupBy({
+        by: ['userId'],
+        where: { garageId: garage.id },
+      }),
+      // Count inspections awaiting customer signature
+      prisma.inspection.count({
+        where: { garageId: garage.id, status: 'awaiting_signature' },
+      }),
     ]);
 
     return jsonResponse({
@@ -109,6 +120,8 @@ export async function GET(req: NextRequest) {
         totalInspections,
         revenueThisMonth: sumRevenue(inspectionsWithCostThisMonth),
         averageScore: averageInspectionScore(inspectionsWithScoreThisMonth),
+        totalCustomers: uniqueCustomers.length,
+        awaitingSignature: awaitingSignatureCount,
       },
       todayAppointments: mapTodayAppointments(todayAppointments as TodayAppointmentRow[]),
       recentInspections: mapRecentInspections(recentInspections as RecentInspectionRow[]),

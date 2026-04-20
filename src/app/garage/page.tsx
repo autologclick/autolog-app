@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardTitle, StatCard } from '@/components/ui/Card';
 import Badge, { StatusBadge } from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import {
   Shield, Calendar, Star, Users, TrendingUp, Clock, FileText, Plus, Building2,
   Loader2, BarChart3, Phone, ChevronLeft, DollarSign, AlertCircle, CheckCircle2,
-  Wrench, User, AlertTriangle, Brain, Zap, Target, Activity, PenLine, Search, X
+  Wrench, User, AlertTriangle, Brain, Zap, Target, Activity, PenLine, Search, X, Bell
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import PushPermissionBanner from '@/components/shared/PushPermissionBanner';
@@ -21,6 +21,7 @@ interface DashboardData {
     pendingAppointments: number;
     averageRating: number | null;
     totalReviews: number;
+    totalCustomers: number;
     totalInspections: number;
     revenueThisMonth: number;
     averageScore: number | null;
@@ -67,7 +68,7 @@ export default function GarageDashboard() {
   const [searchResults, setSearchResults] = useState<CustomerResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
-  const searchTimeout = useState<ReturnType<typeof setTimeout> | null>(null);
+  const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -113,14 +114,14 @@ export default function GarageDashboard() {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    if (searchTimeout[0]) clearTimeout(searchTimeout[0]);
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
     if (!query.trim()) {
       setSearchResults([]);
       setShowSearch(false);
       return;
     }
     setShowSearch(true);
-    searchTimeout[0] = setTimeout(async () => {
+    searchTimeout.current = setTimeout(async () => {
       setSearchLoading(true);
       try {
         const res = await fetch(`/api/garage/customers?search=${encodeURIComponent(query.trim())}&limit=5`);
@@ -189,6 +190,18 @@ export default function GarageDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={() => router.push('/garage/appointments')}
+              className="relative w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition flex-shrink-0"
+              title="התראות"
+            >
+              <Bell size={18} className="text-gray-600" />
+              {unreadNotifs > 0 && (
+                <span className="absolute -top-1 -left-1 bg-red-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1">
+                  {unreadNotifs > 9 ? '9+' : unreadNotifs}
+                </span>
+              )}
+            </button>
             <Button icon={<Plus size={16} />} onClick={() => router.push('/garage/new-inspection')} className="flex-1 sm:flex-none" style={{backgroundColor: '#0d9488'}}>
               בדיקה חדשה
             </Button>
@@ -360,7 +373,7 @@ export default function GarageDashboard() {
                 <Users size={20} style={{color: '#0d9488'}} />
               </div>
             </div>
-            <div className="text-3xl font-bold" style={{color: '#1e3a5f'}}>{stats.totalReviews}</div>
+            <div className="text-3xl font-bold" style={{color: '#1e3a5f'}}>{stats.totalCustomers}</div>
             <p className="text-gray-600 text-sm mt-2">לקוחות פעילים</p>
           </div>
 
@@ -372,7 +385,7 @@ export default function GarageDashboard() {
               </div>
             </div>
             <div className="text-3xl font-bold" style={{color: '#1e3a5f'}}>{stats.averageRating !== null ? stats.averageRating : '—'}</div>
-            <p className="text-gray-600 text-sm mt-2">ביקורות</p>
+            <p className="text-gray-600 text-sm mt-2">דירוג ({stats.totalReviews} ביקורות)</p>
           </div>
         </div>
 
