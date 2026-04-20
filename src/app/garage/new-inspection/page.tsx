@@ -653,6 +653,7 @@ export default function NewInspectionPage() {
       setLoading(true);
       setError('');
       if (!selectedVehicleId && !isManualVehicleValid) { setError('יש לבחור רכב או להזין מספר רישוי'); return; }
+      if (!mileage || parseInt(mileage) < 0) { setError('יש להזין קילומטראז׳'); return; }
 
       // Base payload (common to all types)
       const basePayload: Record<string, unknown> = {
@@ -1149,7 +1150,7 @@ export default function NewInspectionPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Input label="קילומטראז'" placeholder="140,000" value={mileage} onChange={e => setMileage(e.target.value)} />
+                <Input label="קילומטראז' *" placeholder="140,000" type="number" required value={mileage} onChange={e => setMileage(e.target.value)} />
                 <Input label="שם מכניק" placeholder="שם המכניק" value={mechanicName} onChange={e => setMechanicName(e.target.value)} />
               </div>
               <div className="grid grid-cols-2 gap-3">

@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
         testExpiryDate: parseFlexDate(testExpiryDate),
         insuranceExpiry: parseFlexDate(insuranceExpiry),
         registrationDate: parseFlexDate(registrationDate),
-        mileage: mileage || null,
+        mileage: mileage,
         isPrimary: vehicleCount === 0,
         testStatus: parseFlexDate(testExpiryDate) ? getExpiryStatus(parseFlexDate(testExpiryDate)!) : 'valid',
         insuranceStatus: parseFlexDate(insuranceExpiry) ? getExpiryStatus(parseFlexDate(insuranceExpiry)!) : 'valid',

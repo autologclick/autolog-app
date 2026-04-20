@@ -464,6 +464,11 @@ export default function VehiclesPage() {
   const handleAddVehicle = async () => {
     setSaving(true);
     setError('');
+    if (!formData.mileage || Number(formData.mileage) < 0) {
+      setError('יש להזין קילומטראז׳');
+      setSaving(false);
+      return;
+    }
     try {
       const res = await fetch('/api/vehicles', {
         method: 'POST',
@@ -912,7 +917,7 @@ export default function VehiclesPage() {
               onChange={e => setFormData({ ...formData, insuranceExpiry: e.target.value })} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-            <Input label="ק״מ" type="number" value={formData.mileage}
+            <Input label="ק״מ *" type="number" value={formData.mileage} required
               onChange={e => setFormData({ ...formData, mileage: e.target.value })} />
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">סוג דלק</label>
@@ -1033,7 +1038,7 @@ export default function VehiclesPage() {
               onChange={e => setFormData({ ...formData, insuranceExpiry: e.target.value })} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <Input label="ק״מ" placeholder="45000" type="number" value={formData.mileage}
+            <Input label="ק״מ *" placeholder="45000" type="number" value={formData.mileage} required
               onChange={e => setFormData({ ...formData, mileage: e.target.value })} />
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">סוג דלק</label>

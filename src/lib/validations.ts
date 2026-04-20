@@ -78,7 +78,7 @@ export const vehicleSchema = z.object({
   testExpiryDate: z.string().optional().or(z.literal('')),
   insuranceExpiry: z.string().optional().or(z.literal('')),
   registrationDate: z.string().optional().or(z.literal('')),
-  mileage: z.coerce.number().int('קילומטראז חייב להיות מספר שלם').nonnegative().optional(),
+  mileage: z.coerce.number({ required_error: 'קילומטראז׳ נדרש' }).int('קילומטראז׳ חייב להיות מספר שלם').nonnegative('קילומטראז׳ חייב להיות חיובי'),
 });
 
 // ============================================================
