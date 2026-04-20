@@ -116,9 +116,9 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
     const found = await tryLookupAndResult(plate);
     if (!found) {
       setScanStatus('success');
-      setStatusMessage(`מספר ${plate} נשמר. לא נמצאו פרטים נוספים במשרד התחבורה.`);
+      setStatusMessage(`מספר ${plate} נשמר. משרד התחבורה לא מזהה — ייתכן שהטסט לא בתוקף או יבוא אישי. מלא את הפרטים ידנית.`);
       onScanResult({ licensePlate: plate });
-      setTimeout(() => { setScanStatus('idle'); setStatusMessage(''); setScanProgress(0); setManualPlate(''); }, 5000);
+      setTimeout(() => { setScanStatus('idle'); setStatusMessage(''); setScanProgress(0); setManualPlate(''); }, 8000);
     }
     setManualLoading(false);
   };
@@ -155,10 +155,11 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
         setScanProgress(85);
         const found = await tryLookupAndResult(plate);
         if (!found) {
-          // Plate found but no MOT data — let user confirm/edit
-          setScanStatus('manual');
-          setManualPlate(plate);
-          setStatusMessage(`זוהה מספר ${plate} אך לא אומת. תקן אם צריך:`);
+          // Plate found but no MOT data — fill plate and let user fill rest manually
+          onScanResult({ licensePlate: plate });
+          setScanStatus('success');
+          setStatusMessage(`זוהה מספר ${plate} — משרד התחבורה לא מזהה את הרכב (ייתכן שהטסט לא בתוקף או שמדובר ביבוא אישי). מלא את הפרטים ידנית.`);
+          setTimeout(() => { setScanStatus('idle'); setStatusMessage(''); setScanProgress(0); }, 8000);
         }
       } else {
         // No plate detected — manual entry

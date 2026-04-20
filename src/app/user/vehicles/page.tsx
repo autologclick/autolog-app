@@ -293,7 +293,7 @@ export default function VehiclesPage() {
         }));
         setLookupMessage('הנתונים נטענו ממשרד התחבורה!');
       } else {
-        setLookupMessage(data.error || 'לא נמצאו נתונים לרכב זה');
+        setLookupMessage('NOT_FOUND');
       }
     } catch {
       setLookupMessage('שגיאה בחיפוש - נסה שוב');
@@ -986,9 +986,21 @@ export default function VehiclesPage() {
                 מחפש נתוני רכב ממשרד התחבורה...
               </p>
             )}
-            {lookupMessage && (
-              <p className={`text-sm mt-2 ${lookupMessage.includes('הנתונים נטענו') ? 'text-green-600 font-medium' : 'text-amber-600'}`}>
-                {lookupMessage.includes('הנתונים נטענו') ? '✓ ' : ''}{lookupMessage}
+            {lookupMessage && lookupMessage === 'NOT_FOUND' && (
+              <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
+                <p className="text-sm font-bold text-amber-800 mb-1">משרד התחבורה לא מזהה את הרכב</p>
+                <p className="text-xs text-amber-700 mb-2">הסיבה יכולה להיות:</p>
+                <ul className="text-xs text-amber-700 space-y-0.5 mr-3 list-disc">
+                  <li>הרכב ללא טסט בתוקף</li>
+                  <li>הרכב יבוא אישי שעדיין לא נרשם</li>
+                  <li>מספר הרישוי שגוי</li>
+                </ul>
+                <p className="text-xs text-amber-800 font-semibold mt-2">אפשר למלא את הפרטים ידנית למטה ↓</p>
+              </div>
+            )}
+            {lookupMessage && lookupMessage !== 'NOT_FOUND' && (
+              <p className="text-sm mt-2 text-green-600 font-medium">
+                ✓ {lookupMessage}
               </p>
             )}
           </div>
