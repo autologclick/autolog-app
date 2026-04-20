@@ -35,7 +35,13 @@ export default function PushPermissionBanner() {
   }, []);
 
   const handleEnable = useCallback(async () => {
-    setSubscribing(true);
+    // Hide banner immediately — subscription continues in background
+    setShow(false);
+    try {
+      localStorage.setItem('push-banner-dismissed', String(Date.now()));
+      localStorage.setItem('push-banner-dismiss-count', '99');
+    } catch {}
+
     try {
       const permission = await Notification.requestPermission();
       if (permission === 'granted') {
@@ -64,13 +70,6 @@ export default function PushPermissionBanner() {
       }
     } catch (err) {
       console.error('Push subscription failed:', err);
-    } finally {
-      setSubscribing(false);
-      setShow(false);
-      try {
-        localStorage.setItem('push-banner-dismissed', String(Date.now()));
-        localStorage.setItem('push-banner-dismiss-count', '99'); // permanent after enabling
-      } catch {}
     }
   }, []);
 
