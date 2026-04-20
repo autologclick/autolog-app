@@ -16,6 +16,7 @@ import { NOT_FOUND } from '@/lib/messages';
 import { SERVICE_TYPE_HEB } from '@/lib/constants/translations';
 import { sendEmail, buildAppointmentEmailHtml, buildAdminAppointmentEmailHtml } from '@/lib/email';
 import { notifyAdmins } from '@/lib/services/notification-service';
+import { sendPushToGarageOwner, sendPushToRole } from '@/lib/push-sender';
 
 const logger = createLogger('appointments');
 
@@ -280,6 +281,19 @@ export async function POST(req: NextRequest) {
           });
         }
       }
+      // Push notifications — ring phone for garage owner and admins
+      const pushPayload = {
+        title: `תור חדש — ${customerName}`,
+        body: `${serviceLabel} | ${vehicleLabel} | ${dateLabel} ${timeLabel}`,
+        tag: `appointment-${appointment.id}`,
+        requireInteraction: true,
+        data: { link: '/garage/appointments', type: 'new_appointment' },
+      };
+      sendPushToGarageOwner(garageId, pushPayload).catch(() => {});
+      sendPushToRole('admin', {
+        ...pushPayload,
+        data: { link: '/admin/appointments', type: 'new_appointment' },
+      }).catch(() => {});
     } catch (notifError) {
       // Don't fail the appointment creation if notification fails
       logger.warn('Failed to create notifications', { error: notifError instanceof Error ? notifError.message : String(notifError) });

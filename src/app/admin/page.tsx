@@ -11,6 +11,7 @@ import {
   Brain, Zap, AlertTriangle, Target
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import PushPermissionBanner from '@/components/shared/PushPermissionBanner';
 
 interface ActivityItem {
   id: string;
@@ -139,6 +140,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
+      <PushPermissionBanner />
       {error && (
         <div className="text-center py-16 px-4">
           <BarChart3 size={40} className="mx-auto mb-3 text-gray-300" />

@@ -99,10 +99,10 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Push notification handler
+// Push notification handler — with vibration for phone alerts
 self.addEventListener('push', (event) => {
   let data = { title: 'AutoLog', body: '\u05d4\u05ea\u05e8\u05d0\u05d4 \u05d7\u05d3\u05e9\u05d4', icon: '/icon-192.png' };
-  
+
   try {
     if (event.data) {
       data = Object.assign(data, event.data.json());
@@ -120,6 +120,10 @@ self.addEventListener('push', (event) => {
       badge: '/icon-192.png',
       dir: 'rtl',
       lang: 'he',
+      tag: data.tag || 'autolog-notification',
+      renotify: true,
+      requireInteraction: data.requireInteraction || false,
+      vibrate: [200, 100, 200, 100, 200],
       data: data.data || {},
       actions: data.actions || [],
     })

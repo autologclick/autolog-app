@@ -10,6 +10,7 @@ import {
   Wrench, User, AlertTriangle, Brain, Zap, Target, Activity, PenLine, Search, X
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import PushPermissionBanner from '@/components/shared/PushPermissionBanner';
 
 interface DashboardData {
   garage: { name: string; city: string; status: string };
@@ -94,10 +95,20 @@ export default function GarageDashboard() {
 
     fetchDashboard();
 
+    // Auto-refresh every 30 seconds for real-time appointment updates
+    const interval = setInterval(() => {
+      fetch('/api/garage/dashboard')
+        .then(r => r.json())
+        .then(d => { if (d?.garage) setData(d); })
+        .catch(() => {});
+    }, 30000);
+
     fetch('/api/notifications?limit=1')
       .then(r => r.json())
       .then(d => { if (d.unreadCount) setUnreadNotifs(d.unreadCount); })
       .catch(() => {});
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleSearch = (query: string) => {
@@ -256,26 +267,32 @@ export default function GarageDashboard() {
           )}
         </div>
 
-        {/* Pending Appointments Banner */}
+        {/* Push Notification Permission Banner */}
+        <PushPermissionBanner />
+
+        {/* Pending Appointments Banner — prominent with pulse */}
         {stats.pendingAppointments > 0 && (
-          <div className="bg-white border-r-4 rounded-xl p-4 flex items-start gap-3 shadow-sm hover:shadow-md transition" style={{borderRightColor: '#0d9488'}}>
-            <div className="rounded-lg p-2 flex-shrink-0" style={{backgroundColor: '#f0fdfa'}}>
-              <AlertCircle size={20} style={{color: '#0d9488'}} />
+          <div className="bg-gradient-to-l from-teal-50 to-white border-2 border-teal-400 rounded-xl p-4 flex items-center gap-3 shadow-md relative overflow-hidden">
+            {/* Pulsing dot */}
+            <div className="relative flex-shrink-0">
+              <div className="absolute inset-0 bg-teal-400 rounded-full animate-ping opacity-30" style={{width: 40, height: 40}} />
+              <div className="w-10 h-10 bg-teal-600 rounded-full flex items-center justify-center relative z-10">
+                <span className="text-white font-bold text-lg">{stats.pendingAppointments}</span>
+              </div>
             </div>
             <div className="flex-1 min-w-0 text-right">
-              <h3 className="font-semibold text-[#1e3a5f] text-sm sm:text-base">
-                {stats.pendingAppointments} תורים ממתינים לאישור
+              <h3 className="font-bold text-teal-900 text-base">
+                {stats.pendingAppointments === 1 ? 'תור חדש ממתין לאישור!' : `${stats.pendingAppointments} תורים חדשים ממתינים!`}
               </h3>
-              <p className="text-gray-600 text-xs sm:text-sm mt-1">
-                בדוק ואשר תורים חדשים שדורשים אישור
+              <p className="text-teal-700 text-xs mt-0.5">
+                לחץ כדי לאשר או לדחות
               </p>
             </div>
             <button
               onClick={() => router.push('/garage/appointments')}
-              className="text-white rounded-lg px-4 py-2 text-xs sm:text-sm font-medium flex-shrink-0 transition whitespace-nowrap hover:shadow-md"
-              style={{backgroundColor: '#0d9488'}}
+              className="bg-teal-600 hover:bg-teal-700 text-white rounded-xl px-5 py-2.5 text-sm font-bold flex-shrink-0 transition-colors whitespace-nowrap shadow-sm"
             >
-              אשר תורים
+              צפה ואשר
             </button>
           </div>
         )}
