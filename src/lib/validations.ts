@@ -152,17 +152,17 @@ export const comprehensiveInspectionSchema = z.object({
   }).passthrough().optional(),
   lightsNotes: z.string().optional(),
 
-  // Mechanical systems — passthrough() to accept frontend's {items, notes} shape
+  // Mechanical systems — accept items as either array or object (frontend sends object)
   frontAxle: z.object({
     status: z.string().optional(),
     ballBearings: z.string().optional(),
-    items: z.array(z.record(z.unknown())).optional(),
+    items: z.union([z.array(z.record(z.unknown())), z.record(z.unknown())]).optional(),
     notes: z.string().optional(),
   }).passthrough().optional(),
   steeringData: z.object({
     status: z.string().optional(),
     alignment: z.string().optional(),
-    items: z.array(z.record(z.unknown())).optional(),
+    items: z.union([z.array(z.record(z.unknown())), z.record(z.unknown())]).optional(),
     notes: z.string().optional(),
   }).passthrough().optional(),
   shocksData: z.object({
@@ -170,7 +170,7 @@ export const comprehensiveInspectionSchema = z.object({
     frontRight: z.string().optional(),
     rearLeft: z.string().optional(),
     rearRight: z.string().optional(),
-    items: z.array(z.record(z.unknown())).optional(),
+    items: z.union([z.array(z.record(z.unknown())), z.record(z.unknown())]).optional(),
     notes: z.string().optional(),
   }).passthrough().optional(),
   bodyData: z.object({
