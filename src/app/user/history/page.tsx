@@ -89,52 +89,8 @@ export default function HistoryPage() {
         setOffset(newOffset + limit);
       }
     } catch {
-      // Fallback demo data
       if (newOffset === 0) {
-        setEvents([
-          {
-            id: '1',
-            type: 'inspection',
-            title: 'בדיקת AutoLog קדמית',
-            description: 'בדיקה שלמה של הרכב בביצוע',
-            date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            status: 'completed',
-            vehicleId: vehicles[0]?.id,
-            vehicle: vehicles[0] ? { nickname: vehicles[0].nickname, licensePlate: vehicles[0].licensePlate } : undefined,
-          },
-          {
-            id: '2',
-            type: 'appointment',
-            title: 'תור בדיקה',
-            description: 'בדיקה שנתית בחנות',
-            date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            status: 'confirmed',
-            vehicleId: vehicles[0]?.id,
-            vehicle: vehicles[0] ? { nickname: vehicles[0].nickname, licensePlate: vehicles[0].licensePlate } : undefined,
-          },
-          {
-            id: '3',
-            type: 'expense',
-            title: 'תיקון בלמים',
-            description: 'החלפת רפידות בלמים חדשות',
-            date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-            status: 'completed',
-            vehicleId: vehicles[0]?.id,
-            vehicle: vehicles[0] ? { nickname: vehicles[0].nickname, licensePlate: vehicles[0].licensePlate } : undefined,
-            amount: 450,
-            currency: 'ILS',
-          },
-          {
-            id: '4',
-            type: 'sos',
-            title: 'אירוע חירום',
-            description: 'תקלה בדרך - מחוזה ריסס דלק',
-            date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-            status: 'resolved',
-            vehicleId: vehicles[0]?.id,
-            vehicle: vehicles[0] ? { nickname: vehicles[0].nickname, licensePlate: vehicles[0].licensePlate } : undefined,
-          },
-        ]);
+        setEvents([]);
         setHasMore(false);
       }
     }

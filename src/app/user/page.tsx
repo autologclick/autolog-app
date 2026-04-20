@@ -936,7 +936,7 @@ export default function UserHomePage() {
                       <div className="flex-1 min-w-0">
                         <div className="font-semibold text-[#1e3a5f] text-sm truncate">
                           {a.garage?.name || 'שירות'}
-                          <span className="text-gray-500 font-normal"> · {a.serviceType}</span>
+                          <span className="text-gray-500 font-normal"> · {{ inspection: 'בדיקה', maintenance: 'טיפול', repair: 'תיקון', test_prep: 'הכנה לטסט' }[a.serviceType] || a.serviceType}</span>
                         </div>
                         <div className="text-xs text-gray-500 mt-0.5">
                           {dateStr}{a.time ? ' · ' + a.time : ''}
