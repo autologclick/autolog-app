@@ -140,12 +140,13 @@ Common document types you'll encounter:
 
 IMPORTANT EXTRACTION RULES:
 1. Dates: Convert ANY date format to ISO YYYY-MM-DD. Israeli dates are often DD/MM/YYYY or DD.MM.YYYY
-2. Amounts: Extract the TOTAL amount. Look for "סה״כ", "סה\"כ", "סך הכל", "TOTAL". Remove ₪ symbol, return as number
-3. License plate: Israeli plates are 7-8 digits (e.g., 1234567 or 12345678)
+2. Amounts: Extract the TOTAL amount. Look for "סה״כ", "סה\"כ", "סך הכל", "TOTAL", "סך". Remove ₪ symbol, return as number
+3. License plate: Israeli plates are 7-8 digits (e.g., 1234567 or 12345678). Field is "מספר רכב"
 4. Mileage: Look for "ק״מ", "קילומטראז", "מד אוכל", "km", "KM", "odometer"
-5. Invoice number: Look for "מס׳ חשבונית", "מס׳ קבלה", "אסמכתא", "#"
-6. Business name: Usually at the top of the document, often with logo
+5. Invoice number: Look for "מס׳ חשבונית", "מס׳ קבלה", "אסמכתא", "#". For רישיון רכב — put the "בעלים קודמים" count here (the number like 00, 01, 02)
+6. Business name: Usually at the top of the document, often with logo. For רישיון רכב — use the test station name if visible
 7. Line items: Individual services/parts with their costs
+8. For רישיון רכב (vehicle registration): "בתוקף עד" = expiryDate, "כינוי מסחרי" = vehicleInfo (model name like CX-5, NOT the manufacturer), "תוצר" = manufacturer (WITHOUT country name)
 
 Return a JSON object with these exact fields (use null for fields you can't find):`;
 

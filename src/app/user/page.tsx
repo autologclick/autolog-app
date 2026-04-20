@@ -298,6 +298,25 @@ export default function UserHomePage() {
   const [insuranceSuccess, setInsuranceSuccess] = useState('');
   const insuranceFileRef = useRef<HTMLInputElement>(null);
 
+  // Test (טסט) upload modal
+  const [showTestModal, setShowTestModal] = useState(false);
+  const [testScanning, setTestScanning] = useState(false);
+  const [testSaving, setTestSaving] = useState(false);
+  const [testForm, setTestForm] = useState({
+    testExpiryDate: '',
+    testDate: '',
+    testCost: '',
+    testStation: '',
+    testMileageAtTest: '',
+    previousOwners: '',
+    manufacturer: '',
+    model: '',
+  });
+  const [testPreview, setTestPreview] = useState<string | null>(null);
+  const [testError, setTestError] = useState('');
+  const [testSuccess, setTestSuccess] = useState('');
+  const testFileRef = useRef<HTMLInputElement>(null);
+
   const treatmentImageRef = useRef<HTMLInputElement>(null);
   const scanRef = useRef<HTMLInputElement>(null);
 
@@ -527,6 +546,98 @@ export default function UserHomePage() {
       setInsuranceError('שגיאת רשת');
     } finally {
       setInsuranceSaving(false);
+    }
+  };
+
+  // ── Test (טסט) handlers ──
+  const handleTestFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const dataUrl = reader.result as string;
+      setTestPreview(file.type.startsWith('image/') ? dataUrl : null);
+      setTestScanning(true);
+      setTestError('');
+
+      try {
+        const res = await fetch('/api/ai/scan-document', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image: dataUrl,
+            context: 'uploading Israeli vehicle registration (רישיון רכב). Extract: בתוקף עד (expiry date), תוצר (manufacturer, WITHOUT country name), כינוי מסחרי (commercial model name — use this as the model, e.g. CX-5), בעלים קודמים (previous owners count — the number like 00, 01, 02), סך/סכום (total cost), תחנת מבחן (test station), ק"מ (mileage). For previousOwners return just the number. For totalAmount use the סך amount.',
+          }),
+        });
+        const data = await res.json();
+        if (data.success && data.data) {
+          const d = data.data;
+          setTestForm({
+            testExpiryDate: d.expiryDate || '',
+            testDate: d.date || '',
+            testCost: d.totalAmount ? String(d.totalAmount) : '',
+            testStation: d.businessName || '',
+            testMileageAtTest: d.mileage ? String(d.mileage) : '',
+            previousOwners: d.invoiceNumber || '', // AI maps previousOwners here
+            manufacturer: '',
+            model: d.vehicleInfo || '',
+          });
+          toast.success('הפרטים חולצו בהצלחה! בדוק ואשר.');
+        } else {
+          setTestError('לא הצלחנו לחלץ פרטים. מלא ידנית.');
+        }
+      } catch {
+        setTestError('שגיאה בסריקה. מלא ידנית.');
+      } finally {
+        setTestScanning(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSaveTest = async () => {
+    if (!vehicle) return;
+    setTestSaving(true);
+    setTestError('');
+
+    try {
+      const bodyData: Record<string, unknown> = {};
+      if (testForm.testExpiryDate) bodyData.testExpiryDate = testForm.testExpiryDate;
+      if (testForm.testDate) bodyData.testDate = testForm.testDate;
+      if (testForm.testCost) bodyData.testCost = parseFloat(testForm.testCost);
+      if (testForm.testStation) bodyData.testStation = testForm.testStation;
+      if (testForm.testMileageAtTest) bodyData.testMileageAtTest = parseInt(testForm.testMileageAtTest);
+      if (testForm.previousOwners !== '') bodyData.previousOwners = parseInt(testForm.previousOwners);
+
+      const res = await fetch(`/api/vehicles/${vehicle.id}/test`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bodyData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setTestError(data.error || 'שגיאה בשמירה');
+        return;
+      }
+
+      setTestSuccess('פרטי הטסט נשמרו בהצלחה!');
+      toast.success('טסט עודכן!');
+
+      // Update local vehicle data
+      if (testForm.testExpiryDate) {
+        setVehicles(prev => prev.map(v =>
+          v.id === vehicle.id ? { ...v, testExpiryDate: testForm.testExpiryDate } : v
+        ));
+      }
+
+      setTimeout(() => {
+        setTestSuccess('');
+      }, 2000);
+    } catch {
+      setTestError('שגיאת רשת');
+    } finally {
+      setTestSaving(false);
     }
   };
 
@@ -823,12 +934,20 @@ export default function UserHomePage() {
 
         {/* Smart Reminders */}
         <div className="grid grid-cols-3 gap-2">
-          <ReminderCard
-            icon="🧪" title="טסט"
-            value={testDays !== null ? (testDays < 0 ? 'פג תוקף!' : `${testDays} יום`) : 'ללא טסט'}
-            subtitle={vehicle.testExpiryDate ? new Date(vehicle.testExpiryDate).toLocaleDateString('he-IL') : 'לא בתוקף'}
-            status={testDays !== null ? (testDays < 0 ? 'danger' : testDays < 30 ? 'warning' : 'success') : 'danger'}
-          />
+          <div onClick={() => {
+            setTestForm({ testExpiryDate: '', testDate: '', testCost: '', testStation: '', testMileageAtTest: '', previousOwners: '', manufacturer: '', model: '' });
+            setTestPreview(null);
+            setTestError('');
+            setTestSuccess('');
+            setShowTestModal(true);
+          }} className="cursor-pointer active:scale-[0.97] transition-transform">
+            <ReminderCard
+              icon="🧪" title="טסט"
+              value={testDays !== null ? (testDays < 0 ? 'פג תוקף!' : `${testDays} יום`) : 'העלה טסט'}
+              subtitle={vehicle.testExpiryDate ? new Date(vehicle.testExpiryDate).toLocaleDateString('he-IL') : 'לחץ להעלאה'}
+              status={testDays !== null ? (testDays < 0 ? 'danger' : testDays < 30 ? 'warning' : 'success') : 'warning'}
+            />
+          </div>
           <div onClick={() => {
             setInsuranceForm({ insuranceCompany: '', insuranceType: 'comprehensive', insuranceStart: '', insuranceExpiry: '', insuranceCost: '', insurancePolicyNumber: '' });
             setInsurancePreview(null);
@@ -1283,6 +1402,19 @@ export default function UserHomePage() {
             </div>
             <div className="p-4 space-y-2">
               <button
+                onClick={() => { setShowTreatmentsMenu(false); router.push('/user/book-garage'); }}
+                className="w-full flex items-center gap-3 p-4 bg-indigo-50 hover:bg-indigo-100 rounded-xl text-right transition-colors"
+              >
+                <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center flex-shrink-0">
+                  <Car size={20} />
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-[#1e3a5f]">הזמן תור למוסך</div>
+                  <div className="text-xs text-gray-500">קבע מועד לטיפול הבא</div>
+                </div>
+                <ChevronLeft size={20} className="text-gray-400" />
+              </button>
+              <button
                 onClick={() => { setShowTreatmentsMenu(false); setShowAddTreatment(true); }}
                 className="w-full flex items-center gap-3 p-4 bg-teal-50 hover:bg-teal-100 rounded-xl text-right transition-colors"
               >
@@ -1318,19 +1450,6 @@ export default function UserHomePage() {
                 <div className="flex-1">
                   <div className="font-semibold text-[#1e3a5f]">הטיפול הבא</div>
                   <div className="text-xs text-gray-500">מתי מומלץ הטיפול הבא לרכב</div>
-                </div>
-                <ChevronLeft size={20} className="text-gray-400" />
-              </button>
-              <button
-                onClick={() => { setShowTreatmentsMenu(false); router.push('/user/book-garage'); }}
-                className="w-full flex items-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl text-right transition-colors"
-              >
-                <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center flex-shrink-0">
-                  <Car size={20} />
-                </div>
-                <div className="flex-1">
-                  <div className="font-semibold text-[#1e3a5f]">הזמן תור למוסך</div>
-                  <div className="text-xs text-gray-500">קבע מועד לטיפול הבא</div>
                 </div>
                 <ChevronLeft size={20} className="text-gray-400" />
               </button>
@@ -1843,6 +1962,171 @@ export default function UserHomePage() {
         </div>
         );
       })()}
+
+      {/* ═══ Test (טסט) Modal ═══ */}
+      {showTestModal && vehicle && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-end sm:items-center justify-center" onClick={() => setShowTestModal(false)}>
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[90vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="sticky top-0 bg-white rounded-t-2xl z-10 p-4 border-b flex items-center justify-between">
+              <h3 className="text-lg font-bold">🧪 פרטי טסט / רישיון רכב</h3>
+              <button onClick={() => setShowTestModal(false)} className="p-1 hover:bg-gray-100 rounded-lg">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-4" dir="rtl">
+              {/* Upload Section */}
+              <div className="border-2 border-dashed rounded-xl p-4 text-center bg-emerald-50 border-emerald-200">
+                <input
+                  ref={testFileRef}
+                  type="file"
+                  accept="image/*,application/pdf"
+                  capture="environment"
+                  className="hidden"
+                  onChange={handleTestFile}
+                />
+                {testScanning ? (
+                  <div className="flex flex-col items-center gap-2 py-4">
+                    <Loader2 size={32} className="animate-spin text-emerald-600" />
+                    <p className="text-sm font-semibold text-emerald-700">סורק את רישיון הרכב...</p>
+                    <p className="text-xs text-gray-500">ה-AI מחלץ את פרטי הטסט</p>
+                  </div>
+                ) : (
+                  <>
+                    {testPreview && (
+                      <img src={testPreview} alt="תצוגה מקדימה" className="w-full max-h-40 object-contain rounded-lg mb-3" />
+                    )}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          if (testFileRef.current) {
+                            testFileRef.current.removeAttribute('capture');
+                            testFileRef.current.click();
+                          }
+                        }}
+                        className="flex-1 bg-blue-600 text-white rounded-xl py-3 font-semibold text-sm flex items-center justify-center gap-2"
+                      >
+                        <Upload size={16} />
+                        העלה קובץ
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (testFileRef.current) {
+                            testFileRef.current.setAttribute('capture', 'environment');
+                            testFileRef.current.click();
+                          }
+                        }}
+                        className="flex-1 bg-teal-600 text-white rounded-xl py-3 font-semibold text-sm flex items-center justify-center gap-2"
+                      >
+                        <Camera size={16} />
+                        צלם רישיון רכב
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      צלם או העלה רישיון רכב — AI יחלץ את הפרטים
+                    </p>
+                  </>
+                )}
+              </div>
+
+              {testError && (
+                <div className="p-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-center gap-2">
+                  <AlertTriangle size={14} /> {testError}
+                </div>
+              )}
+
+              {testSuccess && (
+                <div className="p-2 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm flex items-center gap-2">
+                  <CheckCircle size={14} /> {testSuccess}
+                </div>
+              )}
+
+              {/* Form Fields */}
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">תוקף טסט</label>
+                    <input
+                      type="date"
+                      value={testForm.testExpiryDate}
+                      onChange={e => setTestForm({ ...testForm, testExpiryDate: e.target.value })}
+                      className="w-full border-2 rounded-xl p-2.5 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">תאריך ביצוע</label>
+                    <input
+                      type="date"
+                      value={testForm.testDate}
+                      onChange={e => setTestForm({ ...testForm, testDate: e.target.value })}
+                      className="w-full border-2 rounded-xl p-2.5 text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">עלות (₪)</label>
+                    <input
+                      type="number"
+                      value={testForm.testCost}
+                      onChange={e => setTestForm({ ...testForm, testCost: e.target.value })}
+                      placeholder="0"
+                      className="w-full border-2 rounded-xl p-2.5 text-sm"
+                      dir="ltr"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">ק&quot;מ בטסט</label>
+                    <input
+                      type="number"
+                      value={testForm.testMileageAtTest}
+                      onChange={e => setTestForm({ ...testForm, testMileageAtTest: e.target.value })}
+                      placeholder="0"
+                      className="w-full border-2 rounded-xl p-2.5 text-sm"
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">תחנת טסט</label>
+                  <input
+                    type="text"
+                    value={testForm.testStation}
+                    onChange={e => setTestForm({ ...testForm, testStation: e.target.value })}
+                    placeholder="שם התחנה"
+                    className="w-full border-2 rounded-xl p-2.5 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">בעלים קודמים</label>
+                  <input
+                    type="number"
+                    value={testForm.previousOwners}
+                    onChange={e => setTestForm({ ...testForm, previousOwners: e.target.value })}
+                    placeholder="0"
+                    className="w-full border-2 rounded-xl p-2.5 text-sm"
+                    dir="ltr"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              {/* Save Button */}
+              <button
+                onClick={handleSaveTest}
+                disabled={testSaving || !testForm.testExpiryDate}
+                className="w-full bg-emerald-600 text-white rounded-xl py-3 font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {testSaving ? <Loader2 size={18} className="animate-spin" /> : <ClipboardCheck size={18} />}
+                {testSaving ? 'שומר...' : 'שמור פרטי טסט'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ═══ AI Vehicle Assistant Chat ═══ */}
       {vehicle && (

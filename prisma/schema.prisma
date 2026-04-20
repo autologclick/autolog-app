@@ -94,9 +94,15 @@ model Vehicle {
   color             String?
   vin               String?   @unique
 
-  // Document status
+  // Test (טסט) — roadworthiness inspection
   testExpiryDate    DateTime?
   testStatus        String    @default("valid") // valid | expiring | expired
+  testDate          DateTime? // date test was performed
+  testCost          Float?    // cost in NIS
+  testStation       String?   // testing station name
+  testMileageAtTest Int?      // odometer reading at test
+  testDocUrl        String?   // uploaded certificate URL (Vercel Blob)
+  previousOwners    Int?      // number of previous owners (from רישיון רכב)
   insuranceExpiry   DateTime?
   insuranceStatus   String    @default("valid") // valid | expiring | expired
   registrationDate  DateTime?
