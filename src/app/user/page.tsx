@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
   Car, ChevronDown, ChevronLeft, Loader2, Plus, Flag,
   Wrench, FileText, Receipt, Calendar, Shield, Clock,
-  Camera, Image as ImageIcon, AlertTriangle, CheckCircle,
+  Camera, Image as ImageIcon, AlertTriangle, CheckCircle, ClipboardCheck,
   Gauge, Fuel, X, MapPin, Upload, Trash2, MessageCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -210,6 +210,7 @@ export default function UserHomePage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showInspectBanner, setShowInspectBanner] = useState(false);
 
   // Maintenance schedule
   const [maintenanceSchedule, setMaintenanceSchedule] = useState<MaintenanceSchedule | null>(null);
@@ -291,7 +292,17 @@ export default function UserHomePage() {
             if (primaryIdx >= 0) setSelectedIdxRaw(primaryIdx);
           }
         } else {
-          setShowOnboarding(true);
+          // Check if user chose "inspect" path in onboarding
+          try {
+            const intent = localStorage.getItem('autolog_user_intent');
+            if (intent === 'inspect') {
+              setShowInspectBanner(true);
+            } else {
+              setShowOnboarding(true);
+            }
+          } catch {
+            setShowOnboarding(true);
+          }
         }
       })
       .catch(() => setShowOnboarding(true))
@@ -475,6 +486,54 @@ export default function UserHomePage() {
 
   if (showOnboarding) {
     return <OnboardingWizard isOpen={true} onComplete={() => window.location.reload()} />;
+  }
+
+  if (showInspectBanner) {
+    return (
+      <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
+        {/* Header */}
+        <div className="bg-gradient-to-bl from-teal-600 to-teal-700 text-white px-4 pt-12 pb-8 rounded-b-3xl">
+          <h1 className="text-xl font-bold mb-1">שלום! 👋</h1>
+          <p className="text-teal-100 text-sm">מה תרצה לעשות היום?</p>
+        </div>
+
+        <div className="px-4 py-6 space-y-4 max-w-lg mx-auto">
+          {/* Inspect a vehicle — primary CTA */}
+          <button
+            onClick={() => router.push('/user/book-garage?service=inspection')}
+            className="w-full bg-white rounded-2xl p-5 shadow-md border-2 border-teal-200 hover:border-teal-500 transition-all text-right flex items-center gap-4 group"
+          >
+            <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-teal-100 transition">
+              <ClipboardCheck size={28} className="text-teal-600" />
+            </div>
+            <div className="flex-1">
+              <div className="font-bold text-gray-800 text-base">הזמן בדיקת רכב</div>
+              <p className="text-sm text-gray-500 mt-0.5">בחר מוסך, הזן מספר רכב והזמן בדיקה</p>
+            </div>
+            <ChevronLeft size={20} className="text-gray-400 flex-shrink-0" />
+          </button>
+
+          {/* Add vehicle — secondary option */}
+          <button
+            onClick={() => {
+              try { localStorage.removeItem('autolog_user_intent'); } catch {}
+              setShowInspectBanner(false);
+              setShowOnboarding(true);
+            }}
+            className="w-full bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:border-teal-400 transition-all text-right flex items-center gap-4 group"
+          >
+            <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-teal-50 transition">
+              <Car size={28} className="text-gray-500 group-hover:text-teal-600 transition" />
+            </div>
+            <div className="flex-1">
+              <div className="font-bold text-gray-800 text-base">הוסף רכב משלי</div>
+              <p className="text-sm text-gray-500 mt-0.5">נהל את הרכב שלך — תזכורות, הוצאות, טיפולים</p>
+            </div>
+            <ChevronLeft size={20} className="text-gray-400 flex-shrink-0" />
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!vehicle) {

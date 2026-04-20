@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { ChevronRight, CheckCircle2, Loader2, AlertCircle, Search, Send, Mail } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { ChevronRight, CheckCircle2, Loader2, AlertCircle, Search, Send, Mail, Car, ClipboardCheck } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import LicenseScanButton, { type ScanResult } from '@/components/ui/LicenseScanButton';
@@ -17,7 +17,9 @@ const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
 const manufacturers = getManufacturerNames();
 
 export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizardProps) {
+  // Steps: 1=Welcome, 2=Intent, 3=AddVehicle, 4=Success
   const [step, setStep] = useState(1);
+  const [intent, setIntent] = useState<'manage' | 'inspect' | ''>('');
   const [formData, setFormData] = useState({
     nickname: '',
     licensePlate: '',
@@ -27,6 +29,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
     color: '',
     fuelType: '',
     testExpiryDate: '',
+    mileage: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,6 +37,8 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
   const [lookupMessage, setLookupMessage] = useState('');
   const [shareState, setShareState] = useState<'idle' | 'can_request' | 'requesting' | 'sent'>('idle');
   const [sharePlate, setSharePlate] = useState('');
+  const lookupDoneRef = useState('')[0]; // track last looked-up plate
+  const [lastLookedUp, setLastLookedUp] = useState('');
 
   if (!isOpen) return null;
 
@@ -42,7 +47,6 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
     setError('');
   };
 
-  // Handle scan result from LicenseScanButton
   const handleScanResult = (result: ScanResult) => {
     setFormData(prev => ({
       ...prev,
@@ -58,7 +62,6 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
     setError('');
   };
 
-  // Manual lookup by plate number
   const handleManualLookup = async () => {
     const plate = formData.licensePlate.replace(/[-\s]/g, '');
     if (!plate || plate.length < 7) {
@@ -87,6 +90,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
           nickname: v.commercialName || (v.manufacturer && v.model ? `${v.manufacturer} ${v.model}` : prev.nickname),
         }));
         setLookupMessage('הפרטים נטענו בהצלחה!');
+        setLastLookedUp(plate);
         setTimeout(() => setLookupMessage(''), 3000);
       } else {
         setLookupMessage('לא נמצאו פרטים לרכב זה');
@@ -103,6 +107,10 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
   const handleSubmit = async () => {
     if (!formData.nickname || !formData.licensePlate || !formData.manufacturer || !formData.model || !formData.year) {
       setError('נא להשלים את כל השדות');
+      return;
+    }
+    if (!formData.mileage || Number(formData.mileage) < 0) {
+      setError('יש להזין קילומטראז׳');
       return;
     }
 
@@ -122,13 +130,13 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
           color: formData.color || undefined,
           fuelType: formData.fuelType || undefined,
           testExpiryDate: formData.testExpiryDate || undefined,
+          mileage: parseInt(formData.mileage),
         }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        // Vehicle exists and belongs to another user — offer share request
         if (data.canRequestShare) {
           setShareState('can_request');
           setSharePlate(data.vehiclePlate);
@@ -141,7 +149,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
         return;
       }
 
-      setStep(3);
+      setStep(4);
       setTimeout(() => {
         onComplete();
       }, 2000);
@@ -175,6 +183,12 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
       setError('שגיאת חיבור. אנא נסה שוב.');
       setShareState('can_request');
     }
+  };
+
+  // When user picks "inspect" — save to localStorage and skip to dashboard
+  const handleInspectPath = () => {
+    try { localStorage.setItem('autolog_user_intent', 'inspect'); } catch {}
+    onComplete();
   };
 
   return (
@@ -215,8 +229,8 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                   <CheckCircle2 size={16} className="text-teal-600" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800">דירוגים וביקורות</p>
-                  <p className="text-sm text-gray-500">השווה מוסכים ותעזור לאחרים להחליט</p>
+                  <p className="font-semibold text-gray-800">בדיקת רכב לפני קנייה</p>
+                  <p className="text-sm text-gray-500">הזמן בדיקה מקצועית לרכב שאתה שוקל לרכוש</p>
                 </div>
               </div>
             </div>
@@ -231,8 +245,57 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
           </div>
         )}
 
-        {/* Step 2: Add Vehicle */}
+        {/* Step 2: Intent — "מה תרצה לעשות?" */}
         {step === 2 && (
+          <div className="p-8 space-y-6">
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-bold text-[#1e3a5f]">מה תרצה לעשות?</h2>
+              <p className="text-sm text-gray-500">בחר את האפשרות שמתאימה לך</p>
+            </div>
+
+            <div className="space-y-3">
+              {/* Option: Manage my vehicle */}
+              <button
+                onClick={() => { setIntent('manage'); setStep(3); }}
+                className="w-full p-5 rounded-2xl border-2 border-gray-200 hover:border-teal-500 hover:bg-teal-50/50 transition-all text-right flex items-center gap-4 group"
+              >
+                <div className="w-14 h-14 bg-teal-50 group-hover:bg-teal-100 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors">
+                  <Car size={28} className="text-teal-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-bold text-gray-800 text-base">יש לי רכב</p>
+                  <p className="text-sm text-gray-500 mt-0.5">אוסיף את הרכב שלי ואנהל אותו</p>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-teal-600 transition-colors flex-shrink-0" />
+              </button>
+
+              {/* Option: Check a vehicle before buying */}
+              <button
+                onClick={handleInspectPath}
+                className="w-full p-5 rounded-2xl border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50/50 transition-all text-right flex items-center gap-4 group"
+              >
+                <div className="w-14 h-14 bg-blue-50 group-hover:bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors">
+                  <ClipboardCheck size={28} className="text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-bold text-gray-800 text-base">רוצה לבדוק רכב</p>
+                  <p className="text-sm text-gray-500 mt-0.5">בדיקה מקצועית לפני קנייה</p>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+              </button>
+            </div>
+
+            <button
+              onClick={() => setStep(1)}
+              className="w-full text-center text-sm text-gray-400 hover:text-gray-600 transition py-2"
+            >
+              חזור
+            </button>
+          </div>
+        )}
+
+        {/* Step 3: Add Vehicle */}
+        {step === 3 && (
           <div className="p-6 space-y-4">
             <div className="space-y-1">
               <div className="flex items-center justify-between">
@@ -242,7 +305,6 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
               <p className="text-sm text-gray-500">צלם רישיון רכב או הזן פרטים ידנית</p>
             </div>
 
-            {/* License Scan Button */}
             <LicenseScanButton onScanResult={handleScanResult} compact />
 
             {error && (
@@ -263,7 +325,6 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
             )}
 
             <div className="space-y-3">
-              {/* License plate with lookup button */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">מספר רכב</label>
                 <div className="flex gap-2">
@@ -278,7 +339,9 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                     type="button"
                     onClick={handleManualLookup}
                     disabled={loading || lookingUp || formData.licensePlate.replace(/[-\s]/g, '').length < 7}
-                    className="px-3 py-2 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition disabled:opacity-50 flex items-center gap-1.5 flex-shrink-0"
+                    className={`px-3 py-2 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition disabled:opacity-50 flex items-center gap-1.5 flex-shrink-0 ${
+                      formData.licensePlate.replace(/[-\s]/g, '').length >= 7 && !lastLookedUp ? 'animate-pulse' : ''
+                    }`}
                   >
                     {lookingUp ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
                     חפש
@@ -306,7 +369,6 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                     className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
                   >
                     <option value="">בחר יצרן</option>
-                    {/* Include API-returned manufacturer if not in the static list */}
                     {formData.manufacturer && !manufacturers.includes(formData.manufacturer) && (
                       <option value={formData.manufacturer}>{formData.manufacturer}</option>
                     )}
@@ -345,7 +407,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">שנה</label>
                   <select
@@ -359,20 +421,30 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                     ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">צבע</label>
                   <Input
-                    placeholder="למשל: לבן"
+                    placeholder="לבן"
                     value={formData.color}
                     onChange={(e) => handleInputChange('color', e.target.value)}
                     disabled={loading}
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">ק״מ *</label>
+                  <Input
+                    placeholder="45000"
+                    type="number"
+                    value={formData.mileage}
+                    onChange={(e) => handleInputChange('mileage', e.target.value)}
+                    disabled={loading}
+                    required
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Share Request Panel — shown when vehicle belongs to another user */}
+            {/* Share Request Panel */}
             {shareState !== 'idle' && (
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl space-y-3">
                 {shareState === 'can_request' && (
@@ -424,7 +496,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
             {shareState === 'idle' && (
             <div className="flex gap-3 pt-2">
               <Button
-                onClick={() => setStep(1)}
+                onClick={() => setStep(2)}
                 disabled={loading}
                 className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-xl"
               >
@@ -452,8 +524,8 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
           </div>
         )}
 
-        {/* Step 3: Success */}
-        {step === 3 && (
+        {/* Step 4: Success */}
+        {step === 4 && (
           <div className="p-8 space-y-6 text-center">
             <div className="space-y-4">
               <div className="text-7xl animate-bounce">🎉</div>

@@ -199,6 +199,15 @@ export default function BookGaragePage() {
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
 
+  // Inline vehicle add for users with no vehicles (inspect flow)
+  const [inlinePlate, setInlinePlate] = useState('');
+  const [inlineLookingUp, setInlineLookingUp] = useState(false);
+  const [inlineAdding, setInlineAdding] = useState(false);
+  const [inlineLookupData, setInlineLookupData] = useState<{
+    manufacturer: string; model: string; year: number; color?: string;
+  } | null>(null);
+  const [inlineError, setInlineError] = useState('');
+
   const selectedGarage = garages.find(g => g.id === selectedGarageId);
 
   // Fetch booked slots when garage + date are selected
@@ -296,6 +305,85 @@ export default function BookGaragePage() {
     setError('');
     setBookingStep('details');
     setShowBookingModal(true);
+    // Reset inline vehicle add state
+    setInlinePlate('');
+    setInlineLookupData(null);
+    setInlineError('');
+  };
+
+  // Inline lookup for users without vehicles
+  const handleInlineLookup = async () => {
+    const plate = inlinePlate.replace(/[-\s]/g, '');
+    if (plate.length < 7) { setInlineError('יש להזין מספר רישוי תקין'); return; }
+    setInlineLookingUp(true);
+    setInlineError('');
+    setInlineLookupData(null);
+    try {
+      const res = await fetch(`/api/vehicles/lookup?plate=${plate}`);
+      const data = await res.json();
+      if (res.ok && data.manufacturer) {
+        setInlineLookupData({ manufacturer: data.manufacturer, model: data.model, year: data.year, color: data.color });
+      } else {
+        setInlineError(data.error || 'לא נמצאו נתונים לרכב זה');
+      }
+    } catch {
+      setInlineError('שגיאת חיבור');
+    } finally {
+      setInlineLookingUp(false);
+    }
+  };
+
+  // Auto-trigger inline lookup when plate is long enough
+  useEffect(() => {
+    const plate = inlinePlate.replace(/[-\s]/g, '');
+    if (plate.length >= 7 && !inlineLookingUp && !inlineLookupData) {
+      const timer = setTimeout(() => handleInlineLookup(), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [inlinePlate]);
+
+  // Add vehicle inline and select it
+  const handleInlineAddVehicle = async () => {
+    if (!inlineLookupData) return;
+    setInlineAdding(true);
+    setInlineError('');
+    try {
+      const plate = inlinePlate.replace(/[-\s]/g, '');
+      const res = await fetch('/api/vehicles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nickname: `${inlineLookupData.manufacturer} ${inlineLookupData.model}`,
+          licensePlate: plate,
+          manufacturer: inlineLookupData.manufacturer,
+          model: inlineLookupData.model,
+          year: inlineLookupData.year,
+          color: inlineLookupData.color || '',
+          mileage: 0,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.vehicle) {
+        const newVehicle: Vehicle = {
+          id: data.vehicle.id,
+          nickname: data.vehicle.nickname,
+          manufacturer: data.vehicle.manufacturer,
+          model: data.vehicle.model,
+          year: data.vehicle.year,
+          licensePlate: data.vehicle.licensePlate,
+        };
+        setVehicles(prev => [...prev, newVehicle]);
+        setBookingData(prev => ({ ...prev, vehicleId: data.vehicle.id }));
+        // Clear inspect intent since they now have a vehicle
+        try { localStorage.removeItem('autolog_user_intent'); } catch {}
+      } else {
+        setInlineError(data.error || 'שגיאה בהוספת הרכב');
+      }
+    } catch {
+      setInlineError('שגיאת חיבור');
+    } finally {
+      setInlineAdding(false);
+    }
   };
 
   const handleSubmitBooking = async () => {
@@ -586,10 +674,64 @@ export default function BookGaragePage() {
                 {vehicles.length === 1 ? 'הרכב שלך' : 'בחר את הרכב שלך'}
               </label>
               {vehicles.length === 0 ? (
-                <div className="text-center py-6 bg-[#fef7ed] rounded-2xl border-2 border-dashed border-gray-300">
-                  <Car size={32} className="mx-auto text-gray-400 mb-2" />
-                  <p className="text-gray-600 text-sm font-bold">אין רכבים</p>
-                  <p className="text-gray-400 text-xs mt-1">הוסף רכב קודם לפני הזמנת תור</p>
+                <div className="bg-[#fef7ed] rounded-2xl border-2 border-dashed border-teal-300 p-4">
+                  <p className="text-sm font-bold text-gray-800 mb-2">הזן מספר רכב לבדיקה</p>
+                  <p className="text-xs text-gray-500 mb-3">נמצא את פרטי הרכב אוטומטית ממשרד התחבורה</p>
+                  <div className="flex gap-2" dir="ltr">
+                    <Input
+                      placeholder="מספר רישוי"
+                      value={inlinePlate}
+                      onChange={e => { setInlinePlate(e.target.value); setInlineLookupData(null); setInlineError(''); }}
+                      className="flex-1 text-center font-bold text-lg tracking-wider"
+                      maxLength={10}
+                    />
+                  </div>
+                  {inlineLookingUp && (
+                    <div className="flex items-center gap-2 justify-center mt-3 text-teal-600">
+                      <Loader2 size={16} className="animate-spin" />
+                      <span className="text-xs">מחפש נתוני רכב...</span>
+                    </div>
+                  )}
+                  {inlineError && (
+                    <div className="flex items-center gap-1.5 mt-3 text-red-600">
+                      <AlertCircle size={14} />
+                      <span className="text-xs">{inlineError}</span>
+                    </div>
+                  )}
+                  {inlineLookupData && !bookingData.vehicleId && (
+                    <div className="mt-3 bg-white rounded-xl p-3 border border-teal-200">
+                      <div className="flex items-center gap-2 mb-2" dir="rtl">
+                        <CheckCircle2 size={16} className="text-green-500 flex-shrink-0" />
+                        <span className="text-sm font-bold text-gray-800">נמצא!</span>
+                      </div>
+                      <div className="text-sm text-gray-700" dir="rtl">
+                        {inlineLookupData.manufacturer} {inlineLookupData.model} ({inlineLookupData.year})
+                        {inlineLookupData.color && <span className="text-gray-500"> · {inlineLookupData.color}</span>}
+                      </div>
+                      <button
+                        onClick={handleInlineAddVehicle}
+                        disabled={inlineAdding}
+                        className="mt-3 w-full bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold py-2.5 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        {inlineAdding ? (
+                          <><Loader2 size={16} className="animate-spin" /> מוסיף...</>
+                        ) : (
+                          <><Check size={16} /> אשר והמשך</>
+                        )}
+                      </button>
+                    </div>
+                  )}
+                  {bookingData.vehicleId && vehicles.length > 0 && (
+                    <div className="mt-3 bg-teal-50 border-2 border-teal-600 rounded-xl p-3 flex items-center gap-3" dir="rtl">
+                      <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Check size={16} className="text-white" />
+                      </div>
+                      <div className="flex-1 text-right">
+                        <div className="font-bold text-gray-800 text-sm">{vehicles[vehicles.length - 1]?.nickname}</div>
+                        <div className="text-xs text-gray-500">{vehicles[vehicles.length - 1]?.manufacturer} {vehicles[vehicles.length - 1]?.model}</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : vehicles.length === 1 ? (
                 /* Single vehicle — shown as selected, no tap needed */
