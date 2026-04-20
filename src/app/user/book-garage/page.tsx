@@ -524,6 +524,19 @@ export default function BookGaragePage() {
               </div>
             </div>
 
+            {/* Disclaimer */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-4 flex gap-3 items-start">
+              <div className="w-8 h-8 bg-[#1e3a5f]/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                <FileText size={16} className="text-[#1e3a5f]" />
+              </div>
+              <div className="flex-1 text-right">
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  הבדיקה מציגה את מצב הרכב בפועל במועד ביצועה.
+                  <span className="font-semibold text-gray-700"> AutoLog והמוסכים השותפים אינם נותנים אחריות על ממצאי הבדיקה או על מצב הרכב לאחריה.</span>
+                </p>
+              </div>
+            </div>
+
             {/* Search */}
             <Input placeholder="חפש מוסך לפי שם או עיר..." icon={<Search size={16} />}
               value={search} onChange={e => setSearch(e.target.value)} />
