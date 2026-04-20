@@ -44,10 +44,18 @@ export const updateProfileSchema = z.object({
   preferredLanguage: z.enum(['he', 'en', 'ar', 'ru']).optional(),
   avatarUrl: z.string().url('כתובת תמונה לא תקינה').optional().or(z.literal('')),
   notificationPreferences: z.object({
+    // Channel preferences
     email: z.boolean().optional(),
     push: z.boolean().optional(),
     sms: z.boolean().optional(),
     whatsapp: z.boolean().optional(),
+    // Topic preferences
+    testReminder: z.boolean().optional(),
+    insuranceReminder: z.boolean().optional(),
+    inspectionUpdate: z.boolean().optional(),
+    appointmentReminder: z.boolean().optional(),
+    sosAlerts: z.boolean().optional(),
+    benefitAlerts: z.boolean().optional(),
   }).optional(),
 });
 

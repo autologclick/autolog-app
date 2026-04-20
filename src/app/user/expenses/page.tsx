@@ -144,6 +144,17 @@ export default function ExpensesPage() {
     })
     .reduce((sum, exp) => sum + exp.amount, 0);
 
+  // Calculate actual number of months with data for accurate average
+  const activeMonths = filteredExpenses.length > 0
+    ? (() => {
+        const dates = filteredExpenses.map(e => new Date(e.date));
+        const earliest = new Date(Math.min(...dates.map(d => d.getTime())));
+        const latest = new Date(Math.max(...dates.map(d => d.getTime())));
+        return Math.max(1, Math.ceil((latest.getTime() - earliest.getTime()) / (1000 * 60 * 60 * 24 * 30)) + 1);
+      })()
+    : 1;
+  const monthlyAverage = filteredExpenses.length > 0 ? Math.round(totalExpenses / activeMonths) : 0;
+
   // Category breakdown
   const categoryBreakdown = CATEGORY_KEYS.reduce((acc, cat) => {
     const sum = filteredExpenses.filter(exp => exp.category === cat).reduce((s, e) => s + e.amount, 0);
@@ -389,7 +400,7 @@ export default function ExpensesPage() {
           </div>
           <div className="bg-white rounded-2xl p-3 text-center shadow-sm">
             <p className="text-xs text-gray-500 mb-1">ממוצע חודשי</p>
-            <p className="text-lg font-bold text-[#1e3a5f]">₪{filteredExpenses.length > 0 ? Math.round((totalExpenses / 6)).toLocaleString() : '0'}</p>
+            <p className="text-lg font-bold text-[#1e3a5f]">₪{monthlyAverage.toLocaleString()}</p>
           </div>
         </div>
 

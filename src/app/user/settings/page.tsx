@@ -66,6 +66,10 @@ export default function SettingsPage() {
           email: userData.user.email || '',
           licenseNumber: userData.user.licenseNumber || '',
         });
+        // Load notification preferences if saved
+        if (userData.user.notificationPreferences) {
+          setNotifPrefs(prev => ({ ...prev, ...userData.user.notificationPreferences }));
+        }
       }
       setVehicleCount(vData.vehicles?.length || 0);
       setLoading(false);
@@ -77,7 +81,7 @@ export default function SettingsPage() {
   const phoneRegex = /^0\d{1,2}[-\s]?\d{3}[-\s]?\d{4}$/;
   const isProfileValid = profile.fullName.trim().length > 0
     && (!profile.email || emailRegex.test(profile.email))
-    && (!profile.phone || phoneRegex.test(profile.phone.replace(/[-\s]/g, '').length >= 10 ? profile.phone : ''));
+    && (!profile.phone || profile.phone.replace(/[-\s]/g, '').length < 10 || phoneRegex.test(profile.phone));
 
   const handleSave = async () => {
     if (profile.email && !emailRegex.test(profile.email)) {
@@ -163,7 +167,18 @@ export default function SettingsPage() {
   };
 
   const toggleNotif = (key: keyof typeof notifPrefs) => {
-    setNotifPrefs(prev => ({ ...prev, [key]: !prev[key] }));
+    const updated = { ...notifPrefs, [key]: !notifPrefs[key] };
+    setNotifPrefs(updated);
+    // Persist to server
+    fetch('/api/auth/me', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ notificationPreferences: updated }),
+    }).catch(() => {
+      // Revert on failure
+      setNotifPrefs(notifPrefs);
+      toast.error('שגיאה בשמירת העדפות התראות');
+    });
   };
 
   const getInitialGradient = () => {
