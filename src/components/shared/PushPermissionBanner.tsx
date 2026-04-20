@@ -17,9 +17,16 @@ export default function PushPermissionBanner() {
     if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
     if (Notification.permission !== 'default') return;
 
-    // Don't show if already dismissed
     try {
-      if (localStorage.getItem('push-banner-dismissed')) return;
+      const dismissedAt = localStorage.getItem('push-banner-dismissed');
+      if (dismissedAt) {
+        const dismissCount = parseInt(localStorage.getItem('push-banner-dismiss-count') || '1');
+        // After 2 dismissals — stop showing permanently
+        if (dismissCount >= 2) return;
+        // After first dismissal — wait 1 day before reminding
+        const daysSince = (Date.now() - parseInt(dismissedAt)) / (1000 * 60 * 60 * 24);
+        if (daysSince < 1) return;
+      }
     } catch {}
 
     // Show after a short delay
@@ -60,13 +67,20 @@ export default function PushPermissionBanner() {
     } finally {
       setSubscribing(false);
       setShow(false);
-      try { localStorage.setItem('push-banner-dismissed', '1'); } catch {}
+      try {
+        localStorage.setItem('push-banner-dismissed', String(Date.now()));
+        localStorage.setItem('push-banner-dismiss-count', '99'); // permanent after enabling
+      } catch {}
     }
   }, []);
 
   const handleDismiss = useCallback(() => {
     setShow(false);
-    try { localStorage.setItem('push-banner-dismissed', '1'); } catch {}
+    try {
+      const count = parseInt(localStorage.getItem('push-banner-dismiss-count') || '0') + 1;
+      localStorage.setItem('push-banner-dismissed', String(Date.now()));
+      localStorage.setItem('push-banner-dismiss-count', String(count));
+    } catch {}
   }, []);
 
   if (!show) return null;
