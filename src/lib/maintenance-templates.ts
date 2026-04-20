@@ -41,7 +41,7 @@ export interface MaintenanceTemplateData {
 
 // Bump this version whenever ISRAELI_MARKET_TEMPLATES changes.
 // Auto-seed will re-run when the deployed version differs from the DB.
-const TEMPLATE_VERSION = 6;
+const TEMPLATE_VERSION = 8;
 
 // ── Manufacturer name aliases for matching ──
 // Maps various spellings (Hebrew, English, common typos) to the canonical name used in templates.
@@ -69,9 +69,83 @@ const MANUFACTURER_ALIASES: Record<string, string> = {
   // Honda
   'honda': 'הונדה', 'HONDA': 'הונדה', 'Honda': 'הונדה',
   // BMW
-  'bmw': 'ב.מ.וו', 'BMW': 'ב.מ.וו', 'Bmw': 'ב.מ.וו',
+  'bmw': 'ב.מ.וו', 'BMW': 'ב.מ.וו', 'Bmw': 'ב.מ.וו', 'בי אם וו': 'ב.מ.וו', 'בי.אם.וו': 'ב.מ.וו',
   // Mercedes
-  'mercedes': 'מרצדס', 'MERCEDES': 'מרצדס', 'Mercedes': 'מרצדס', 'mercedes-benz': 'מרצדס',
+  'mercedes': 'מרצדס', 'MERCEDES': 'מרצדס', 'Mercedes': 'מרצדס', 'mercedes-benz': 'מרצדס', 'Mercedes-Benz': 'מרצדס',
+  // Renault
+  'renault': 'רנו', 'RENAULT': 'רנו', 'Renault': 'רנו',
+  // Peugeot
+  'peugeot': 'פיז\'ו', 'PEUGEOT': 'פיז\'ו', 'Peugeot': 'פיז\'ו', 'פז\'ו': 'פיז\'ו',
+  // Citroen
+  'citroen': 'סיטרואן', 'CITROEN': 'סיטרואן', 'Citroen': 'סיטרואן', 'citroën': 'סיטרואן',
+  // Dacia
+  'dacia': 'דאצ\'יה', 'DACIA': 'דאצ\'יה', 'Dacia': 'דאצ\'יה',
+  // MG
+  'mg': 'MG', 'Mg': 'MG',
+  // Chery
+  'chery': 'צ\'רי', 'CHERY': 'צ\'רי', 'Chery': 'צ\'רי',
+  // Geely
+  'geely': 'ג\'ילי', 'GEELY': 'ג\'ילי', 'Geely': 'ג\'ילי',
+  // Subaru
+  'subaru': 'סובארו', 'SUBARU': 'סובארו', 'Subaru': 'סובארו',
+  // Ford
+  'ford': 'פורד', 'FORD': 'פורד', 'Ford': 'פורד',
+  // Audi
+  'audi': 'אאודי', 'AUDI': 'אאודי', 'Audi': 'אאודי',
+  // Opel
+  'opel': 'אופל', 'OPEL': 'אופל', 'Opel': 'אופל',
+  // Fiat
+  'fiat': 'פיאט', 'FIAT': 'פיאט', 'Fiat': 'פיאט',
+  // Lexus (Toyota luxury)
+  'lexus': 'לקסוס', 'LEXUS': 'לקסוס', 'Lexus': 'לקסוס',
+  // Volvo
+  'volvo': 'וולוו', 'VOLVO': 'וולוו', 'Volvo': 'וולוו',
+  // Jeep
+  'jeep': 'ג\'יפ', 'JEEP': 'ג\'יפ', 'Jeep': 'ג\'יפ',
+  // Chevrolet
+  'chevrolet': 'שברולט', 'CHEVROLET': 'שברולט', 'Chevrolet': 'שברולט', 'chevy': 'שברולט',
+  // Tesla
+  'tesla': 'טסלה', 'TESLA': 'טסלה', 'Tesla': 'טסלה',
+  // BYD
+  'byd': 'BYD', 'BYD': 'BYD', 'Byd': 'BYD', 'ביד': 'BYD',
+  // Mini (BMW Group)
+  'mini': 'מיני', 'MINI': 'מיני', 'Mini': 'מיני',
+  // Alfa Romeo
+  'alfa romeo': 'אלפא רומיאו', 'ALFA ROMEO': 'אלפא רומיאו', 'Alfa Romeo': 'אלפא רומיאו', 'alfa': 'אלפא רומיאו',
+  // Land Rover / Range Rover
+  'land rover': 'לנד רובר', 'LAND ROVER': 'לנד רובר', 'Land Rover': 'לנד רובר', 'range rover': 'לנד רובר', 'Range Rover': 'לנד רובר', 'ריינג\' רובר': 'לנד רובר',
+  // Jaguar
+  'jaguar': 'יגואר', 'JAGUAR': 'יגואר', 'Jaguar': 'יגואר',
+  // Porsche
+  'porsche': 'פורשה', 'PORSCHE': 'פורשה', 'Porsche': 'פורשה',
+  // Ssangyong
+  'ssangyong': 'סאנגיונג', 'SSANGYONG': 'סאנגיונג', 'Ssangyong': 'סאנגיונג', 'SsangYong': 'סאנגיונג',
+  // Isuzu
+  'isuzu': 'איסוזו', 'ISUZU': 'איסוזו', 'Isuzu': 'איסוזו',
+  // GWM / Haval (Great Wall Motors)
+  'gwm': 'GWM', 'GWM': 'GWM', 'haval': 'GWM', 'HAVAL': 'GWM', 'Haval': 'GWM', 'האוול': 'GWM',
+  // JAC
+  'jac': 'JAC', 'JAC': 'JAC', 'Jac': 'JAC', 'ג\'אק': 'JAC',
+  // Polestar (Volvo/Geely electric)
+  'polestar': 'פולסטאר', 'POLESTAR': 'פולסטאר', 'Polestar': 'פולסטאר',
+  // Smart
+  'smart': 'סמארט', 'SMART': 'סמארט', 'Smart': 'סמארט',
+  // DS (PSA luxury)
+  'ds': 'DS', 'DS': 'DS',
+  // Dodge / RAM
+  'dodge': 'דודג\'', 'DODGE': 'דודג\'', 'Dodge': 'דודג\'', 'ram': 'דודג\'', 'RAM': 'דודג\'', 'Ram': 'דודג\'',
+  // Infiniti (Nissan luxury)
+  'infiniti': 'אינפיניטי', 'INFINITI': 'אינפיניטי', 'Infiniti': 'אינפיניטי',
+  // BAIC
+  'baic': 'BAIC', 'BAIC': 'BAIC',
+  // Maxus (LDV)
+  'maxus': 'מקסוס', 'MAXUS': 'מקסוס', 'Maxus': 'מקסוס', 'ldv': 'מקסוס', 'LDV': 'מקסוס',
+  // Cupra (separate entry in case registered differently)
+  'קופרא': 'סיאט',
+  // Lancia
+  'lancia': 'לנצ\'יה', 'LANCIA': 'לנצ\'יה', 'Lancia': 'לנצ\'יה',
+  // Seat in Hebrew
+  'סיאט': 'סיאט',
 };
 
 function normalizeManufacturer(name: string): string {
@@ -452,6 +526,899 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DSG', intervalKm: 60000, intervalMonths: 48, description: 'שמן DSG — קריטי לתיבות כפולות' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- VOLKSWAGEN (VW Group) ----
+  {
+    manufacturer: 'פולקסווגן',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן סינטטי 5W-30/0W-20 לפי דרישת היצרן' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר לביצועי מנוע מיטביים' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן תא נוסעים — אוויר נקי ומונע ריחות' },
+      { category: 'בלמים', item: 'בדיקת רפידות בלמים קדמיות', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת עובי רפידות והחלפה במידת הצורך' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 60000, intervalMonths: 24, description: 'VW דורש החלפה כל שנתיים — מונע קורוזיה' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל G13 ייעודי לקבוצת VW' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 90000, intervalMonths: 60, description: 'קריטי — קריעת רצועה גורמת לנזק חמור למנוע' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום/פלטינום לביצועים מיטביים' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DSG/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן DSG — קריטי לתיבות דאבל קלאץ\' של VW' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- NISSAN ----
+  {
+    manufacturer: 'ניסאן',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן סינטטי 5W-30 — הבסיס לכל טיפול' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע — חיוני לביצועים וחיסכון בדלק' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה לאוויר נקי' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות, דיסקים וצנרת' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'נוזל בלמים DOT4 — מניעת קורוזיה' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'ניסאן Super Long Life Coolant' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 60, description: 'רצועת עזר מפעילה אלטרנטור ומזגן' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים ייעודיים לניסאן' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT', intervalKm: 60000, intervalMonths: 48, description: 'שמן CVT NS-3 ייעודי — קריטי לתיבות CVT של ניסאן' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- MITSUBISHI ----
+  {
+    manufacturer: 'מיצובישי',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן סינטטי מלא 0W-20/5W-30' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה — החלפה כל טיפול' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים לבטיחות' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל Super Long Life Coolant' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 60, description: 'רצועת V מפעילה מערכות עזר' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתי אירידיום' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT/אוטומט', intervalKm: 80000, intervalMonths: 60, description: 'שמן CVTF-J4 ייעודי למיצובישי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- SUZUKI ----
+  {
+    manufacturer: 'סוזוקי',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן סינטטי 0W-20 לחיסכון בדלק' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל Super Long Life' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 30000, intervalMonths: 24, description: 'מצתי ניקל סטנדרטיים — החלפה תדירה יותר' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן CVT Green 1 של סוזוקי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- HONDA ----
+  {
+    manufacturer: 'הונדה',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן 0W-20 סינטטי מלא' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר לביצועי מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה — כל טיפול' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים קדמיים ואחוריים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 36, description: 'הונדה ממליצה החלפה כל 3 שנים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 72, description: 'Honda Long Life Coolant Type 2' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 105000, intervalMonths: 72, description: 'רצועת Serpentine' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 105000, intervalMonths: 72, description: 'מצתי אירידיום — מחזיקים מעמד ארוך' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT', intervalKm: 60000, intervalMonths: 48, description: 'שמן Honda HCF-2 ייעודי לתיבות CVT' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- BMW ----
+  {
+    manufacturer: 'ב.מ.וו',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן BMW LL-01 סינטטי מלא — כל 15,000 ק"מ בישראל' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'Micro-filter — מסנן קבינה עם פחם פעיל' },
+      { category: 'בלמים', item: 'בדיקת רפידות ודיסקי בלמים', intervalKm: 30000, intervalMonths: 24, description: 'חיישני בלאי מתריעים — בדיקה ויזואלית כל טיפול' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'BMW דורש החלפה כל שנתיים — קריטי לביצועים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 48, description: 'BMW Antifreeze/Coolant' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 60000, intervalMonths: 48, description: 'רצועה ריבד Serpentine' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום NGK/Bosch' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט (ZF)', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ZF LifeGuard — למרות ש-BMW טוען "sealed for life"' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- MERCEDES ----
+  {
+    manufacturer: 'מרצדס',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן MB 229.5 סינטטי מלא' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה עם שכבת פחם פעיל' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים — חיישני בלאי מובנים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'מרצדס דורש החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'MB Coolant 325.0' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 48, description: 'רצועת Poly-V' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים ייעודיים למרצדס' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר 9G-Tronic', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF 236.17 — קריטי לתיבות 9 הילוכים' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- RENAULT ----
+  {
+    manufacturer: 'רנו',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן RN0720 סינטטי 5W-30' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Glaceol RX Type D' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 60, description: 'רצועת Poly-V' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 30000, intervalMonths: 24, description: 'מצתים — מרווח קצר יותר למנועי רנו TCe' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר EDC/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן Elfmatic CVT ייעודי לרנו' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- PEUGEOT / CITROEN (PSA Group) ----
+  {
+    manufacturer: 'פיז\'ו',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן Total Quartz INEO 5W-30' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור Revkogel 2000+' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 90000, intervalMonths: 72, description: 'קריטי — במנועי PureTech יש שרשרת טיימינג' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים ייעודיים למנועי PureTech/VTi' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר EAT6/EAT8', intervalKm: 60000, intervalMonths: 48, description: 'שמן Total Fluidmatic — קריטי לתיבות Aisin' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- CITROEN (same PSA intervals) ----
+  {
+    manufacturer: 'סיטרואן',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן Total Quartz INEO 5W-30' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 90000, intervalMonths: 72, description: 'קריטי — קריעה גורמת לנזק חמור' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ייעודי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- DACIA (Renault platform) ----
+  {
+    manufacturer: 'דאצ\'יה',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן 5W-30 סינטטי' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 30000, intervalMonths: 24, description: 'מצתים — מנועי TCe של דאצ\'יה' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT/EDC', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי לתיבת הילוכים' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- MG (Chinese-owned, popular in Israel 2022+) ----
+  {
+    manufacturer: 'MG',
+    model: '*',
+    yearFrom: 2020,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 10000, intervalMonths: 12, description: 'MG ממליצה כל 10,000 ק"מ — מרווח קצר יותר' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 20000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 10000, intervalMonths: 12, description: 'מסנן קבינה — כל טיפול' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 20000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים למנועי טורבו 1.5' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DCT/CVT', intervalKm: 60000, intervalMonths: 48, description: 'שמן DCT ייעודי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- CHERY (Chinese, growing in Israel) ----
+  {
+    manufacturer: 'צ\'רי',
+    model: '*',
+    yearFrom: 2020,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 10000, intervalMonths: 12, description: 'שמן 5W-30 סינטטי — מרווח 10,000 ק"מ' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 20000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 10000, intervalMonths: 12, description: 'מסנן קבינה — כל טיפול' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 20000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים למנועי טורבו' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT/DCT', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי לתיבת הילוכים' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- SUBARU ----
+  {
+    manufacturer: 'סובארו',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן 0W-20 סינטטי למנועי בוקסר' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'סובארו ממליצה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Subaru Long Life Coolant' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 105000, intervalMonths: 72, description: 'קריטי למנועי בוקסר (FB/FA — שרשרת, EJ — רצועה)' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT (Lineartronic)', intervalKm: 60000, intervalMonths: 48, description: 'שמן CVT-II ייעודי לסובארו' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- AUDI (VW Group — premium intervals) ----
+  {
+    manufacturer: 'אאודי',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן VW 504/507 סינטטי מלא' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה עם פחם פעיל' },
+      { category: 'בלמים', item: 'בדיקת רפידות ודיסקי בלמים', intervalKm: 30000, intervalMonths: 24, description: 'חיישני בלאי — בדיקה כל טיפול שני' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 60000, intervalMonths: 24, description: 'אאודי דורש החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל G13' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 90000, intervalMonths: 60, description: 'שרשרת ברוב הדגמים — בדיקת מתיחות' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר S-Tronic/Tiptronic', intervalKm: 60000, intervalMonths: 48, description: 'שמן DSG/ATF ייעודי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- FORD ----
+  {
+    manufacturer: 'פורד',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן Ford Castrol 5W-20/5W-30' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'נוזל DOT4 — החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Motorcraft Orange Coolant' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 60, description: 'רצועת Serpentine' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום למנועי EcoBoost' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר PowerShift/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF Mercon — קריטי לתיבות PowerShift' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- OPEL (GM/Stellantis) ----
+  {
+    manufacturer: 'אופל',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן Dexos2 5W-30 סינטטי' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Dex-Cool Long Life' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 90000, intervalMonths: 72, description: 'שרשרת ברוב מנועי 1.2T/1.4T' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ייעודי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- FIAT ----
+  {
+    manufacturer: 'פיאט',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן Selenia 5W-30/5W-40' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור Paraflu UP' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 75000, intervalMonths: 60, description: 'קריטי — במנועי Fire/MultiAir' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DDCT/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי לתיבות Dualogic/DDCT' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- GEELY (Chinese, growing in Israel) ----
+  {
+    manufacturer: 'ג\'ילי',
+    model: '*',
+    yearFrom: 2020,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 10000, intervalMonths: 12, description: 'שמן 5W-30 סינטטי — מרווח 10,000 ק"מ' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 20000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 10000, intervalMonths: 12, description: 'מסנן קבינה — כל טיפול' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 20000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים למנועי טורבו' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DCT/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי לתיבת הילוכים' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- LEXUS (Toyota luxury — similar intervals) ----
+  {
+    manufacturer: 'לקסוס',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן סינטטי מלא 0W-20 — תקן לקסוס' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 45000, intervalMonths: 36, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה — כל טיפול' },
+      { category: 'בלמים', item: 'בדיקת רפידות ודיסקי בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקה והחלפה לפי בלאי' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 36, description: 'מונע קורוזיה במערכת' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 160000, intervalMonths: 84, description: 'Toyota Super Long Life Coolant' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 105000, intervalMonths: 72, description: 'רצועת עזר' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 105000, intervalMonths: 72, description: 'מצתי אירידיום — מחזיקים עד 100K ק"מ' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 75000, intervalMonths: 60, description: 'שמן ATF WS ייעודי ללקסוס' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- VOLVO ----
+  {
+    manufacturer: 'וולוו',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן VCC RBS0-2AE 0W-20 סינטטי מלא' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה עם פחם פעיל IAQS' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'וולוו דורש החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Volvo Coolant VCS' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 90000, intervalMonths: 60, description: 'רצועת Poly-V' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום למנועי Drive-E' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט (Aisin)', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF לתיבת Aisin AW של וולוו' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- JEEP (Stellantis) ----
+  {
+    manufacturer: 'ג\'יפ',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן סינטטי 5W-30/0W-20 לפי דגם' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'OAT Coolant' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 60, description: 'רצועת Serpentine' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים למנועי MultiAir/Tigershark' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר ZF 9HP', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ZF — קריטי לתיבות 9 הילוכים' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- CHEVROLET ----
+  {
+    manufacturer: 'שברולט',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן Dexos1 Gen3 סינטטי' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Dex-Cool Long Life' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום ACDelco' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 75000, intervalMonths: 60, description: 'שמן Dexron VI ATF' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- TESLA (Electric — no oil changes!) ----
+  {
+    manufacturer: 'טסלה',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: 'electric',
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן HEPA — חיוני לאיכות אוויר בקבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בלאי נמוך בזכות בלימה רגנרטיבית — בדיקה תקופתית' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 60000, intervalMonths: 24, description: 'טסלה ממליצה החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור מערכת חשמל', intervalKm: 120000, intervalMonths: 48, description: 'נוזל קירור למנוע חשמלי וסוללה' },
+      { category: 'צמיגים', item: 'סיבוב/החלפת צמיגים', intervalKm: 15000, intervalMonths: 12, description: 'רכב חשמלי — בלאי צמיגים מהיר יותר בשל מומנט מיידי' },
+      { category: 'מיזוג', item: 'ייבוש מערכת מיזוג (Desiccant)', intervalKm: 90000, intervalMonths: 72, description: 'החלפת חומר ייבוש במערכת המיזוג' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מצבר 12V, מערכת בלימה, מתלים, עדכון תוכנה ואבחון מחשב' },
+    ]
+  },
+
+  // ---- BYD (Chinese electric/hybrid — fastest growing in Israel) ----
+  {
+    manufacturer: 'BYD',
+    model: '*',
+    yearFrom: 2020,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 10000, intervalMonths: 12, description: 'מסנן קבינה — כל טיפול' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 20000, intervalMonths: 24, description: 'בלאי מופחת בזכות בלימה רגנרטיבית' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור מערכת חשמל', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור לסוללה ומנוע חשמלי' },
+      { category: 'צמיגים', item: 'סיבוב/החלפת צמיגים', intervalKm: 10000, intervalMonths: 12, description: 'בלאי מהיר יותר ברכב חשמלי — סיבוב כל טיפול' },
+      { category: 'תיבת הילוכים', item: 'בדיקת/החלפת שמן גיר הפחתה', intervalKm: 60000, intervalMonths: 48, description: 'שמן גיר הפחתה למנוע חשמלי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מצבר 12V, מערכת בלימה, מתלים, מערכת חשמל ואבחון מחשב' },
+    ]
+  },
+
+  // ---- MINI (BMW Group) ----
+  {
+    manufacturer: 'מיני',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן BMW LL-01 סינטטי' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'Micro-filter — מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת רפידות ודיסקי בלמים', intervalKm: 30000, intervalMonths: 24, description: 'חיישני בלאי מתריעים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'החלפה כל שנתיים — תקן BMW Group' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 48, description: 'BMW/MINI Coolant' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט/DCT', intervalKm: 60000, intervalMonths: 48, description: 'שמן Aisin ATF/DCT ייעודי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- ALFA ROMEO (Stellantis) ----
+  {
+    manufacturer: 'אלפא רומיאו',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן Selenia K Power 5W-30' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור Paraflu UP' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 75000, intervalMonths: 60, description: 'קריטי — במנועי MultiAir' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים למנועי MultiAir/GME טורבו' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר ZF 8HP/DCT', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ZF LifeGuard' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- LAND ROVER / RANGE ROVER ----
+  {
+    manufacturer: 'לנד רובר',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן Castrol Edge Professional 5W-20' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה PM2.5' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Land Rover OAT Coolant' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 60, description: 'רצועת Serpentine' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום למנועי Ingenium' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר ZF 8HP/9HP', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ZF LifeGuard 8' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות, מערכת שטח ואבחון מחשב' },
+    ]
+  },
+
+  // ---- JAGUAR (JLR) ----
+  {
+    manufacturer: 'יגואר',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן Castrol Edge Professional 5W-20' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Jaguar OAT Coolant' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום למנועי Ingenium' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר ZF 8HP', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ZF LifeGuard' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- PORSCHE ----
+  {
+    manufacturer: 'פורשה',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן Mobil 1 0W-40 מאושר פורשה A40' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה עם פחם פעיל' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים — PCCB קרמיים או פלדה' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'פורשה דורש החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Porsche Coolant G13' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים ייעודיים' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר PDK/Tiptronic', intervalKm: 60000, intervalMonths: 48, description: 'שמן PDK — קריטי לתיבת הדאבל קלאץ\'' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- SSANGYONG ----
+  {
+    manufacturer: 'סאנגיונג',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן סינטטי 5W-30' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט/DCT', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ייעודי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- ISUZU ----
+  {
+    manufacturer: 'איסוזו',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן 5W-30 CK-4 למנועי דיזל' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן דלק', intervalKm: 30000, intervalMonths: 24, description: 'מסנן דלק — קריטי למנועי דיזל' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור Long Life' },
+      { category: 'מנוע', item: 'החלפת רצועת טיימינג', intervalKm: 90000, intervalMonths: 60, description: 'קריטי — רצועת טיימינג במנועי D-Max' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF Aisin' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- GWM / HAVAL (Great Wall Motors — Chinese) ----
+  {
+    manufacturer: 'GWM',
+    model: '*',
+    yearFrom: 2020,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 10000, intervalMonths: 12, description: 'שמן 5W-30 סינטטי — מרווח 10,000 ק"מ' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 20000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 10000, intervalMonths: 12, description: 'מסנן קבינה — כל טיפול' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 20000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים למנועי טורבו' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DCT/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן DCT ייעודי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- JAC (Chinese) ----
+  {
+    manufacturer: 'JAC',
+    model: '*',
+    yearFrom: 2020,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 10000, intervalMonths: 12, description: 'שמן 5W-30 סינטטי' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 20000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 10000, intervalMonths: 12, description: 'מסנן קבינה — כל טיפול' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 20000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT/DCT', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי לתיבת הילוכים' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- POLESTAR (Volvo/Geely electric) ----
+  {
+    manufacturer: 'פולסטאר',
+    model: '*',
+    yearFrom: 2020,
+    yearTo: 2030,
+    fuelType: 'electric',
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה IAQS' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בלאי מופחת בזכות בלימה רגנרטיבית' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור מערכת חשמל', intervalKm: 120000, intervalMonths: 48, description: 'נוזל קירור לסוללה ומנוע חשמלי' },
+      { category: 'צמיגים', item: 'סיבוב/החלפת צמיגים', intervalKm: 15000, intervalMonths: 12, description: 'סיבוב צמיגים כל טיפול' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מצבר 12V, מערכת בלימה, מתלים, עדכון תוכנה ואבחון מחשב' },
+    ]
+  },
+
+  // ---- SMART (electric/micro) ----
+  {
+    manufacturer: 'סמארט',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור מערכת חשמל', intervalKm: 120000, intervalMonths: 48, description: 'נוזל קירור' },
+      { category: 'צמיגים', item: 'סיבוב/החלפת צמיגים', intervalKm: 15000, intervalMonths: 12, description: 'סיבוב צמיגים' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מצבר 12V, מערכת בלימה, מתלים ואבחון מחשב' },
+    ]
+  },
+
+  // ---- DS (PSA luxury brand) ----
+  {
+    manufacturer: 'DS',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן Total Quartz INEO 5W-30' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים למנועי PureTech' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר EAT8', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF Aisin' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- DODGE / RAM (Stellantis American) ----
+  {
+    manufacturer: 'דודג\'',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן סינטטי 5W-20/0W-20' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'OAT Coolant' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים למנועי HEMI/Pentastar' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר ZF 8HP', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ZF 8+HP' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- INFINITI (Nissan luxury) ----
+  {
+    manufacturer: 'אינפיניטי',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן סינטטי 5W-30 Ester Oil' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Nissan Long Life Coolant' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתי אירידיום' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט 7AT', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ייעודי לאינפיניטי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- BAIC (Chinese) ----
+  {
+    manufacturer: 'BAIC',
+    model: '*',
+    yearFrom: 2020,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 10000, intervalMonths: 12, description: 'שמן 5W-30 סינטטי' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 20000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 10000, intervalMonths: 12, description: 'מסנן קבינה — כל טיפול' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 20000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT/DCT', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- MAXUS / LDV (Chinese commercial) ----
+  {
+    manufacturer: 'מקסוס',
+    model: '*',
+    yearFrom: 2020,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 10000, intervalMonths: 12, description: 'שמן 5W-30 סינטטי' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 20000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 10000, intervalMonths: 12, description: 'מסנן קבינה — כל טיפול' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 20000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי' },
+      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- LANCIA (Stellantis — Ypsilon in Israel) ----
+  {
+    manufacturer: 'לנצ\'יה',
+    model: '*',
+    yearFrom: 2015,
+    yearTo: 2030,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 15000, intervalMonths: 12, description: 'שמן Selenia 5W-40' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר מנוע' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 30000, intervalMonths: 24, description: 'בדיקת רפידות ודיסקים' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 45000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור Paraflu UP' },
+      { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 75000, intervalMonths: 60, description: 'קריטי — במנועי Fire' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי' },
       { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },

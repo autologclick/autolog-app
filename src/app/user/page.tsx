@@ -1439,36 +1439,69 @@ export default function UserHomePage() {
               </div>
             </div>
 
-            {/* What needs to be replaced at this service — only items due at nextServiceKm */}
+            {/* What needs to be replaced at this service */}
             <div className="p-4">
-              <h4 className="text-sm font-bold text-gray-700 mb-3">מה צריך להחליף?</h4>
               <div className="space-y-2">
                 {(() => {
                   const nextKm = maintenanceSchedule.nextServiceKm;
+                  const allItems = maintenanceSchedule.items.filter(i => i.category !== 'כללי');
 
-                  // Filter: only items whose nextAtKm matches this service milestone
-                  const dueItems = maintenanceSchedule.items.filter(item => item.nextAtKm === nextKm);
+                  // Find the minimum service interval (basic service cycle — usually 10k-15k)
+                  const serviceInterval = Math.min(
+                    ...maintenanceSchedule.items
+                      .filter(i => i.category !== 'כללי')
+                      .map(i => i.intervalKm)
+                      .filter(k => k > 0),
+                    15000
+                  );
 
-                  // Separate replacement items from general inspection
-                  const replacementItems = dueItems.filter(i => i.category !== 'כללי');
-                  const inspectionItem = dueItems.find(i => i.category === 'כללי');
+                  // Basic items: done every service (interval equals the basic service cycle)
+                  const basicItems = allItems.filter(i => i.intervalKm <= serviceInterval);
+
+                  // Additional items due specifically at this service milestone (not basic)
+                  const additionalDueItems = allItems.filter(i =>
+                    i.intervalKm > serviceInterval && i.nextAtKm === nextKm
+                  );
+
+                  const inspectionItem = maintenanceSchedule.items.find(i => i.category === 'כללי');
 
                   return (
                     <>
-                      {replacementItems.map((item, idx) => (
-                        <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
-                          <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${
-                            item.priority === 'high' ? 'bg-red-500' : item.priority === 'medium' ? 'bg-amber-500' : 'bg-teal-500'
-                          }`} />
-                          <div className="flex-1">
-                            <div className="text-sm font-medium text-gray-800">{item.item}</div>
-                            <div className="text-xs text-gray-500 mt-0.5">כל {item.intervalKm.toLocaleString()} ק&quot;מ · {item.description}</div>
-                          </div>
-                        </div>
-                      ))}
-                      {replacementItems.length === 0 && (
-                        <div className="text-sm text-gray-500 text-center py-3">טיפול שגרתי — החלפת שמן ומסננים</div>
+                      {/* Basic items — done every service */}
+                      {basicItems.length > 0 && (
+                        <>
+                          <h4 className="text-sm font-bold text-gray-700 mb-2">כל טיפול — בסיסי</h4>
+                          {basicItems.map((item, idx) => (
+                            <div key={`basic-${idx}`} className="flex items-start gap-3 p-3 bg-teal-50 rounded-xl">
+                              <div className="w-2 h-2 rounded-full flex-shrink-0 mt-1.5 bg-teal-500" />
+                              <div className="flex-1">
+                                <div className="text-sm font-medium text-gray-800">{item.item}</div>
+                                <div className="text-xs text-gray-500 mt-0.5">כל {item.intervalKm.toLocaleString()} ק&quot;מ · {item.description}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </>
                       )}
+
+                      {/* Additional items due at this specific service */}
+                      {additionalDueItems.length > 0 && (
+                        <>
+                          <h4 className="text-sm font-bold text-gray-700 mt-4 mb-2">נוסף בטיפול הזה ({nextKm.toLocaleString()} ק&quot;מ)</h4>
+                          {additionalDueItems.map((item, idx) => (
+                            <div key={`extra-${idx}`} className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl">
+                              <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${
+                                item.priority === 'high' ? 'bg-red-500' : item.priority === 'medium' ? 'bg-amber-500' : 'bg-teal-500'
+                              }`} />
+                              <div className="flex-1">
+                                <div className="text-sm font-medium text-gray-800">{item.item}</div>
+                                <div className="text-xs text-gray-500 mt-0.5">כל {item.intervalKm.toLocaleString()} ק&quot;מ · {item.description}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </>
+                      )}
+
+                      {/* General inspection */}
                       {inspectionItem && (
                         <div className="mt-4 rounded-xl border border-blue-100 overflow-hidden">
                           <button

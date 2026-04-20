@@ -251,7 +251,7 @@ async function generateMaintenanceSchedule(vehicle: {
     // Template lookup failed — fall through to AI generation
   }
 
-  const prompt = `You are an expert automotive mechanic with deep knowledge of manufacturer maintenance schedules for all car brands worldwide.
+  const prompt = `You are an expert automotive mechanic with deep knowledge of manufacturer maintenance schedules for all car brands worldwide, specializing in the Israeli market.
 
 Given this vehicle:
 - Manufacturer: ${vehicle.manufacturer}
@@ -260,15 +260,22 @@ Given this vehicle:
 - Current Mileage: ${mileage.toLocaleString()} km
 - Fuel Type: ${vehicle.fuelType || 'Unknown'}
 
-Based on the OFFICIAL manufacturer maintenance schedule for this specific vehicle, provide a detailed maintenance schedule.
+Based on the OFFICIAL manufacturer maintenance schedule for this EXACT vehicle model, provide a detailed maintenance schedule.
+
+CRITICAL — MANDATORY BASIC ITEMS (must appear in EVERY schedule):
+These 3 items are done at every regular service and MUST be included with the base service interval:
+1. "החלפת שמן מנוע ומסנן שמן" — category "שמן ומסננים" — interval 15000 km (or 10000 for Chinese brands)
+2. "החלפת פילטר מזגן" — category "שמן ומסננים" — interval 15000 km (or 10000 for Chinese brands)
+3. "בדיקה כללית" — category "כללי" — interval 15000 km (or 10000 for Chinese brands)
 
 IMPORTANT RULES:
-- Include ONLY items that require REPLACEMENT or FLUID CHANGE (e.g., oil change, filter replacement, brake pad replacement, spark plugs, coolant change, transmission fluid, belts, tires).
-- Do NOT include inspection-only items (e.g., "בדיקת בלמים", "בדיקת צמיגים", "בדיקת מצבר"). Inspections are handled separately.
-- Israeli service interval is typically every 15,000 km.
-- Add exactly ONE item with category "כללי" (general) named "בדיקה כללית" with intervalKm 15000. Its description should list what to CHECK (not replace) at this specific service: fluids, tire pressure, lights, battery, brake pads thickness, suspension, belts, computer diagnostics.
-- The "פילטר מזגן" is the Israeli term for cabin air filter (not "מסנן תא נוסעים").
+- The first two items above are basic replacements done at EVERY service visit — they must have the same intervalKm as the base service cycle.
+- Include additional REPLACEMENT or FLUID CHANGE items (air filter, brake pads, spark plugs, coolant, transmission fluid, belts, tires, brake fluid).
+- Do NOT include inspection-only items (e.g., "בדיקת בלמים", "בדיקת צמיגים"). Inspections are handled separately.
+- The "בדיקה כללית" item description should list what to CHECK at this service: fluids, tire pressure, lights, battery, brake pads thickness, suspension, belts, computer diagnostics.
+- "פילטר מזגן" is the Israeli term for cabin air filter (not "מסנן תא נוסעים").
 - Do NOT include any cost estimates or prices.
+- All intervals MUST be multiples of the base service interval (15000 or 10000) to ensure items align properly at service milestones.
 
 Calculate:
 1. When the NEXT service is due (in km and approximate date assuming ~15,000 km/year)
@@ -277,16 +284,16 @@ Calculate:
 
 Return ONLY valid JSON in this exact format (no markdown, no explanation):
 {
-  "nextServiceKm": <number - next service milestone in km>,
+  "nextServiceKm": <number - next service milestone in km, must be a multiple of the base interval>,
   "nextServiceDate": "<YYYY-MM-DD approximate date>",
   "summary": "<one line summary in Hebrew of what's needed next>",
   "items": [
     {
       "category": "<category in Hebrew: שמן ומסננים / בלמים / צמיגים / חשמל / מתלים / רצועות / נוזלים / מנוע / תיבת הילוכים / מיזוג / כללי>",
       "item": "<specific item name in Hebrew — must be a REPLACEMENT action, e.g. החלפת שמן, החלפת מסנן, NOT בדיקת...>",
-      "intervalKm": <manufacturer recommended interval in km>,
+      "intervalKm": <manufacturer recommended interval in km — MUST be a multiple of 15000 or 10000>,
       "intervalMonths": <manufacturer recommended interval in months>,
-      "nextAtKm": <next km this item is due>,
+      "nextAtKm": <next km this item is due — calculated from current mileage>,
       "priority": "<high/medium/low based on urgency at current mileage>",
       "description": "<brief description in Hebrew of why this is needed>"
     }
@@ -294,7 +301,7 @@ Return ONLY valid JSON in this exact format (no markdown, no explanation):
 }
 
 Include 8-12 REPLACEMENT items plus the one "בדיקה כללית" item. Sort by priority (high first).
-Use accurate manufacturer intervals — do NOT guess. If unsure about a specific interval for this model, use industry-standard intervals.
+Use accurate manufacturer intervals for this EXACT model — do NOT guess. If unsure about a specific interval for this model, use industry-standard intervals for the same engine type/displacement.
 All text fields should be in Hebrew.`;
 
   // Try Anthropic Haiku first (fastest + cheapest), then OpenAI as fallback
@@ -446,6 +453,33 @@ function sanitizeSchedule(parsed: Record<string, unknown>, mileage: number): Mai
     }
     return item;
   });
+
+  // Ensure mandatory basic items exist — oil change, cabin filter, general inspection
+  const baseInterval = Math.min(
+    ...fixedItems.filter(i => (i.intervalKm as number) > 0).map(i => i.intervalKm as number),
+    15000
+  );
+  const mandatoryItems = [
+    { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: baseInterval, intervalMonths: 12, description: 'החלפת שמן ומסנן — הטיפול הבסיסי ביותר לשמירה על המנוע' },
+    { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: baseInterval, intervalMonths: 12, description: 'מסנן קבינה לאוויר נקי בתוך הרכב' },
+    { category: 'כללי', item: 'בדיקה כללית', intervalKm: baseInterval, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+  ];
+
+  for (const mandatory of mandatoryItems) {
+    const exists = fixedItems.some(i =>
+      (i.item as string)?.includes(mandatory.item.substring(0, 10)) ||
+      (mandatory.category === 'כללי' && (i.category as string) === 'כללי')
+    );
+    if (!exists) {
+      const intervalsPassed = Math.floor(mileage / mandatory.intervalKm);
+      const nextAtKm = (intervalsPassed + 1) * mandatory.intervalKm;
+      fixedItems.unshift({
+        ...mandatory,
+        nextAtKm,
+        priority: 'high',
+      } as unknown as Record<string, unknown>);
+    }
+  }
 
   // Recalculate next service date
   const kmToNext = nextKm - mileage;
