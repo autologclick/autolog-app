@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Mic, MicOff, Loader2 } from 'lucide-react';
+import { Mic, MicOff, Loader2, X } from 'lucide-react';
 
 interface VoiceMicButtonProps {
   /** Current text value of the target input */
@@ -16,10 +16,15 @@ interface VoiceMicButtonProps {
   className?: string;
 }
 
+const MIC_CONSENT_KEY = 'autolog_mic_consent';
+
 /**
  * Compact microphone button for speech-to-text.
  * Place it next to any <input> or <textarea> — it appends spoken text to the current value.
  * Uses Web Speech API (he-IL) with proper permission handling for mobile.
+ *
+ * On first use, shows a consent prompt explaining why mic access is needed.
+ * After the user approves, it won't ask again.
  */
 export default function VoiceMicButton({
   value,
@@ -31,6 +36,7 @@ export default function VoiceMicButton({
   const [isListening, setIsListening] = useState(false);
   const [supported, setSupported] = useState(true);
   const [permState, setPermState] = useState<'unknown' | 'granted' | 'denied' | 'requesting'>('unknown');
+  const [showConsent, setShowConsent] = useState(false);
   const recognitionRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const valueRef = useRef(value);
@@ -45,8 +51,8 @@ export default function VoiceMicButton({
 
     const rec = new SR();
     rec.lang = 'he-IL';
-    rec.interimResults = false; // Only final results for compact mode
-    rec.continuous = false;     // Single utterance
+    rec.interimResults = false;
+    rec.continuous = false;
     rec.maxAlternatives = 1;
 
     rec.onresult = (event: any) => {
@@ -71,7 +77,6 @@ export default function VoiceMicButton({
 
     rec.onend = () => {
       setIsListening(false);
-      // Stop mic stream to release indicator
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(t => t.stop());
         streamRef.current = null;
@@ -88,14 +93,19 @@ export default function VoiceMicButton({
     };
   }, []);
 
-  const toggle = useCallback(async () => {
-    if (!recognitionRef.current || disabled) return;
+  /** Check if the user has already consented */
+  const hasConsent = useCallback(() => {
+    try { return localStorage.getItem(MIC_CONSENT_KEY) === 'true'; } catch { return false; }
+  }, []);
 
-    if (isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-      return;
-    }
+  /** Save consent */
+  const saveConsent = useCallback(() => {
+    try { localStorage.setItem(MIC_CONSENT_KEY, 'true'); } catch {}
+  }, []);
+
+  /** Actually start listening (after consent is confirmed) */
+  const startListening = useCallback(async () => {
+    if (!recognitionRef.current) return;
 
     try {
       setPermState('requesting');
@@ -114,39 +124,118 @@ export default function VoiceMicButton({
     } catch {
       setPermState('denied');
     }
-  }, [isListening, disabled]);
+  }, []);
+
+  /** Handle mic button click */
+  const toggle = useCallback(async () => {
+    if (!recognitionRef.current || disabled) return;
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      return;
+    }
+
+    // First-time use: show consent prompt
+    if (!hasConsent()) {
+      setShowConsent(true);
+      return;
+    }
+
+    await startListening();
+  }, [isListening, disabled, hasConsent, startListening]);
+
+  /** User approved consent */
+  const handleConsentApprove = useCallback(async () => {
+    saveConsent();
+    setShowConsent(false);
+    await startListening();
+  }, [saveConsent, startListening]);
+
+  /** User declined consent */
+  const handleConsentDecline = useCallback(() => {
+    setShowConsent(false);
+  }, []);
 
   if (!supported) return null;
 
   const iconSize = size === 'sm' ? 16 : 20;
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      disabled={disabled || permState === 'denied'}
-      className={`flex-shrink-0 rounded-full transition-all ${
-        isListening
-          ? 'bg-red-500 text-white animate-pulse shadow-md'
-          : permState === 'denied'
-            ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
-            : 'bg-gray-100 text-gray-400 hover:bg-teal-50 hover:text-teal-600 active:scale-90'
-      } ${size === 'sm' ? 'p-1.5' : 'p-2'} ${className}`}
-      title={
-        permState === 'denied'
-          ? 'הגישה למיקרופון נדחתה'
-          : isListening
-            ? 'לחץ לעצור'
-            : 'לחץ לדיבור'
-      }
-    >
-      {permState === 'requesting' ? (
-        <Loader2 size={iconSize} className="animate-spin" />
-      ) : isListening ? (
-        <MicOff size={iconSize} />
-      ) : (
-        <Mic size={iconSize} />
+    <>
+      <button
+        type="button"
+        onClick={toggle}
+        disabled={disabled || permState === 'denied'}
+        className={`flex-shrink-0 rounded-full transition-all ${
+          isListening
+            ? 'bg-red-500 text-white animate-pulse shadow-md'
+            : permState === 'denied'
+              ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
+              : 'bg-gray-100 text-gray-400 hover:bg-teal-50 hover:text-teal-600 active:scale-90'
+        } ${size === 'sm' ? 'p-1.5' : 'p-2'} ${className}`}
+        title={
+          permState === 'denied'
+            ? 'הגישה למיקרופון נדחתה'
+            : isListening
+              ? 'לחץ לעצור'
+              : 'לחץ לדיבור'
+        }
+      >
+        {permState === 'requesting' ? (
+          <Loader2 size={iconSize} className="animate-spin" />
+        ) : isListening ? (
+          <MicOff size={iconSize} />
+        ) : (
+          <Mic size={iconSize} />
+        )}
+      </button>
+
+      {/* ── Consent prompt (first-time only) ── */}
+      {showConsent && (
+        <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-[2px]" onClick={handleConsentDecline}>
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center relative"
+            dir="rtl"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Close */}
+            <button
+              onClick={handleConsentDecline}
+              className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <X size={18} className="text-gray-400" />
+            </button>
+
+            {/* Mic icon */}
+            <div className="w-16 h-16 rounded-full bg-teal-50 flex items-center justify-center mx-auto mb-4">
+              <Mic size={28} className="text-teal-600" />
+            </div>
+
+            <h3 className="font-bold text-lg text-[#1e3a5f] mb-2">הפעלת מיקרופון</h3>
+            <p className="text-sm text-gray-500 leading-relaxed mb-6">
+              AutoLog משתמש במיקרופון כדי להמיר דיבור לטקסט — במקום להקליד, פשוט תדבר.
+              <br />
+              <span className="text-gray-400 text-xs mt-1 block">ההקלטה לא נשמרת ומשמשת רק למילוי השדה.</span>
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleConsentDecline}
+                className="flex-1 py-2.5 rounded-xl border-2 border-gray-200 text-gray-500 font-semibold text-sm hover:bg-gray-50 transition-colors"
+              >
+                לא עכשיו
+              </button>
+              <button
+                onClick={handleConsentApprove}
+                className="flex-1 py-2.5 rounded-xl bg-teal-600 text-white font-semibold text-sm hover:bg-teal-700 transition-colors shadow-sm"
+              >
+                אשר והפעל
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-    </button>
+    </>
   );
 }
