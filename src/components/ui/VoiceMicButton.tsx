@@ -34,8 +34,10 @@ export default function VoiceMicButton({
   const recognitionRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const valueRef = useRef(value);
+  const onResultRef = useRef(onResult);
 
   useEffect(() => { valueRef.current = value; }, [value]);
+  useEffect(() => { onResultRef.current = onResult; }, [onResult]);
 
   useEffect(() => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -56,7 +58,7 @@ export default function VoiceMicButton({
       }
       if (transcript) {
         const cur = valueRef.current;
-        onResult(cur + (cur ? ' ' : '') + transcript);
+        onResultRef.current(cur + (cur ? ' ' : '') + transcript);
       }
     };
 
