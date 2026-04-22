@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import PageHeader from '@/components/ui/PageHeader';
 import PageSkeleton from '@/components/ui/PageSkeleton';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import {
   FileText, Trash2, AlertTriangle, Calendar, ChevronDown,
   Loader2, Upload, X, Camera, Eye, Car,
@@ -583,8 +584,16 @@ export default function DocumentsPage() {
                 </div>
 
                 {/* Title */}
-                <Input label="כותרת" placeholder="למשל: רישיון רכב 2026"
-                  value={uploadTitle} onChange={(e) => setUploadTitle(e.target.value)} dir="rtl" />
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5 text-right">כותרת</label>
+                  <div className="flex items-center gap-2">
+                    <input placeholder="למשל: רישיון רכב 2026"
+                      value={uploadTitle} onChange={(e) => setUploadTitle(e.target.value)} dir="rtl"
+                      className="flex-1 px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+                    />
+                    <VoiceMicButton value={uploadTitle} onResult={v => setUploadTitle(v)} />
+                  </div>
+                </div>
 
                 {/* Expiry Date */}
                 <div>
@@ -600,10 +609,13 @@ export default function DocumentsPage() {
                 {/* Description */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2 text-right">הערות (אופציונלי)</label>
-                  <textarea placeholder="הערות נוספות..."
-                    value={uploadDescription} onChange={(e) => setUploadDescription(e.target.value)}
-                    className="w-full p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-right text-sm"
-                    rows={2} dir="rtl" />
+                  <div className="flex items-start gap-2">
+                    <textarea placeholder="הערות נוספות..."
+                      value={uploadDescription} onChange={(e) => setUploadDescription(e.target.value)}
+                      className="flex-1 p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-right text-sm"
+                      rows={2} dir="rtl" />
+                    <VoiceMicButton value={uploadDescription} onResult={v => setUploadDescription(v)} className="mt-2.5" />
+                  </div>
                 </div>
 
                 {/* Error */}

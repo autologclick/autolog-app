@@ -11,6 +11,7 @@ import {
   Brain, TrendingUp, Target, Timer, Bell, Volume2
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 
 interface Appointment {
   id: string;
@@ -713,14 +714,17 @@ export default function AppointmentsPage() {
               <label className="block text-sm font-medium text-gray-700 text-right mb-2">
                 תיעוד הטיפול שבוצע
               </label>
-              <textarea
-                value={completionNotes}
-                onChange={(e) => setCompletionNotes(e.target.value)}
-                placeholder="תאר את הטיפול שבוצע, חלקים שהוחלפו, המלצות ללקוח..."
-                className="w-full p-3 border border-gray-300 rounded-xl text-right resize-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                rows={4}
-                dir="rtl"
-              />
+              <div className="flex items-start gap-2">
+                <textarea
+                  value={completionNotes}
+                  onChange={(e) => setCompletionNotes(e.target.value)}
+                  placeholder="תאר את הטיפול שבוצע, חלקים שהוחלפו, המלצות ללקוח..."
+                  className="flex-1 p-3 border border-gray-300 rounded-xl text-right resize-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  rows={4}
+                  dir="rtl"
+                />
+                <VoiceMicButton value={completionNotes} onResult={v => setCompletionNotes(v)} size="md" className="mt-2" />
+              </div>
               <p className="text-xs text-gray-400 text-right mt-1">
                 התיעוד יישלח ללקוח ויופיע במערכת המעקב שלו
               </p>
@@ -827,15 +831,18 @@ export default function AppointmentsPage() {
               <label className="block text-sm font-medium text-gray-700 text-right mb-2">
                 סיבת דחייה (אופציונלי)
               </label>
-              <textarea
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="לדוגמה: אין תור פנוי בזמן זה, הציוד לא זמין..."
-                className="w-full p-3 border border-gray-300 rounded-xl text-right resize-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                rows={2}
-                maxLength={300}
-                dir="rtl"
-              />
+              <div className="flex items-start gap-2">
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="לדוגמה: אין תור פנוי בזמן זה, הציוד לא זמין..."
+                  className="flex-1 p-3 border border-gray-300 rounded-xl text-right resize-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  rows={2}
+                  maxLength={300}
+                  dir="rtl"
+                />
+                <VoiceMicButton value={rejectionReason} onResult={v => setRejectionReason(v)} className="mt-2" />
+              </div>
               <p className="text-xs text-gray-400 text-right mt-1">
                 עד 300 תווים. הסיבה תישלח ללקוח.
               </p>

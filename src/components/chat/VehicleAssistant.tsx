@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { X, Send, Loader2, RotateCcw, Sparkles, ChevronLeft } from 'lucide-react';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 
 // ── Types ──────────────────────────────────────────
 interface Message {
@@ -316,13 +317,14 @@ export default function VehicleAssistant({
         {/* ── Input area ── */}
         <div className="bg-white border-t border-gray-100 px-4 py-3 flex-shrink-0">
           <div className="flex items-end gap-2">
+            <VoiceMicButton value={input} onResult={v => setInput(v)} disabled={isStreaming} />
             <div className="flex-1 relative">
               <textarea
                 ref={inputRef}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="כתוב הודעה..."
+                placeholder="כתוב או דבר..."
                 rows={1}
                 disabled={isStreaming}
                 className="w-full resize-none bg-[#f0f2f5] rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:bg-white focus:border focus:border-gray-200 disabled:opacity-50 max-h-[100px] leading-relaxed transition-all placeholder:text-gray-400"

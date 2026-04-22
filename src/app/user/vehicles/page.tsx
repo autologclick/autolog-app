@@ -15,6 +15,7 @@ import {
   Send, Mail, CheckCircle2, XCircle, Clock, UserPlus
 } from 'lucide-react';
 import LicenseScanButton, { type ScanResult } from '@/components/ui/LicenseScanButton';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import { getManufacturerNames, getModelNames } from '@/lib/vehicle-data';
 import { useRouter } from 'next/navigation';
 
@@ -877,8 +878,11 @@ export default function VehiclesPage() {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <Input label="כינוי" value={formData.nickname}
-              onChange={e => setFormData({ ...formData, nickname: e.target.value })} />
+            <div className="flex items-end gap-2">
+              <div className="flex-1"><Input label="כינוי" value={formData.nickname}
+                onChange={e => setFormData({ ...formData, nickname: e.target.value })} /></div>
+              <VoiceMicButton value={formData.nickname} onResult={v => setFormData({ ...formData, nickname: v })} className="mb-1" />
+            </div>
             <Input label="מספר רישוי" value={formData.licensePlate} disabled />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
@@ -1017,8 +1021,11 @@ export default function VehiclesPage() {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <Input label="כינוי" placeholder="למשל: ספורטז' לבנה" value={formData.nickname}
-              onChange={e => setFormData({ ...formData, nickname: e.target.value })} />
+            <div className="flex items-end gap-2">
+              <div className="flex-1"><Input label="כינוי" placeholder="למשל: ספורטז' לבנה" value={formData.nickname}
+                onChange={e => setFormData({ ...formData, nickname: e.target.value })} /></div>
+              <VoiceMicButton value={formData.nickname} onResult={v => setFormData({ ...formData, nickname: v })} className="mb-1" />
+            </div>
             <Input label="מספר רישוי" placeholder="1234567" value={formData.licensePlate}
               onChange={e => setFormData({ ...formData, licensePlate: e.target.value })} />
           </div>

@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import VoiceInput from '@/components/ui/VoiceInput';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import {
   Shield, Search, Check, AlertTriangle, X, Save, ArrowRight, ArrowLeft,
   Loader2, Camera, Video, Car, Wrench, Droplets, Gauge, Lightbulb,
@@ -1582,8 +1583,11 @@ export default function NewInspectionPage() {
             <div className="space-y-3 mt-3">
               {recommendations.map((rec, idx) => (
                 <div key={idx} className="p-3 bg-yellow-50 rounded-xl space-y-2 border border-yellow-200">
-                  <input type="text" value={rec.text} onChange={e => { const n = [...recommendations]; n[idx].text = e.target.value; setRecommendations(n); }}
-                    placeholder="למשל: בלמים בלויים - דורש החלפה" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" dir="rtl" />
+                  <div className="flex items-center gap-2">
+                    <VoiceMicButton value={rec.text} onResult={v => { const n = [...recommendations]; n[idx].text = v; setRecommendations(n); }} />
+                    <input type="text" value={rec.text} onChange={e => { const n = [...recommendations]; n[idx].text = e.target.value; setRecommendations(n); }}
+                      placeholder="למשל: בלמים בלויים - דורש החלפה" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" dir="rtl" />
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     <select value={rec.urgency} onChange={e => { const n = [...recommendations]; n[idx].urgency = e.target.value; setRecommendations(n); }}
                       className="flex-1 min-w-[140px] rounded-lg border border-gray-300 px-2 py-1.5 text-xs">
@@ -1624,7 +1628,10 @@ export default function NewInspectionPage() {
             <p className="text-sm text-gray-500 mt-1 mb-3">אשר קבלת הדוח בחתימה דיגיטלית</p>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <Input label="שם מלא" placeholder="שם הלקוח" value={customerName} onChange={e => setCustomerName(e.target.value)} />
+                <div className="flex items-end gap-2">
+                  <div className="flex-1"><Input label="שם מלא" placeholder="שם הלקוח" value={customerName} onChange={e => setCustomerName(e.target.value)} /></div>
+                  <VoiceMicButton value={customerName} onResult={setCustomerName} className="mb-1" />
+                </div>
                 <Input label='מספר ת"ז' placeholder="012345678" value={customerIdNumber} onChange={e => setCustomerIdNumber(e.target.value)} />
               </div>
               <div className="border-2 border-gray-200 rounded-xl overflow-hidden bg-white">

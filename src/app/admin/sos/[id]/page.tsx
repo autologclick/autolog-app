@@ -6,6 +6,7 @@ import { Card, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import { AlertTriangle, ArrowRight, MapPin, Phone, Clock, User, Car, CheckCircle, Loader2, MessageSquare, Shield } from 'lucide-react';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 
 const eventTypeLabels: Record<string, string> = {
   accident: 'תאונה',
@@ -222,13 +223,16 @@ export default function AdminSosDetailPage() {
           <MessageSquare size={18} className="text-teal-500" />
           הערות טיפול
         </CardTitle>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="הוסף הערות לאירוע..."
-          className="w-full mt-3 p-3 border border-gray-200 rounded-lg resize-none h-24 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-          dir="rtl"
-        />
+        <div className="flex items-start gap-2 mt-3">
+          <VoiceMicButton value={notes} onResult={setNotes} className="mt-2" />
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="הוסף הערות לאירוע..."
+            className="flex-1 p-3 border border-gray-200 rounded-lg resize-none h-24 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            dir="rtl"
+          />
+        </div>
       </Card>
 
       {/* Actions */}

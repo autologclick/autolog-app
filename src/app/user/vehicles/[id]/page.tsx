@@ -14,6 +14,7 @@ import {
   Camera, Image as ImageIcon, Zap, AlertTriangle, ChevronLeft, ChevronDown,
   Check, Flag, CheckCircle, Wrench, TrendingUp, MapPinIcon, Upload, ArrowLeftRight
 } from 'lucide-react';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 // Tesseract is dynamically imported inside handleScanReceipt() to keep it out of
 // the initial bundle. It's a heavy OCR library (~5MB) used only when the user
 // explicitly scans a receipt.
@@ -663,17 +664,17 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
                 </>
               )}
 
-              <div className="flex gap-2 mt-4">
+              <div className="flex gap-3 mt-4">
                 <button
                   onClick={() => setShowEditModal(true)}
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-sm"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#1e3a5f] hover:bg-[#162d4a] text-white rounded-xl font-semibold text-sm transition-colors shadow-sm"
                 >
                   <Edit size={16} />
                   ערוך פרטי רכב
                 </button>
                 <button
                   onClick={() => router.push('/user/vehicles/transfer')}
-                  className="flex-1 flex items-center justify-center gap-2 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg font-medium transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 border-2 border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 rounded-xl font-semibold text-sm transition-colors"
                 >
                   <ArrowLeftRight size={16} />
                   העבר בעלות
@@ -899,13 +900,16 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
           </div>
 
           {/* Description */}
-          <textarea
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            placeholder="תיאור"
-            rows={3}
-            value={treatmentData.description}
-            onChange={e => setTreatmentData(prev => ({ ...prev, description: e.target.value }))}
-          />
+          <div className="flex items-start gap-2">
+            <VoiceMicButton value={treatmentData.description} onResult={v => setTreatmentData(prev => ({ ...prev, description: v }))} className="mt-2" />
+            <textarea
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              placeholder="תיאור"
+              rows={3}
+              value={treatmentData.description}
+              onChange={e => setTreatmentData(prev => ({ ...prev, description: e.target.value }))}
+            />
+          </div>
 
           {/* Image Upload */}
           <div>

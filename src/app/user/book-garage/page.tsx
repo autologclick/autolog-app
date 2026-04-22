@@ -17,6 +17,7 @@ import {
   Wrench, ClipboardCheck, Car, Settings2, ArrowRight,
   Clock, MapIcon, FileText, Coffee, Wifi, Monitor, Heart, Armchair, ChevronDown
 } from 'lucide-react';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 
 interface GarageReview {
   id: string;
@@ -872,12 +873,13 @@ export default function BookGaragePage() {
                 <span>הוסף הערות</span>
               </button>
               {showNotesInput && (
-                <div className="mt-2">
+                <div className="mt-2 flex items-start gap-2">
+                  <VoiceMicButton value={bookingData.notes} onResult={v => setBookingData({ ...bookingData, notes: v })} className="mt-2" />
                   <textarea
                     placeholder="ספר למוסך על תקלות או בקשות מיוחדות..."
                     value={bookingData.notes}
                     onChange={e => setBookingData({ ...bookingData, notes: e.target.value })}
-                    className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 transition resize-none"
+                    className="flex-1 px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 transition resize-none"
                     rows={3}
                   />
                 </div>
@@ -930,8 +932,11 @@ export default function BookGaragePage() {
           )}
           <div className="text-right">
             <label className="block text-sm font-bold text-gray-700 mb-2">תגובה (אופציונלי)</label>
-            <textarea className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 transition resize-none"
-              rows={3} placeholder="ספר על החוויה שלך..." value={reviewComment} onChange={e => setReviewComment(e.target.value)} />
+            <div className="flex items-start gap-2">
+              <VoiceMicButton value={reviewComment} onResult={setReviewComment} className="mt-2" />
+              <textarea className="flex-1 px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 transition resize-none"
+                rows={3} placeholder="ספר על החוויה שלך..." value={reviewComment} onChange={e => setReviewComment(e.target.value)} />
+            </div>
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={() => setShowReviewModal(false)} className="flex-1">ביטול</Button>

@@ -8,6 +8,7 @@ import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import PageHeader from '@/components/ui/PageHeader';
 import PageSkeleton from '@/components/ui/PageSkeleton';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import {
   Plus, Edit, Trash2, Car, TrendingUp, Fuel, Wrench, Shield,
   AlertTriangle, MapPin, DollarSign, Calendar, Download,
@@ -733,12 +734,18 @@ export default function ExpensesPage() {
               />
             </div>
 
-            <Input
-              label="תיאור"
-              placeholder="לדוגמה: תדלוק דלק, החלפת שמן, ביטוח שנתי..."
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            />
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">תיאור</label>
+              <div className="flex items-center gap-2">
+                <input
+                  placeholder="לדוגמה: תדלוק דלק, החלפת שמן, ביטוח שנתי..."
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="flex-1 px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+                />
+                <VoiceMicButton value={formData.description} onResult={v => setFormData({ ...formData, description: v })} />
+              </div>
+            </div>
 
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <div className="flex flex-col sm:flex-row gap-3 pt-4">

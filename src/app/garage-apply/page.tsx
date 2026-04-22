@@ -8,6 +8,7 @@ import {
   Loader2, AlertCircle, Send, Camera, Image, X, Plus
 } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 
 const SERVICE_OPTIONS = [
   { id: 'inspection', label: 'בדיקות רכב' },
@@ -448,13 +449,16 @@ export default function GarageApplyPage() {
                   <FileText size={14} className="inline ml-1" />
                   תיאור המוסך
                 </label>
-                <textarea
-                  value={form.description}
-                  onChange={e => updateField('description', e.target.value)}
-                  placeholder="ספר על המוסך, ההתמחות, ניסיון מיוחד..."
-                  rows={3}
-                  className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 resize-none"
-                />
+                <div className="flex items-start gap-2">
+                  <VoiceMicButton value={form.description} onResult={v => updateField('description', v)} className="mt-2" />
+                  <textarea
+                    value={form.description}
+                    onChange={e => updateField('description', e.target.value)}
+                    placeholder="ספר על המוסך, ההתמחות, ניסיון מיוחד..."
+                    rows={3}
+                    className="flex-1 rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 resize-none"
+                  />
+                </div>
               </div>
 
               {/* Images Upload */}

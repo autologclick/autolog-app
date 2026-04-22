@@ -9,6 +9,7 @@ import Modal from '@/components/ui/Modal';
 import PageHeader from '@/components/ui/PageHeader';
 import PageSkeleton from '@/components/ui/PageSkeleton';
 import { AlertCircle, Phone, MapPin, Clock, Plus, Send, Car, Loader2, AlertTriangle, CheckCircle2, ArrowRight, Flame, Wrench, CircleDot, Fuel, Lock, HelpCircle } from 'lucide-react';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 
 const eventTypeIcons: Record<string, typeof AlertCircle> = {
   accident: Flame,
@@ -322,13 +323,16 @@ export default function SosPage() {
                   {/* Add Note Section */}
                   {activeEventId === event.id ? (
                     <div className="space-y-2 pt-2 border-t border-red-200">
-                      <textarea
-                        placeholder="הוסף עדכון או הערה..."
-                        value={eventNote}
-                        onChange={(e) => setEventNote(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
-                        rows={2}
-                      />
+                      <div className="flex items-start gap-2">
+                        <VoiceMicButton value={eventNote} onResult={setEventNote} className="mt-1.5" />
+                        <textarea
+                          placeholder="הוסף עדכון או הערה..."
+                          value={eventNote}
+                          onChange={(e) => setEventNote(e.target.value)}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
+                          rows={2}
+                        />
+                      </div>
                       <div className="flex gap-2 justify-end">
                         <Button
                           size="sm"

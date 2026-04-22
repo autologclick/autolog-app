@@ -7,6 +7,7 @@ import Badge from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import VoiceInput from '@/components/ui/VoiceInput';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import Pagination from '@/components/ui/Pagination';
 import {
   Wrench, Send, Loader2, AlertCircle, Clock,
@@ -494,12 +495,18 @@ export default function GarageTreatmentsPage() {
             </div>
           </div>
 
-          <Input
-            label="כותרת הטיפול"
-            placeholder="למשל: טיפול 30,000 ק״מ"
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-          />
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">כותרת הטיפול</label>
+            <div className="flex items-center gap-2">
+              <input
+                placeholder="למשל: טיפול 30,000 ק״מ"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                className="flex-1 px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+              />
+              <VoiceMicButton value={form.title} onResult={v => setForm({ ...form, title: v })} />
+            </div>
+          </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2 text-right">תיאור העבודה</label>

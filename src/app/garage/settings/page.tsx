@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Badge from '@/components/ui/Badge';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import {
   Settings, Save, Loader2, MapPin, Phone, Mail, Clock,
   CheckCircle2, AlertCircle, Wifi, Coffee, Tv, Car, Baby, Armchair,
@@ -395,13 +396,16 @@ export default function GarageSettingsPage() {
         </div>
         <div className="mt-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">תיאור המוסך</label>
-          <textarea
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-            rows={3}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400"
-            placeholder="תיאור קצר של המוסך, התמחויות, וניסיון..."
-          />
+          <div className="flex items-start gap-2">
+            <textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              rows={3}
+              className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400"
+              placeholder="תיאור קצר של המוסך, התמחויות, וניסיון..."
+            />
+            <VoiceMicButton value={description} onResult={v => setDescription(v)} size="md" className="mt-1" />
+          </div>
         </div>
       </Card>
 

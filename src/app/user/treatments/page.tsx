@@ -13,6 +13,7 @@ import PageSkeleton from '@/components/ui/PageSkeleton';
 import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 
 interface Treatment {
   id: string;
@@ -399,14 +400,17 @@ export default function UserTreatmentsPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <textarea
-                      value={rejectReason}
-                      onChange={(e) => setRejectReason(e.target.value)}
-                      placeholder="סיבת הדחייה (אופציונלי)..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
-                      rows={2}
-                      dir="rtl"
-                    />
+                    <div className="flex items-start gap-2">
+                      <VoiceMicButton value={rejectReason} onResult={setRejectReason} className="mt-1.5" />
+                      <textarea
+                        value={rejectReason}
+                        onChange={(e) => setRejectReason(e.target.value)}
+                        placeholder="סיבת הדחייה (אופציונלי)..."
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+                        rows={2}
+                        dir="rtl"
+                      />
+                    </div>
                     <div className="flex gap-2">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleReject(treatment.id); }}
@@ -590,24 +594,32 @@ export default function UserTreatmentsPage() {
           </div>
 
           {/* Title */}
-          <Input
-            label="כותרת *"
-            placeholder="למשל: החלפת שמן + פילטר"
-            value={addForm.title}
-            onChange={e => setAddForm({ ...addForm, title: e.target.value })}
-          />
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <Input
+                label="כותרת *"
+                placeholder="למשל: החלפת שמן + פילטר"
+                value={addForm.title}
+                onChange={e => setAddForm({ ...addForm, title: e.target.value })}
+              />
+            </div>
+            <VoiceMicButton value={addForm.title} onResult={v => setAddForm({ ...addForm, title: v })} className="mb-1" />
+          </div>
 
           {/* Description */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">תיאור (אופציונלי)</label>
-            <textarea
-              placeholder="פרטים נוספים על הטיפול..."
-              value={addForm.description}
-              onChange={e => setAddForm({ ...addForm, description: e.target.value })}
-              className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-sm resize-none"
-              rows={2}
-              dir="rtl"
-            />
+            <div className="flex items-start gap-2">
+              <VoiceMicButton value={addForm.description} onResult={v => setAddForm({ ...addForm, description: v })} className="mt-1.5" />
+              <textarea
+                placeholder="פרטים נוספים על הטיפול..."
+                value={addForm.description}
+                onChange={e => setAddForm({ ...addForm, description: e.target.value })}
+                className="flex-1 px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-sm resize-none"
+                rows={2}
+                dir="rtl"
+              />
+            </div>
           </div>
 
           {/* Garage, Mileage, Cost, Date */}

@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 import OnboardingWizard from '@/components/shared/OnboardingWizard';
 import PushPermissionBanner from '@/components/shared/PushPermissionBanner';
 import VehicleAssistant from '@/components/chat/VehicleAssistant';
+import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import GlobalSearch from '@/components/ui/GlobalSearch';
 // Tesseract loaded dynamically in handleScanReceipt to avoid SSR issues
 
@@ -1524,11 +1525,14 @@ export default function UserHomePage() {
               {/* Form fields */}
               <div>
                 <label className="text-sm font-semibold text-gray-700 block mb-1">כותרת *</label>
-                <input
-                  value={treatmentForm.title} onChange={e => setTreatmentForm(f => ({ ...f, title: e.target.value }))}
-                  placeholder="למשל: טיפול 50,000 ק״מ"
-                  className="w-full border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
-                />
+                <div className="flex items-center gap-2">
+                  <input
+                    value={treatmentForm.title} onChange={e => setTreatmentForm(f => ({ ...f, title: e.target.value }))}
+                    placeholder="למשל: טיפול 50,000 ק״מ"
+                    className="flex-1 border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+                  />
+                  <VoiceMicButton value={treatmentForm.title} onResult={v => setTreatmentForm(f => ({ ...f, title: v }))} />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -1560,21 +1564,27 @@ export default function UserHomePage() {
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-gray-700 block mb-1">מוסך</label>
-                  <input value={treatmentForm.garageName}
-                    onChange={e => setTreatmentForm(f => ({ ...f, garageName: e.target.value }))}
-                    placeholder="שם המוסך"
-                    className="w-full border rounded-xl px-3 py-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input value={treatmentForm.garageName}
+                      onChange={e => setTreatmentForm(f => ({ ...f, garageName: e.target.value }))}
+                      placeholder="שם המוסך"
+                      className="flex-1 border rounded-xl px-3 py-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                    />
+                    <VoiceMicButton value={treatmentForm.garageName} onResult={v => setTreatmentForm(f => ({ ...f, garageName: v }))} />
+                  </div>
                 </div>
               </div>
 
               <div>
                 <label className="text-sm font-semibold text-gray-700 block mb-1">תיאור</label>
-                <textarea value={treatmentForm.description}
-                  onChange={e => setTreatmentForm(f => ({ ...f, description: e.target.value }))}
-                  placeholder="פרטים נוספים..." rows={2}
-                  className="w-full border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none resize-none"
-                />
+                <div className="flex items-start gap-2">
+                  <textarea value={treatmentForm.description}
+                    onChange={e => setTreatmentForm(f => ({ ...f, description: e.target.value }))}
+                    placeholder="פרטים נוספים..." rows={2}
+                    className="flex-1 border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none resize-none"
+                  />
+                  <VoiceMicButton value={treatmentForm.description} onResult={v => setTreatmentForm(f => ({ ...f, description: v }))} className="mt-2.5" />
+                </div>
               </div>
 
               {/* Image upload */}
