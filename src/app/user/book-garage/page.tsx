@@ -84,6 +84,14 @@ const serviceValueToLabel: Record<string, string> = {
   spare_parts: 'חלקי חילוף',
 };
 
+const serviceDisclaimers: Record<string, string> = {
+  inspection: 'הבדיקה מציגה את מצב הרכב בפועל במועד ביצועה. AutoLog והמוסכים השותפים אינם נותנים אחריות על ממצאי הבדיקה או על מצב הרכב לאחריה.',
+  test_prep: 'הכנה לטסט כוללת בדיקה ותיקון של פריטים נדרשים לעמידה בטסט השנתי. עמידה בטסט תלויה בתחנת הבדיקה ואינה מובטחת.',
+  repair: 'אבחון התקלה מבוסס על ניסיון המכונאי ועל הממצאים בזמן הבדיקה. ייתכן שיידרשו בדיקות נוספות בהמשך.',
+  maintenance: 'הטיפול מבוצע בהתאם להמלצות יצרן הרכב ולמצבו בפועל. מומלץ לעקוב אחרי לוח הטיפולים ביומן הרכב.',
+};
+const defaultDisclaimer = 'השירות מבוצע על ידי המוסך בהתאם לסטנדרטים המקצועיים המקובלים.';
+
 const ALL_TIME_SLOTS = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'];
 
 /** Map JS getDay() (0=Sun) to Hebrew day keys used in garage workingHours */
@@ -532,8 +540,7 @@ export default function BookGaragePage() {
               </div>
               <div className="flex-1 text-right">
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  הבדיקה מציגה את מצב הרכב בפועל במועד ביצועה.
-                  <span className="font-semibold text-gray-700"> AutoLog והמוסכים השותפים אינם נותנים אחריות על ממצאי הבדיקה או על מצב הרכב לאחריה.</span>
+                  {serviceDisclaimers[selectedService] || defaultDisclaimer}
                 </p>
               </div>
             </div>
