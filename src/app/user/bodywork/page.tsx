@@ -125,19 +125,45 @@ export default function BodyworkPage() {
     }
   };
 
+  /** Compress an image file to max 1200px and JPEG quality 0.7 */
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const MAX = 1200;
+        let w = img.width;
+        let h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject('Canvas error'); return; }
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject('Image load error'); };
+      img.src = url;
+    });
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     for (const file of Array.from(files)) {
       if (images.length >= 6) { toast.error('מקסימום 6 תמונות'); break; }
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.result) {
-          setImages(prev => [...prev, reader.result as string]);
-        }
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressed = await compressImage(file);
+        setImages(prev => [...prev, compressed]);
+      } catch {
+        toast.error('לא ניתן לטעון את התמונה');
+      }
     }
     e.target.value = '';
   };
