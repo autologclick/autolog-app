@@ -10,7 +10,7 @@ import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import {
-  Hammer, Car, Clock, DollarSign, Send, Eye,
+  Hammer, Car, Clock, DollarSign, Send, Eye, AlertCircle,
   Star, MapPin, AlertCircle, CheckCircle2,
   Calendar, ChevronLeft, Loader2, Image as ImageIcon
 } from 'lucide-react';
@@ -60,6 +60,7 @@ export default function GarageBodyworkPage() {
   const [estimatedDays, setEstimatedDays] = useState('');
   const [notes, setNotes] = useState('');
   const [warranty, setWarranty] = useState('');
+  const [replacementCar, setReplacementCar] = useState<'yes' | 'no' | ''>('');
   const [submitting, setSubmitting] = useState(false);
   const [notBodywork, setNotBodywork] = useState(false);
 
@@ -84,6 +85,7 @@ export default function GarageBodyworkPage() {
     setEstimatedDays('');
     setNotes('');
     setWarranty('');
+    setReplacementCar('');
     setShowQuoteForm(true);
   };
 
@@ -98,7 +100,10 @@ export default function GarageBodyworkPage() {
         body: JSON.stringify({
           price: parseFloat(price),
           estimatedDays: estimatedDays ? parseInt(estimatedDays) : null,
-          notes: notes.trim() || null,
+          notes: [
+            notes.trim(),
+            replacementCar === 'yes' ? '🚗 כולל רכב חליפי' : replacementCar === 'no' ? 'ללא רכב חליפי' : '',
+          ].filter(Boolean).join(' • ') || null,
           warranty: warranty.trim() || null,
         }),
       });
@@ -297,6 +302,33 @@ export default function GarageBodyworkPage() {
                 className="flex-1 rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
                 dir="rtl"
               />
+            </div>
+          </div>
+          {/* Replacement car */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">רכב חליפי</label>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setReplacementCar(replacementCar === 'yes' ? '' : 'yes')}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition flex items-center justify-center gap-2 ${
+                  replacementCar === 'yes'
+                    ? 'bg-green-50 border-green-400 text-green-700'
+                    : 'bg-white border-gray-200 text-gray-500 hover:border-green-300'
+                }`}
+              >
+                <Car size={16} />
+                כולל רכב חליפי
+              </button>
+              <button
+                onClick={() => setReplacementCar(replacementCar === 'no' ? '' : 'no')}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition ${
+                  replacementCar === 'no'
+                    ? 'bg-red-50 border-red-300 text-red-600'
+                    : 'bg-white border-gray-200 text-gray-500 hover:border-red-200'
+                }`}
+              >
+                ללא רכב חליפי
+              </button>
             </div>
           </div>
           <Button
