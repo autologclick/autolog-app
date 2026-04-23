@@ -71,9 +71,16 @@ export async function GET(req: NextRequest) {
       // Admin sees everything
       if (status) where.status = status;
     } else if (role === 'garage_owner') {
-      // Garage owner sees open requests (optionally filtered by city)
+      // Garage owner sees open requests — only if they offer bodywork services
       const garage = await prisma.garage.findUnique({ where: { ownerId: payload.userId } });
       if (!garage) return errorResponse('מוסך לא נמצא', 404);
+
+      // Check that this garage offers bodywork
+      const services: string[] = garage.services ? JSON.parse(garage.services) : [];
+      if (!services.includes('bodywork')) {
+        return errorResponse('המוסך שלך לא מציע שירותי פחחות. עדכן את השירותים בהגדרות.', 403);
+      }
+
       where.status = status || 'open';
       // Show requests from the garage's city or without a city
       if (garage.city) {

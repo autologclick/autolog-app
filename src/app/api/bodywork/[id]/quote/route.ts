@@ -25,6 +25,12 @@ export async function POST(
     const garage = await prisma.garage.findUnique({ where: { ownerId: payload.userId } });
     if (!garage) return errorResponse('מוסך לא נמצא', 404);
 
+    // Only garages offering bodywork can submit quotes
+    const services: string[] = garage.services ? JSON.parse(garage.services) : [];
+    if (!services.includes('bodywork')) {
+      return errorResponse('המוסך שלך לא מציע שירותי פחחות', 403);
+    }
+
     // Verify request exists and is open
     const request = await prisma.bodyworkRequest.findUnique({ where: { id } });
     if (!request) return errorResponse('בקשה לא נמצאה', 404);
