@@ -94,16 +94,16 @@ export default function ServicePage() {
           {/* Bodywork — special card */}
           <button
             onClick={() => router.push('/user/bodywork')}
-            className="w-full bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-4 shadow-sm border-2 border-orange-200 hover:border-orange-400 transition-all text-right active:scale-[0.98] flex items-center gap-4"
+            className="w-full bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-100 hover:border-orange-400 transition-all text-right active:scale-[0.98] flex items-center gap-4"
           >
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Hammer size={22} className="text-orange-500" />
+            <div className="w-14 h-14 bg-gradient-to-br from-orange-100 to-amber-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+              <Hammer size={24} className="text-orange-500" />
             </div>
             <div className="flex-1">
-              <div className="font-bold text-sm text-[#1e3a5f]">פחחות — הצעות מחיר</div>
-              <div className="text-xs text-gray-500 mt-0.5">צלם את הנזק, קבל הצעות ממוסכים ובחר את הטובה ביותר</div>
+              <div className="font-bold text-[#1e3a5f]">פחחות — הצעות מחיר</div>
+              <div className="text-xs text-gray-500 mt-1 leading-relaxed">צלם את הנזק, קבל הצעות ממוסכים ובחר את הטובה ביותר</div>
             </div>
-            <ChevronLeft size={18} className="text-orange-300 flex-shrink-0" />
+            <ChevronLeft size={18} className="text-gray-300 flex-shrink-0" />
           </button>
         </div>
 

@@ -108,11 +108,17 @@ export default function BodyworkPage() {
   const fetchData = async () => {
     try {
       const [vehiclesRes, requestsRes] = await Promise.all([
-        fetch('/api/vehicles'),
-        fetch('/api/bodywork'),
+        fetch('/api/vehicles').catch(() => null),
+        fetch('/api/bodywork').catch(() => null),
       ]);
-      if (vehiclesRes.ok) setVehicles(await vehiclesRes.json());
-      if (requestsRes.ok) setRequests(await requestsRes.json());
+      if (vehiclesRes?.ok) {
+        const data = await vehiclesRes.json().catch(() => []);
+        setVehicles(Array.isArray(data) ? data : []);
+      }
+      if (requestsRes?.ok) {
+        const data = await requestsRes.json().catch(() => []);
+        setRequests(Array.isArray(data) ? data : []);
+      }
     } catch {} finally {
       setLoading(false);
     }
@@ -204,9 +210,8 @@ export default function BodyworkPage() {
   if (loading) return <PageSkeleton />;
 
   return (
-    <div className="min-h-screen bg-[#f4f6f9]">
-      <PageHeader title="פחחות — הצעות מחיר" backUrl="/user" />
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+    <div className="space-y-6">
+      <PageHeader title="פחחות — הצעות מחיר" backUrl="/user/service" />
 
         {/* ── New Request Button ── */}
         <button
