@@ -1,15 +1,22 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { verifyPassword } from '@/lib/auth';
+import {
+  verifyPassword,
+  generateToken,
+  generateRefreshToken,
+  verifyTrustedDeviceToken,
+  TRUSTED_DEVICE_COOKIE,
+} from '@/lib/auth';
 import { jsonResponse, errorResponse, validationErrorResponse, getClientIp } from '@/lib/api-helpers';
 import { loginSchema } from '@/lib/validations';
-import { AUTH_ERRORS } from '@/lib/messages';
+import { AUTH_ERRORS, SUCCESS_MESSAGES } from '@/lib/messages';
 import {
   checkLoginRateLimit,
   isAccountLocked,
   getLockoutTimeRemaining,
   recordFailedAttempt,
   recordIpSuspiciousActivity,
+  resetFailedAttempts,
 } from '@/lib/rate-limit';
 import { createRequestLogger } from '@/lib/logger';
 import { logAuthEvent } from '@/lib/audit-log';
@@ -98,7 +105,54 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Password is correct — issue OTP to email
+    // ── Trusted device check — skip OTP if this browser was verified before ──
+    const trustedCookie = req.cookies.get(TRUSTED_DEVICE_COOKIE)?.value;
+    if (trustedCookie && verifyTrustedDeviceToken(trustedCookie, user.id)) {
+      // Device is trusted — skip OTP, issue tokens directly
+      resetFailedAttempts(normalizedEmail);
+
+      const accessToken = generateToken({ userId: user.id, email: user.email, role: user.role });
+      const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, role: user.role });
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: new Date() },
+      });
+
+      logger.info('Login via trusted device — OTP skipped', { userId: user.id });
+      logAuthEvent('LOGIN', user.id, { status: 'success', req, metadata: 'trusted-device' });
+
+      const response = jsonResponse({
+        user: {
+          id: user.id,
+          email: user.email,
+          fullName: user.fullName,
+          role: user.role,
+          phone: user.phone,
+        },
+        message: SUCCESS_MESSAGES.LOGIN,
+        trustedDevice: true,
+      });
+
+      response.cookies.set('auth-token', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 2 * 60 * 60,
+        path: '/',
+      });
+      response.cookies.set('refresh-token', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 24 * 30,
+        path: '/',
+      });
+
+      return response;
+    }
+
+    // ── Not a trusted device — issue OTP to email ──
     try {
       await issueEmailOtp(user.email, user.fullName);
     } catch (e) {

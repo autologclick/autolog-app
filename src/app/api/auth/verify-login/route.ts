@@ -1,7 +1,14 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/db';
-import { verifyPassword, generateToken, generateRefreshToken } from '@/lib/auth';
+import {
+  verifyPassword,
+  generateToken,
+  generateRefreshToken,
+  generateTrustedDeviceToken,
+  TRUSTED_DEVICE_COOKIE,
+  TRUSTED_DEVICE_EXPIRY_DAYS,
+} from '@/lib/auth';
 import { jsonResponse, errorResponse, validationErrorResponse, getClientIp } from '@/lib/api-helpers';
 import { AUTH_ERRORS, SUCCESS_MESSAGES } from '@/lib/messages';
 import {
@@ -146,6 +153,16 @@ export async function POST(req: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 60 * 60 * 24 * 30, // 30 days
+      path: '/',
+    });
+
+    // Set trusted device cookie — next login from this browser won't require OTP
+    const trustedToken = generateTrustedDeviceToken(user.id);
+    response.cookies.set(TRUSTED_DEVICE_COOKIE, trustedToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 * TRUSTED_DEVICE_EXPIRY_DAYS,
       path: '/',
     });
 

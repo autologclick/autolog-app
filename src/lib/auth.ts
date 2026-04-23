@@ -53,6 +53,37 @@ export function isTokenBlacklisted(tokenId: string): boolean {
   return cache.has(`blacklist:${tokenId}`);
 }
 
+// ============================================================================
+// Trusted Device Token — skip OTP on known browsers for 30 days
+// ============================================================================
+export const TRUSTED_DEVICE_COOKIE = 'trusted-device';
+export const TRUSTED_DEVICE_EXPIRY_DAYS = 30;
+
+/**
+ * Generate a signed trusted-device token for a specific user.
+ * Contains userId + random salt, signed with JWT_SECRET.
+ */
+export function generateTrustedDeviceToken(userId: string): string {
+  return jwt.sign(
+    { userId, salt: crypto.randomBytes(8).toString('hex'), purpose: 'trusted-device' },
+    JWT_SECRET,
+    { expiresIn: `${TRUSTED_DEVICE_EXPIRY_DAYS}d` }
+  );
+}
+
+/**
+ * Verify a trusted-device token belongs to the given user.
+ * Returns true only if the token is valid, not expired, and matches the userId.
+ */
+export function verifyTrustedDeviceToken(token: string, userId: string): boolean {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    return decoded.purpose === 'trusted-device' && decoded.userId === userId;
+  } catch {
+    return false;
+  }
+}
+
 export interface JwtPayload {
   userId: string;
   email: string;
