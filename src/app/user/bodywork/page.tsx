@@ -125,44 +125,54 @@ export default function BodyworkPage() {
   };
 
   /** Read file as base64 data URL (fallback — no compression) */
-  const readAsDataUrl = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = () => reject('File read error');
-      reader.readAsDataURL(file);
-    });
-  };
+  /** Compress any image file (including HEIC) to JPEG via canvas */
+  const compressFile = async (file: File): Promise<string> => {
+    const MAX = 1200;
 
-  /** Try to compress image via canvas; returns null if format not supported */
-  const tryCompress = (file: File): Promise<string | null> => {
-    return new Promise((resolve) => {
-      const img = new window.Image();
-      const url = URL.createObjectURL(file);
-      const timeout = setTimeout(() => { URL.revokeObjectURL(url); resolve(null); }, 5000);
-      img.onload = () => {
-        clearTimeout(timeout);
-        URL.revokeObjectURL(url);
-        try {
-          const MAX = 1200;
-          let w = img.width;
-          let h = img.height;
+    // Method 1: try createImageBitmap (supports HEIC on most modern browsers)
+    if (typeof createImageBitmap === 'function') {
+      try {
+        const bitmap = await createImageBitmap(file);
+        let w = bitmap.width, h = bitmap.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(bitmap, 0, 0, w, h);
+        bitmap.close();
+        return canvas.toDataURL('image/jpeg', 0.7);
+      } catch { /* fall through */ }
+    }
+
+    // Method 2: try Image element (works for JPEG/PNG/WEBP)
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const img = new window.Image();
+        const url = URL.createObjectURL(file);
+        const timeout = setTimeout(() => { URL.revokeObjectURL(url); reject('timeout'); }, 5000);
+        img.onload = () => {
+          clearTimeout(timeout); URL.revokeObjectURL(url);
+          let w = img.width, h = img.height;
           if (w > MAX || h > MAX) {
             if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
             else { w = Math.round(w * MAX / h); h = MAX; }
           }
           const canvas = document.createElement('canvas');
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          if (!ctx) { resolve(null); return; }
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d')!;
           ctx.drawImage(img, 0, 0, w, h);
           resolve(canvas.toDataURL('image/jpeg', 0.7));
-        } catch { resolve(null); }
-      };
-      img.onerror = () => { clearTimeout(timeout); URL.revokeObjectURL(url); resolve(null); };
-      img.src = url;
-    });
+        };
+        img.onerror = () => { clearTimeout(timeout); URL.revokeObjectURL(url); reject('load error'); };
+        img.src = url;
+      });
+      return dataUrl;
+    } catch { /* fall through */ }
+
+    throw new Error('unsupported format');
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,12 +182,10 @@ export default function BodyworkPage() {
     for (const file of Array.from(files)) {
       if (images.length >= 6) { toast.error('מקסימום 6 תמונות'); break; }
       try {
-        // Try compress first, fall back to raw base64 if format unsupported (HEIC etc.)
-        const compressed = await tryCompress(file);
-        const dataUrl = compressed || await readAsDataUrl(file);
+        const dataUrl = await compressFile(file);
         setImages(prev => [...prev, dataUrl]);
       } catch {
-        toast.error('לא ניתן לטעון את התמונה');
+        toast.error('לא ניתן לטעון את התמונה. נסה לצלם במקום לבחור מגלריה.');
       }
     }
     e.target.value = '';
