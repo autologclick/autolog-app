@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button';
 import {
   Shield, Calendar, Star, Users, TrendingUp, Clock, FileText, Plus, Building2,
   Loader2, BarChart3, Phone, ChevronLeft, DollarSign, AlertCircle, CheckCircle2,
-  Wrench, User, AlertTriangle, Brain, Zap, Target, Activity, PenLine, Search, X, Bell
+  Wrench, User, AlertTriangle, Brain, Zap, Target, Activity, PenLine, Search, X, Bell, Hammer
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import PushPermissionBanner from '@/components/shared/PushPermissionBanner';
@@ -639,6 +639,18 @@ export default function GarageDashboard() {
             <div className="min-w-0">
               <div className="text-sm font-semibold text-[#1e3a5f]">לקוחות</div>
               <div className="text-xs text-gray-500 mt-0.5">ניהול לקוחות</div>
+            </div>
+          </button>
+
+          {/* פחחות - Bodywork Requests */}
+          <button onClick={() => router.push('/garage/bodywork')}
+            className="flex flex-col items-center gap-3 p-5 bg-white border border-gray-100 rounded-xl hover:shadow-lg hover:border-gray-200 transition text-center">
+            <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-orange-50">
+              <Hammer size={20} className="text-orange-500" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-sm font-semibold text-[#1e3a5f]">פחחות</div>
+              <div className="text-xs text-gray-500 mt-0.5">בקשות הצעות מחיר</div>
             </div>
           </button>
         </div>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Calendar, MapPin, Wrench, AlertTriangle, ChevronLeft,
-  Clock, CheckCircle, Loader2, Shield, Search
+  Clock, CheckCircle, Loader2, Shield, Search, Hammer
 } from 'lucide-react';
 
 interface Appointment {
@@ -90,6 +90,21 @@ export default function ServicePage() {
               </button>
             ))}
           </div>
+
+          {/* Bodywork — special card */}
+          <button
+            onClick={() => router.push('/user/bodywork')}
+            className="w-full bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-4 shadow-sm border-2 border-orange-200 hover:border-orange-400 transition-all text-right active:scale-[0.98] flex items-center gap-4"
+          >
+            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Hammer size={22} className="text-orange-500" />
+            </div>
+            <div className="flex-1">
+              <div className="font-bold text-sm text-[#1e3a5f]">פחחות — הצעות מחיר</div>
+              <div className="text-xs text-gray-500 mt-0.5">צלם את הנזק, קבל הצעות ממוסכים ובחר את הטובה ביותר</div>
+            </div>
+            <ChevronLeft size={18} className="text-orange-300 flex-shrink-0" />
+          </button>
         </div>
 
         {/* Upcoming Appointments */}

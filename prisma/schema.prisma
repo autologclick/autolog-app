@@ -54,6 +54,7 @@ model User {
   garageOwner   Garage?   @relation("GarageOwner")
   ownedShares   VehicleShare[] @relation("SharedVehicleOwner")
   sharedVehicles VehicleShare[] @relation("SharedVehicleUser")
+  bodyworkRequests BodyworkRequest[]
 
   @@index([email])
   @@index([role])
@@ -140,6 +141,7 @@ model Vehicle {
   drivers           VehicleDriver[]
   documents         Document[]
   shares            VehicleShare[]
+  bodyworkRequests  BodyworkRequest[]
 
   @@index([userId])
   @@index([licensePlate])
@@ -238,6 +240,7 @@ model Garage {
   inspections   Inspection[]
   appointments  Appointment[]
   reviews       GarageReview[]
+  bodyworkQuotes BodyworkQuote[]
 
   @@index([ownerId])
   @@index([city])
@@ -703,4 +706,67 @@ model MaintenanceTemplate {
   @@unique([manufacturer, model, yearFrom, yearTo, fuelType])
   @@index([manufacturer, model])
   @@index([manufacturer])
+}
+
+// ============================================================
+// BODYWORK REQUESTS — פחחות (quote marketplace)
+// ============================================================
+
+model BodyworkRequest {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleId     String
+  vehicle       Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  // Damage details
+  description   String                          // תיאור הנזק
+  images        String                          // JSON array of image URLs
+  damageArea    String?                         // front | rear | left | right | roof | hood | trunk | bumper | door | fender | other
+  urgency       String    @default("normal")    // urgent | normal | flexible
+
+  // Location
+  city          String?
+  latitude      Float?
+  longitude     Float?
+
+  // Status flow: open → quoted → accepted → completed → closed
+  status        String    @default("open")      // open | quoted | accepted | completed | closed | cancelled
+  acceptedQuoteId String?                       // ID of the quote the user chose
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  quotes        BodyworkQuote[]
+
+  @@index([userId])
+  @@index([vehicleId])
+  @@index([status])
+  @@index([city])
+  @@index([createdAt])
+}
+
+model BodyworkQuote {
+  id            String    @id @default(cuid())
+  requestId     String
+  request       BodyworkRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  garageId      String
+  garage        Garage    @relation(fields: [garageId], references: [id], onDelete: Cascade)
+
+  // Quote details
+  price         Float                           // הצעת מחיר ב-₪
+  estimatedDays Int?                            // זמן משוער בימים
+  notes         String?                         // הערות מהמוסך
+  warranty      String?                         // אחריות (למשל: "שנה על צבע")
+
+  // Status: pending → accepted | rejected
+  status        String    @default("pending")   // pending | accepted | rejected
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([requestId, garageId])               // מוסך יכול לשלוח הצעה אחת לכל בקשה
+  @@index([requestId])
+  @@index([garageId])
+  @@index([status])
 }
