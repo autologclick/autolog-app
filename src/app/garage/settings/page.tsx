@@ -708,8 +708,10 @@ export default function GarageSettingsPage() {
   );
 }
 
-function safeJsonParse(value: string | null | undefined): unknown {
+function safeJsonParse(value: unknown): unknown {
   if (!value) return null;
+  if (typeof value === 'object') return value; // already parsed
+  if (typeof value !== 'string') return null;
   try {
     return JSON.parse(value);
   } catch {
