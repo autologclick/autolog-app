@@ -12,7 +12,11 @@ const updateGarageProfileSchema = z.object({
   email: z.string().email('כתובת אימייל לא תקינה').optional(),
   description: z.string().max(1000, 'תיאור ארוך מדי').optional(),
   services: z.array(z.string()).optional(),
-  workingHours: z.record(z.string()).optional(),
+  workingHours: z.record(z.object({
+    open: z.string().optional(),
+    close: z.string().optional(),
+    closed: z.boolean().optional(),
+  })).optional(),
   amenities: z.array(z.string()).optional(),
   languages: z.array(z.string()).optional(),
 

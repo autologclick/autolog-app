@@ -332,8 +332,8 @@ export default function GarageSettingsPage() {
       toast.success('הפרופיל נשמר בהצלחה');
       setTimeout(() => router.push('/garage'), 600);
       return;
-    } catch {
-      setError('לא הצלחנו לשמור את הפרופיל. בדוק את החיבור לאינטרנט ונסה שוב.');
+    } catch (err: any) {
+      setError(err?.message || 'לא הצלחנו לשמור את הפרופיל. נסה שוב.');
     } finally {
       setSaving(false);
     }
