@@ -112,8 +112,8 @@ export default function BodyworkPage() {
         fetch('/api/bodywork').catch(() => null),
       ]);
       if (vehiclesRes?.ok) {
-        const data = await vehiclesRes.json().catch(() => []);
-        setVehicles(Array.isArray(data) ? data : []);
+        const data = await vehiclesRes.json().catch(() => ({}));
+        setVehicles(Array.isArray(data) ? data : Array.isArray(data?.vehicles) ? data.vehicles : []);
       }
       if (requestsRes?.ok) {
         const data = await requestsRes.json().catch(() => []);
