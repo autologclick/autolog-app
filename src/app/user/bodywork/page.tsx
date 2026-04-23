@@ -300,8 +300,7 @@ export default function BodyworkPage() {
                       <p className="text-xs text-gray-500 line-clamp-2 mb-2">{req.description}</p>
                       <div className="flex items-center gap-3 text-xs text-gray-400">
                         <span className="flex items-center gap-1">
-                          <DollarSign size={12} />
-                          {req._count.quotes} הצעות
+                          ₪ {req._count.quotes} הצעות
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock size={12} />
