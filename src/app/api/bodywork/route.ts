@@ -77,7 +77,8 @@ export async function GET(req: NextRequest) {
 
       // Check that this garage offers bodywork
       const services: string[] = garage.services ? JSON.parse(garage.services) : [];
-      if (!services.includes('bodywork')) {
+      const hasBodywork = services.some(s => s === 'bodywork' || s.includes('פחחות'));
+      if (!hasBodywork) {
         return errorResponse('המוסך שלך לא מציע שירותי פחחות. עדכן את השירותים בהגדרות.', 403);
       }
 

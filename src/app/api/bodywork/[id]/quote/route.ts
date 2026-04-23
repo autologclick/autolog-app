@@ -27,7 +27,8 @@ export async function POST(
 
     // Only garages offering bodywork can submit quotes
     const services: string[] = garage.services ? JSON.parse(garage.services) : [];
-    if (!services.includes('bodywork')) {
+    const hasBodywork = services.some(s => s === 'bodywork' || s.includes('פחחות'));
+    if (!hasBodywork) {
       return errorResponse('המוסך שלך לא מציע שירותי פחחות', 403);
     }
 
