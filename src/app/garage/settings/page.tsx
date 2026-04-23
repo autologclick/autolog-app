@@ -467,17 +467,30 @@ export default function GarageSettingsPage() {
           <div className="flex items-center justify-between mb-3">
             <label className="block text-sm font-semibold text-gray-700">גלריית תמונות <span className="font-normal text-gray-400">({gallery.length}/10)</span></label>
             {gallery.length < 10 && (
-              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-medium rounded-lg cursor-pointer hover:bg-emerald-100 transition border border-emerald-200">
-                <Plus size={14} />
-                הוסף תמונות
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  multiple
-                  onChange={handleGalleryUpload}
-                  className="hidden"
-                />
-              </label>
+              <div className="flex gap-2">
+                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-medium rounded-lg cursor-pointer hover:bg-emerald-100 transition border border-emerald-200">
+                  <Camera size={14} />
+                  צלם
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleGalleryUpload}
+                    className="hidden"
+                  />
+                </label>
+                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-medium rounded-lg cursor-pointer hover:bg-emerald-100 transition border border-emerald-200">
+                  <Plus size={14} />
+                  מגלריה
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleGalleryUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
             )}
           </div>
           <p className="text-xs text-gray-400 mb-3">העלה תמונות מהמוסך מבפנים ומבחוץ, ציוד, אזור המתנה, חניה ועוד.</p>
@@ -512,7 +525,7 @@ export default function GarageSettingsPage() {
                   <span className="text-xs mt-1">הוסף</span>
                   <input
                     type="file"
-                    accept="image/jpeg,image/png,image/webp"
+                    accept="image/*"
                     multiple
                     onChange={handleGalleryUpload}
                     className="hidden"
