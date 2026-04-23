@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from '@/lib/auth';
+import { requireAuth } from '@/lib/api-helpers';
 
 /**
  * POST /api/ai/scan-document
@@ -55,10 +55,7 @@ export interface ScanResult {
 export async function POST(req: NextRequest) {
   try {
     // Verify authentication
-    const session = await getServerSession();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'לא מחובר' }, { status: 401 });
-    }
+    requireAuth(req);
 
     const body = await req.json();
     const { image, context } = body;
