@@ -34,7 +34,7 @@ interface GarageSummary {
 }
 
 const typeLabels: Record<string, string> = {
-  full: 'בדיקה מלאה',
+  full: 'אבחון מלא',
   rot: 'בדיקת רקב',
   engine: 'בדיקת מנוע',
   tires: 'בדיקת צמיגים',
@@ -154,7 +154,7 @@ export default function AdminBillingPage() {
           dir="rtl">
           <option value="all">כל הסוגים</option>
           <option value="pre_test">הכנה לטסט</option>
-          <option value="full">בדיקה מלאה</option>
+          <option value="full">אבחון מלא</option>
           <option value="rot">בדיקת רקב</option>
           <option value="engine">בדיקת מנוע</option>
         </select>

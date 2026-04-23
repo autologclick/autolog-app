@@ -135,7 +135,7 @@ const scoreLabel = (score: number) => {
 
 const inspectionTypeLabel = (t: string) => {
   const map: Record<string, string> = {
-    full: 'בדיקה מלאה (AutoLog)',
+    full: 'אבחון מלא (AutoLog)',
     rot: 'בדיקת רקב',
     engine: 'בדיקת מנוע',
     pre_test: 'הכנה לטסט',
@@ -622,7 +622,7 @@ export default function InspectionReportPage() {
 
   const buildShareText = (pdfLink?: string) => {
     const lines = [
-      `🚗 *דוח בדיקת רכב — ${vehicleLabel}*`,
+      `🚗 *דוח אבחון רכב — ${vehicleLabel}*`,
       `📋 לוחית רישוי: ${v.licensePlate}`,
       score > 0 ? `✅ ציון כללי: *${score}/100*` : '',
       '',

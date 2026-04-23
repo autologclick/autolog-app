@@ -51,7 +51,7 @@ const INSPECTION_TYPE_CONFIG: Record<string, {
   badgeText: string;        // type badge text
 }> = {
   full: {
-    label: 'בדיקה מלאה (AutoLog)',
+    label: 'אבחון מלא (AutoLog)',
     icon: Car,
     colorClass: 'text-teal-600',
     bgClass: 'bg-teal-50',
@@ -352,7 +352,7 @@ export default function ReportsPage() {
             {reports.length === 0 ? 'אין דוחות בדיקה' : 'אין תוצאות'}
           </h3>
           <p className="text-gray-500 text-sm">
-            {reports.length === 0 ? 'לאחר בדיקת AutoLog או טיפול, המידע יופיע כאן' : 'נסה לשנות את הסינון'}
+            {reports.length === 0 ? 'לאחר אבחון AutoLog או טיפול, המידע יופיע כאן' : 'נסה לשנות את הסינון'}
           </p>
         </div>
       ) : (

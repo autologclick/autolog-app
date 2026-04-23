@@ -53,7 +53,7 @@ interface Inspection {
 }
 
 const inspectionTypeLabels: Record<string, string> = {
-  full: 'בדיקה מלאה',
+  full: 'אבחון מלא',
   rot: 'בדיקת רקב',
   engine: 'בדיקת מנוע',
   tires: 'בדיקת צמיגים',

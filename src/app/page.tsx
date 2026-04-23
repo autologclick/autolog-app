@@ -676,7 +676,7 @@ export default function Home() {
                 <div className="space-y-3">
                   {[
                     { time: '09:00', name: 'דני כהן', type: 'טסט שנתי', color: 'bg-blue-100 text-blue-700' },
-                    { time: '10:30', name: 'שרה מזרחי', type: 'בדיקה כללית', color: 'bg-teal-100 text-teal-700' },
+                    { time: '10:30', name: 'שרה מזרחי', type: 'אבחון כללי', color: 'bg-teal-100 text-teal-700' },
                     { time: '12:00', name: 'אבי רוזן', type: 'החלפת שמן', color: 'bg-amber-100 text-amber-700' },
                   ].map(item => (
                     <div key={item.time} className="flex items-center gap-3 p-2 hover:bg-[#fef7ed]/50 rounded-lg transition">

@@ -29,8 +29,8 @@ export interface ServicePricing {
 export const SERVICE_PRICING: Record<string, ServicePricing> = {
   full: {
     price: 350,
-    label: 'בדיקת AutoLog',
-    description: 'בדיקה מקיפה של 200+ פרמטרים עם דוח AI',
+    label: 'אבחון AutoLog',
+    description: 'אבחון מקיף של 200+ פרמטרים עם דוח AI',
     priceLabel: '₪350',
     addons: [{ label: 'בדיקת מחשב רכב', price: 100 }],
   },
@@ -126,7 +126,7 @@ export const INSPECTION_TYPE_HEB: Record<string, string> = {
   maintenance: 'תחזוקה',
   repair: 'תיקון',
   test_prep: 'הכנה למבחן',
-  full: 'בדיקה מלאה',
+  full: 'אבחון מלא',
   pre_test: 'הכנה לטסט',
   rot: 'בדיקת רקב',
   periodic: 'טיפול תקופתי',

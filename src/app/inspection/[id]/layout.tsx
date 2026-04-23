@@ -44,12 +44,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     const typeLabels: Record<string, string> = {
       pre_test: 'בדיקה לפני טסט',
-      full: 'בדיקה מקיפה',
+      full: 'אבחון מקיף',
       basic: 'בדיקה בסיסית',
       pre_purchase: 'בדיקה לפני קנייה',
     };
 
-    const typeLabel = typeLabels[inspection.inspectionType] || 'בדיקת רכב';
+    const typeLabel = typeLabels[inspection.inspectionType] || 'אבחון רכב';
     const dateStr = new Date(inspection.date).toLocaleDateString('he-IL');
     const scoreStr = inspection.overallScore != null ? ` - ציון ${inspection.overallScore}` : '';
 
@@ -79,8 +79,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   } catch {
     return {
-      title: 'דוח בדיקת רכב',
-      description: 'צפו בדוח בדיקת רכב מפורט באפליקציית AutoLog.',
+      title: 'דוח אבחון רכב',
+      description: 'צפו בדוח אבחון רכב מפורט באפליקציית AutoLog.',
     };
   }
 }

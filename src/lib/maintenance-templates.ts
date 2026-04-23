@@ -401,7 +401,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים בלויים פוגעים בביצועי המנוע ובצריכת הדלק' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר (DSG/אוטומט)', intervalKm: 60000, intervalMonths: 48, description: 'החלפת שמן גיר DSG שומרת על תיבת ההילוכים ומונעת תקלות' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -427,7 +427,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים חדשים משפרים ביצועים וצריכת דלק' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, description: 'שמן גיר נקי מונע שחיקה מוקדמת של תיבת ההילוכים' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -453,7 +453,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 105000, intervalMonths: 72, description: 'מצתי אירידיום של טויוטה מחזיקים עד 100,000 ק"מ' },
       { category: 'תיבת הילוכים', item: 'בדיקת שמן גיר CVT/אוטומט', intervalKm: 75000, intervalMonths: 60, description: 'בדיקה והחלפה לפי סוג התיבה' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -478,7 +478,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים חדשים לביצועים ויעילות' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, description: 'שמירה על תיבת ההילוכים' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -502,7 +502,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים ייעודיים למנועי SkyActiv' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, description: 'שמן SkyActiv-Drive ייעודי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -526,7 +526,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
 
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DSG', intervalKm: 60000, intervalMonths: 48, description: 'שמן DSG — קריטי לתיבות כפולות' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -548,7 +548,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 90000, intervalMonths: 60, description: 'קריטי — קריעת רצועה גורמת לנזק חמור למנוע' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום/פלטינום לביצועים מיטביים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DSG/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן DSG — קריטי לתיבות דאבל קלאץ\' של VW' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -570,7 +570,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 60, description: 'רצועת עזר מפעילה אלטרנטור ומזגן' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים ייעודיים לניסאן' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT', intervalKm: 60000, intervalMonths: 48, description: 'שמן CVT NS-3 ייעודי — קריטי לתיבות CVT של ניסאן' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -592,7 +592,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 60, description: 'רצועת V מפעילה מערכות עזר' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתי אירידיום' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT/אוטומט', intervalKm: 80000, intervalMonths: 60, description: 'שמן CVTF-J4 ייעודי למיצובישי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -613,7 +613,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל Super Long Life' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 30000, intervalMonths: 24, description: 'מצתי ניקל סטנדרטיים — החלפה תדירה יותר' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן CVT Green 1 של סוזוקי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -635,7 +635,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 105000, intervalMonths: 72, description: 'רצועת Serpentine' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 105000, intervalMonths: 72, description: 'מצתי אירידיום — מחזיקים מעמד ארוך' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT', intervalKm: 60000, intervalMonths: 48, description: 'שמן Honda HCF-2 ייעודי לתיבות CVT' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -657,7 +657,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 60000, intervalMonths: 48, description: 'רצועה ריבד Serpentine' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום NGK/Bosch' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט (ZF)', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ZF LifeGuard — למרות ש-BMW טוען "sealed for life"' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -679,7 +679,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 48, description: 'רצועת Poly-V' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים ייעודיים למרצדס' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר 9G-Tronic', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF 236.17 — קריטי לתיבות 9 הילוכים' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -701,7 +701,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 60, description: 'רצועת Poly-V' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 30000, intervalMonths: 24, description: 'מצתים — מרווח קצר יותר למנועי רנו TCe' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר EDC/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן Elfmatic CVT ייעודי לרנו' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -723,7 +723,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 90000, intervalMonths: 72, description: 'קריטי — במנועי PureTech יש שרשרת טיימינג' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים ייעודיים למנועי PureTech/VTi' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר EAT6/EAT8', intervalKm: 60000, intervalMonths: 48, description: 'שמן Total Fluidmatic — קריטי לתיבות Aisin' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -745,7 +745,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 90000, intervalMonths: 72, description: 'קריטי — קריעה גורמת לנזק חמור' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ייעודי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -766,7 +766,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 30000, intervalMonths: 24, description: 'מצתים — מנועי TCe של דאצ\'יה' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT/EDC', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי לתיבת הילוכים' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -787,7 +787,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים למנועי טורבו 1.5' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DCT/CVT', intervalKm: 60000, intervalMonths: 48, description: 'שמן DCT ייעודי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -808,7 +808,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים למנועי טורבו' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT/DCT', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי לתיבת הילוכים' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -830,7 +830,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 105000, intervalMonths: 72, description: 'קריטי למנועי בוקסר (FB/FA — שרשרת, EJ — רצועה)' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT (Lineartronic)', intervalKm: 60000, intervalMonths: 48, description: 'שמן CVT-II ייעודי לסובארו' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -852,7 +852,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 90000, intervalMonths: 60, description: 'שרשרת ברוב הדגמים — בדיקת מתיחות' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר S-Tronic/Tiptronic', intervalKm: 60000, intervalMonths: 48, description: 'שמן DSG/ATF ייעודי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -874,7 +874,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 60, description: 'רצועת Serpentine' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום למנועי EcoBoost' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר PowerShift/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF Mercon — קריטי לתיבות PowerShift' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -896,7 +896,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 90000, intervalMonths: 72, description: 'שרשרת ברוב מנועי 1.2T/1.4T' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ייעודי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -918,7 +918,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 75000, intervalMonths: 60, description: 'קריטי — במנועי Fire/MultiAir' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DDCT/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי לתיבות Dualogic/DDCT' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -939,7 +939,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים למנועי טורבו' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DCT/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי לתיבת הילוכים' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -961,7 +961,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 105000, intervalMonths: 72, description: 'רצועת עזר' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 105000, intervalMonths: 72, description: 'מצתי אירידיום — מחזיקים עד 100K ק"מ' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 75000, intervalMonths: 60, description: 'שמן ATF WS ייעודי ללקסוס' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -983,7 +983,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 90000, intervalMonths: 60, description: 'רצועת Poly-V' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום למנועי Drive-E' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט (Aisin)', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF לתיבת Aisin AW של וולוו' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1005,7 +1005,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 60, description: 'רצועת Serpentine' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים למנועי MultiAir/Tigershark' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר ZF 9HP', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ZF — קריטי לתיבות 9 הילוכים' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1026,7 +1026,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Dex-Cool Long Life' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום ACDelco' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 75000, intervalMonths: 60, description: 'שמן Dexron VI ATF' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1045,7 +1045,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור מערכת חשמל', intervalKm: 120000, intervalMonths: 48, description: 'נוזל קירור למנוע חשמלי וסוללה' },
       { category: 'צמיגים', item: 'סיבוב/החלפת צמיגים', intervalKm: 15000, intervalMonths: 12, description: 'רכב חשמלי — בלאי צמיגים מהיר יותר בשל מומנט מיידי' },
       { category: 'מיזוג', item: 'ייבוש מערכת מיזוג (Desiccant)', intervalKm: 90000, intervalMonths: 72, description: 'החלפת חומר ייבוש במערכת המיזוג' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מצבר 12V, מערכת בלימה, מתלים, עדכון תוכנה ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מצבר 12V, מערכת בלימה, מתלים, עדכון תוכנה ואבחון מחשב' },
     ]
   },
 
@@ -1064,7 +1064,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור מערכת חשמל', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור לסוללה ומנוע חשמלי' },
       { category: 'צמיגים', item: 'סיבוב/החלפת צמיגים', intervalKm: 10000, intervalMonths: 12, description: 'בלאי מהיר יותר ברכב חשמלי — סיבוב כל טיפול' },
       { category: 'תיבת הילוכים', item: 'בדיקת/החלפת שמן גיר הפחתה', intervalKm: 60000, intervalMonths: 48, description: 'שמן גיר הפחתה למנוע חשמלי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מצבר 12V, מערכת בלימה, מתלים, מערכת חשמל ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מצבר 12V, מערכת בלימה, מתלים, מערכת חשמל ואבחון מחשב' },
     ]
   },
 
@@ -1085,7 +1085,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 48, description: 'BMW/MINI Coolant' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט/DCT', intervalKm: 60000, intervalMonths: 48, description: 'שמן Aisin ATF/DCT ייעודי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1107,7 +1107,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 75000, intervalMonths: 60, description: 'קריטי — במנועי MultiAir' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים למנועי MultiAir/GME טורבו' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר ZF 8HP/DCT', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ZF LifeGuard' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1129,7 +1129,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת עזר', intervalKm: 75000, intervalMonths: 60, description: 'רצועת Serpentine' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום למנועי Ingenium' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר ZF 8HP/9HP', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ZF LifeGuard 8' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות, מערכת שטח ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות, מערכת שטח ואבחון מחשב' },
     ]
   },
 
@@ -1150,7 +1150,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Jaguar OAT Coolant' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתי אירידיום למנועי Ingenium' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר ZF 8HP', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ZF LifeGuard' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1171,7 +1171,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Porsche Coolant G13' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים ייעודיים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר PDK/Tiptronic', intervalKm: 60000, intervalMonths: 48, description: 'שמן PDK — קריטי לתיבת הדאבל קלאץ\'' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1192,7 +1192,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט/DCT', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ייעודי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1214,7 +1214,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור Long Life' },
       { category: 'מנוע', item: 'החלפת רצועת טיימינג', intervalKm: 90000, intervalMonths: 60, description: 'קריטי — רצועת טיימינג במנועי D-Max' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF Aisin' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1235,7 +1235,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים למנועי טורבו' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר DCT/אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן DCT ייעודי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1256,7 +1256,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT/DCT', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי לתיבת הילוכים' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1274,7 +1274,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
       { category: 'נוזלים', item: 'החלפת נוזל קירור מערכת חשמל', intervalKm: 120000, intervalMonths: 48, description: 'נוזל קירור לסוללה ומנוע חשמלי' },
       { category: 'צמיגים', item: 'סיבוב/החלפת צמיגים', intervalKm: 15000, intervalMonths: 12, description: 'סיבוב צמיגים כל טיפול' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מצבר 12V, מערכת בלימה, מתלים, עדכון תוכנה ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מצבר 12V, מערכת בלימה, מתלים, עדכון תוכנה ואבחון מחשב' },
     ]
   },
 
@@ -1292,7 +1292,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 30000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
       { category: 'נוזלים', item: 'החלפת נוזל קירור מערכת חשמל', intervalKm: 120000, intervalMonths: 48, description: 'נוזל קירור' },
       { category: 'צמיגים', item: 'סיבוב/החלפת צמיגים', intervalKm: 15000, intervalMonths: 12, description: 'סיבוב צמיגים' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מצבר 12V, מערכת בלימה, מתלים ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מצבר 12V, מערכת בלימה, מתלים ואבחון מחשב' },
     ]
   },
 
@@ -1313,7 +1313,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'נוזל קירור' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים למנועי PureTech' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר EAT8', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF Aisin' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1334,7 +1334,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'OAT Coolant' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים למנועי HEMI/Pentastar' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר ZF 8HP', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ZF 8+HP' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1355,7 +1355,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 120000, intervalMonths: 60, description: 'Nissan Long Life Coolant' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתי אירידיום' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט 7AT', intervalKm: 60000, intervalMonths: 48, description: 'שמן ATF ייעודי לאינפיניטי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1376,7 +1376,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר CVT/DCT', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1397,7 +1397,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'נוזלים', item: 'החלפת נוזל קירור', intervalKm: 100000, intervalMonths: 48, description: 'נוזל קירור' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 40000, intervalMonths: 36, description: 'מצתים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 10000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 
@@ -1419,7 +1419,7 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'רצועות', item: 'בדיקת/החלפת רצועת טיימינג', intervalKm: 75000, intervalMonths: 60, description: 'קריטי — במנועי Fire' },
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי' },
-      { category: 'כללי', item: 'בדיקה כללית', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
     ]
   },
 ];

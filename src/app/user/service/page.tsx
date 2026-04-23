@@ -19,7 +19,7 @@ interface Appointment {
 }
 
 const serviceOptions = [
-  { value: 'inspection', label: 'בדיקת AutoLog', icon: <Shield size={22} className="text-teal-600" />, price: '₪350', addon: '+ ₪100 בדיקת מחשב' },
+  { value: 'inspection', label: 'אבחון AutoLog', icon: <Shield size={22} className="text-teal-600" />, price: '₪350', addon: '+ ₪100 בדיקת מחשב' },
   { value: 'test_prep', label: 'הכנה לטסט', icon: <Search size={22} className="text-blue-600" />, price: '₪250' },
   { value: 'repair', label: 'אבחון תקלות', icon: <Wrench size={22} className="text-orange-500" />, price: '₪150' },
   { value: 'maintenance', label: 'טיפול תקופתי', icon: <Calendar size={22} className="text-purple-500" />, price: 'החל מ-₪550' },

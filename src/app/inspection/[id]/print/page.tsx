@@ -39,7 +39,7 @@ interface Inspection {
 }
 
 const typeLabels: Record<string, string> = {
-  full: 'בדיקה מלאה', rot: 'בדיקת רקב', engine: 'בדיקת מנוע',
+  full: 'אבחון מלא', rot: 'בדיקת רקב', engine: 'בדיקת מנוע',
   tires: 'בדיקת צמיגים', brakes: 'בדיקת בלמים', pre_test: 'הכנה לטסט',
 };
 
@@ -125,7 +125,7 @@ export default function PrintInspectionPage() {
             <div style={{ fontSize: 28, fontWeight: 800, color: '#1e3a5f' }}>
               Auto<span style={{ color: '#0d9488' }}>Log</span>
             </div>
-            <div style={{ fontSize: 11, color: '#6b7280' }}>דוח בדיקת רכב מקצועי</div>
+            <div style={{ fontSize: 11, color: '#6b7280' }}>דוח אבחון רכב מקצועי</div>
           </div>
           <div style={{ textAlign: 'left' }}>
             <div style={{ fontSize: 12, color: '#6b7280' }}>מס׳ דוח</div>

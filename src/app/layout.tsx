@@ -26,7 +26,7 @@ const baseMetadata: Metadata = {
     template: '%s | AutoLog',
   },
   description: 'מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד. הצטרפו ל-2,500+ משתמשים שכבר מנהלים את הרכב בצורה חכמה.',
-  keywords: ['ניהול רכבים', 'טסט', 'ביטוח רכב', 'מוסך', 'בדיקת רכב', 'AutoLog', 'תזכורות רכב', 'SOS חירום'],
+  keywords: ['ניהול רכבים', 'טסט', 'ביטוח רכב', 'מוסך', 'אבחון רכב', 'AutoLog', 'תזכורות רכב', 'SOS חירום'],
   authors: [{ name: 'AutoLog' }],
   creator: 'AutoLog',
   icons: { icon: '/favicon.ico', apple: '/apple-touch-icon.png' },

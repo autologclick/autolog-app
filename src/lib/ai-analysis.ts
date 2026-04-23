@@ -361,14 +361,14 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
       id: 'no-inspection',
       type: 'warning',
       title: 'לא בוצעה בדיקה',
-      description: 'לא נמצאו בדיקות לרכב זה. מומלץ לבצע בדיקה מקיפה.',
+      description: 'לא נמצאו בדיקות לרכב זה. מומלץ לבצע אבחון מקיף.',
       category: 'בדיקות',
     });
     nextActions.push({
       id: 'first-inspection',
       title: 'בדיקה ראשונה',
       urgency: 'soon',
-      description: 'קבע בדיקה מקיפה לרכב',
+      description: 'קבע אבחון מקיף לרכב',
     });
   }
 

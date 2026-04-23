@@ -37,7 +37,7 @@ interface InspectionDetail {
 }
 
 const typeLabels: Record<string, string> = {
-  full: 'בדיקה מלאה', rot: 'בדיקת רקב', engine: 'בדיקת מנוע',
+  full: 'אבחון מלא', rot: 'בדיקת רקב', engine: 'בדיקת מנוע',
   tires: 'בדיקת צמיגים', brakes: 'בדיקת בלמים', pre_test: 'הכנה לטסט',
   periodic: 'טיפול תקופתי', troubleshoot: 'אבחון תקלה',
 };

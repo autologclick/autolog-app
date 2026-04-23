@@ -29,7 +29,7 @@ export interface PaymentSummary {
 // =============================================
 
 const DEFAULT_SERVICE_COSTS: Record<string, number> = {
-  inspection: 350,   // בדיקת AutoLog
+  inspection: 350,   // אבחון AutoLog
   maintenance: 550,  // טיפול תקופתי (החל מ-)
   repair: 150,       // אבחון תקלות
   test_prep: 250,    // הכנה לטסט

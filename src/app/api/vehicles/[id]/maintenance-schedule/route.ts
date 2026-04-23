@@ -266,13 +266,13 @@ CRITICAL — MANDATORY BASIC ITEMS (must appear in EVERY schedule):
 These 3 items are done at every regular service and MUST be included with the base service interval:
 1. "החלפת שמן מנוע ומסנן שמן" — category "שמן ומסננים" — interval 15000 km (or 10000 for Chinese brands)
 2. "החלפת פילטר מזגן" — category "שמן ומסננים" — interval 15000 km (or 10000 for Chinese brands)
-3. "בדיקה כללית" — category "כללי" — interval 15000 km (or 10000 for Chinese brands)
+3. "אבחון כללי" — category "כללי" — interval 15000 km (or 10000 for Chinese brands)
 
 IMPORTANT RULES:
 - The first two items above are basic replacements done at EVERY service visit — they must have the same intervalKm as the base service cycle.
 - Include additional REPLACEMENT or FLUID CHANGE items (air filter, brake pads, spark plugs, coolant, transmission fluid, belts, tires, brake fluid).
 - Do NOT include inspection-only items (e.g., "בדיקת בלמים", "בדיקת צמיגים"). Inspections are handled separately.
-- The "בדיקה כללית" item description should list what to CHECK at this service: fluids, tire pressure, lights, battery, brake pads thickness, suspension, belts, computer diagnostics.
+- The "אבחון כללי" item description should list what to CHECK at this service: fluids, tire pressure, lights, battery, brake pads thickness, suspension, belts, computer diagnostics.
 - "פילטר מזגן" is the Israeli term for cabin air filter (not "מסנן תא נוסעים").
 - Do NOT include any cost estimates or prices.
 - All intervals MUST be multiples of the base service interval (15000 or 10000) to ensure items align properly at service milestones.
@@ -300,7 +300,7 @@ Return ONLY valid JSON in this exact format (no markdown, no explanation):
   ]
 }
 
-Include 8-12 REPLACEMENT items plus the one "בדיקה כללית" item. Sort by priority (high first).
+Include 8-12 REPLACEMENT items plus the one "אבחון כללי" item. Sort by priority (high first).
 Use accurate manufacturer intervals for this EXACT model — do NOT guess. If unsure about a specific interval for this model, use industry-standard intervals for the same engine type/displacement.
 All text fields should be in Hebrew.`;
 
@@ -462,7 +462,7 @@ function sanitizeSchedule(parsed: Record<string, unknown>, mileage: number): Mai
   const mandatoryItems = [
     { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: baseInterval, intervalMonths: 12, description: 'החלפת שמן ומסנן — הטיפול הבסיסי ביותר לשמירה על המנוע' },
     { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: baseInterval, intervalMonths: 12, description: 'מסנן קבינה לאוויר נקי בתוך הרכב' },
-    { category: 'כללי', item: 'בדיקה כללית', intervalKm: baseInterval, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    { category: 'כללי', item: 'אבחון כללי', intervalKm: baseInterval, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
   ];
 
   for (const mandatory of mandatoryItems) {

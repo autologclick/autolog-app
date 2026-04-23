@@ -807,7 +807,7 @@ export default function UserHomePage() {
               <ClipboardCheck size={28} className="text-teal-600" />
             </div>
             <div className="flex-1">
-              <div className="font-bold text-gray-800 text-base">הזמן בדיקת רכב</div>
+              <div className="font-bold text-gray-800 text-base">הזמן אבחון רכב</div>
               <p className="text-sm text-gray-500 mt-0.5">בחר מוסך, הזן מספר רכב והזמן בדיקה</p>
             </div>
             <ChevronLeft size={20} className="text-gray-400 flex-shrink-0" />
@@ -1710,7 +1710,7 @@ export default function UserHomePage() {
                             onClick={() => setShowInspectionDetails(prev => !prev)}
                             className="w-full p-3 bg-blue-50 flex items-center justify-between text-right hover:bg-blue-100 transition-colors"
                           >
-                            <span className="text-sm font-bold text-blue-800">בדיקה כללית</span>
+                            <span className="text-sm font-bold text-blue-800">אבחון כללי</span>
                             <ChevronDown size={16} className={`text-blue-600 transition-transform ${showInspectionDetails ? 'rotate-180' : ''}`} />
                           </button>
                           {showInspectionDetails && (

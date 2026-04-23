@@ -31,7 +31,7 @@ const TYPE_CONFIG: Record<string, {
   badgeText: string;
   borderClass: string;
 }> = {
-  full: { label: 'בדיקה מלאה', icon: Car, badgeBg: 'bg-teal-100', badgeText: 'text-teal-700', borderClass: 'border-r-teal-500' },
+  full: { label: 'אבחון מלא', icon: Car, badgeBg: 'bg-teal-100', badgeText: 'text-teal-700', borderClass: 'border-r-teal-500' },
   pre_test: { label: 'הכנה לטסט', icon: ClipboardCheck, badgeBg: 'bg-blue-100', badgeText: 'text-blue-700', borderClass: 'border-r-blue-500' },
   periodic: { label: 'טיפול תקופתי', icon: Settings, badgeBg: 'bg-teal-100', badgeText: 'text-teal-700', borderClass: 'border-r-teal-500' },
   troubleshoot: { label: 'תיקון / אבחון', icon: Wrench, badgeBg: 'bg-orange-100', badgeText: 'text-orange-700', borderClass: 'border-r-orange-500' },

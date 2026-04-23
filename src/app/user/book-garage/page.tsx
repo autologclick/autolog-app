@@ -71,7 +71,7 @@ interface Vehicle {
 
 // Service types with Hebrew labels, English values, emojis, and pricing
 const serviceOptions = [
-  { value: 'inspection', label: 'בדיקת AutoLog', emoji: '🔍', description: 'בדיקה מקיפה של 200+ פרמטרים עם דוח AI', price: '₪350', addon: '+ ₪100 בדיקת מחשב' },
+  { value: 'inspection', label: 'אבחון AutoLog', emoji: '🔍', description: 'אבחון מקיף של 200+ פרמטרים עם דוח AI', price: '₪350', addon: '+ ₪100 בדיקת מחשב' },
   { value: 'test_prep', label: 'הכנה לטסט', emoji: '🧪', description: 'הכנת הרכב לטסט שנתי', price: '₪250' },
   { value: 'repair', label: 'אבחון תקלות', emoji: '🛠️', description: 'אבחון ואיתור תקלות ברכב', price: '₪150' },
   { value: 'maintenance', label: 'טיפול תקופתי', emoji: '🔧', description: 'טיפול שוטף ותחזוקה מונעת', price: 'החל מ-₪550' },
