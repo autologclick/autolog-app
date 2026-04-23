@@ -94,7 +94,6 @@ export default function BodyworkPage() {
   const [submitting, setSubmitting] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState('');
   const [description, setDescription] = useState('');
-  const [damageArea, setDamageArea] = useState('');
   const [urgency, setUrgency] = useState('normal');
   const [images, setImages] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -202,7 +201,6 @@ export default function BodyworkPage() {
           vehicleId: selectedVehicle,
           description: description.trim(),
           images,
-          damageArea: damageArea || null,
           urgency,
         }),
       });
@@ -245,7 +243,6 @@ export default function BodyworkPage() {
     setShowForm(false);
     setSelectedVehicle('');
     setDescription('');
-    setDamageArea('');
     setUrgency('normal');
     setImages([]);
   };
@@ -391,26 +388,6 @@ export default function BodyworkPage() {
                 className="flex-1 rounded-xl border border-gray-300 px-3 py-2.5 text-sm resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
                 dir="rtl"
               />
-            </div>
-          </div>
-
-          {/* Damage Area */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">אזור הנזק</label>
-            <div className="flex flex-wrap gap-2">
-              {DAMAGE_AREAS.map(area => (
-                <button
-                  key={area.value}
-                  onClick={() => setDamageArea(damageArea === area.value ? '' : area.value)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${
-                    damageArea === area.value
-                      ? 'bg-orange-500 text-white border-orange-500'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-orange-300'
-                  }`}
-                >
-                  {area.label}
-                </button>
-              ))}
             </div>
           </div>
 
