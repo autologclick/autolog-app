@@ -108,7 +108,7 @@ export async function POST(request: Request) {
 
     // Create benefits
     const benefits = [
-      { name: 'הנחה באבחון AutoLog', category: 'מוסכים', discount: '₪100', description: 'הנחה על אבחון AutoLog מלא', icon: '🔧', expiryDate: new Date('2026-06-30') },
+      { name: 'הנחה באבחון רכב', category: 'מוסכים', discount: '₪100', description: 'הנחה על אבחון רכב מלא', icon: '🔧', expiryDate: new Date('2026-06-30') },
       { name: 'הנחה על ביטוח', category: 'ביטוח', discount: '5%', description: 'הנחה על פוליסת ביטוח שנתית', icon: '🛡️', expiryDate: new Date('2026-12-31') },
       { name: 'הנחה על צמיגים', category: 'צמיגים', discount: '10%', description: 'הנחה על קנייה של צמיגים', icon: '🛞', expiryDate: new Date('2026-05-15') },
       { name: 'הנחה על דלק', category: 'דלק', discount: '₪0.30/ליטר', description: 'הנחה לליטר דלק', icon: '⛽', expiryDate: new Date('2026-04-30') },

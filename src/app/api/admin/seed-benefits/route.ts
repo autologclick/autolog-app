@@ -12,10 +12,10 @@ export async function POST(req: NextRequest) {
 
     const benefits = [
       {
-        name: 'הנחה באבחון AutoLog',
+        name: 'הנחה באבחון רכב',
         category: 'services',
         discount: '₪100 הנחה',
-        description: 'הנחה על אבחון AutoLog מלא בכל המוסכים השותפים',
+        description: 'הנחה על אבחון רכב מלא בכל המוסכים השותפים',
         partnerName: 'רשת AutoLog',
         icon: 'wrench',
         expiryDate: new Date('2026-06-30'),

@@ -352,7 +352,7 @@ export default function ReportsPage() {
             {reports.length === 0 ? 'אין דוחות בדיקה' : 'אין תוצאות'}
           </h3>
           <p className="text-gray-500 text-sm">
-            {reports.length === 0 ? 'לאחר אבחון AutoLog או טיפול, המידע יופיע כאן' : 'נסה לשנות את הסינון'}
+            {reports.length === 0 ? 'לאחר אבחון רכב או טיפול, המידע יופיע כאן' : 'נסה לשנות את הסינון'}
           </p>
         </div>
       ) : (

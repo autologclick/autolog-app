@@ -43,7 +43,7 @@ const statusOptions = [
 ];
 
 const inspectionTypes = [
-  { value: 'full', label: 'אבחון AutoLog', price: '₪350' },
+  { value: 'full', label: 'אבחון רכב', price: '₪350' },
   { value: 'pre_test', label: 'הכנה לטסט', price: '₪250' },
   { value: 'troubleshoot', label: 'אבחון תקלות', price: '₪150' },
   { value: 'periodic', label: 'טיפול תקופתי', price: 'החל מ-₪550' },
