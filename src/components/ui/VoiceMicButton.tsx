@@ -37,6 +37,7 @@ export default function VoiceMicButton({
   const [supported, setSupported] = useState(true);
   const [permState, setPermState] = useState<'unknown' | 'granted' | 'denied' | 'requesting'>('unknown');
   const [showConsent, setShowConsent] = useState(false);
+  const [showDenied, setShowDenied] = useState(false);
   const recognitionRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const valueRef = useRef(value);
@@ -131,7 +132,7 @@ export default function VoiceMicButton({
     if (!recognitionRef.current || disabled) return;
 
     if (permState === 'denied') {
-      alert('הגישה למיקרופון נחסמה.\n\nכדי להפעיל מחדש:\nלחץ על הסמל 🔒 בשורת הכתובת → הרשאות → מיקרופון → אפשר');
+      setShowDenied(true);
       return;
     }
 
@@ -238,6 +239,48 @@ export default function VoiceMicButton({
                 לא עכשיו
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Permission denied help modal ── */}
+      {showDenied && (
+        <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-[2px]" onClick={() => setShowDenied(false)}>
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center relative"
+            dir="rtl"
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowDenied(false)}
+              className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <X size={18} className="text-gray-400" />
+            </button>
+
+            <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+              <MicOff size={28} className="text-red-500" />
+            </div>
+
+            <h3 className="font-bold text-lg text-[#1e3a5f] mb-2">המיקרופון חסום</h3>
+            <p className="text-sm text-gray-500 leading-relaxed mb-4">
+              הדפדפן חסם את הגישה למיקרופון. כדי להפעיל מחדש:
+            </p>
+
+            <div className="bg-gray-50 rounded-xl p-4 text-right text-sm text-gray-600 space-y-2 mb-5">
+              <p><strong>בטלפון:</strong> הגדרות → אפליקציות → Chrome (או הדפדפן שלך) → הרשאות → מיקרופון → אפשר</p>
+              <p><strong>במחשב:</strong> לחץ על 🔒 בשורת הכתובת → הרשאות אתר → מיקרופון → אפשר</p>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowDenied(false);
+                setPermState('unknown');
+              }}
+              className="w-full py-3 rounded-xl bg-[#1e3a5f] text-white font-bold text-sm hover:bg-[#2a5a8f] transition-colors"
+            >
+              הבנתי, אנסה שוב
+            </button>
           </div>
         </div>
       )}
