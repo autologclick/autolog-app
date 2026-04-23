@@ -112,6 +112,7 @@ export async function PUT(req: NextRequest) {
 
     const validation = updateGarageProfileSchema.safeParse(body);
     if (!validation.success) {
+      console.error('Garage profile validation errors:', JSON.stringify(validation.error.issues, null, 2));
       return validationErrorResponse(validation.error);
     }
 
