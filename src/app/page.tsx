@@ -7,7 +7,8 @@ import {
   FileText, Bell, Wrench, Clock, Star, ChevronDown,
   Smartphone, Car, CalendarCheck, BarChart3, Lock,
   Mail, CheckCircle2, ArrowLeft, TrendingUp,
-  ClipboardCheck, HeartPulse, Calendar
+  ClipboardCheck, HeartPulse, Calendar, Sparkles,
+  Camera, Mic, DollarSign, ArrowLeftRight, Search
 } from 'lucide-react';
 import Logo, { LogoIcon } from '@/components/ui/Logo';
 
@@ -114,7 +115,7 @@ export default function Home() {
                 applicationCategory: 'Productivity',
                 operatingSystem: 'Web, iOS, Android',
                 url: 'https://autolog.click',
-                description: 'ניהול רכבים חכם עם תזכורות, מסמכים וטיפול חירום',
+                description: 'ניהול רכבים חכם עם AI — סריקת מסמכים, תזכורות, מעקב הוצאות, קביעת תורים ושירות חירום',
                 offers: {
                   '@type': 'Offer',
                   price: '0',
@@ -275,7 +276,7 @@ export default function Home() {
               </h1>
 
               <p className="text-base sm:text-lg text-gray-300 leading-relaxed mb-8 max-w-lg">
-                בדיקות תקופתיות, ביטוח, טסט, תזכורות חכמות, היסטוריית טיפולים ושירות חירום — הכל בפלטפורמה דיגיטלית אחת, בחינם.
+                תזכורות חכמות, סריקת מסמכים עם AI, מעקב הוצאות, קביעת תורים, היסטוריית טיפולים ושירות חירום — הכל בפלטפורמה דיגיטלית אחת, בחינם.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 mb-10">
@@ -406,27 +407,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============ TRUST BAR ============ */}
-      <section className="py-6 bg-gray-50 border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 flex flex-wrap justify-center items-center gap-8 text-gray-600 text-sm">
-          <div className="flex items-center gap-2">
-            <Lock size={16} />
-            <span>מאובטח ומוצפן</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Smartphone size={16} />
-            <span>עובד מכל מכשיר</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 size={16} />
-            <span>חינם לחלוטין</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Shield size={16} />
-            <span>פרטיות מלאה</span>
-          </div>
-        </div>
-      </section>
+      {/* Trust bar removed — badges already in hero */}
 
       {/* ============ FEATURES ============ */}
       <section id="features" className="py-20 sm:py-28 bg-gray-50">
@@ -441,42 +422,54 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <FeatureCard
-              icon={FileText}
-              title="ניהול מסמכים מלא"
-              description="ביטוח, רישיון, טסט שנתי, קבלות — כל המסמכים שלך מאורגנים בענן, נגישים מכל מקום ובכל זמן."
+              icon={Camera}
+              title="סריקת מסמכים עם AI"
+              description="צלם ביטוח, טסט או קבלה — הבינה המלאכותית שולפת את כל הפרטים אוטומטית ושומרת אותם במערכת."
               delay={0}
             />
             <FeatureCard
               icon={Bell}
               title="תזכורות חכמות"
-              description="קבל התראות אוטומטיות לפני שפג תוקף הטסט, הביטוח או הרישיון. לא תפספס שום תאריך חשוב."
+              description="התראות אוטומטיות לפני שפג תוקף הטסט, הביטוח או הרישיון. לא תפספס שום תאריך חשוב."
               delay={100}
             />
             <FeatureCard
-              icon={HeartPulse}
-              title="SOS חירום"
-              description="תקוע בדרך? לחיצה אחת שולחת קריאת עזרה למוסך שלך או לשירות חירום הקרוב אליך."
+              icon={Sparkles}
+              title="עוזר AI אישי לרכב"
+              description="שאל כל שאלה על הרכב שלך — רעש מוזר, נורת חיווי, מחיר טיפול. ה-AI מכיר את הרכב שלך ועוזר מיד."
               delay={200}
-            />
-            <FeatureCard
-              icon={ClipboardCheck}
-              title="דוחות בדיקה דיגיטליים"
-              description="קבל דוח בדיקה מפורט מהמוסך ישירות לאפליקציה — עם ציונים, תמונות והמלצות לטיפול."
-              delay={300}
             />
             <FeatureCard
               icon={CalendarCheck}
               title="קביעת תורים אונליין"
               description="תזמן בדיקה או טיפול במוסך ישירות מהמערכת. ללא טלפונים, ללא המתנה."
+              delay={300}
+            />
+            <FeatureCard
+              icon={Mic}
+              title="הקלטה קולית"
+              description="במקום להקליד — פשוט דבר. בכל שדה באפליקציה אפשר להקליט בעברית והטקסט נכתב לבד."
               delay={400}
             />
             <FeatureCard
-              icon={BarChart3}
-              title="היסטוריית טיפולים"
-              description="עקוב אחר כל הטיפולים, ההוצאות והבדיקות לאורך חיי הרכב — מידע שעוזר גם במכירה."
+              icon={DollarSign}
+              title="מעקב הוצאות"
+              description="תעד כל הוצאה על הרכב — דלק, ביטוח, תיקונים. תמיד תדע כמה הרכב עולה לך באמת."
               delay={500}
+            />
+            <FeatureCard
+              icon={ClipboardCheck}
+              title="דוחות בדיקה דיגיטליים"
+              description="דוח בדיקה מפורט מהמוסך ישירות לנייד — עם ציונים, תמונות והמלצות לטיפול."
+              delay={600}
+            />
+            <FeatureCard
+              icon={HeartPulse}
+              title="SOS חירום"
+              description="תקוע בדרך? לחיצה אחת שולחת קריאת עזרה למוסך שלך או לשירות חירום הקרוב."
+              delay={700}
             />
           </div>
         </div>
@@ -541,10 +534,10 @@ export default function Home() {
         <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-1000 ${stats.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
             {[
-              { icon: Shield, label: 'הצפנה בנקאית', desc: 'SSL/TLS מלא' },
-              { icon: Smartphone, label: 'עובד מכל מכשיר', desc: 'ללא הורדה' },
-              { icon: Clock, label: 'תזכורות אוטומטיות', desc: 'טסט, ביטוח, רישיון' },
-              { icon: Wrench, label: 'רשת מוסכים', desc: 'הצטרפו בחינם' },
+              { icon: Sparkles, label: 'בינה מלאכותית', desc: 'סריקת מסמכים ועוזר AI' },
+              { icon: Mic, label: 'הקלטה קולית', desc: 'דבר במקום להקליד' },
+              { icon: Search, label: 'בדיקת 200+ פרמטרים', desc: 'דוח AI מקצועי' },
+              { icon: ArrowLeftRight, label: 'העברת בעלות', desc: 'מוכר ← קונה דיגיטלית' },
             ].map(({ icon: Icon, label, desc }) => (
               <div key={label}>
                 <Icon className="w-8 h-8 mx-auto mb-3 text-teal-300 opacity-80" />
@@ -733,20 +726,12 @@ export default function Home() {
                 a: 'פרטיות ואבטחה הם עדיפות #1 שלנו. כל המידע שלך מוצפן בסטנדרטים בנקאיים (SSL/TLS), ומאוחסן בשרתים מאובטחים ומסודרים. אנחנו לעולם לא מוכרים את הנתונים שלך לצד שלישי.',
               },
               {
-                q: 'מה קורה אם אני מוכר את הרכב?',
-                a: 'אתה יכול בכל רגע למחוק את הרכב מהחשבון שלך. כל המסמכים והנתונים שלך מתמחקים בצורה מאובטחת ממערכת AutoLog. אם אתה רוצה, אתה יכול אפילו לייצא את ההיסטוריה לפני המחיקה.',
-              },
-              {
                 q: 'האם אפשר לנהל כמה רכבים?',
                 a: 'בהחלט! אתה יכול להוסיף כמה רכבים שאתה רוצה לחשבון אחד. תזכורות, מסמכים, בדיקות — הכל מסודר בנפרד לכל רכב. מצוין לבעלי צי או משפחות עם יותר מרכב אחד.',
               },
               {
                 q: 'איך אני קובע תור למוסך?',
                 a: 'אם המוסך שלך שותף ל-AutoLog, אתה יכול לקבוע תור ישירות מהמערכת. לחיצה אחת, בחר את התאריך והשעה — וזהו! המוסך מקבל את הבקשה וחוזר אליך עם אישור.',
-              },
-              {
-                q: 'מה זה דוחות הבדיקה הדיגיטליים?',
-                a: 'במקום להדפיס דוח על נייר, המוסך יוצר דוח מקצועי ישר במערכת — עם תמונות, ציונים, וטיפים לטיפול. אתה מקבל את זה ישר לנייד שלך, זה בטוח וקל לשמירה.',
               },
             ].map((item, i) => (
               <button
