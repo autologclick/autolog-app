@@ -14,6 +14,7 @@ const updateGarageProfileSchema = z.object({
   services: z.array(z.string()).optional(),
   workingHours: z.record(z.string()).optional(),
   amenities: z.array(z.string()).optional(),
+  languages: z.array(z.string()).optional(),
 
   // Branding & media
   logoUrl: z.string().url('כתובת לוגו לא תקינה').optional().or(z.literal('')),
@@ -90,6 +91,7 @@ export async function GET(req: NextRequest) {
       services: garage.services ? JSON.parse(garage.services) : [],
       workingHours: garage.workingHours ? JSON.parse(garage.workingHours) : {},
       amenities: garage.amenities ? JSON.parse(garage.amenities) : [],
+      languages: garage.languages ? JSON.parse(garage.languages) : [],
     };
 
     return jsonResponse({ garage: parsed });
@@ -133,7 +135,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // JSON array fields
-    const jsonArrayFields = ['services', 'workingHours', 'amenities', 'galleryImages',
+    const jsonArrayFields = ['services', 'workingHours', 'amenities', 'languages', 'galleryImages',
       'specializations', 'vehicleBrands', 'certifications',
       'priceList', 'paymentMethods', 'socialLinks'] as const;
 

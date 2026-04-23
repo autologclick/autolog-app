@@ -293,10 +293,10 @@ export default function GarageSettingsPage() {
           phone,
           email,
           description,
-          services: JSON.stringify(services),
-          workingHours: JSON.stringify(workingHours),
-          amenities: JSON.stringify(amenities),
-          languages: JSON.stringify(languages),
+          services,
+          workingHours,
+          amenities,
+          languages,
         }),
       });
 

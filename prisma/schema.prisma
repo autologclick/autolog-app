@@ -206,6 +206,7 @@ model Garage {
   isActive      Boolean   @default(true)
   isPartner     Boolean   @default(false)
   amenities     String?   // JSON array: ["coffee", "shuttle", "wifi", "waiting_room", "tv", "children_area"]
+  languages     String?   // JSON array: ["he", "ar", "ru", "en", "am", "fr", "es", "ro", "ti", "ka", "tr", "pt"]
   imageUrl      String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
