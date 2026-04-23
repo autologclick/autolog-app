@@ -25,10 +25,31 @@ interface LicenseScanButtonProps {
 
 /**
  * Compress image to base64 data URL for API upload.
+ * Supports HEIC/HEIF via createImageBitmap fallback.
  */
-function compressImage(file: File, maxDim = 1200): Promise<string> {
+async function compressImage(file: File, maxDim = 1200): Promise<string> {
+  // Method 1: createImageBitmap (supports HEIC on modern browsers)
+  if (typeof createImageBitmap === 'function') {
+    try {
+      const bitmap = await createImageBitmap(file);
+      let w = bitmap.width, h = bitmap.height;
+      if (w > maxDim || h > maxDim) {
+        const ratio = Math.min(maxDim / w, maxDim / h);
+        w = Math.round(w * ratio);
+        h = Math.round(h * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(bitmap, 0, 0, w, h);
+      bitmap.close();
+      return canvas.toDataURL('image/jpeg', 0.8);
+    } catch { /* fall through to Image element */ }
+  }
+
+  // Method 2: Image element (JPEG/PNG/WEBP)
   return new Promise((resolve, reject) => {
-    const img = new Image();
+    const img = new window.Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
       URL.revokeObjectURL(url);
@@ -39,8 +60,7 @@ function compressImage(file: File, maxDim = 1200): Promise<string> {
         w = Math.round(w * ratio);
         h = Math.round(h * ratio);
       }
-      canvas.width = w;
-      canvas.height = h;
+      canvas.width = w; canvas.height = h;
       const ctx = canvas.getContext('2d');
       if (!ctx) { reject(new Error('Canvas not supported')); return; }
       ctx.drawImage(img, 0, 0, w, h);
