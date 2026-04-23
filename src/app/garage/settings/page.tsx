@@ -183,17 +183,41 @@ export default function GarageSettingsPage() {
     });
   };
 
+  /** Compress image to max dimensions and JPEG; falls back to raw base64 */
+  const compressImage = (file: File, maxPx = 1200): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      const url = URL.createObjectURL(file);
+      const timeout = setTimeout(() => { URL.revokeObjectURL(url); fileToBase64(file).then(resolve).catch(() => resolve('')); }, 5000);
+      img.onload = () => {
+        clearTimeout(timeout);
+        URL.revokeObjectURL(url);
+        try {
+          let w = img.width, h = img.height;
+          if (w > maxPx || h > maxPx) {
+            if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+            else { w = Math.round(w * maxPx / h); h = maxPx; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) { fileToBase64(file).then(resolve); return; }
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.8));
+        } catch { fileToBase64(file).then(resolve); }
+      };
+      img.onerror = () => { clearTimeout(timeout); URL.revokeObjectURL(url); fileToBase64(file).then(resolve).catch(() => resolve('')); };
+      img.src = url;
+    });
+  };
+
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      setError('התמונה גדולה מדי (מקסימום 5MB)');
-      return;
-    }
     try {
       setUploadingLogo(true);
       setError('');
-      const base64 = await fileToBase64(file);
+      const base64 = await compressImage(file, 800);
       const res = await fetch('/api/garage/images', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -239,8 +263,8 @@ export default function GarageSettingsPage() {
       setError('');
       const base64Images: string[] = [];
       for (let i = 0; i < files.length; i++) {
-        if (files[i].size > 5 * 1024 * 1024) continue;
-        base64Images.push(await fileToBase64(files[i]));
+        const compressed = await compressImage(files[i], 1200);
+        if (compressed) base64Images.push(compressed);
       }
       if (!base64Images.length) {
         setError('לא נמצאו תמונות תקינות');
