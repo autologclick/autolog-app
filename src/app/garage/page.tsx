@@ -62,6 +62,7 @@ export default function GarageDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [unreadNotifs, setUnreadNotifs] = useState(0);
+  const [bodyworkCount, setBodyworkCount] = useState(0);
 
   // Quick search
   const [searchQuery, setSearchQuery] = useState('');
@@ -107,6 +108,11 @@ export default function GarageDashboard() {
     fetch('/api/notifications?limit=1')
       .then(r => r.json())
       .then(d => { if (d.unreadCount) setUnreadNotifs(d.unreadCount); })
+      .catch(() => {});
+
+    fetch('/api/bodywork')
+      .then(r => r.ok ? r.json() : [])
+      .then(d => { if (Array.isArray(d)) setBodyworkCount(d.length); })
       .catch(() => {});
 
     return () => clearInterval(interval);
@@ -311,6 +317,30 @@ export default function GarageDashboard() {
         )}
 
 
+
+        {/* Bodywork Requests Banner */}
+        {bodyworkCount > 0 && (
+          <div className="bg-gradient-to-l from-orange-50 to-white border-2 border-orange-300 rounded-xl p-4 flex items-center gap-3 shadow-md relative overflow-hidden">
+            <div className="relative flex-shrink-0">
+              <div className="absolute inset-0 bg-orange-400 rounded-full animate-ping opacity-30" style={{width: 40, height: 40}} />
+              <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center relative z-10">
+                <span className="text-white font-bold text-lg">{bodyworkCount}</span>
+              </div>
+            </div>
+            <div className="flex-1 min-w-0 text-right">
+              <h3 className="font-bold text-orange-900 text-base">
+                {bodyworkCount === 1 ? 'בקשת פחחות חדשה!' : `${bodyworkCount} בקשות פחחות חדשות!`}
+              </h3>
+              <p className="text-orange-700 text-xs mt-0.5">לחץ לצפייה ושליחת הצעת מחיר</p>
+            </div>
+            <button
+              onClick={() => router.push('/garage/bodywork')}
+              className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl px-5 py-2.5 text-sm font-bold flex-shrink-0 transition-colors whitespace-nowrap shadow-sm"
+            >
+              צפה והגב
+            </button>
+          </div>
+        )}
 
         {/* Awaiting Signature Banner */}
         {stats.awaitingSignature > 0 && (
