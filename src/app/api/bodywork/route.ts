@@ -6,6 +6,9 @@ import {
   errorResponse,
   handleApiError,
 } from '@/lib/api-helpers';
+import { sendPushToGarageOwner } from '@/lib/push-sender';
+import { createNotification } from '@/lib/services/notification-service';
+import { sendEmail } from '@/lib/email';
 
 /**
  * POST /api/bodywork — Create a new bodywork (פחחות) quote request
@@ -46,9 +49,86 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // ── Notify bodywork garages (async, non-blocking) ──
+    const vehicleName = `${request.vehicle.manufacturer} ${request.vehicle.model}`;
+    notifyBodyworkGarages(request.id, vehicleName, description, request.city).catch(() => {});
+
     return jsonResponse(request, 201);
   } catch (err) {
     return handleApiError(err);
+  }
+}
+
+/**
+ * Find all garages offering bodywork and notify them via push + email + in-app notification
+ */
+async function notifyBodyworkGarages(requestId: string, vehicleName: string, description: string, city: string | null) {
+  try {
+    // Find garages that offer bodywork services
+    const garages = await prisma.garage.findMany({
+      where: {
+        isActive: true,
+        services: { not: null },
+        ownerId: { not: null },
+      },
+      select: { id: true, ownerId: true, email: true, name: true, services: true, city: true },
+    });
+
+    const bodyworkGarages = garages.filter(g => {
+      const services: string[] = g.services ? JSON.parse(g.services) : [];
+      return services.some(s => s === 'bodywork' || s.includes('פחחות'));
+    });
+
+    // Optionally filter by city
+    const relevantGarages = city
+      ? bodyworkGarages.filter(g => g.city === city || !city)
+      : bodyworkGarages;
+
+    const shortDesc = description.length > 50 ? description.slice(0, 50) + '...' : description;
+
+    for (const garage of relevantGarages) {
+      if (!garage.ownerId) continue;
+
+      // In-app notification
+      createNotification({
+        userId: garage.ownerId,
+        type: 'bodywork_request',
+        title: 'בקשת פחחות חדשה!',
+        message: `${vehicleName} — ${shortDesc}`,
+        link: '/garage/bodywork',
+      }).catch(() => {});
+
+      // Push notification
+      sendPushToGarageOwner(garage.id, {
+        title: 'בקשת פחחות חדשה!',
+        body: `${vehicleName} — ${shortDesc}`,
+        url: '/garage/bodywork',
+      }).catch(() => {});
+
+      // Email notification
+      if (garage.email) {
+        sendEmail({
+          to: garage.email,
+          subject: `בקשת פחחות חדשה — ${vehicleName}`,
+          html: `
+            <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 500px;">
+              <h2 style="color: #1e3a5f;">בקשת פחחות חדשה ב-AutoLog</h2>
+              <p><strong>רכב:</strong> ${vehicleName}</p>
+              <p><strong>תיאור:</strong> ${description}</p>
+              <br/>
+              <a href="https://autolog.click/garage/bodywork"
+                style="background: #f97316; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+                צפה ושלח הצעת מחיר
+              </a>
+              <br/><br/>
+              <p style="color: #999; font-size: 12px;">AutoLog — ניהול רכבים חכם</p>
+            </div>
+          `,
+        }).catch(() => {});
+      }
+    }
+  } catch (err) {
+    console.error('Failed to notify bodywork garages:', err);
   }
 }
 
