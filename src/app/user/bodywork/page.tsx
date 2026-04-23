@@ -279,7 +279,6 @@ export default function BodyworkPage() {
             <p className="text-sm text-gray-400 max-w-xs mx-auto">צלם את הנזק, תאר מה קרה, ומוסכי הפחחות שלנו ישלחו לך הצעות מחיר</p>
           </div>
         )}
-      </div>
 
       {/* ── New Request Modal ── */}
       <Modal isOpen={showForm} onClose={resetForm} title="בקשת הצעת מחיר — פחחות" size="lg">
