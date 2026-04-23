@@ -219,18 +219,18 @@ export default function VoiceMicButton({
               <span className="text-gray-400 text-xs mt-1 block">ההקלטה לא נשמרת ומשמשת רק למילוי השדה.</span>
             </p>
 
-            <div className="flex gap-3">
-              <button
-                onClick={handleConsentDecline}
-                className="flex-1 py-2.5 rounded-xl border-2 border-gray-200 text-gray-500 font-semibold text-sm hover:bg-gray-50 transition-colors"
-              >
-                לא עכשיו
-              </button>
+            <div className="flex flex-col gap-2.5">
               <button
                 onClick={handleConsentApprove}
-                className="flex-1 py-2.5 rounded-xl bg-teal-600 text-white font-semibold text-sm hover:bg-teal-700 transition-colors shadow-sm"
+                className="w-full py-3 rounded-xl bg-teal-600 text-white font-bold text-sm hover:bg-teal-700 transition-colors shadow-sm"
               >
                 אשר והפעל
+              </button>
+              <button
+                onClick={handleConsentDecline}
+                className="w-full py-2.5 rounded-xl text-gray-400 font-medium text-sm hover:bg-gray-50 transition-colors"
+              >
+                לא עכשיו
               </button>
             </div>
           </div>
