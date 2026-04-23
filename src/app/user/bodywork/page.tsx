@@ -125,29 +125,43 @@ export default function BodyworkPage() {
     }
   };
 
-  /** Compress an image file to max 1200px and JPEG quality 0.7 */
-  const compressImage = (file: File): Promise<string> => {
+  /** Read file as base64 data URL (fallback — no compression) */
+  const readAsDataUrl = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject('File read error');
+      reader.readAsDataURL(file);
+    });
+  };
+
+  /** Try to compress image via canvas; returns null if format not supported */
+  const tryCompress = (file: File): Promise<string | null> => {
+    return new Promise((resolve) => {
       const img = new window.Image();
       const url = URL.createObjectURL(file);
+      const timeout = setTimeout(() => { URL.revokeObjectURL(url); resolve(null); }, 5000);
       img.onload = () => {
+        clearTimeout(timeout);
         URL.revokeObjectURL(url);
-        const MAX = 1200;
-        let w = img.width;
-        let h = img.height;
-        if (w > MAX || h > MAX) {
-          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
-          else { w = Math.round(w * MAX / h); h = MAX; }
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) { reject('Canvas error'); return; }
-        ctx.drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', 0.7));
+        try {
+          const MAX = 1200;
+          let w = img.width;
+          let h = img.height;
+          if (w > MAX || h > MAX) {
+            if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+            else { w = Math.round(w * MAX / h); h = MAX; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) { resolve(null); return; }
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.7));
+        } catch { resolve(null); }
       };
-      img.onerror = () => { URL.revokeObjectURL(url); reject('Image load error'); };
+      img.onerror = () => { clearTimeout(timeout); URL.revokeObjectURL(url); resolve(null); };
       img.src = url;
     });
   };
@@ -159,8 +173,10 @@ export default function BodyworkPage() {
     for (const file of Array.from(files)) {
       if (images.length >= 6) { toast.error('מקסימום 6 תמונות'); break; }
       try {
-        const compressed = await compressImage(file);
-        setImages(prev => [...prev, compressed]);
+        // Try compress first, fall back to raw base64 if format unsupported (HEIC etc.)
+        const compressed = await tryCompress(file);
+        const dataUrl = compressed || await readAsDataUrl(file);
+        setImages(prev => [...prev, dataUrl]);
       } catch {
         toast.error('לא ניתן לטעון את התמונה');
       }
