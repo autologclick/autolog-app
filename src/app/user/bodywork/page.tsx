@@ -98,6 +98,7 @@ export default function BodyworkPage() {
   const [urgency, setUrgency] = useState('normal');
   const [images, setImages] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
 
   // View request detail
   const [viewRequest, setViewRequest] = useState<BodyworkRequest | null>(null);
@@ -304,6 +305,7 @@ export default function BodyworkPage() {
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">תמונות הנזק * (עד 6)</label>
             <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
+            <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleImageUpload} />
             <div className="grid grid-cols-3 gap-2">
               {images.map((img, i) => (
                 <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
@@ -314,13 +316,22 @@ export default function BodyworkPage() {
                 </div>
               ))}
               {images.length < 6 && (
-                <button
-                  onClick={() => fileRef.current?.click()}
-                  className="aspect-square rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1 hover:border-orange-400 hover:bg-orange-50 transition"
-                >
-                  <Camera size={22} className="text-gray-400" />
-                  <span className="text-[11px] text-gray-400">צלם / העלה</span>
-                </button>
+                <>
+                  <button
+                    onClick={() => cameraRef.current?.click()}
+                    className="aspect-square rounded-xl border-2 border-dashed border-orange-300 bg-orange-50 flex flex-col items-center justify-center gap-1 hover:border-orange-400 transition"
+                  >
+                    <Camera size={22} className="text-orange-400" />
+                    <span className="text-[11px] text-orange-500 font-medium">צלם</span>
+                  </button>
+                  <button
+                    onClick={() => fileRef.current?.click()}
+                    className="aspect-square rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1 hover:border-orange-400 hover:bg-orange-50 transition"
+                  >
+                    <Upload size={22} className="text-gray-400" />
+                    <span className="text-[11px] text-gray-400">מגלריה</span>
+                  </button>
+                </>
               )}
             </div>
           </div>
