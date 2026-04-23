@@ -61,13 +61,18 @@ export default function GarageBodyworkPage() {
   const [notes, setNotes] = useState('');
   const [warranty, setWarranty] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [notBodywork, setNotBodywork] = useState(false);
 
   useEffect(() => { fetchRequests(); }, []);
 
   const fetchRequests = async () => {
     try {
       const res = await fetch('/api/bodywork');
-      if (res.ok) setRequests(await res.json());
+      if (res.ok) {
+        setRequests(await res.json());
+      } else if (res.status === 403) {
+        setNotBodywork(true);
+      }
     } catch {} finally {
       setLoading(false);
     }
@@ -126,7 +131,21 @@ export default function GarageBodyworkPage() {
       <PageHeader title="בקשות פחחות" backUrl="/garage" />
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
 
-        {requests.length === 0 ? (
+        {notBodywork ? (
+          <div className="text-center py-16">
+            <div className="w-20 h-20 mx-auto mb-4 bg-amber-50 rounded-full flex items-center justify-center">
+              <AlertCircle size={36} className="text-amber-400" />
+            </div>
+            <h3 className="text-lg font-bold text-[#1e3a5f] mb-2">המוסך לא מוגדר לפחחות</h3>
+            <p className="text-sm text-gray-500 max-w-xs mx-auto mb-4">כדי לקבל בקשות פחחות מלקוחות, הוסף את שירות "פחחות" בהגדרות המוסך</p>
+            <button
+              onClick={() => window.location.href = '/garage/settings'}
+              className="px-6 py-2.5 bg-[#1e3a5f] text-white rounded-xl font-bold text-sm hover:bg-[#2a5a8f] transition"
+            >
+              עבור להגדרות
+            </button>
+          </div>
+        ) : requests.length === 0 ? (
           <div className="text-center py-20">
             <Hammer size={48} className="mx-auto text-gray-300 mb-4" />
             <h3 className="text-lg font-bold text-gray-500 mb-2">אין בקשות פחחות כרגע</h3>
