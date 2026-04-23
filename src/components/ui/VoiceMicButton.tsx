@@ -130,6 +130,11 @@ export default function VoiceMicButton({
   const toggle = useCallback(async () => {
     if (!recognitionRef.current || disabled) return;
 
+    if (permState === 'denied') {
+      alert('הגישה למיקרופון נחסמה.\n\nכדי להפעיל מחדש:\nלחץ על הסמל 🔒 בשורת הכתובת → הרשאות → מיקרופון → אפשר');
+      return;
+    }
+
     if (isListening) {
       recognitionRef.current.stop();
       setIsListening(false);
@@ -143,7 +148,7 @@ export default function VoiceMicButton({
     }
 
     await startListening();
-  }, [isListening, disabled, hasConsent, startListening]);
+  }, [isListening, disabled, hasConsent, startListening, permState]);
 
   /** User approved consent */
   const handleConsentApprove = useCallback(async () => {
@@ -166,7 +171,7 @@ export default function VoiceMicButton({
       <button
         type="button"
         onClick={toggle}
-        disabled={disabled || permState === 'denied'}
+        disabled={disabled}
         className={`flex-shrink-0 rounded-full transition-all ${
           isListening
             ? 'bg-red-500 text-white animate-pulse shadow-md'
