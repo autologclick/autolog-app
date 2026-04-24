@@ -224,6 +224,7 @@ export default function ExpensesPage() {
       const vehicle = vehicles.find(v => v.id === formData.vehicleId);
       setExpenses(prev => [...prev, { ...newExpense.expense, vehicle }]);
       setError('');
+      toast.success('ההוצאה נוספה בהצלחה');
       resetForm();
       setShowAddModal(false);
     } catch {

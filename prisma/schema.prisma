@@ -447,6 +447,8 @@ model Expense {
   receiptUrl  String?
   treatmentId String?   @unique
   treatment   Treatment? @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+  documentId  String?   @unique
+  document    Document?  @relation(fields: [documentId], references: [id], onDelete: SetNull)
   createdAt   DateTime  @default(now())
 
   @@index([vehicleId])
@@ -488,6 +490,7 @@ model Document {
   fileType    String?   // image/jpeg, application/pdf, etc.
   expiryDate  DateTime?
   isActive    Boolean   @default(true)
+  expense     Expense?  // Linked expense (if auto-created from document scan)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

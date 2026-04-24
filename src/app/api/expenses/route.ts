@@ -15,6 +15,7 @@ import {
 import { expenseSchema } from '@/lib/validations';
 import { NOT_FOUND } from '@/lib/messages';
 import { isValidExpenseCategory, aggregateExpenses } from '@/lib/services/expense-service';
+import { createDocumentFromExpense } from '@/lib/services/expense-document-sync';
 
 // GET /api/expenses - List expenses for user's vehicles
 export async function GET(req: NextRequest) {
@@ -173,6 +174,19 @@ export async function POST(req: NextRequest) {
         },
       },
     });
+
+    // Auto-create a linked Document if expense has a receipt image
+    if (receiptUrl && receiptUrl.startsWith('data:image/')) {
+      createDocumentFromExpense({
+        expenseId: expense.id,
+        vehicleId,
+        category,
+        amount,
+        description,
+        date: expenseDate,
+        receiptUrl,
+      }).catch(err => console.error('Expense→Document sync failed:', err));
+    }
 
     return jsonResponse(
       { expense, message: 'הוצאה נוספה בהצלחה' },

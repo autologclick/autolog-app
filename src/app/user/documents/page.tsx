@@ -11,6 +11,7 @@ import {
   Loader2, Upload, X, Camera, Eye, Car,
   CheckCircle, AlertCircle, Scan
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 // =============================================
 // Types & Constants
@@ -106,6 +107,7 @@ export default function DocumentsPage() {
     licensePlate?: string; expiryDate?: string; totalAmount?: number;
     businessName?: string; mileage?: number; date?: string;
     invoiceNumber?: string; description?: string;
+    documentType?: string; summary?: string; suggestedCategory?: string;
   } | null>(null);
   const [viewingDoc, setViewingDoc] = useState<{ fileUrl: string; title: string } | null>(null);
 
@@ -263,7 +265,7 @@ export default function DocumentsPage() {
             // Auto-fill description from summary
             if (data.summary) setUploadDescription(data.summary);
 
-            // Store all scan results for display
+            // Store all scan results for display and expense sync
             setScanResults({
               licensePlate: data.licensePlate || undefined,
               expiryDate: data.expiryDate || undefined,
@@ -273,6 +275,9 @@ export default function DocumentsPage() {
               date: data.date || undefined,
               invoiceNumber: data.invoiceNumber || undefined,
               description: data.description || undefined,
+              documentType: data.documentType || undefined,
+              summary: data.summary || undefined,
+              suggestedCategory: data.suggestedCategory || undefined,
             });
             setScanProgress('הסריקה הושלמה!');
           } else {
@@ -311,6 +316,17 @@ export default function DocumentsPage() {
       if (uploadFile) {
         fileData = await compressForUpload(uploadFile);
       }
+      // Build scan data for auto-expense creation
+      const scanData = scanResults?.totalAmount ? {
+        totalAmount: scanResults.totalAmount,
+        date: scanResults.date,
+        documentType: scanResults.documentType,
+        description: scanResults.description,
+        summary: scanResults.summary,
+        businessName: scanResults.businessName,
+        suggestedCategory: scanResults.suggestedCategory,
+      } : undefined;
+
       const res = await fetch('/api/documents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -321,10 +337,15 @@ export default function DocumentsPage() {
           description: uploadDescription || undefined,
           fileData,
           expiryDate: uploadExpiry || null,
+          scanData,
         }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'שגיאה בהעלאת מסמך'); setSaving(false); return; }
+      // Notify user if expense was auto-created
+      if (data.linkedExpenseId) {
+        toast.success('המסמך נשמר והוצאה נוצרה אוטומטית!', { duration: 4000 });
+      }
       resetUploadForm();
       // Refresh documents list
       try {

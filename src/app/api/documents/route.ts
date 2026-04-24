@@ -16,6 +16,7 @@ import {
 } from '@/lib/api-helpers';
 import { documentSchema } from '@/lib/validations';
 import { NOT_FOUND } from '@/lib/messages';
+import { createExpenseFromDocument } from '@/lib/services/expense-document-sync';
 
 // Normalize legacy document types to canonical types
 function normalizeDocType(type: string): string {
@@ -99,6 +100,7 @@ export async function POST(req: NextRequest) {
       fileType,
       expiryDate,
       isActive,
+      scanData,
     } = validation.data;
 
     // Normalize legacy document types to canonical types
@@ -152,7 +154,30 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return jsonResponse({ document, message: 'המסמך נוסף בהצלחה!' }, 201);
+    // Auto-create a linked Expense if scan detected a price
+    let linkedExpenseId: string | null = null;
+    if (scanData?.totalAmount && scanData.totalAmount > 0) {
+      linkedExpenseId = await createExpenseFromDocument({
+        documentId: document.id,
+        vehicleId,
+        totalAmount: scanData.totalAmount,
+        date: scanData.date,
+        description: scanData.description,
+        documentType: scanData.documentType,
+        summary: scanData.summary,
+        businessName: scanData.businessName,
+        suggestedCategory: scanData.suggestedCategory,
+        fileUrl: resolvedFileUrl,
+      });
+    }
+
+    return jsonResponse({
+      document,
+      linkedExpenseId,
+      message: linkedExpenseId
+        ? 'המסמך נוסף בהצלחה! הוצאה נוצרה אוטומטית'
+        : 'המסמך נוסף בהצלחה!',
+    }, 201);
   } catch (error) {
     return handleApiError(error);
   }

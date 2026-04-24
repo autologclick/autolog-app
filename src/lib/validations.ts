@@ -421,6 +421,16 @@ export const documentSchema = z.object({
     .or(z.literal('')),
   expiryDate: z.string().optional().or(z.literal('')),
   isActive: z.boolean().optional(),
+  // AI scan results (for auto-creating linked expense)
+  scanData: z.object({
+    totalAmount: z.number().positive().optional(),
+    date: z.string().optional(),
+    documentType: z.string().optional(),
+    description: z.string().optional(),
+    summary: z.string().optional(),
+    businessName: z.string().optional(),
+    suggestedCategory: z.string().optional(),
+  }).optional(),
 });
 
 export const updateDocumentSchema = z.object({
