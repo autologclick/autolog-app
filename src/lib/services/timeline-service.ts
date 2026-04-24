@@ -90,7 +90,7 @@ export function buildInspectionEvents(
       type: 'inspection',
       date: inspection.date,
       title: HISTORY_EVENT_TITLES.inspection,
-      description: `בדיקה ${INSPECTION_TYPE_HEB[inspection.inspectionType] || inspection.inspectionType} ב${inspection.garage?.name || 'סדנה'}`,
+      description: `אבחון ${INSPECTION_TYPE_HEB[inspection.inspectionType] || inspection.inspectionType} ב${inspection.garage?.name || 'סדנה'}`,
       vehicleId: inspection.vehicleId,
       vehicleName: getVehicleLabel(vehicle),
       status: inspection.status,

@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
       inspectionData = buildInspectionData(data as ValidatedInspectionInput, vehicle.id, garage.id);
     } catch (buildErr) {
       console.error('[Inspection] Failed to build inspection data:', buildErr);
-      return errorResponse('שגיאה בבניית נתוני הבדיקה', 500);
+      return errorResponse('שגיאה בבניית נתוני האבחון', 500);
     }
 
     // Create inspection and items in a transaction
@@ -165,8 +165,8 @@ export async function POST(req: NextRequest) {
           data: {
             userId: vehicleOwnerId,
             type: 'system',
-            title: 'דוח בדיקה חדש!',
-            message: `דוח בדיקה מסוג ${INSPECTION_TYPE_HEB[data.inspectionType] || data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
+            title: 'דוח אבחון חדש!',
+            message: `דוח אבחון מסוג ${INSPECTION_TYPE_HEB[data.inspectionType] || data.inspectionType} לרכב ${vehicle.nickname || vehicle.manufacturer + ' ' + vehicle.model} (${vehicle.licensePlate}) זמין לצפייה.`,
             link: `/inspection/${newInspection.id}`,
           },
         });
@@ -213,7 +213,7 @@ export async function POST(req: NextRequest) {
 
       // Send treatment notification only to real customers (not garage-owned vehicles)
       if (!isOwnedByGarage) {
-        const treatmentAction = treatmentType === 'inspection' ? 'בדיקה' : treatmentType === 'maintenance' ? 'תחזוקה' : 'תיקון';
+        const treatmentAction = treatmentType === 'inspection' ? 'אבחון' : treatmentType === 'maintenance' ? 'תחזוקה' : 'תיקון';
         await tx.notification.create({
           data: {
             userId: vehicleOwnerId,
@@ -235,7 +235,7 @@ export async function POST(req: NextRequest) {
       });
     });
 
-    return jsonResponse({ inspection, message: 'הבדיקה נוצרה בהצלחה' }, 201);
+    return jsonResponse({ inspection, message: 'האבחון נוצר בהצלחה' }, 201);
   } catch (error) {
     return handleApiError(error);
   }

@@ -362,13 +362,13 @@ export default function InspectionReportPage() {
         const res = await fetch(`/api/inspections/${params.id}`);
         if (!res.ok) {
           const data = await res.json();
-          setError(data.error || 'שגיאה בטעינת הבדיקה');
+          setError(data.error || 'שגיאה בטעינת האבחון');
           return;
         }
         const data = await res.json();
         setInspection(data.inspection);
       } catch {
-        setError('שגיאה בטעינת הבדיקה');
+        setError('שגיאה בטעינת האבחון');
       } finally {
         setLoading(false);
       }
@@ -393,7 +393,7 @@ export default function InspectionReportPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <Loader2 className="animate-spin text-teal-600" size={40} />
-        <p className="text-sm text-gray-500">טוען דוח בדיקה...</p>
+        <p className="text-sm text-gray-500">טוען דוח אבחון...</p>
       </div>
     );
   }
@@ -402,7 +402,7 @@ export default function InspectionReportPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Shield size={48} className="text-gray-300" />
-        <p className="text-gray-500 text-lg">{error || 'הבדיקה לא נמצאה'}</p>
+        <p className="text-gray-500 text-lg">{error || 'האבחון לא נמצא'}</p>
         <Button variant="outline" onClick={() => router.back()}>חזור</Button>
       </div>
     );
@@ -644,7 +644,7 @@ export default function InspectionReportPage() {
 
         // Use Web Share API with PDF file if supported
         if (navigator.share && navigator.canShare) {
-          const shareData = { title: `דוח בדיקה — ${vehicleLabel}`, text: buildShareText(), files: [file] };
+          const shareData = { title: `דוח אבחון — ${vehicleLabel}`, text: buildShareText(), files: [file] };
           if (navigator.canShare(shareData)) {
             await navigator.share(shareData);
             return;
@@ -656,7 +656,7 @@ export default function InspectionReportPage() {
       const fullPdfUrl = await getSignedPdfUrl();
       if (navigator.share) {
         await navigator.share({
-          title: `דוח בדיקה — ${vehicleLabel}`,
+          title: `דוח אבחון — ${vehicleLabel}`,
           text: buildShareText(fullPdfUrl),
         });
       } else {
@@ -703,7 +703,7 @@ export default function InspectionReportPage() {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs sm:text-sm opacity-90">דוח בדיקה</span>
+            <span className="text-xs sm:text-sm opacity-90">דוח אבחון</span>
             <LogoIcon size={24} />
           </div>
         </div>
@@ -1236,7 +1236,7 @@ export default function InspectionReportPage() {
 
         {aiLoading ? (
           <div className="flex items-center justify-center py-6 gap-2">
-            <span className="text-sm text-gray-400">מנתח את תוצאות הבדיקה...</span>
+            <span className="text-sm text-gray-400">מנתח את תוצאות האבחון...</span>
             <Loader2 size={18} className="animate-spin text-teal-500" />
           </div>
         ) : aiAnalysis ? (

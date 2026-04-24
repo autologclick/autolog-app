@@ -25,7 +25,7 @@ const baseMetadata: Metadata = {
     default: 'AutoLog - ניהול רכבים חכם',
     template: '%s | AutoLog',
   },
-  description: 'מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד. הצטרפו ל-2,500+ משתמשים שכבר מנהלים את הרכב בצורה חכמה.',
+  description: 'מערכת ניהול רכבים מקצועית - אבחונים, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד. הצטרפו ל-2,500+ משתמשים שכבר מנהלים את הרכב בצורה חכמה.',
   keywords: ['ניהול רכבים', 'טסט', 'ביטוח רכב', 'מוסך', 'אבחון רכב', 'AutoLog', 'תזכורות רכב', 'SOS חירום'],
   authors: [{ name: 'AutoLog' }],
   creator: 'AutoLog',
@@ -47,7 +47,7 @@ const baseMetadata: Metadata = {
     url: 'https://autolog.click',
     siteName: 'AutoLog',
     title: 'AutoLog - ניהול רכבים חכם ויעיל',
-    description: 'מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד',
+    description: 'מערכת ניהול רכבים מקצועית - אבחונים, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד',
   },
   twitter: {
     card: 'summary_large_image',

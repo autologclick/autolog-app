@@ -67,7 +67,7 @@ export async function GET(
     });
 
     if (!inspection) {
-      return errorResponse('בדיקה לא נמצאה', 404);
+      return errorResponse('אבחון לא נמצא', 404);
     }
 
     // Verify access control

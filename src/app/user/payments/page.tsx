@@ -33,7 +33,7 @@ interface PaymentSummary {
 }
 
 const SERVICE_TYPE_LABELS: Record<string, string> = {
-  inspection: 'בדיקה',
+  inspection: 'אבחון',
   maintenance: 'תחזוקה',
   repair: 'תיקון',
   test_prep: 'הכנה לטסט',
@@ -355,7 +355,7 @@ export default function PaymentsPage() {
                       <div>
                         <p className="text-xs text-gray-400 mb-1">מקור</p>
                         <p className="font-semibold text-gray-800">
-                          {payment.source === 'inspection' ? 'בדיקה' : payment.source === 'appointment' ? 'תור' : 'הוצאה'}
+                          {payment.source === 'inspection' ? 'אבחון' : payment.source === 'appointment' ? 'תור' : 'הוצאה'}
                         </p>
                       </div>
                       <div>

@@ -252,7 +252,7 @@ export default function VehicleReportPage() {
       `רכב: ${report?.vehicle.manufacturer} ${report?.vehicle.model} ${report?.vehicle.year}\n` +
       `לוחית רישוי: ${report?.vehicle.licensePlate}\n` +
       `סה"כ טיפולים: ${report?.summary.totalTreatments}\n` +
-      `סה"כ בדיקות: ${report?.summary.totalInspections}\n` +
+      `סה"כ אבחונים: ${report?.summary.totalInspections}\n` +
       `קילומטראז׳ אחרון: ${report?.summary.lastMileage ? report.summary.lastMileage.toLocaleString() : 'לא ידוע'}\n` +
       `עלות כוללת: ${formatCurrency(report?.summary.totalCost || 0)}\n\n` +
       `הדוח נוצר ע"י AutoLog`;
@@ -422,7 +422,7 @@ export default function VehicleReportPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { label: 'טיפולים', value: summary.totalTreatments, icon: Wrench, color: 'text-blue-600 bg-blue-50' },
-            { label: 'בדיקות', value: summary.totalInspections, icon: ClipboardCheck, color: 'text-emerald-600 bg-emerald-50' },
+            { label: 'אבחונים', value: summary.totalInspections, icon: ClipboardCheck, color: 'text-emerald-600 bg-emerald-50' },
             { label: 'ק"מ אחרון', value: summary.lastMileage ? summary.lastMileage.toLocaleString() : '—', icon: Gauge, color: 'text-purple-600 bg-purple-50' },
             { label: 'עלות כוללת', value: formatCurrency(summary.totalCost), icon: DollarSign, color: 'text-amber-600 bg-amber-50' },
           ].map((stat) => (
@@ -478,7 +478,7 @@ export default function VehicleReportPage() {
         {/* Inspections Section */}
         {report.inspections.length > 0 && (
           <CollapsibleSection
-            title="בדיקות רכב"
+            title="אבחוני רכב"
             icon={ClipboardCheck}
             count={report.inspections.length}
             expanded={expandedSections.inspections}

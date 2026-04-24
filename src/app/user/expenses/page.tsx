@@ -45,7 +45,7 @@ const CATEGORIES = {
   fuel: { label: 'דלק', color: 'orange', icon: Fuel, emoji: '⛽' },
   maintenance: { label: 'תחזוקה', color: 'purple', icon: Wrench, emoji: '🔧' },
   insurance: { label: 'ביטוח', color: 'blue', icon: Shield, emoji: '🛡️' },
-  test: { label: 'בדיקה', color: 'cyan', icon: Zap, emoji: '📄' },
+  test: { label: 'אבחון', color: 'cyan', icon: Zap, emoji: '📄' },
   parking: { label: 'חניה', color: 'amber', icon: MapPin, emoji: '🅿️' },
   fines: { label: 'קנסות', color: 'red', icon: AlertTriangle, emoji: '📝' },
   other: { label: 'אחר', color: 'slate', icon: DollarSign, emoji: '📋' },

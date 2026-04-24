@@ -73,11 +73,11 @@ export default function ProfilePage() {
       description: 'היסטוריית חיובים ותשלומים',
     },
     {
-      label: 'דוחות ובדיקות',
+      label: 'דוחות ואבחונים',
       href: '/user/reports',
       icon: <FileCheck size={20} />,
       iconBg: 'bg-purple-50 text-purple-600',
-      description: 'צפה בתוצאות בדיקות הרכב',
+      description: 'צפה בתוצאות אבחוני הרכב',
     },
     {
       label: 'הגדרות',

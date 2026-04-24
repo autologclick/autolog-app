@@ -43,7 +43,7 @@ interface Appointment {
 type FilterStatus = 'all' | 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'rejected';
 
 const serviceTypeHeb: Record<string, string> = {
-  inspection: 'בדיקה',
+  inspection: 'אבחון',
   maintenance: 'טיפול',
   repair: 'תיקון',
   test_prep: 'הכנה לטסט',

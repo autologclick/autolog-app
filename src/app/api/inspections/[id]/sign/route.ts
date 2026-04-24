@@ -37,7 +37,7 @@ export async function PUT(
     }
 
     if (inspection.status !== 'awaiting_signature') {
-      return errorResponse('הבדיקה אינה ממתינה לחתימה', 400);
+      return errorResponse('האבחון אינו ממתין לחתימה', 400);
     }
 
     // Update inspection with signature and change status to completed

@@ -78,16 +78,16 @@ const serviceOptions = [
 ];
 
 const serviceValueToLabel: Record<string, string> = {
-  inspection: 'בדיקה', maintenance: 'טיפול', repair: 'תיקון', test_prep: 'הכנה לטסט',
+  inspection: 'אבחון', maintenance: 'טיפול', repair: 'תיקון', test_prep: 'הכנה לטסט',
   oil_change: 'החלפת שמן', tires: 'צמיגים', brakes: 'בלמים', diagnostics: 'אבחון',
   bodywork: 'פחחות', electrical: 'חשמל', ac: 'מיזוג', lights_mirrors: 'פנסים ומראות',
   spare_parts: 'חלקי חילוף',
 };
 
 const serviceDisclaimers: Record<string, string> = {
-  inspection: 'הבדיקה מציגה את מצב הרכב בפועל במועד ביצועה. AutoLog והמוסכים השותפים אינם נותנים אחריות על ממצאי הבדיקה או על מצב הרכב לאחריה.',
+  inspection: 'האבחון מציג את מצב הרכב בפועל במועד ביצועו. AutoLog והמוסכים השותפים אינם נותנים אחריות על ממצאי האבחון או על מצב הרכב לאחריו.',
   test_prep: 'הכנה לטסט כוללת בדיקה ותיקון של פריטים נדרשים לעמידה בטסט השנתי. עמידה בטסט תלויה בתחנת הבדיקה ואינה מובטחת.',
-  repair: 'אבחון התקלה מבוסס על ניסיון המכונאי ועל הממצאים בזמן הבדיקה. ייתכן שיידרשו בדיקות נוספות בהמשך.',
+  repair: 'אבחון התקלה מבוסס על ניסיון המכונאי ועל הממצאים בזמן האבחון. ייתכן שיידרשו בדיקות נוספות בהמשך.',
   maintenance: 'הטיפול מבוצע בהתאם להמלצות יצרן הרכב ולמצבו בפועל. מומלץ לעקוב אחרי לוח הטיפולים ביומן הרכב.',
 };
 const defaultDisclaimer = 'השירות מבוצע על ידי המוסך בהתאם לסטנדרטים המקצועיים המקובלים.';
@@ -290,7 +290,7 @@ export default function BookGaragePage() {
         setGarages(data.garages.map((g: GarageListItem) => ({
           ...g,
           reviewCount: g.reviewCount || g._count?.reviews || 0,
-          services: typeof g.services === 'string' ? (() => { try { return JSON.parse(g.services); } catch { return ['בדיקה']; } })() : g.services || ['בדיקה'],
+          services: typeof g.services === 'string' ? (() => { try { return JSON.parse(g.services); } catch { return ['אבחון']; } })() : g.services || ['אבחון'],
           amenities: typeof g.amenities === 'string' ? (() => { try { return JSON.parse(g.amenities); } catch { return []; } })() : g.amenities || [],
         })));
       }
@@ -707,7 +707,7 @@ export default function BookGaragePage() {
               </label>
               {vehicles.length === 0 ? (
                 <div className="bg-[#fef7ed] rounded-2xl border-2 border-dashed border-teal-300 p-4">
-                  <p className="text-sm font-bold text-gray-800 mb-2">הזן מספר רכב לבדיקה</p>
+                  <p className="text-sm font-bold text-gray-800 mb-2">הזן מספר רכב לאבחון</p>
                   <p className="text-xs text-gray-500 mb-3">נמצא את פרטי הרכב אוטומטית ממשרד התחבורה</p>
                   <div className="flex gap-2" dir="ltr">
                     <Input

@@ -11,7 +11,7 @@ import Logo from '@/components/ui/Logo';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
 
 const SERVICE_OPTIONS = [
-  { id: 'inspection', label: 'בדיקות רכב' },
+  { id: 'inspection', label: 'אבחוני רכב' },
   { id: 'maintenance', label: 'טיפולים שוטפים' },
   { id: 'repair', label: 'תיקונים כלליים' },
   { id: 'test_prep', label: 'הכנה לטסט' },

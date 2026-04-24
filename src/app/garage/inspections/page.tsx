@@ -41,7 +41,7 @@ const TYPE_CONFIG: Record<string, {
   brakes: { label: 'בדיקת בלמים', icon: AlertTriangle, badgeBg: 'bg-rose-100', badgeText: 'text-rose-700', borderClass: 'border-r-rose-500' },
 };
 
-const DEFAULT_TYPE = { label: 'בדיקה', icon: BarChart3, badgeBg: 'bg-gray-100', badgeText: 'text-gray-700', borderClass: 'border-r-gray-400' };
+const DEFAULT_TYPE = { label: 'אבחון', icon: BarChart3, badgeBg: 'bg-gray-100', badgeText: 'text-gray-700', borderClass: 'border-r-gray-400' };
 
 function getTypeConfig(type: string) {
   return TYPE_CONFIG[type] || DEFAULT_TYPE;
@@ -49,7 +49,7 @@ function getTypeConfig(type: string) {
 
 const FILTER_TABS = [
   { key: 'all', label: 'הכל', icon: BarChart3 },
-  { key: 'full', label: 'בדיקות מקיפות', icon: Car },
+  { key: 'full', label: 'אבחונים מקיפים', icon: Car },
   { key: 'pre_test', label: 'הכנה לטסט', icon: ClipboardCheck },
   { key: 'periodic', label: 'טיפולים', icon: Settings },
   { key: 'troubleshoot', label: 'תיקונים', icon: Wrench },
@@ -113,7 +113,7 @@ export default function GarageInspectionsPage() {
             <Shield size={20} className="text-[#1e3a5f]" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">בדיקות ופעולות</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">אבחונים ופעולות</h1>
             <p className="text-sm text-gray-500">{inspections.length} רשומות</p>
           </div>
         </div>
@@ -198,20 +198,20 @@ export default function GarageInspectionsPage() {
             <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-emerald-600" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לבדיקות</h2>
+            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לאבחונים</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={14} className="text-emerald-600" />
-                <span className="text-xs font-bold text-gray-700">סוג בדיקה מוביל</span>
+                <span className="text-xs font-bold text-gray-700">סוג אבחון מוביל</span>
               </div>
               <p className="text-xs text-gray-600">
                 {(() => {
                   const topType = Object.entries(typeCounts).sort((a, b) => b[1] - a[1])[0];
                   if (!topType) return '📋 אין מספיק נתונים לניתוח.';
                   const pct = Math.round((topType[1] / inspections.length) * 100);
-                  return `📊 ${getTypeConfig(topType[0]).label} — ${pct}% מכלל הבדיקות (${topType[1]} מתוך ${inspections.length}). ${pct > 50 ? 'שקלו גיוון שירותים.' : 'התפלגות מגוונת.'}`;
+                  return `📊 ${getTypeConfig(topType[0]).label} — ${pct}% מכלל האבחונים (${topType[1]} מתוך ${inspections.length}). ${pct > 50 ? 'שקלו גיוון שירותים.' : 'התפלגות מגוונת.'}`;
                 })()}
               </p>
             </div>
@@ -226,10 +226,10 @@ export default function GarageInspectionsPage() {
                   if (scored.length === 0) return '🔍 אין ציונים זמינים עדיין.';
                   const avg = Math.round(scored.reduce((s, i) => s + (i.overallScore || 0), 0) / scored.length);
                   return avg >= 80
-                    ? `⭐ ציון ממוצע ${avg} — איכות בדיקות מצוינת! שמרו על הרמה.`
+                    ? `⭐ ציון ממוצע ${avg} — איכות אבחונים מצוינת! שמרו על הרמה.`
                     : avg >= 60
-                    ? `📊 ציון ממוצע ${avg} — יש מקום לשיפור בחלק מהבדיקות.`
-                    : `⚠️ ציון ממוצע ${avg} — מומלץ לבדוק את תהליכי הבדיקה.`;
+                    ? `📊 ציון ממוצע ${avg} — יש מקום לשיפור בחלק מהאבחונים.`
+                    : `⚠️ ציון ממוצע ${avg} — מומלץ לבדוק את תהליכי האבחון.`;
                 })()}
               </p>
             </div>
@@ -242,8 +242,8 @@ export default function GarageInspectionsPage() {
                 {(() => {
                   const completed = inspections.filter(i => i.status === 'completed').length;
                   const pending = inspections.filter(i => i.status === 'pending' || i.status === 'in_progress' || i.status === 'awaiting_signature').length;
-                  if (pending > 0) return `⏳ ${pending} בדיקות בתהליך. ${completed} הושלמו. סיימו בדיקות פתוחות לשיפור זמני טיפול.`;
-                  return `✅ כל ${completed} הבדיקות הושלמו. ביצועים מצוינים!`;
+                  if (pending > 0) return `⏳ ${pending} אבחונים בתהליך. ${completed} הושלמו. סיימו אבחונים פתוחים לשיפור זמני טיפול.`;
+                  return `✅ כל ${completed} האבחונים הושלמו. ביצועים מצוינים!`;
                 })()}
               </p>
             </div>
@@ -261,7 +261,7 @@ export default function GarageInspectionsPage() {
             <Shield size={32} className="text-gray-300" />
           </div>
           <h3 className="text-lg font-bold text-gray-600 mb-2">
-            {inspections.length === 0 ? 'אין בדיקות עדיין' : 'אין תוצאות'}
+            {inspections.length === 0 ? 'אין אבחונים עדיין' : 'אין תוצאות'}
           </h3>
           <p className="text-gray-400 text-sm mb-4">
             {inspections.length === 0 ? 'לחץ על "פעולה חדשה" להתחיל' : 'נסה לשנות את הסינון'}
@@ -331,7 +331,7 @@ export default function GarageInspectionsPage() {
                             });
                           }
                           const signUrl = `${window.location.origin}/inspection/${i.id}`;
-                          const msg = encodeURIComponent(`שלום רב 👋\n\nדוח הבדיקה לרכב שלך הושלם ומוכן לצפייה וחתימה.\n\n📄 *לצפייה בדוח:*\n${signUrl}\n\n_בברכה, הצוות שלנו_ 🚗`);
+                          const msg = encodeURIComponent(`שלום רב 👋\n\nדוח האבחון לרכב שלך הושלם ומוכן לצפייה וחתימה.\n\n📄 *לצפייה בדוח:*\n${signUrl}\n\n_בברכה, הצוות שלנו_ 🚗`);
                           window.open(`https://wa.me/?text=${msg}`, '_blank');
                         }}
                         className="p-2 rounded-lg text-green-500 hover:text-green-700 hover:bg-green-50 transition"
@@ -351,7 +351,7 @@ export default function GarageInspectionsPage() {
                         onClick={(e) => {
                           e.stopPropagation();
                           const url = `${window.location.origin}/inspection/${i.id}`;
-                          const msg = `שלום רב 👋\n\nדוח הבדיקה לרכב שלך מוכן לחתימה.\n\n📄 *לצפייה ואישור:*\n${url}\n\n_בברכה, הצוות שלנו_ 🚗`;
+                          const msg = `שלום רב 👋\n\nדוח האבחון לרכב שלך מוכן לחתימה.\n\n📄 *לצפייה ואישור:*\n${url}\n\n_בברכה, הצוות שלנו_ 🚗`;
                           window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
                         }}
                         className="p-2 rounded-lg text-green-500 hover:text-green-700 hover:bg-green-50 transition"

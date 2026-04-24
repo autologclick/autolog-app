@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const inspectionId = url.searchParams.get('inspectionId');
 
     if (!inspectionId) {
-      return errorResponse('חסר מזהה בדיקה', 400);
+      return errorResponse('חסר מזהה אבחון', 400);
     }
 
     const inspection = await prisma.inspection.findUnique({
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!inspection) {
-      return errorResponse('בדיקה לא נמצאה', 404);
+      return errorResponse('אבחון לא נמצא', 404);
     }
 
     requireOwnershipOrAdmin(payload, inspection.vehicle.userId);

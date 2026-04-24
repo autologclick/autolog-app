@@ -70,10 +70,10 @@ export async function GET(
       try {
         payload = requireAuth(req);
       } catch {
-        return errorResponse('אין הרשאה לצפות בבדיקה', 403);
+        return errorResponse('אין הרשאה לצפות באבחון', 403);
       }
       if (payload.role !== 'admin' && inspection.vehicle.userId !== payload.userId) {
-        return errorResponse('אין הרשאה לצפות בבדיקה', 403);
+        return errorResponse('אין הרשאה לצפות באבחון', 403);
       }
     }
 

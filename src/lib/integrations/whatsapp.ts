@@ -11,8 +11,8 @@ const logger = createLogger('business');
 // Localized message templates (Hebrew)
 const MESSAGE_TEMPLATES = {
   test_reminder: {
-    title: 'תזכורת בדיקה חודשית',
-    body: 'שלום {{vehicleName}},\n\nזהו תזכורת לביצוע בדיקה חודשית של הרכב שלך.\n\nתאריך הבדיקה המתוכנן: {{testDate}}\n\nבואו לביקור בגראז שלנו כדי לוודא שהרכב בתנאי מעולה.\n\nתודה,\nצוות AutoLog',
+    title: 'תזכורת אבחון חודשי',
+    body: 'שלום {{vehicleName}},\n\nזהו תזכורת לביצוע אבחון חודשי של הרכב שלך.\n\nתאריך האבחון המתוכנן: {{testDate}}\n\nבואו לביקור בגראז שלנו כדי לוודא שהרכב בתנאי מעולה.\n\nתודה,\nצוות AutoLog',
   },
   appointment_confirmation: {
     title: 'אישור תור',

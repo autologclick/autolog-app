@@ -143,13 +143,13 @@ export default function InspectionDetailPage({ params }: { params: { id: string 
         setLoading(true);
         const res = await fetch(`/api/inspections/${paramId}`);
         if (!res.ok) {
-          setError('בדיקה לא נמצאה');
+          setError('אבחון לא נמצא');
           return;
         }
         const data = await res.json();
         setInspection(data);
       } catch (err) {
-        setError('שגיאה בטעינת הבדיקה');
+        setError('שגיאה בטעינת האבחון');
         if (process.env.NODE_ENV === 'development') {
           console.error(err);
         }
@@ -172,12 +172,12 @@ export default function InspectionDetailPage({ params }: { params: { id: string 
   if (error || !inspection) {
     return (
       <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
-        <h1 className="text-2xl font-bold text-[#1e3a5f]">דוח בדיקה</h1>
+        <h1 className="text-2xl font-bold text-[#1e3a5f]">דוח אבחון</h1>
         <Card className="text-center py-12 bg-red-50 border-red-200">
           <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4">
             <FileText size={24} className="text-red-600" />
           </div>
-          <h3 className="text-lg font-bold text-red-600 mb-2">{error || 'בדיקה לא נמצאה'}</h3>
+          <h3 className="text-lg font-bold text-red-600 mb-2">{error || 'אבחון לא נמצא'}</h3>
           <Button variant="outline" onClick={() => router.back()}>
             חזור אחורה
           </Button>
@@ -201,7 +201,7 @@ export default function InspectionDetailPage({ params }: { params: { id: string 
           <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
             <FileText size={20} className="text-blue-600" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1e3a5f]">דוח בדיקה</h1>
+          <h1 className="text-2xl font-bold text-[#1e3a5f]">דוח אבחון</h1>
         </div>
         <div className="flex gap-2">
           <Button
@@ -284,10 +284,10 @@ export default function InspectionDetailPage({ params }: { params: { id: string 
 
       {/* Inspection Details */}
       <Card>
-        <CardTitle icon={<BarChart3 size={20} className="text-purple-500" />}>פרטי הבדיקה</CardTitle>
+        <CardTitle icon={<BarChart3 size={20} className="text-purple-500" />}>פרטי האבחון</CardTitle>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
           <div className="p-3 bg-gray-50 rounded-lg">
-            <div className="text-xs text-gray-500 uppercase mb-1">סוג בדיקה</div>
+            <div className="text-xs text-gray-500 uppercase mb-1">סוג אבחון</div>
             <div className="font-semibold text-gray-800">
               {inspectionTypeLabels[inspection.inspectionType] || inspection.inspectionType}
             </div>

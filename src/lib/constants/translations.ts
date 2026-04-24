@@ -8,7 +8,7 @@
 // =============================================
 
 export const SERVICE_TYPE_HEB: Record<string, string> = {
-  inspection: 'בדיקה',
+  inspection: 'אבחון',
   maintenance: 'טיפול',
   repair: 'תיקון',
   test_prep: 'הכנה לטסט',
@@ -111,7 +111,7 @@ export const SOS_TYPE_HEB: Record<string, string> = {
 // =============================================
 
 export const HISTORY_EVENT_TITLES: Record<string, string> = {
-  inspection: 'בדיקה טכנית',
+  inspection: 'אבחון טכני',
   appointment: 'תור בסדנה',
   expense: 'הוצאה',
   sos: 'קריאת SOS',
@@ -122,7 +122,7 @@ export const HISTORY_EVENT_TITLES: Record<string, string> = {
 // =============================================
 
 export const INSPECTION_TYPE_HEB: Record<string, string> = {
-  inspection: 'בדיקה טכנית',
+  inspection: 'אבחון טכני',
   maintenance: 'תחזוקה',
   repair: 'תיקון',
   test_prep: 'הכנה למבחן',
@@ -141,7 +141,7 @@ export const EXPENSE_CATEGORY_HEB: Record<string, string> = {
   fuel: 'דלק',
   maintenance: 'תחזוקה',
   insurance: 'ביטוח',
-  test: 'בדיקה טכנית',
+  test: 'אבחון טכני',
   parking: 'חנייה',
   fine: 'קנס',
   other: 'אחר',

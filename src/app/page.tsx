@@ -392,7 +392,7 @@ export default function Home() {
                     <CheckCircle2 size={18} className="text-green-600" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-800">בדיקה הושלמה</p>
+                    <p className="text-xs font-bold text-gray-800">אבחון הושלם</p>
                     <p className="text-[10px] text-gray-500">ציון: 94/100</p>
                   </div>
                 </div>
@@ -444,7 +444,7 @@ export default function Home() {
             <FeatureCard
               icon={CalendarCheck}
               title="קביעת תורים אונליין"
-              description="תזמן בדיקה או טיפול במוסך ישירות מהמערכת. ללא טלפונים, ללא המתנה."
+              description="תזמן אבחון או טיפול במוסך ישירות מהמערכת. ללא טלפונים, ללא המתנה."
               delay={300}
             />
             <FeatureCard
@@ -461,8 +461,8 @@ export default function Home() {
             />
             <FeatureCard
               icon={ClipboardCheck}
-              title="דוחות בדיקה דיגיטליים"
-              description="דוח בדיקה מפורט מהמוסך ישירות לנייד — עם ציונים, תמונות והמלצות לטיפול."
+              title="דוחות אבחון דיגיטליים"
+              description="דוח אבחון מפורט מהמוסך ישירות לנייד — עם ציונים, תמונות והמלצות לטיפול."
               delay={600}
             />
             <FeatureCard
@@ -617,12 +617,12 @@ export default function Home() {
                 הפוך את המוסך שלך לדיגיטלי
               </h2>
               <p className="text-gray-500 text-lg leading-relaxed mb-8">
-                הצטרף כמוסך שותף וקבל כלים מתקדמים לניהול הלקוחות, הבדיקות והתורים שלך — בחינם.
+                הצטרף כמוסך שותף וקבל כלים מתקדמים לניהול הלקוחות, האבחונים והתורים שלך — בחינם.
               </p>
 
               <div className="space-y-5 mb-8">
                 {[
-                  { icon: ClipboardCheck, title: 'דוחות בדיקה דיגיטליים', desc: 'צור דוחות מקצועיים בשניות עם הקלטה קולית, תמונות וציונים.' },
+                  { icon: ClipboardCheck, title: 'דוחות אבחון דיגיטליים', desc: 'צור דוחות מקצועיים בשניות עם הקלטה קולית, תמונות וציונים.' },
                   { icon: CalendarCheck, title: 'ניהול תורים חכם', desc: 'הלקוחות קובעים תור ישירות מהמערכת. ללא טלפונים מיותרים.' },
                   { icon: Star, title: 'בנה מוניטין', desc: 'קבל דירוגים וביקורות מלקוחות מרוצים ובלוט בין המוסכים באזור.' },
                   { icon: TrendingUp, title: 'ניתוח ביצועים', desc: 'דשבורד עם סטטיסטיקות, הכנסות ומעקב אחר ביצועי המוסך.' },
@@ -658,7 +658,7 @@ export default function Home() {
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div className="bg-gray-50 rounded-xl p-3">
                     <p className="text-2xl font-bold text-[#1e3a5f]">47</p>
-                    <p className="text-xs text-gray-500">בדיקות</p>
+                    <p className="text-xs text-gray-500">אבחונים</p>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3">
                     <p className="text-2xl font-bold text-emerald-600">4.8</p>
@@ -727,7 +727,7 @@ export default function Home() {
               },
               {
                 q: 'האם אפשר לנהל כמה רכבים?',
-                a: 'בהחלט! אתה יכול להוסיף כמה רכבים שאתה רוצה לחשבון אחד. תזכורות, מסמכים, בדיקות — הכל מסודר בנפרד לכל רכב. מצוין לבעלי צי או משפחות עם יותר מרכב אחד.',
+                a: 'בהחלט! אתה יכול להוסיף כמה רכבים שאתה רוצה לחשבון אחד. תזכורות, מסמכים, אבחונים — הכל מסודר בנפרד לכל רכב. מצוין לבעלי צי או משפחות עם יותר מרכב אחד.',
               },
               {
                 q: 'איך אני קובע תור למוסך?',
@@ -836,7 +836,7 @@ export default function Home() {
               <ul className="space-y-2.5 text-gray-400 text-sm">
                 <li><Link href="/terms" className="hover:text-white transition">תנאי שימוש</Link></li>
                 <li><Link href="/privacy" className="hover:text-white transition">מדיניות פרטיות</Link></li>
-                <li><Link href="/warranty" className="hover:text-white transition">אחריות בדיקות</Link></li>
+                <li><Link href="/warranty" className="hover:text-white transition">אחריות אבחונים</Link></li>
                 <li><Link href="/accessibility" className="hover:text-white transition">נגישות</Link></li>
               </ul>
             </div>

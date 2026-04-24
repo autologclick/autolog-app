@@ -175,7 +175,7 @@ export default function AdminSettingsPage() {
           { label: 'משתמשים', value: stats.users, icon: <Users size={16} />, color: 'text-blue-600 bg-blue-50' },
           { label: 'מוסכים', value: stats.garages, icon: <Building2 size={16} />, color: 'text-emerald-600 bg-emerald-50' },
           { label: 'רכבים', value: stats.vehicles, icon: <Car size={16} />, color: 'text-amber-600 bg-amber-50' },
-          { label: 'בדיקות', value: stats.inspections, icon: <FileCheck size={16} />, color: 'text-teal-600 bg-teal-50' },
+          { label: 'אבחונים', value: stats.inspections, icon: <FileCheck size={16} />, color: 'text-teal-600 bg-teal-50' },
         ].map(s => (
           <div key={s.label} className={`rounded-xl p-3 text-center ${s.color.split(' ')[1]} border border-gray-100`}>
             <div className={`mx-auto w-8 h-8 rounded-lg flex items-center justify-center ${s.color} mb-1`}>
@@ -240,7 +240,7 @@ export default function AdminSettingsPage() {
             { key: 'garageApplications' as const, label: 'בקשות הצטרפות', desc: 'התראה על בקשות מוסכים חדשות', icon: Building2 },
             { key: 'newUsers' as const, label: 'משתמשים חדשים', desc: 'התראה על כל הרשמה חדשה למערכת', icon: Users },
             { key: 'weeklyReport' as const, label: 'דוחות שבועיים', desc: 'סיכום שבועי למייל', icon: FileCheck },
-            { key: 'inspectionComplete' as const, label: 'בדיקות הושלמו', desc: 'עדכון על בדיקות שהסתיימו', icon: CheckCircle2 },
+            { key: 'inspectionComplete' as const, label: 'אבחונים הושלמו', desc: 'עדכון על אבחונים שהסתיימו', icon: CheckCircle2 },
           ].map(item => {
             const IconComponent = item.icon;
             return (

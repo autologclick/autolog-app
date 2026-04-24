@@ -229,8 +229,8 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                   <CheckCircle2 size={16} className="text-teal-600" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800">בדיקת רכב לפני קנייה</p>
-                  <p className="text-sm text-gray-500">הזמן בדיקה מקצועית לרכב שאתה שוקל לרכוש</p>
+                  <p className="font-semibold text-gray-800">אבחון רכב לפני קנייה</p>
+                  <p className="text-sm text-gray-500">הזמן אבחון מקצועי לרכב שאתה שוקל לרכוש</p>
                 </div>
               </div>
             </div>
@@ -279,7 +279,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                 </div>
                 <div className="flex-1">
                   <p className="font-bold text-gray-800 text-base">רוצה לבדוק רכב</p>
-                  <p className="text-sm text-gray-500 mt-0.5">בדיקה מקצועית לפני קנייה</p>
+                  <p className="text-sm text-gray-500 mt-0.5">אבחון מקצועי לפני קנייה</p>
                 </div>
                 <ChevronRight size={20} className="text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
               </button>

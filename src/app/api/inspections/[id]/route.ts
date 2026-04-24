@@ -39,7 +39,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     });
 
     if (!inspection) {
-      return errorResponse('בדיקה לא נמצאה', 404);
+      return errorResponse('אבחון לא נמצא', 404);
     }
 
     // Access control
@@ -110,7 +110,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     });
 
     if (!inspection) {
-      return errorResponse('בדיקה לא נמצאה', 404);
+      return errorResponse('אבחון לא נמצא', 404);
     }
 
     if (payload.role === 'garage_owner') {

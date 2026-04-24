@@ -91,7 +91,7 @@ function inspectionsToPayments(
       status: 'paid' as const,
       source: 'inspection' as const,
       vehicleNickname: vehicleNicknameMap[inspection.vehicleId],
-      description: `בדיקה ${inspection.inspectionType || 'מלאה'}`,
+      description: `אבחון ${inspection.inspectionType || 'מלא'}`,
     }));
 }
 

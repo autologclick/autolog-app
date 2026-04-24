@@ -34,7 +34,7 @@ const treatmentTypeHeb: Record<string, string> = {
 };
 
 const serviceTypeHeb: Record<string, string> = {
-  inspection: 'בדיקה',
+  inspection: 'אבחון',
   maintenance: 'טיפול',
   repair: 'תיקון',
   test_prep: 'הכנה לטסט',

@@ -141,7 +141,7 @@ export function buildRecentActivity(
       id: i.id,
       type: 'inspection' as const,
       title: i.vehicle?.nickname || i.vehicle?.licensePlate || 'רכב',
-      description: 'בדיקה חדשה',
+      description: 'אבחון חדש',
       timestamp: i.createdAt,
       meta: { garage: i.garage?.name, score: i.overallScore, status: i.status } as Record<string, unknown>,
     })),

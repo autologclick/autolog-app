@@ -35,7 +35,7 @@ interface Appointment {
 }
 
 const serviceTypeHeb: Record<string, string> = {
-  inspection: 'בדיקה',
+  inspection: 'אבחון',
   maintenance: 'טיפול',
   repair: 'תיקון',
   test_prep: 'הכנה לטסט',
@@ -420,10 +420,10 @@ export default function AppointmentsPage() {
           key="inspection"
           onClick={() => router.push(`/garage/new-inspection?appointmentId=${appointment.id}`)}
           className="h-8 px-3 rounded-lg bg-teal-100 flex items-center justify-center gap-1 hover:bg-teal-200 transition text-xs font-medium text-teal-700"
-          title="צור דוח בדיקה"
+          title="צור דוח אבחון"
         >
           <Shield size={14} />
-          <span>צור בדיקה</span>
+          <span>צור אבחון</span>
         </button>
       );
     }
@@ -761,7 +761,7 @@ export default function AppointmentsPage() {
                 className="w-full bg-teal-600 text-white rounded-xl py-2.5 font-medium hover:bg-teal-700 transition flex items-center justify-center gap-2 text-sm"
               >
                 <Shield size={16} />
-                סיים + צור דוח בדיקה
+                סיים + צור דוח אבחון
               </button>
             </div>
           </div>

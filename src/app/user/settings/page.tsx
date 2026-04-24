@@ -316,7 +316,7 @@ export default function SettingsPage() {
             {[
               { key: 'testReminder' as const, label: 'תזכורת טסט', desc: 'התראה 30 יום לפני פקיעת הטסט', icon: ClipboardList },
               { key: 'insuranceReminder' as const, label: 'תזכורת ביטוח', desc: 'התראה 30 יום לפני פקיעת הביטוח', icon: Shield },
-              { key: 'inspectionUpdate' as const, label: 'עדכוני בדיקה', desc: 'עדכון כשדוח בדיקה מוכן', icon: Search },
+              { key: 'inspectionUpdate' as const, label: 'עדכוני אבחון', desc: 'עדכון כשדוח אבחון מוכן', icon: Search },
               { key: 'appointmentReminder' as const, label: 'תזכורת תורים', desc: 'תזכורת יום לפני תור מוסך', icon: Calendar },
               { key: 'sosAlerts' as const, label: 'התראות חירום', desc: 'עדכונים על אירועי חירום', icon: AlertTriangle },
               { key: 'benefitAlerts' as const, label: 'הטבות חדשות', desc: 'התראה על הטבות חדשות במועדון', icon: Gift },

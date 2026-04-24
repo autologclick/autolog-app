@@ -27,7 +27,7 @@ const serviceOptions = [
 
 const serviceTypeLabel = (t: string) => {
   const map: Record<string, string> = {
-    inspection: 'בדיקה', test_prep: 'הכנה לטסט', maintenance: 'טיפול תקופתי',
+    inspection: 'אבחון', test_prep: 'הכנה לטסט', maintenance: 'טיפול תקופתי',
     repair: 'תיקון', oil_change: 'החלפת שמן', tires: 'צמיגים', brakes: 'בלמים',
     diagnostics: 'אבחון', bodywork: 'פחחות', electrical: 'חשמל', ac: 'מיזוג',
   };

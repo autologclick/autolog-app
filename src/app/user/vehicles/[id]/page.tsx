@@ -1110,7 +1110,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
             <div>
               <p className="font-medium text-red-900">זו פעולה בלתי הפיכה</p>
               <p className="text-sm text-red-700 mt-1">
-                המחיקה של {vehicle.nickname} תסיר את כל הבדיקות, התורים והוצאות הקשורות אליה.
+                המחיקה של {vehicle.nickname} תסיר את כל האבחונים, התורים והוצאות הקשורים אליה.
               </p>
             </div>
           </div>

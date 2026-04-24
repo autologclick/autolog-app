@@ -11,7 +11,7 @@ const logger = createLogger('business');
 // Hebrew message templates for push notifications
 const NOTIFICATION_TEMPLATES = {
   test_expiry_reminder: {
-    title: 'תזכורת בדיקה',
+    title: 'תזכורת אבחון',
     getBody: (vehicleName: string, daysUntil: number) =>
       `בדיקת ה-${vehicleName} תפוג בעוד ${daysUntil} ימים. בואו לתור כעת!`,
   },

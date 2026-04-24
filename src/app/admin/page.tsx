@@ -215,7 +215,7 @@ export default function AdminDashboard() {
               )}
             </div>
             <div className="text-2xl sm:text-3xl font-bold text-blue-600">{data?.stats.monthlyInspections.toLocaleString('he-IL') ?? '0'}</div>
-            <div className="text-xs sm:text-sm text-gray-600 mt-1">בדיקות החודש</div>
+            <div className="text-xs sm:text-sm text-gray-600 mt-1">אבחונים החודש</div>
           </div>
         </Card>
 
@@ -304,7 +304,7 @@ export default function AdminDashboard() {
             className="flex flex-col items-center justify-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 h-auto py-4 transition"
           >
             <Shield size={22} />
-            <span className="text-xs font-medium text-center">בדיקות</span>
+            <span className="text-xs font-medium text-center">אבחונים</span>
           </Button>
           <Button
             onClick={() => router.push('/admin/applications')}
@@ -359,10 +359,10 @@ export default function AdminDashboard() {
                 <p className="text-sm font-bold text-teal-800">מגמת צמיחה</p>
                 <p className="text-xs text-teal-600 mt-0.5">
                   {data.stats.inspectionTrend > 0
-                    ? `עלייה של ${data.stats.inspectionTrend}% בבדיקות לעומת חודש קודם`
+                    ? `עלייה של ${data.stats.inspectionTrend}% באבחונים לעומת חודש קודם`
                     : data.stats.inspectionTrend < 0
-                    ? `ירידה של ${Math.abs(data.stats.inspectionTrend)}% בבדיקות - מומלץ לבדוק`
-                    : 'קצב בדיקות יציב לעומת חודש קודם'
+                    ? `ירידה של ${Math.abs(data.stats.inspectionTrend)}% באבחונים - מומלץ לבדוק`
+                    : 'קצב אבחונים יציב לעומת חודש קודם'
                   }
                 </p>
               </div>
@@ -447,7 +447,7 @@ export default function AdminDashboard() {
                 <th className="text-right py-3 px-3 font-semibold text-gray-700">מוסך</th>
                 <th className="text-right py-3 px-3 font-semibold text-gray-700 hidden sm:table-cell">עיר</th>
                 <th className="text-center py-3 px-3 font-semibold text-gray-700">דירוג</th>
-                <th className="text-center py-3 px-3 font-semibold text-gray-700">בדיקות</th>
+                <th className="text-center py-3 px-3 font-semibold text-gray-700">אבחונים</th>
                 <th className="text-center py-3 px-3 font-semibold text-gray-700 hidden sm:table-cell">סטטוס</th>
               </tr>
             </thead>

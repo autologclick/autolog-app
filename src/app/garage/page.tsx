@@ -209,7 +209,7 @@ export default function GarageDashboard() {
               )}
             </button>
             <Button icon={<Plus size={16} />} onClick={() => router.push('/garage/new-inspection')} className="flex-1 sm:flex-none" style={{backgroundColor: '#0d9488'}}>
-              בדיקה חדשה
+              אבחון חדש
             </Button>
           </div>
         </div>
@@ -350,7 +350,7 @@ export default function GarageDashboard() {
             </div>
             <div className="flex-1 min-w-0 text-right">
               <h3 className="font-semibold text-[#1e3a5f] text-sm sm:text-base">
-                {stats.awaitingSignature} {stats.awaitingSignature === 1 ? 'בדיקה ממתינה' : 'בדיקות ממתינות'} לחתימת לקוח
+                {stats.awaitingSignature} {stats.awaitingSignature === 1 ? 'אבחון ממתין' : 'אבחונים ממתינים'} לחתימת לקוח
               </h3>
               <p className="text-gray-600 text-xs sm:text-sm mt-1">
                 הלקוחות קיבלו התראה וצריכים לחתום כדי לצפות בדוח
@@ -360,7 +360,7 @@ export default function GarageDashboard() {
               onClick={() => router.push('/garage/inspections')}
               className="bg-amber-500 text-white rounded-lg px-4 py-2 text-xs sm:text-sm font-medium flex-shrink-0 transition whitespace-nowrap hover:bg-amber-600 hover:shadow-md"
             >
-              צפה בבדיקות
+              צפה באבחונים
             </button>
           </div>
         )}
@@ -378,7 +378,7 @@ export default function GarageDashboard() {
             <p className="text-gray-600 text-sm mt-2">תורים היום</p>
           </div>
 
-          {/* בדיקות החודש - This Month's Inspections */}
+          {/* אבחונים החודש - This Month's Inspections */}
           <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition border border-gray-100">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 rounded-lg" style={{backgroundColor: '#f0fdfa'}}>
@@ -393,7 +393,7 @@ export default function GarageDashboard() {
                 </span>
               )}
             </div>
-            <p className="text-gray-600 text-sm mt-2">בדיקות החודש</p>
+            <p className="text-gray-600 text-sm mt-2">אבחונים החודש</p>
           </div>
 
           {/* לקוחות פעילים - Active Customers */}
@@ -432,17 +432,17 @@ export default function GarageDashboard() {
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={14} className={stats.trend >= 0 ? 'text-green-600' : 'text-red-500'} />
-                <span className="text-xs font-bold text-gray-700">מגמת בדיקות</span>
+                <span className="text-xs font-bold text-gray-700">מגמת אבחונים</span>
               </div>
               <p className="text-xs text-gray-600">
                 {stats.trend > 10
-                  ? `📈 עלייה משמעותית של ${stats.trend}% בבדיקות החודש. המומנטום חיובי — שקלו להוסיף שעות פעילות.`
+                  ? `📈 עלייה משמעותית של ${stats.trend}% באבחונים החודש. המומנטום חיובי — שקלו להוסיף שעות פעילות.`
                   : stats.trend > 0
-                  ? `📊 עלייה קלה של ${stats.trend}% בבדיקות. שמרו על הקצב הנוכחי.`
+                  ? `📊 עלייה קלה של ${stats.trend}% באבחונים. שמרו על הקצב הנוכחי.`
                   : stats.trend < -10
-                  ? `📉 ירידה של ${Math.abs(stats.trend)}% בבדיקות. מומלץ לשלוח תזכורות ללקוחות קיימים.`
+                  ? `📉 ירידה של ${Math.abs(stats.trend)}% באבחונים. מומלץ לשלוח תזכורות ללקוחות קיימים.`
                   : stats.inspectionsThisMonth === 0
-                  ? '🔍 אין בדיקות החודש. שלחו הודעות ללקוחות לגבי טסט שנתי קרוב.'
+                  ? '🔍 אין אבחונים החודש. שלחו הודעות ללקוחות לגבי טסט שנתי קרוב.'
                   : '📊 פעילות יציבה. ניתן לחזק קשרי לקוחות לצמיחה עתידית.'}
               </p>
             </div>
@@ -478,7 +478,7 @@ export default function GarageDashboard() {
                   : stats.averageRating !== null && stats.averageRating > 0
                   ? `⚠️ דירוג ${stats.averageRating} — יש מקום לשיפור. מומלץ לקרוא ביקורות ולפעול לשיפור השירות.`
                   : stats.averageScore !== null && stats.averageScore > 0
-                  ? `🔧 ציון בדיקה ממוצע: ${stats.averageScore}. שמרו על רמת בדיקה גבוהה לבניית אמון.`
+                  ? `🔧 ציון אבחון ממוצע: ${stats.averageScore}. שמרו על רמת אבחון גבוהה לבניית אמון.`
                   : '📋 אין מספיק נתונים לדירוג. עודדו לקוחות להשאיר ביקורת.'}
               </p>
             </div>
@@ -532,11 +532,11 @@ export default function GarageDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center justify-between mb-6">
             <button onClick={() => router.push('/garage/inspections')} className="text-sm font-semibold flex items-center gap-1 transition hover:opacity-70" style={{color: '#0d9488'}}>
-              כל הבדיקות <ChevronLeft size={14} />
+              כל האבחונים <ChevronLeft size={14} />
             </button>
             <div className="flex items-center gap-2" style={{color: '#1e3a5f'}}>
               <Shield size={18} />
-              <h2 className="font-bold">5 בדיקות אחרונות</h2>
+              <h2 className="font-bold">5 אבחונים אחרונים</h2>
             </div>
           </div>
           {recentInspections.length > 0 ? (
@@ -612,11 +612,11 @@ export default function GarageDashboard() {
               <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm border border-gray-200">
                 <Shield size={28} className="text-gray-300" />
               </div>
-              <h3 className="text-base font-bold text-gray-600 mb-1">עדיין לא נעשו בדיקות</h3>
-              <p className="text-gray-400 text-sm mb-4">צרו את הבדיקה הראשונה שלכם</p>
+              <h3 className="text-base font-bold text-gray-600 mb-1">עדיין לא נעשו אבחונים</h3>
+              <p className="text-gray-400 text-sm mb-4">צרו את האבחון הראשון שלכם</p>
               <button onClick={() => router.push('/garage/new-inspection')}
                 className="px-4 py-2 rounded-lg text-white font-medium transition hover:shadow-md" style={{backgroundColor: '#0d9488'}}>
-                צור בדיקה ראשונה
+                צור אבחון ראשון
               </button>
             </div>
           )}
@@ -624,15 +624,15 @@ export default function GarageDashboard() {
 
         {/* Quick Action Buttons */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pb-16 lg:pb-0">
-          {/* בדיקה חדשה - New Inspection */}
+          {/* אבחון חדש - New Inspection */}
           <button onClick={() => router.push('/garage/new-inspection')}
             className="flex flex-col items-center gap-3 p-5 bg-white border border-gray-100 rounded-xl hover:shadow-lg hover:border-gray-200 transition text-center">
             <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{backgroundColor: '#f0fdfa'}}>
               <Wrench size={20} style={{color: '#0d9488'}} />
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-[#1e3a5f]">בדיקה חדשה</div>
-              <div className="text-xs text-gray-500 mt-0.5">צור דוח בדיקה</div>
+              <div className="text-sm font-semibold text-[#1e3a5f]">אבחון חדש</div>
+              <div className="text-xs text-gray-500 mt-0.5">צור דוח אבחון</div>
             </div>
           </button>
 

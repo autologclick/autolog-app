@@ -778,7 +778,7 @@ export default function NewInspectionPage() {
       });
 
       if (!res.ok) {
-        let errorMsg = 'שגיאה בשמירת הבדיקה';
+        let errorMsg = 'שגיאה בשמירת האבחון';
         try {
           const data = await res.json();
           console.error('[Inspection] API error:', res.status, data);
@@ -805,10 +805,10 @@ export default function NewInspectionPage() {
       setSuccessModal(true);
     } catch (err) {
       console.error('[Inspection] Submit error:', err);
-      const errMsg = err instanceof Error ? err.message : 'שגיאה בשמירת הבדיקה';
+      const errMsg = err instanceof Error ? err.message : 'שגיאה בשמירת האבחון';
       setError(errMsg.includes('Failed to fetch') || errMsg.includes('NetworkError')
         ? 'שגיאת רשת. בדוק את החיבור לאינטרנט ונסה שוב.'
-        : 'שגיאה בשמירת הבדיקה. נסה שוב.');
+        : 'שגיאה בשמירת האבחון. נסה שוב.');
     } finally { setLoading(false); }
   };
 
@@ -839,7 +839,7 @@ export default function NewInspectionPage() {
       const lines = [
         `שלום רב 👋`,
         ``,
-        `דוח הבדיקה לרכב שלך הושלם ומוכן לצפייה.`,
+        `דוח האבחון לרכב שלך הושלם ומוכן לצפייה.`,
         ``,
         pdfLink ? `📄 *לצפייה בדוח:*` : `📄 *לצפייה ואישור הדוח:*`,
         pdfLink || inspectionUrl,
@@ -875,9 +875,9 @@ export default function NewInspectionPage() {
         </div>
         <div>
           <h1 className="text-lg sm:text-2xl font-bold text-[#1e3a5f]">
-            {step === 0 ? 'פעולה חדשה' : inspectionTypes.find(t => t.value === inspectionType)?.label || 'בדיקה חדשה'}
+            {step === 0 ? 'פעולה חדשה' : inspectionTypes.find(t => t.value === inspectionType)?.label || 'אבחון חדש'}
           </h1>
-          <p className="text-sm text-gray-500">ביצוע בדיקה ומילוי ממצאים</p>
+          <p className="text-sm text-gray-500">ביצוע אבחון ומילוי ממצאים</p>
         </div>
       </div>
 
@@ -886,7 +886,7 @@ export default function NewInspectionPage() {
         <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 flex items-start gap-2.5">
           <Info size={18} className="text-amber-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-amber-800 leading-relaxed">
-            <strong>תזכורת:</strong> בדיקה זו מהווה חוות דעת מקצועית בלבד ואינה מהווה בדיקת מכון רישוי מורשה. אין לה תוקף משפטי מחייב והיא אינה מחליפה בדיקה הנדרשת על פי חוק. יש להבהיר זאת ללקוח.
+            <strong>תזכורת:</strong> אבחון זה מהווה חוות דעת מקצועית בלבד ואינו מהווה בדיקת מכון רישוי מורשה. אין לו תוקף משפטי מחייב והוא אינו מחליף בדיקה הנדרשת על פי חוק. יש להבהיר זאת ללקוח.
           </p>
         </div>
       )}
@@ -948,7 +948,7 @@ export default function NewInspectionPage() {
       {step === 1 && (
         <>
           <Card>
-            <CardTitle icon={<Car className="text-teal-600" />}>פרטי רכב ובדיקה</CardTitle>
+            <CardTitle icon={<Car className="text-teal-600" />}>פרטי רכב ואבחון</CardTitle>
             <div className="space-y-4 mt-4">
 
               {/* Vehicle Mode Selector */}
@@ -1616,7 +1616,7 @@ export default function NewInspectionPage() {
               <div>
                 <p className="text-xs text-red-800 font-bold mb-1">הצהרה רגולטורית — יש להקריא ללקוח:</p>
                 <p className="text-xs text-red-700 leading-relaxed">
-                  &quot;בדיקה זו מהווה חוות דעת מקצועית של המוסך בלבד. היא אינה מהווה בדיקת מכון רישוי מורשה מטעם משרד התחבורה ואין לה תוקף משפטי מחייב. מומלץ לבצע גם בדיקה במכון רישוי מורשה, במיוחד לפני רכישת רכב.&quot;
+                  &quot;אבחון זה מהווה חוות דעת מקצועית של המוסך בלבד. הוא אינו מהווה בדיקת מכון רישוי מורשה מטעם משרד התחבורה ואין לו תוקף משפטי מחייב. מומלץ לבצע גם בדיקה במכון רישוי מורשה, במיוחד לפני רכישת רכב.&quot;
                 </p>
               </div>
             </div>
@@ -1981,7 +1981,7 @@ export default function NewInspectionPage() {
           )}
           {inspectionType === 'full' && step === 8 && (
             <Button className="flex-1 bg-teal-600 hover:bg-teal-700" icon={<Save size={16} />}
-              loading={loading} onClick={handleSubmit}>שלח בדיקה</Button>
+              loading={loading} onClick={handleSubmit}>שלח אבחון</Button>
           )}
           {/* Non-full types: step 1 → step 2 (form), step 2 → submit */}
           {inspectionType !== 'full' && step === 1 && (
@@ -2011,7 +2011,7 @@ export default function NewInspectionPage() {
       </Modal>
 
       {/* Success Modal */}
-      <Modal isOpen={successModal} onClose={() => {}} title={inspectionType === 'full' ? 'בדיקה נוצרה בהצלחה!' : 'נשמר בהצלחה!'}>
+      <Modal isOpen={successModal} onClose={() => {}} title={inspectionType === 'full' ? 'אבחון נוצר בהצלחה!' : 'נשמר בהצלחה!'}>
         <div className="text-center space-y-4">
           <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto">
             <Check size={32} className="text-green-600" />
@@ -2035,7 +2035,7 @@ export default function NewInspectionPage() {
           )}
           <div className="flex gap-2">
             <Button variant="outline" className="flex-1" onClick={() => { setSuccessModal(false); router.push('/garage/inspections'); }}>
-              חזור לבדיקות
+              חזור לאבחונים
             </Button>
             <Button className="flex-1" onClick={() => { setSuccessModal(false); router.push(`/inspection/${successId}`); }}>
               צפה בדוח

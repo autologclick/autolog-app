@@ -170,7 +170,7 @@ function ScoreCircle({ score }: { score: number }) {
 // ============ FILTER TABS ============
 const FILTER_TABS = [
   { key: 'all', label: 'הכל', icon: BarChart3 },
-  { key: 'full', label: 'בדיקות מקיפות', icon: Car },
+  { key: 'full', label: 'אבחונים מקיפים', icon: Car },
   { key: 'pre_test', label: 'הכנה לטסט', icon: ClipboardCheck },
   { key: 'periodic', label: 'טיפולים', icon: Settings },
   { key: 'troubleshoot', label: 'תיקונים', icon: Wrench },
@@ -211,7 +211,7 @@ export default function ReportsPage() {
   if (loading) {
     return (
       <div className="bg-[#fef7ed] pb-24" dir="rtl">
-        <PageHeader title="דוחות בדיקה" variant="purple" backUrl="/user/profile" />
+        <PageHeader title="דוחות אבחון" variant="purple" backUrl="/user/profile" />
         <div className="container mx-auto px-4 pt-12">
           <PageSkeleton />
         </div>
@@ -221,7 +221,7 @@ export default function ReportsPage() {
 
   return (
     <div className="bg-[#fef7ed] pb-24 min-h-screen" dir="rtl">
-      <PageHeader title="דוחות בדיקה" variant="purple" backUrl="/user/profile" />
+      <PageHeader title="דוחות אבחון" variant="purple" backUrl="/user/profile" />
 
       <div className="container mx-auto px-4 space-y-6 pt-6">
         {/* Search Bar */}
@@ -300,7 +300,7 @@ export default function ReportsPage() {
             <div className="bg-white rounded-2xl p-4 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
                 <BarChart3 size={14} className="text-purple-500" />
-                <span className="text-xs font-bold text-gray-700">בדיקה מוביל</span>
+                <span className="text-xs font-bold text-gray-700">אבחון מוביל</span>
               </div>
               <p className="text-sm font-semibold text-gray-800 truncate">
                 {(() => {
@@ -349,7 +349,7 @@ export default function ReportsPage() {
             <FileText size={32} className="text-purple-300" />
           </div>
           <h3 className="text-lg font-bold text-gray-700 mb-2">
-            {reports.length === 0 ? 'אין דוחות בדיקה' : 'אין תוצאות'}
+            {reports.length === 0 ? 'אין דוחות אבחון' : 'אין תוצאות'}
           </h3>
           <p className="text-gray-500 text-sm">
             {reports.length === 0 ? 'לאחר אבחון רכב או טיפול, המידע יופיע כאן' : 'נסה לשנות את הסינון'}

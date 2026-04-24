@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       {
         type: 'test_expiry' as const,
         title: 'טסט עומד לפוג',
-        message: 'בדיקת ההמצאות של הרכב שלך תפוג בעוד 30 ימים. רצוי להזמין בדיקה מראש.',
+        message: 'בדיקת ההמצאות של הרכב שלך תפוג בעוד 30 ימים. רצוי להזמין אבחון מראש.',
       },
       {
         type: 'insurance_expiry' as const,

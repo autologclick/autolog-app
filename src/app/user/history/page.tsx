@@ -154,7 +154,7 @@ export default function HistoryPage() {
 
   const getEventTypeLabel = (type: string) => {
     const map: Record<string, string> = {
-      inspection: 'בדיקה',
+      inspection: 'אבחון',
       appointment: 'תור',
       expense: 'הוצאה',
       sos: 'אירוע חירום',
@@ -287,7 +287,7 @@ export default function HistoryPage() {
             <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden">
               {[
                 { value: 'all', label: 'כל הסוגים' },
-                { value: 'inspection', label: 'בדיקה' },
+                { value: 'inspection', label: 'אבחון' },
                 { value: 'appointment', label: 'תור' },
                 { value: 'expense', label: 'הוצאה' },
                 { value: 'sos', label: 'אירוע חירום' },

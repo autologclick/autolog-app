@@ -64,7 +64,7 @@ export default function AdminGarageDetailPage({ params }: { params: { id: string
           <div className="text-center">
             <Shield size={24} className="mx-auto text-teal-600 mb-2" />
             <div className="text-2xl font-bold">{garage._count.inspections}</div>
-            <div className="text-xs text-gray-500">בדיקות</div>
+            <div className="text-xs text-gray-500">אבחונים</div>
           </div>
         </Card>
         <Card>

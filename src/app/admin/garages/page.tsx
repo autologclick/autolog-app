@@ -217,7 +217,7 @@ export default function AdminGaragesPage() {
                   <div className="text-xs sm:text-sm text-gray-500 flex flex-wrap items-center gap-2 mt-1">
                     <span className="flex items-center gap-1"><MapPin size={12} />{g.city}</span>
                     {g.rating > 0 && <span className="flex items-center gap-1"><Star size={12} className="text-amber-500" />{g.rating.toFixed(1)}</span>}
-                    <span>{g._count.inspections} בדיקות</span>
+                    <span>{g._count.inspections} אבחונים</span>
                   </div>
                 </div>
                 <div className="flex gap-0.5 sm:gap-1 flex-shrink-0">

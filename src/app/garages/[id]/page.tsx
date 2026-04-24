@@ -48,11 +48,11 @@ const amenityConfig: Record<string, { label: string; Icon: typeof Coffee }> = {
 };
 
 const serviceConfig: Record<string, { label: string; Icon: typeof Wrench }> = {
-  inspection: { label: 'בדיקה', Icon: ClipboardCheck },
+  inspection: { label: 'אבחון', Icon: ClipboardCheck },
   maintenance: { label: 'טיפול', Icon: Wrench },
   repair: { label: 'תיקון', Icon: Settings2 },
   test_prep: { label: 'הכנה לטסט', Icon: Car },
-  'בדיקה': { label: 'בדיקה', Icon: ClipboardCheck },
+  'אבחון': { label: 'אבחון', Icon: ClipboardCheck },
   'טיפול': { label: 'טיפול', Icon: Wrench },
   'תיקון': { label: 'תיקון', Icon: Settings2 },
   'הכנה לטסט': { label: 'הכנה לטסט', Icon: Car },
@@ -187,7 +187,7 @@ export default function PublicGaragePage() {
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-white rounded-xl p-3 text-center shadow-sm border border-gray-100">
               <div className="text-2xl font-bold text-teal-600">{garage._count.inspections}</div>
-              <div className="text-xs text-gray-500 mt-1">בדיקות</div>
+              <div className="text-xs text-gray-500 mt-1">אבחונים</div>
             </div>
             <div className="bg-white rounded-xl p-3 text-center shadow-sm border border-gray-100">
               <div className="text-2xl font-bold text-teal-600">{garage._count.appointments}</div>

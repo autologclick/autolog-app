@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!inspection) {
       return {
-        title: 'דוח בדיקה לא נמצא',
+        title: 'דוח אבחון לא נמצא',
         robots: { index: false, follow: false },
       };
     }
@@ -43,10 +43,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ].filter(Boolean).join(' ');
 
     const typeLabels: Record<string, string> = {
-      pre_test: 'בדיקה לפני טסט',
+      pre_test: 'אבחון לפני טסט',
       full: 'אבחון מקיף',
-      basic: 'בדיקה בסיסית',
-      pre_purchase: 'בדיקה לפני קנייה',
+      basic: 'אבחון בסיסי',
+      pre_purchase: 'אבחון לפני קנייה',
     };
 
     const typeLabel = typeLabels[inspection.inspectionType] || 'אבחון רכב';
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const scoreStr = inspection.overallScore != null ? ` - ציון ${inspection.overallScore}` : '';
 
     const title = `${typeLabel} — ${vehicleLabel}`;
-    const description = `דוח ${typeLabel} לרכב ${vehicleLabel}${scoreStr}. בוצע ב-${dateStr} ע"י ${inspection.garage.name}. צפו בתוצאות הבדיקה המלאות באפליקציית AutoLog.`;
+    const description = `דוח ${typeLabel} לרכב ${vehicleLabel}${scoreStr}. בוצע ב-${dateStr} ע"י ${inspection.garage.name}. צפו בתוצאות האבחון המלאות באפליקציית AutoLog.`;
 
     return {
       title,

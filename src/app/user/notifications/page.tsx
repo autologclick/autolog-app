@@ -43,7 +43,7 @@ const notificationTypeConfig: Record<string, { icon: React.ReactNode; color: str
     icon: <ClipboardCheck size={20} />,
     color: '#059669',
     bgColor: 'bg-green-100',
-    label: 'בדיקה הושלמה',
+    label: 'אבחון הושלם',
   },
   sos_update: {
     icon: <AlertTriangle size={20} />,

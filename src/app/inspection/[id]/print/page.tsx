@@ -77,7 +77,7 @@ export default function PrintInspectionPage() {
         // Auto-print after render
         setTimeout(() => window.print(), 500);
       })
-      .catch(() => setError('שגיאה בטעינת הבדיקה'));
+      .catch(() => setError('שגיאה בטעינת האבחון'));
   }, [id]);
 
   if (error) return <div style={{ padding: 40, textAlign: 'center', color: 'red' }}>{error}</div>;
@@ -137,7 +137,7 @@ export default function PrintInspectionPage() {
         {/* ===== SCORE + TYPE ===== */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', borderRadius: 12, padding: '16px 20px', marginBottom: 20, border: '1px solid #e2e8f0' }}>
           <div>
-            <div style={{ fontSize: 13, color: '#64748b', marginBottom: 4 }}>סוג בדיקה</div>
+            <div style={{ fontSize: 13, color: '#64748b', marginBottom: 4 }}>סוג אבחון</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: '#1e3a5f' }}>{typeLabels[i.inspectionType] || i.inspectionType}</div>
             {i.mechanicName && <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>מכניק: {i.mechanicName}</div>}
           </div>

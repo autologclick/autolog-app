@@ -119,7 +119,7 @@ export default function SharedVehicleHistoryPage({ params }: { params: { id: str
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-white rounded-xl border p-4 text-center">
             <p className="text-2xl font-bold text-blue-600">{data.totalInspections}</p>
-            <p className="text-xs text-gray-500">בדיקות</p>
+            <p className="text-xs text-gray-500">אבחונים</p>
           </div>
           <div className="bg-white rounded-xl border p-4 text-center">
             <p className="text-2xl font-bold text-green-600">{data.totalServices}</p>

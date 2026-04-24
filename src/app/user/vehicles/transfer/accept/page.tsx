@@ -168,7 +168,7 @@ export default function AcceptTransferPage() {
 
   const dataCategories = transfer
     ? [
-        { included: transfer.includeInspections, label: 'בדיקות', icon: FileText },
+        { included: transfer.includeInspections, label: 'אבחונים', icon: FileText },
         { included: transfer.includeTreatments, label: 'טיפולים', icon: Wrench },
         { included: transfer.includeExpenses, label: 'הוצאות', icon: Receipt },
         { included: transfer.includeDocuments, label: 'מסמכים', icon: FolderOpen },

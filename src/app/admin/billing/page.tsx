@@ -134,11 +134,11 @@ export default function AdminBillingPage() {
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">מעקב חיוב מוסכים</h1>
-            <p className="text-sm text-gray-500">סיכום בדיקות ועלויות לפי מוסך</p>
+            <p className="text-sm text-gray-500">סיכום אבחונים ועלויות לפי מוסך</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <Badge variant="info" size="md">{totalAll} בדיקות</Badge>
+          <Badge variant="info" size="md">{totalAll} אבחונים</Badge>
           <Badge variant="success" size="md">{totalPreTests} הכנה לטסט</Badge>
         </div>
       </div>
@@ -170,7 +170,7 @@ export default function AdminBillingPage() {
               </div>
               <div>
                 <div className="text-2xl font-bold text-[#1e3a5f]">{totalAll}</div>
-                <div className="text-xs text-gray-500">סה״כ בדיקות</div>
+                <div className="text-xs text-gray-500">סה״כ אבחונים</div>
               </div>
             </div>
           </Card>
@@ -229,7 +229,7 @@ export default function AdminBillingPage() {
                 <div>
                   <p className="text-sm font-bold text-teal-800">מוסך מוביל</p>
                   <p className="text-xs text-teal-600 mt-0.5">
-                    {garageSummaries[0].garageName} — {garageSummaries[0].totalInspections} בדיקות
+                    {garageSummaries[0].garageName} — {garageSummaries[0].totalInspections} אבחונים
                     {garageSummaries[0].totalCost > 0 && `, ₪${garageSummaries[0].totalCost.toLocaleString()}`}
                   </p>
                 </div>
@@ -241,7 +241,7 @@ export default function AdminBillingPage() {
               <div>
                 <p className="text-sm font-bold text-blue-800">יחס הכנה לטסט</p>
                 <p className="text-xs text-blue-600 mt-0.5">
-                  {totalAll > 0 ? `${Math.round((totalPreTests / totalAll) * 100)}%` : '0%'} מהבדיקות הן הכנה לטסט
+                  {totalAll > 0 ? `${Math.round((totalPreTests / totalAll) * 100)}%` : '0%'} מהאבחונים הם הכנה לטסט
                   {totalPreTests / totalAll > 0.5 ? ' — ביקוש גבוה' : totalPreTests / totalAll > 0.25 ? ' — יחס בריא' : ' — ביקוש נמוך'}
                 </p>
               </div>
@@ -254,7 +254,7 @@ export default function AdminBillingPage() {
                 <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl border border-amber-200">
                   <DollarSign size={18} className="text-amber-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-bold text-amber-800">עלות ממוצעת לבדיקה</p>
+                    <p className="text-sm font-bold text-amber-800">עלות ממוצעת לאבחון</p>
                     <p className="text-xs text-amber-600 mt-0.5">
                       ₪{avgCost.toLocaleString()} — {avgCost > 300 ? 'גבוה מהממוצע, מומלץ לבדוק' : avgCost > 0 ? 'בטווח סביר' : 'לא דווחו עלויות'}
                     </p>
@@ -285,7 +285,7 @@ export default function AdminBillingPage() {
       ) : garageSummaries.length === 0 ? (
         <div className="text-center py-12">
           <Receipt size={48} className="mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500 text-lg">לא נמצאו בדיקות</p>
+          <p className="text-gray-500 text-lg">לא נמצאו אבחונים</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -302,7 +302,7 @@ export default function AdminBillingPage() {
                     : <ChevronDown size={16} className="text-gray-400" />}
                   <div className="flex gap-2 flex-wrap">
                     <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-700">
-                      {gs.totalInspections} בדיקות
+                      {gs.totalInspections} אבחונים
                     </span>
                     {gs.preTestCount > 0 && (
                       <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">

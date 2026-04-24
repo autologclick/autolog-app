@@ -642,7 +642,7 @@ export default function VehiclesPage() {
                   <span className="text-xs font-bold text-gray-700">סיכום פעילות</span>
                 </div>
                 <p className="text-xs text-gray-600">
-                  📊 {vehicles.reduce((sum, v) => sum + (v._count?.inspections || 0), 0)} בדיקות • {vehicles.reduce((sum, v) => sum + (v._count?.expenses || 0), 0)} הוצאות
+                  📊 {vehicles.reduce((sum, v) => sum + (v._count?.inspections || 0), 0)} אבחונים • {vehicles.reduce((sum, v) => sum + (v._count?.expenses || 0), 0)} הוצאות
                 </p>
               </div>
             </div>
@@ -846,7 +846,7 @@ export default function VehiclesPage() {
                         </div>
                       </div>
                       <div>
-                        <div className="text-xs text-gray-500 mb-1">בדיקות</div>
+                        <div className="text-xs text-gray-500 mb-1">אבחונים</div>
                         <div className="font-medium text-[#1e3a5f]">
                           {v._count?.inspections || 0}
                         </div>

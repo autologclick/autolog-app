@@ -9,7 +9,7 @@ import { ChevronRight, Loader2, AlertCircle, Car, Calendar, AlertTriangle, Phone
 
 const serviceTypeLabel = (t: string) => {
   const map: Record<string, string> = {
-    inspection: 'בדיקה', test_prep: 'הכנה לטסט', maintenance: 'טיפול תקופתי',
+    inspection: 'אבחון', test_prep: 'הכנה לטסט', maintenance: 'טיפול תקופתי',
     repair: 'תיקון', oil_change: 'החלפת שמן', tires: 'צמיגים', brakes: 'בלמים',
     diagnostics: 'אבחון', bodywork: 'פחחות', electrical: 'חשמל', ac: 'מיזוג',
   };
@@ -285,7 +285,7 @@ export default function UserDetailPage() {
                     <div className="flex flex-wrap gap-2 mt-3">
                       <div className="flex items-center gap-1">
                         <Badge variant={getDocumentStatus(vehicle.testStatus)} size="sm">
-                          בדיקה: {getDocumentStatusLabel(vehicle.testStatus)}
+                          טסט: {getDocumentStatusLabel(vehicle.testStatus)}
                         </Badge>
                       </div>
                       <Badge variant={getDocumentStatus(vehicle.insuranceStatus)} size="sm">

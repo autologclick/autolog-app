@@ -295,17 +295,17 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
       insights.push({
         id: 'low-inspection-score',
         type: 'critical',
-        title: 'ציון בדיקה נמוך',
-        description: `הבדיקה האחרונה קיבלה ציון ${score}/100. נדרש טיפול בממצאים.`,
-        category: 'בדיקות',
+        title: 'ציון אבחון נמוך',
+        description: `האבחון האחרון קיבל ציון ${score}/100. נדרש טיפול בממצאים.`,
+        category: 'אבחונים',
       });
     } else if (score >= INSPECTION_SCORE.GOOD) {
       insights.push({
         id: 'good-inspection',
         type: 'positive',
         title: 'הרכב במצב טוב',
-        description: `הבדיקה האחרונה קיבלה ציון ${score}/100. הרכב במצב תקין.`,
-        category: 'בדיקות',
+        description: `האבחון האחרון קיבל ציון ${score}/100. הרכב במצב תקין.`,
+        category: 'אבחונים',
       });
     }
 
@@ -314,15 +314,15 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
       insights.push({
         id: 'old-inspection',
         type: 'warning',
-        title: 'לא בוצעה בדיקה זמן רב',
-        description: `עברו ${daysSinceInspection} ימים מהבדיקה האחרונה. מומלץ לבצע בדיקה כל 6 חודשים.`,
-        category: 'בדיקות',
+        title: 'לא בוצע אבחון זמן רב',
+        description: `עברו ${daysSinceInspection} ימים מהאבחון האחרון. מומלץ לבצע אבחון כל 6 חודשים.`,
+        category: 'אבחונים',
       });
       nextActions.push({
         id: 'schedule-inspection',
-        title: 'קביעת בדיקה',
+        title: 'קביעת אבחון',
         urgency: 'soon',
-        description: 'מומלץ לבצע בדיקה שנתית/חצי שנתית',
+        description: 'מומלץ לבצע אבחון שנתי/חצי שנתי',
       });
     }
 
@@ -341,7 +341,7 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
           type: 'critical',
           title: `${criticalItems.length} פריטים קריטיים`,
           description: `נמצאו ${criticalItems.length} פריטים שדורשים טיפול מיידי: ${criticalItems.map(i => i.itemName).join(', ')}`,
-          category: 'בדיקות',
+          category: 'אבחונים',
         });
       }
 
@@ -351,7 +351,7 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
           type: 'warning',
           title: `${wornItems.length} פריטים בשחיקה`,
           description: `${wornItems.length} פריטים נמצאים במצב של שחיקה ויש לטפל בהם בקרוב.`,
-          category: 'בדיקות',
+          category: 'אבחונים',
         });
       }
     }
@@ -360,13 +360,13 @@ export function analyzeVehicleHealth(vehicle: VehicleData): VehicleHealthReport 
     insights.push({
       id: 'no-inspection',
       type: 'warning',
-      title: 'לא בוצעה בדיקה',
-      description: 'לא נמצאו בדיקות לרכב זה. מומלץ לבצע אבחון מקיף.',
-      category: 'בדיקות',
+      title: 'לא בוצע אבחון',
+      description: 'לא נמצאו אבחונים לרכב זה. מומלץ לבצע אבחון מקיף.',
+      category: 'אבחונים',
     });
     nextActions.push({
       id: 'first-inspection',
-      title: 'בדיקה ראשונה',
+      title: 'אבחון ראשון',
       urgency: 'soon',
       description: 'קבע אבחון מקיף לרכב',
     });

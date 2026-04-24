@@ -77,11 +77,11 @@ export default function AdminInspectionsPage() {
             <Shield size={20} className="text-[#1e3a5f]" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">ניהול בדיקות</h1>
-            <p className="text-sm text-gray-500">צפייה בכל הבדיקות שבוצעו</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">ניהול אבחונים</h1>
+            <p className="text-sm text-gray-500">צפייה בכל האבחונים שבוצעו</p>
           </div>
         </div>
-        <Badge variant="info" size="md">{inspections.length} בדיקות</Badge>
+        <Badge variant="info" size="md">{inspections.length} אבחונים</Badge>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
@@ -98,7 +98,7 @@ export default function AdminInspectionsPage() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-12">
           <Shield size={48} className="mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500 text-lg">לא נמצאו בדיקות</p>
+          <p className="text-gray-500 text-lg">לא נמצאו אבחונים</p>
         </div>
       ) : (
         <Card>

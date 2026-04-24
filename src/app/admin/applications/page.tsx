@@ -117,7 +117,7 @@ export default function AdminApplicationsPage() {
   };
 
   const SERVICE_LABELS: Record<string, string> = {
-    inspection: 'בדיקות רכב',
+    inspection: 'אבחוני רכב',
     maintenance: 'טיפולים שוטפים',
     repair: 'תיקונים',
     test_prep: 'הכנה לטסט',

@@ -122,7 +122,7 @@ export async function GET(req: NextRequest) {
                 userId: vehicle.user.id,
                 type: 'test_expiry',
                 title: urgency + ' תזכורת טסט - ' + vehicleName,
-                message: 'הטסט של רכב ' + vehicle.licensePlate + ' פג ' + timeText + '. קבע תור לבדיקה עכשיו.',
+                message: 'הטסט של רכב ' + vehicle.licensePlate + ' פג ' + timeText + '. קבע תור לאבחון עכשיו.',
                 link: '/user/vehicles/' + vehicle.id,
               });
               stats.testReminders++;

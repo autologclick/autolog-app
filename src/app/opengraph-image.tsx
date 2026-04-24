@@ -61,7 +61,7 @@ export default async function Image() {
 
           {/* Feature pills */}
           <div style={{ display: 'flex', gap: 16 }}>
-            {['תזכורות', 'ביטוח', 'בדיקות', 'מוסכים'].map((feat) => (
+            {['תזכורות', 'ביטוח', 'אבחונים', 'מוסכים'].map((feat) => (
               <div
                 key={feat}
                 style={{

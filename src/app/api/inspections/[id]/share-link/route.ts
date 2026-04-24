@@ -23,7 +23,7 @@ export async function POST(
         garage: { select: { ownerId: true } },
       },
     });
-    if (!inspection) return errorResponse('בדיקה לא נמצאה', 404);
+    if (!inspection) return errorResponse('אבחון לא נמצא', 404);
 
     // Allow: admin, vehicle owner, or garage owner who performed the inspection
     const isAdmin = payload.role === 'admin';

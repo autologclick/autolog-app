@@ -338,8 +338,8 @@ export async function createInAppNotification(
 export function getNotificationTemplate(type: NotificationType) {
   const templates: Record<NotificationType, { title: string; defaultBody: string }> = {
     test_reminder: {
-      title: 'תזכורת בדיקה',
-      defaultBody: 'הרכב שלך זקוק לבדיקה',
+      title: 'תזכורת אבחון',
+      defaultBody: 'הרכב שלך זקוק לאבחון',
     },
     appointment_reminder: {
       title: 'תזכורת תור',

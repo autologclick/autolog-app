@@ -74,7 +74,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
 const TYPE_LABELS: Record<string, string> = {
   maintenance: 'תחזוקה',
   repair: 'תיקון',
-  inspection: 'בדיקה',
+  inspection: 'אבחון',
   other: 'אחר',
 };
 
@@ -359,7 +359,7 @@ export default function UserTreatmentsPage() {
                 className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors"
               >
                 <Eye size={16} />
-                צפה בדוח הבדיקה המלא
+                צפה בדוח האבחון המלא
               </button>
             )}
 

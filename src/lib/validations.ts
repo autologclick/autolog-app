@@ -106,7 +106,7 @@ export const inspectionSchema = z.object({
   inspectionType: z.enum([
     'full', 'rot', 'engine', 'tires', 'brakes', 'pre_test'
   ], {
-    errorMap: () => ({ message: 'סוג בדיקה לא תקין' }),
+    errorMap: () => ({ message: 'סוג אבחון לא תקין' }),
   }),
   mechanicName: z.string().max(100, 'שם מכונאי ארוך מדי').optional(),
   items: z.array(inspectionItemSchema).optional(),

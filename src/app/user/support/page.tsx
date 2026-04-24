@@ -53,8 +53,8 @@ const faqItems = [
     icon: Calendar,
   },
   {
-    q: 'איך מורידים דוח בדיקה כ-PDF?',
-    a: 'פתח את דוח הבדיקה ולחץ על כפתור "הורד PDF" או "שתף". הדוח כולל סיכום AI עם המלצות.',
+    q: 'איך מורידים דוח אבחון כ-PDF?',
+    a: 'פתח את דוח האבחון ולחץ על כפתור "הורד PDF" או "שתף". הדוח כולל סיכום AI עם המלצות.',
     icon: FileText,
   },
   {
@@ -79,7 +79,7 @@ const topicOptions = [
   { value: 'account', label: 'שאלה על חשבון', icon: Lock },
   { value: 'garage', label: 'בעיה עם מוסך', icon: Car },
   { value: 'suggestion', label: 'הצעה לשיפור', icon: Lightbulb },
-  { value: 'report', label: 'דוח בדיקה', icon: FileText },
+  { value: 'report', label: 'דוח אבחון', icon: FileText },
   { value: 'other', label: 'אחר', icon: MessageSquare },
 ];
 

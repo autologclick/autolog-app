@@ -307,7 +307,7 @@ export default function TransferPage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">מה להעביר לקונה?</label>
             <div className="space-y-2">
               {[
-                { key: 'inspections', label: 'בדיקות', icon: FileText, state: includeInspections, setter: setIncludeInspections },
+                { key: 'inspections', label: 'אבחונים', icon: FileText, state: includeInspections, setter: setIncludeInspections },
                 { key: 'treatments', label: 'טיפולים', icon: Wrench, state: includeTreatments, setter: setIncludeTreatments },
                 { key: 'expenses', label: 'הוצאות', icon: Receipt, state: includeExpenses, setter: setIncludeExpenses },
                 { key: 'documents', label: 'מסמכים', icon: FolderOpen, state: includeDocuments, setter: setIncludeDocuments },
@@ -396,7 +396,7 @@ export default function TransferPage() {
                   <div className="flex flex-wrap gap-2">
                     {t.includeInspections && (
                       <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full flex items-center gap-1">
-                        <FileText size={12} /> בדיקות
+                        <FileText size={12} /> אבחונים
                       </span>
                     )}
                     {t.includeTreatments && (

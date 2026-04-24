@@ -821,7 +821,7 @@ export default function UserHomePage() {
             </div>
             <div className="flex-1">
               <div className="font-bold text-gray-800 text-base">הזמן אבחון רכב</div>
-              <p className="text-sm text-gray-500 mt-0.5">בחר מוסך, הזן מספר רכב והזמן בדיקה</p>
+              <p className="text-sm text-gray-500 mt-0.5">בחר מוסך, הזן מספר רכב והזמן אבחון</p>
             </div>
             <ChevronLeft size={20} className="text-gray-400 flex-shrink-0" />
           </button>
@@ -1342,7 +1342,7 @@ export default function UserHomePage() {
                       <div className="flex-1 min-w-0">
                         <div className="font-semibold text-[#1e3a5f] text-sm truncate">
                           {a.garage?.name || 'שירות'}
-                          <span className="text-gray-500 font-normal"> · {{ inspection: 'בדיקה', maintenance: 'טיפול', repair: 'תיקון', test_prep: 'הכנה לטסט' }[a.serviceType] || a.serviceType}</span>
+                          <span className="text-gray-500 font-normal"> · {{ inspection: 'אבחון', maintenance: 'טיפול', repair: 'תיקון', test_prep: 'הכנה לטסט' }[a.serviceType] || a.serviceType}</span>
                         </div>
                         <div className="text-xs text-gray-500 mt-0.5">
                           {dateStr}{a.time ? ' · ' + a.time : ''}

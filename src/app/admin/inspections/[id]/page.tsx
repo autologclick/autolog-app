@@ -62,7 +62,7 @@ export default function AdminInspectionDetailPage({ params }: { params: { id: st
   }, [params.id]);
 
   if (loading) return <div className="space-y-6 pt-12 lg:pt-0 animate-pulse" dir="rtl"><div className="flex items-center gap-3"><div className="w-10 h-10 bg-gray-200 rounded-lg" /><div className="h-6 bg-gray-200 rounded w-36" /></div><div className="grid grid-cols-1 md:grid-cols-3 gap-4">{[1,2,3].map(i=><div key={i} className="bg-white rounded-xl p-6 h-28" />)}</div><div className="bg-white rounded-xl p-6 space-y-3">{[1,2,3,4].map(i=><div key={i} className="h-10 bg-gray-50 rounded-lg" />)}</div></div>;
-  if (!inspection) return <div className="text-center py-20"><p className="text-gray-500">בדיקה לא נמצאה</p></div>;
+  if (!inspection) return <div className="text-center py-20"><p className="text-gray-500">אבחון לא נמצא</p></div>;
 
   const recs = (() => { try { return JSON.parse(inspection.recommendations || '[]'); } catch { return []; } })();
   const scores = (() => { try { return JSON.parse(inspection.detailedScores || '{}'); } catch { return {}; } })();
@@ -75,7 +75,7 @@ export default function AdminInspectionDetailPage({ params }: { params: { id: st
           <div className="w-10 h-10 bg-[#fef7ed] rounded-lg flex items-center justify-center border-2 border-[#1e3a5f]">
             <Shield size={22} className="text-[#1e3a5f]" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">פרטי בדיקה</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">פרטי אבחון</h1>
         </div>
       </div>
 
@@ -142,7 +142,7 @@ export default function AdminInspectionDetailPage({ params }: { params: { id: st
       {/* Items */}
       {(inspection.items || []).length > 0 && (
         <Card>
-          <h3 className="font-bold mb-3">פריטי בדיקה</h3>
+          <h3 className="font-bold mb-3">פריטי אבחון</h3>
           <div className="space-y-2">
             {inspection.items.map(item => (
               <div key={item.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
