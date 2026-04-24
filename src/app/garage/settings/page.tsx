@@ -183,8 +183,33 @@ export default function GarageSettingsPage() {
     });
   };
 
-  /** Compress image to max dimensions and JPEG; falls back to raw base64 */
-  const compressImage = (file: File, maxPx = 1200): Promise<string> => {
+  /** Compress image to max dimensions and JPEG; supports HEIC via createImageBitmap */
+  const compressImage = async (file: File, maxPx = 1200): Promise<string> => {
+    const drawToCanvas = (source: ImageBitmap | HTMLImageElement): string => {
+      let w = source.width, h = source.height;
+      if (w > maxPx || h > maxPx) {
+        if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+        else { w = Math.round(w * maxPx / h); h = maxPx; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas error');
+      ctx.drawImage(source, 0, 0, w, h);
+      return canvas.toDataURL('image/jpeg', 0.8);
+    };
+
+    // Method 1: createImageBitmap (supports HEIC on modern browsers)
+    if (typeof createImageBitmap === 'function') {
+      try {
+        const bitmap = await createImageBitmap(file);
+        const result = drawToCanvas(bitmap);
+        bitmap.close();
+        return result;
+      } catch { /* fall through to Image element */ }
+    }
+
+    // Method 2: Image element fallback with timeout
     return new Promise((resolve) => {
       const img = new window.Image();
       const url = URL.createObjectURL(file);
@@ -192,19 +217,7 @@ export default function GarageSettingsPage() {
       img.onload = () => {
         clearTimeout(timeout);
         URL.revokeObjectURL(url);
-        try {
-          let w = img.width, h = img.height;
-          if (w > maxPx || h > maxPx) {
-            if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
-            else { w = Math.round(w * maxPx / h); h = maxPx; }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          if (!ctx) { fileToBase64(file).then(resolve); return; }
-          ctx.drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', 0.8));
-        } catch { fileToBase64(file).then(resolve); }
+        try { resolve(drawToCanvas(img)); } catch { fileToBase64(file).then(resolve); }
       };
       img.onerror = () => { clearTimeout(timeout); URL.revokeObjectURL(url); fileToBase64(file).then(resolve).catch(() => resolve('')); };
       img.src = url;

@@ -149,33 +149,51 @@ export default function DocumentsPage() {
   }, [isUploading]);
 
   // Compress image for upload (max 1200px, quality 0.7) to stay under API body limit
-  const compressForUpload = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      if (!file.type.startsWith('image/')) {
+  // Supports HEIC/HEIF via createImageBitmap fallback
+  const compressForUpload = async (file: File): Promise<string> => {
+    // Non-image files: just read as data URL
+    if (!file.type.startsWith('image/') && !file.name.match(/\.(heic|heif)$/i)) {
+      return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target?.result as string);
         reader.onerror = reject;
         reader.readAsDataURL(file);
-        return;
+      });
+    }
+
+    const maxDim = 1200;
+    const drawToCanvas = (source: ImageBitmap | HTMLImageElement): string => {
+      const canvas = document.createElement('canvas');
+      let w = source.width, h = source.height;
+      if (w > maxDim || h > maxDim) {
+        const ratio = Math.min(maxDim / w, maxDim / h);
+        w = Math.round(w * ratio);
+        h = Math.round(h * ratio);
       }
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas not supported');
+      ctx.drawImage(source, 0, 0, w, h);
+      return canvas.toDataURL('image/jpeg', 0.7);
+    };
+
+    // Method 1: createImageBitmap (supports HEIC on modern browsers)
+    if (typeof createImageBitmap === 'function') {
+      try {
+        const bitmap = await createImageBitmap(file);
+        const result = drawToCanvas(bitmap);
+        bitmap.close();
+        return result;
+      } catch { /* fall through to Image element */ }
+    }
+
+    // Method 2: Image element fallback
+    return new Promise((resolve, reject) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
       img.onload = () => {
         URL.revokeObjectURL(url);
-        const canvas = document.createElement('canvas');
-        const maxDim = 1200;
-        let w = img.width, h = img.height;
-        if (w > maxDim || h > maxDim) {
-          const ratio = Math.min(maxDim / w, maxDim / h);
-          w = Math.round(w * ratio);
-          h = Math.round(h * ratio);
-        }
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) { reject(new Error('Canvas not supported')); return; }
-        ctx.drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', 0.7));
+        try { resolve(drawToCanvas(img)); } catch (e) { reject(e); }
       };
       img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load')); };
       img.src = url;

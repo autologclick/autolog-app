@@ -370,7 +370,32 @@ export default function VehiclesPage() {
     });
 
   // Resize + recompress image to a safe data URL for upload
-  const compressImage = (file: File, maxEdge: number, quality: number): Promise<string> => {
+  // Supports HEIC/HEIF via createImageBitmap fallback
+  const compressImage = async (file: File, maxEdge: number, quality: number): Promise<string> => {
+    const drawToCanvas = (source: ImageBitmap | HTMLImageElement, w: number, h: number): string => {
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('canvas context unavailable');
+      ctx.drawImage(source, 0, 0, w, h);
+      return canvas.toDataURL('image/jpeg', quality);
+    };
+
+    // Method 1: createImageBitmap (supports HEIC on modern browsers)
+    if (typeof createImageBitmap === 'function') {
+      try {
+        const bitmap = await createImageBitmap(file);
+        const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
+        const w = Math.round(bitmap.width * scale);
+        const h = Math.round(bitmap.height * scale);
+        const result = drawToCanvas(bitmap, w, h);
+        bitmap.close();
+        return result;
+      } catch { /* fall through to Image element */ }
+    }
+
+    // Method 2: Image element fallback
     return new Promise((resolve, reject) => {
       const img = new Image();
       const objUrl = URL.createObjectURL(file);
@@ -379,18 +404,9 @@ export default function VehiclesPage() {
         const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
         const w = Math.round(img.width * scale);
         const h = Math.round(img.height * scale);
-        const canvas = document.createElement('canvas');
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return reject(new Error('canvas context unavailable'));
-        ctx.drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', quality));
+        try { resolve(drawToCanvas(img, w, h)); } catch (e) { reject(e); }
       };
-      img.onerror = () => {
-        URL.revokeObjectURL(objUrl);
-        reject(new Error('image load failed'));
-      };
+      img.onerror = () => { URL.revokeObjectURL(objUrl); reject(new Error('image load failed')); };
       img.src = objUrl;
     });
   };

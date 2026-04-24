@@ -662,22 +662,35 @@ export default function UserHomePage() {
     }
   };
 
-  // ── Image compression ──
-  const compressImage = (file: File, maxWidth = 800, quality = 0.7): Promise<string> => {
+  // ── Image compression (supports HEIC/HEIF via createImageBitmap) ──
+  const compressImage = async (file: File, maxWidth = 800, quality = 0.7): Promise<string> => {
+    const drawToCanvas = (source: ImageBitmap | HTMLImageElement): string => {
+      const canvas = document.createElement('canvas');
+      let w = source.width, h = source.height;
+      if (w > maxWidth) { h = Math.round((h * maxWidth) / w); w = maxWidth; }
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas error');
+      ctx.drawImage(source, 0, 0, w, h);
+      return canvas.toDataURL('image/jpeg', quality);
+    };
+
+    // Method 1: createImageBitmap (supports HEIC on modern browsers)
+    if (typeof createImageBitmap === 'function') {
+      try {
+        const bitmap = await createImageBitmap(file);
+        const result = drawToCanvas(bitmap);
+        bitmap.close();
+        return result;
+      } catch { /* fall through to Image element */ }
+    }
+
+    // Method 2: Image element fallback
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
         const img = new window.Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let w = img.width, h = img.height;
-          if (w > maxWidth) { h = Math.round((h * maxWidth) / w); w = maxWidth; }
-          canvas.width = w; canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          if (!ctx) { reject(new Error('Canvas error')); return; }
-          ctx.drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        };
+        img.onload = () => { try { resolve(drawToCanvas(img)); } catch (e) { reject(e); } };
         img.onerror = () => resolve(reader.result as string);
         img.src = reader.result as string;
       };
