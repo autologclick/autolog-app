@@ -448,3 +448,109 @@ export function buildVehicleShareRequestEmailHtml(
 
   return emailWrapper('linear-gradient(135deg,#0d9488,#0f766e)', header, body);
 }
+
+/**
+ * Bodywork Quote Accepted — Garage Owner Email
+ * Sent to the garage whose quote was accepted by the customer
+ */
+export function buildBodyworkAcceptedGarageEmailHtml({
+  garageName,
+  customerName,
+  customerPhone,
+  customerEmail,
+  vehicleLabel,
+  description,
+  price,
+  estimatedDays,
+}: {
+  garageName: string;
+  customerName: string;
+  customerPhone?: string | null;
+  customerEmail?: string | null;
+  vehicleLabel: string;
+  description: string;
+  price: number;
+  estimatedDays?: number | null;
+}): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+  const header = '<h1 style="color:#ffffff;margin:0;font-size:20px">🎉 הצעת המחיר שלך אושרה!</h1>';
+
+  const rows = [
+    detailRow('לקוח', customerName),
+    customerPhone ? detailRow('טלפון', `<a href="tel:${customerPhone}" style="color:#2563eb;text-decoration:none;font-weight:600">${customerPhone}</a>`) : '',
+    customerEmail ? detailRow('אימייל', `<a href="mailto:${customerEmail}" style="color:#2563eb;text-decoration:none;word-break:break-all">${customerEmail}</a>`) : '',
+    detailRow('רכב', vehicleLabel),
+    detailRow('תיאור הנזק', description),
+    detailRow('מחיר שאושר', `₪${price.toLocaleString('he-IL')}`),
+    estimatedDays ? detailRow('זמן משוער', `${estimatedDays} ימים`, true) : '',
+  ].filter(Boolean).join('');
+
+  const body = [
+    p(`שלום ${garageName},`),
+    p(`הלקוח <strong>${customerName}</strong> בחר בהצעת המחיר שלכם לפחחות! 🎉`),
+    detailTable(rows),
+    `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px;margin:0 0 20px">`,
+    `<p style="font-size:15px;color:#166534;margin:0;font-weight:600">📞 אנא צרו קשר עם הלקוח בהקדם לתיאום מועד לביצוע העבודה.</p></div>`,
+    `<div style="text-align:center;margin:20px 0">${btnHtml(`${baseUrl}/garage/bodywork`, 'צפה בפרטים', '#f97316')}</div>`,
+  ].join('');
+
+  return emailWrapper('linear-gradient(135deg,#f97316,#ea580c)', header, body);
+}
+
+/**
+ * Bodywork Quote Accepted — Admin Email
+ * Sent to admin for record-keeping
+ */
+export function buildBodyworkAcceptedAdminEmailHtml({
+  customerName,
+  customerPhone,
+  customerEmail,
+  garageName,
+  garageEmail,
+  garagePhone,
+  vehicleLabel,
+  licensePlate,
+  description,
+  price,
+  estimatedDays,
+  requestId,
+}: {
+  customerName: string;
+  customerPhone?: string | null;
+  customerEmail?: string | null;
+  garageName: string;
+  garageEmail?: string | null;
+  garagePhone?: string | null;
+  vehicleLabel: string;
+  licensePlate?: string;
+  description: string;
+  price: number;
+  estimatedDays?: number | null;
+  requestId: string;
+}): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+  const header = '<h1 style="color:#ffffff;margin:0;font-size:20px">📋 הצעת פחחות אושרה</h1>';
+
+  const rows = [
+    detailRow('לקוח', customerName),
+    customerPhone ? detailRow('טלפון לקוח', customerPhone) : '',
+    customerEmail ? detailRow('אימייל לקוח', customerEmail) : '',
+    detailRow('מוסך', garageName),
+    garagePhone ? detailRow('טלפון מוסך', garagePhone) : '',
+    garageEmail ? detailRow('אימייל מוסך', garageEmail) : '',
+    detailRow('רכב', vehicleLabel),
+    licensePlate ? detailRow('מספר רכב', licensePlate) : '',
+    detailRow('תיאור', description),
+    detailRow('מחיר', `₪${price.toLocaleString('he-IL')}`),
+    estimatedDays ? detailRow('זמן משוער', `${estimatedDays} ימים`, true) : '',
+  ].filter(Boolean).join('');
+
+  const body = [
+    p('שלום מנהל,'),
+    p('הצעת מחיר לפחחות אושרה על ידי הלקוח:'),
+    detailTable(rows),
+    `<div style="text-align:center;margin:20px 0">${btnHtml(`${baseUrl}/admin/bodywork`, 'צפה בפאנל ניהול', '#7c3aed')}</div>`,
+  ].join('');
+
+  return emailWrapper('linear-gradient(135deg,#7c3aed,#6d28d9)', header, body);
+}

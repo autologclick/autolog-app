@@ -102,7 +102,8 @@ async function notifyBodyworkGarages(requestId: string, vehicleName: string, des
       sendPushToGarageOwner(garage.id, {
         title: 'בקשת פחחות חדשה!',
         body: `${vehicleName} — ${shortDesc}`,
-        url: '/garage/bodywork',
+        data: { url: '/garage/bodywork' },
+        requireInteraction: true,
       }).catch(() => {});
 
       // Email notification

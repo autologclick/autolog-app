@@ -16,7 +16,8 @@ export type NotificationType =
   | 'test_expiry'
   | 'insurance_expiry'
   | 'system'
-  | 'inspection';
+  | 'inspection'
+  | 'bodywork_request';
 
 export interface CreateNotificationParams {
   userId: string;
