@@ -24,11 +24,28 @@ export default function PWAInstallPrompt() {
       });
     }
 
-    // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    // Check if already installed — multiple detection methods
+    const isRunningAsApp =
+      window.matchMedia('(display-mode: standalone)').matches ||   // Android Chrome PWA
+      window.matchMedia('(display-mode: fullscreen)').matches ||   // TWA mode
+      window.matchMedia('(display-mode: minimal-ui)').matches ||   // Some PWA launchers
+      (navigator as unknown as { standalone?: boolean }).standalone === true || // iOS Safari
+      document.referrer.includes('android-app://');                 // Android TWA referrer
+
+    if (isRunningAsApp) {
       setIsInstalled(true);
+      // Persist so we never prompt again even if detection fails later
+      try { localStorage.setItem('pwa-installed', '1'); } catch {}
       return;
     }
+
+    // Check if we previously detected installation
+    try {
+      if (localStorage.getItem('pwa-installed') === '1') {
+        setIsInstalled(true);
+        return;
+      }
+    } catch {}
 
     // Check if user already dismissed twice — stop showing
     try {
@@ -47,14 +64,17 @@ export default function PWAInstallPrompt() {
     window.addEventListener('beforeinstallprompt', handler);
 
     // Listen for successful install
-    window.addEventListener('appinstalled', () => {
+    const installedHandler = () => {
       setIsInstalled(true);
       setShowBanner(false);
       setDeferredPrompt(null);
-    });
+      try { localStorage.setItem('pwa-installed', '1'); } catch {}
+    };
+    window.addEventListener('appinstalled', installedHandler);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('appinstalled', installedHandler);
     };
   }, []);
 

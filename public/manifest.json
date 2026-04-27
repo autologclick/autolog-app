@@ -1,7 +1,7 @@
 {
   "name": "AutoLog - ניהול רכבים חכם",
   "short_name": "AutoLog",
-  "description": "מערכת ניהול רכבים מקצועית - בדיקות, ביטוח, טסט, מוסכים ועוד",
+  "description": "מערכת ניהול רכבים מקצועית - אבחון, ביטוח, טסט, מוסכים ועוד",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fef7ed",
