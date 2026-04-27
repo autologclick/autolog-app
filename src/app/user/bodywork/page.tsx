@@ -353,8 +353,8 @@ export default function BodyworkPage() {
           {/* Photos */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">תמונות הנזק * (עד 6)</label>
-            <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
-            <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleImageUpload} />
+            <input ref={fileRef} type="file" accept="image/*,application/pdf" multiple className="hidden" onChange={handleImageUpload} />
+            <input ref={cameraRef} type="file" accept="image/*,application/pdf" capture="environment" className="hidden" onChange={handleImageUpload} />
             <div className="grid grid-cols-3 gap-2">
               {images.map((img, i) => (
                 <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200">

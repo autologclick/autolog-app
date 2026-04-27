@@ -130,7 +130,7 @@ function ImageUploadSection({ imagePreview, onImageSelect, onImageRemove, onCame
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/*,application/pdf"
             className="hidden"
             onChange={onImageSelect}
           />
@@ -569,7 +569,7 @@ export default function VehiclesPage() {
       <input
         ref={cameraInputRef}
         type="file"
-        accept="image/*"
+        accept="image/*,application/pdf"
         capture="environment"
         className="hidden"
         onChange={handleImageSelect}

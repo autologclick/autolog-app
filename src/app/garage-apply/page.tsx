@@ -492,7 +492,7 @@ export default function GarageApplyPage() {
                     <span>הוסף תמונות</span>
                     <input
                       type="file"
-                      accept="image/jpeg,image/png,image/webp"
+                      accept="image/jpeg,image/png,image/webp,application/pdf"
                       multiple
                       onChange={handleImageSelect}
                       className="hidden"

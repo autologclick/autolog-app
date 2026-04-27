@@ -933,14 +933,14 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,application/pdf"
               onChange={handleImageUpload}
               className="hidden"
             />
             <input
               ref={cameraInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,application/pdf"
               capture="environment"
               onChange={handleImageUpload}
               className="hidden"

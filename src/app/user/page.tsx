@@ -1522,7 +1522,7 @@ export default function UserHomePage() {
                   {scanning ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}
                   <span className="text-sm font-semibold">{scanning ? 'סורק...' : '✨ סרוק קבלה'}</span>
                 </button>
-                <input ref={scanRef} type="file" accept="image/*" capture="environment" className="hidden"
+                <input ref={scanRef} type="file" accept="image/*,application/pdf" capture="environment" className="hidden"
                   onChange={e => { if (e.target.files?.[0]) handleScanReceipt(e.target.files[0]); }} />
               </div>
 
@@ -1608,7 +1608,7 @@ export default function UserHomePage() {
                     <Upload size={20} />
                     <span className="text-sm">צרף תמונה</span>
                   </button>
-                  <input ref={treatmentImageRef} type="file" accept="image/*" className="hidden"
+                  <input ref={treatmentImageRef} type="file" accept="image/*,application/pdf" className="hidden"
                     onChange={async e => { if (e.target.files?.[0]) setTreatmentImage(await compressImage(e.target.files[0])); }} />
                 </div>
               )}
