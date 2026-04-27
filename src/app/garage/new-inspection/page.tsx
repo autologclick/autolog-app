@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -301,6 +301,36 @@ export default function NewInspectionPage() {
   const [brakeNotes, setBrakeNotes] = useState('');
   const [undercarNotes, setUndercarNotes] = useState('');
   const [undercarMedia, setUndercarMedia] = useState<Array<{ type: 'video' | 'image'; name: string; url: string }>>([]);
+  const [videoCountdown, setVideoCountdown] = useState<number | null>(null);
+  const countdownRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Countdown timer for undercar video recording (40 seconds)
+  const startVideoCountdown = useCallback(() => {
+    // Clear any existing timer
+    if (countdownRef.current) clearInterval(countdownRef.current);
+    setVideoCountdown(40);
+    countdownRef.current = setInterval(() => {
+      setVideoCountdown(prev => {
+        if (prev === null || prev <= 1) {
+          if (countdownRef.current) clearInterval(countdownRef.current);
+          countdownRef.current = null;
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, []);
+
+  const stopVideoCountdown = useCallback(() => {
+    if (countdownRef.current) clearInterval(countdownRef.current);
+    countdownRef.current = null;
+    setVideoCountdown(null);
+  }, []);
+
+  // Cleanup countdown on unmount
+  useEffect(() => {
+    return () => { if (countdownRef.current) clearInterval(countdownRef.current); };
+  }, []);
 
   // Step 8: Summary, Recommendations, Signature
   const [summary, setSummary] = useState('');
@@ -1473,6 +1503,25 @@ export default function NewInspectionPage() {
             <CardTitle>סרטון / הערות תחתית הרכב</CardTitle>
             <div className="space-y-3 mt-3">
               {/* Upload buttons */}
+              {/* 40-second countdown timer */}
+              {videoCountdown !== null && (
+                <div className="flex items-center justify-center gap-3 bg-red-50 border border-red-200 rounded-xl p-3 animate-pulse">
+                  <div className="relative w-12 h-12">
+                    <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
+                      <circle cx="24" cy="24" r="20" fill="none" stroke="#fecaca" strokeWidth="4" />
+                      <circle cx="24" cy="24" r="20" fill="none" stroke="#ef4444" strokeWidth="4"
+                        strokeDasharray={`${(videoCountdown / 40) * 125.6} 125.6`}
+                        strokeLinecap="round" className="transition-all duration-1000 ease-linear" />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-red-600">{videoCountdown}</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-red-700">מצלם סרטון תחתית...</p>
+                    <p className="text-xs text-red-500">נותרו {videoCountdown} שניות</p>
+                  </div>
+                </div>
+              )}
+
               <div className="flex gap-2">
                 <button
                   onClick={() => {
@@ -1480,17 +1529,27 @@ export default function NewInspectionPage() {
                     input.type = 'file';
                     input.accept = 'video/*';
                     input.capture = 'environment';
+                    startVideoCountdown();
                     input.onchange = (e) => {
+                      stopVideoCountdown();
                       const file = (e.target as HTMLInputElement).files?.[0];
                       if (!file) return;
                       const url = URL.createObjectURL(file);
                       setUndercarMedia(prev => [...prev, { type: 'video', name: file.name, url }]);
                     };
+                    // Stop countdown if user cancels the camera
+                    const handleFocus = () => {
+                      setTimeout(() => {
+                        if (!input.files?.length) stopVideoCountdown();
+                      }, 500);
+                      window.removeEventListener('focus', handleFocus);
+                    };
+                    window.addEventListener('focus', handleFocus);
                     input.click();
                   }}
                   className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition text-sm font-medium"
                 >
-                  <Video size={18} /> צלם סרטון
+                  <Video size={18} /> צלם סרטון (40 שניות)
                 </button>
                 <button
                   onClick={() => {
