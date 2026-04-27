@@ -670,12 +670,38 @@ export default function InspectionReportPage() {
     }
   };
 
-  const handleDownload = () => {
-    // Direct PDF download (user is authenticated, cookies sent)
-    const link = document.createElement('a');
-    link.href = pdfUrl;
-    link.download = `AutoLog-${v.licensePlate}.pdf`;
-    link.click();
+  const handleDownload = async () => {
+    try {
+      // Try fetching PDF directly (authenticated users)
+      const res = await fetch(pdfUrl);
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `AutoLog-${v.licensePlate}.pdf`;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        return;
+      }
+    } catch {}
+    // Fallback: use signed URL (for unauthenticated / shared link viewers)
+    try {
+      const signedUrl = await getSignedPdfUrl();
+      const res = await fetch(signedUrl);
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `AutoLog-${v.licensePlate}.pdf`;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        return;
+      }
+    } catch {}
+    // Last resort: open PDF URL in new tab
+    window.open(pdfUrl, '_blank');
   };
 
   return (

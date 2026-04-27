@@ -72,7 +72,18 @@ export async function GET(
       } catch {
         return errorResponse('אין הרשאה לצפות באבחון', 403);
       }
-      if (payload.role !== 'admin' && inspection.vehicle.userId !== payload.userId) {
+      // Allow: admin, vehicle owner, or garage owner who performed the inspection
+      if (payload.role === 'admin') {
+        // Admin — always allowed
+      } else if (payload.role === 'garage_owner') {
+        const garage = await prisma.garage.findUnique({
+          where: { ownerId: payload.userId },
+          select: { id: true },
+        });
+        if (garage?.id !== inspection.garage?.id) {
+          return errorResponse('אין הרשאה לצפות באבחון', 403);
+        }
+      } else if (inspection.vehicle.userId !== payload.userId) {
         return errorResponse('אין הרשאה לצפות באבחון', 403);
       }
     }
