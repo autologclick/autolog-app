@@ -526,25 +526,66 @@ export default function NewInspectionPage() {
     }
   }, [manualPlate, vehicleMode]);
 
-  // Photo upload handler
+  // Upload a file to Vercel Blob and return the URL
+  const [uploadingMedia, setUploadingMedia] = useState<string | null>(null);
+
+  const uploadToBlob = useCallback(async (base64: string, category: string, key?: string): Promise<string | null> => {
+    try {
+      const res = await fetch('/api/inspections/media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ file: base64, category, key }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return data.url;
+      }
+    } catch {}
+    return null;
+  }, []);
+
+  // Convert File to base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Photo upload handler — uploads to Vercel Blob, stores URL
   const handlePhotoUpload = (collection: 'exterior' | 'interior', key: string) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     input.capture = 'environment';
-    input.onchange = (e) => {
+    input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = reader.result as string;
-        if (collection === 'exterior') {
-          setExteriorPhotos(prev => ({ ...prev, [key]: base64 }));
+      setUploadingMedia(`${collection}_${key}`);
+      try {
+        const base64 = await fileToBase64(file);
+        const url = await uploadToBlob(base64, collection, key);
+        if (url) {
+          if (collection === 'exterior') {
+            setExteriorPhotos(prev => ({ ...prev, [key]: url }));
+          } else {
+            setInteriorPhotos(prev => ({ ...prev, [key]: url }));
+          }
         } else {
-          setInteriorPhotos(prev => ({ ...prev, [key]: base64 }));
+          // Fallback: store base64 locally (still works, just may be stripped if too large)
+          if (collection === 'exterior') {
+            setExteriorPhotos(prev => ({ ...prev, [key]: base64 }));
+          } else {
+            setInteriorPhotos(prev => ({ ...prev, [key]: base64 }));
+          }
         }
-      };
-      reader.readAsDataURL(file);
+      } catch {
+        // Ignore upload errors
+      } finally {
+        setUploadingMedia(null);
+      }
     };
     input.click();
   };
@@ -733,7 +774,10 @@ export default function NewInspectionPage() {
           summary: summary || undefined,
           recommendations: recommendations.filter(r => r.text.trim()),
           notes: { undercarriage: notesUndercar || undercarNotes, engine: notesEngine, general: summary },
-          // Customer signature removed - customer signs via app after receiving the report
+          // Include undercar media (uploaded to Vercel Blob, URLs only — not blob: URLs)
+          undercarMedia: undercarMedia
+            .filter(m => !m.url.startsWith('blob:'))
+            .map(m => ({ type: m.type, name: m.name, url: m.url })),
         };
       } else if (inspectionType === 'pre_test') {
         const passedCount = Object.values(preTestChecklist).filter(v => v).length;
@@ -784,20 +828,25 @@ export default function NewInspectionPage() {
         payload = basePayload;
       }
 
-      // Strip base64 photos if payload is too large (Vercel 4.5MB limit)
+      // Photos are now uploaded to Vercel Blob as URLs (not base64),
+      // so the payload is small. Only strip as a last-resort safety net.
       const payloadStr = JSON.stringify(payload);
       const payloadSizeMB = new Blob([payloadStr]).size / (1024 * 1024);
 
       let finalPayload = payload;
       if (payloadSizeMB > 4) {
-        // Remove large base64 photo data to stay under Vercel's limit
-        console.warn(`[Inspection] Payload too large (${payloadSizeMB.toFixed(1)}MB), stripping photos`);
+        console.warn(`[Inspection] Payload too large (${payloadSizeMB.toFixed(1)}MB), stripping base64 photos`);
         const stripped = { ...payload };
-        delete stripped.exteriorPhotos;
-        delete stripped.interiorPhotos;
-        delete stripped.vehiclePhoto;
-        delete stripped.invoicePhoto;
-        delete stripped.servicePhotos;
+        // Only strip fields that might still contain base64 (fallback case)
+        for (const key of ['exteriorPhotos', 'interiorPhotos', 'vehiclePhoto', 'invoicePhoto', 'servicePhotos'] as const) {
+          const val = stripped[key];
+          if (typeof val === 'string' && val.startsWith('data:')) delete stripped[key];
+          if (val && typeof val === 'object') {
+            const obj = val as Record<string, string>;
+            const hasBase64 = Object.values(obj).some(v => typeof v === 'string' && v.startsWith('data:'));
+            if (hasBase64) delete stripped[key];
+          }
+        }
         finalPayload = stripped;
       }
 
@@ -1522,6 +1571,13 @@ export default function NewInspectionPage() {
                 </div>
               )}
 
+              {uploadingMedia === 'undercar' && (
+                <div className="flex items-center justify-center gap-2 text-teal-600 text-sm py-2">
+                  <Loader2 size={16} className="animate-spin" />
+                  מעלה קובץ...
+                </div>
+              )}
+
               <div className="flex gap-2">
                 <button
                   onClick={() => {
@@ -1530,12 +1586,25 @@ export default function NewInspectionPage() {
                     input.accept = 'video/*';
                     input.capture = 'environment';
                     startVideoCountdown();
-                    input.onchange = (e) => {
+                    input.onchange = async (e) => {
                       stopVideoCountdown();
                       const file = (e.target as HTMLInputElement).files?.[0];
                       if (!file) return;
-                      const url = URL.createObjectURL(file);
-                      setUndercarMedia(prev => [...prev, { type: 'video', name: file.name, url }]);
+                      // Show local preview immediately
+                      const localUrl = URL.createObjectURL(file);
+                      const type = 'video' as const;
+                      setUndercarMedia(prev => [...prev, { type, name: file.name, url: localUrl }]);
+                      // Upload to Vercel Blob in background
+                      setUploadingMedia('undercar');
+                      try {
+                        const base64 = await fileToBase64(file);
+                        const blobUrl = await uploadToBlob(base64, 'undercar', `video_${Date.now()}`);
+                        if (blobUrl) {
+                          setUndercarMedia(prev =>
+                            prev.map(m => m.url === localUrl ? { ...m, url: blobUrl } : m)
+                          );
+                        }
+                      } catch {} finally { setUploadingMedia(null); }
                     };
                     // Stop countdown if user cancels the camera
                     const handleFocus = () => {
@@ -1557,14 +1626,25 @@ export default function NewInspectionPage() {
                     input.type = 'file';
                     input.accept = 'video/*,image/*';
                     input.multiple = true;
-                    input.onchange = (e) => {
+                    input.onchange = async (e) => {
                       const files = (e.target as HTMLInputElement).files;
                       if (!files) return;
-                      Array.from(files).forEach(file => {
-                        const url = URL.createObjectURL(file);
-                        const type = file.type.startsWith('video') ? 'video' : 'image';
-                        setUndercarMedia(prev => [...prev, { type, name: file.name, url }]);
-                      });
+                      setUploadingMedia('undercar');
+                      for (const file of Array.from(files)) {
+                        const localUrl = URL.createObjectURL(file);
+                        const type = file.type.startsWith('video') ? 'video' as const : 'image' as const;
+                        setUndercarMedia(prev => [...prev, { type, name: file.name, url: localUrl }]);
+                        try {
+                          const base64 = await fileToBase64(file);
+                          const blobUrl = await uploadToBlob(base64, 'undercar', `${type}_${Date.now()}`);
+                          if (blobUrl) {
+                            setUndercarMedia(prev =>
+                              prev.map(m => m.url === localUrl ? { ...m, url: blobUrl } : m)
+                            );
+                          }
+                        } catch {}
+                      }
+                      setUploadingMedia(null);
                     };
                     input.click();
                   }}

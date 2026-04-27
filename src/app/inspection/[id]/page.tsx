@@ -8,7 +8,7 @@ import {
   Shield, Car, Wrench, Droplets, Gauge, Lightbulb, Eye, PenLine,
   Check, AlertTriangle, X, ChevronDown, ChevronUp, Share2, Download, Lock,
   Phone, MapPin, Calendar, Clock, Camera, CircleDot, Settings,
-  Wind, Zap, ArrowRight, FileText, Star, MessageCircle, Loader2
+  Wind, Zap, ArrowRight, FileText, Star, MessageCircle, Loader2, Video
 } from 'lucide-react';
 import Logo, { LogoIcon } from '@/components/ui/Logo';
 
@@ -44,6 +44,7 @@ interface Inspection {
   engineIssues: { issues?: string[]; notes?: string } | null;
   gearboxIssues: { notes?: string } | null;
   brakingSystem: { frontDiscs?: number; rearDiscs?: number; frontPads?: number; rearPads?: number } | null;
+  undercarMedia: Array<{ type: 'video' | 'image'; name: string; url: string }> | null;
   recommendations: Array<{ text: string; urgency?: string; estimatedCost?: string }> | null;
   notes: { undercarriage?: string; engine?: string; general?: string } | null;
   vehicle: {
@@ -1161,6 +1162,26 @@ export default function InspectionReportPage() {
             {inspection.brakingSystem.rearPads !== undefined && (
               <BrakeBar label="רפידות אחוריות" value={inspection.brakingSystem.rearPads} />
             )}
+          </div>
+        </Section>
+      )}
+
+      {/* ===== UNDERCAR MEDIA ===== */}
+      {inspection.undercarMedia && inspection.undercarMedia.length > 0 && (
+        <Section title="תחתית הרכב — סרטונים ותמונות" icon={<Video size={18} className="text-emerald-600" />} defaultOpen={true}>
+          <div className="space-y-3">
+            {inspection.undercarMedia.map((media, idx) => (
+              <div key={idx} className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                {media.type === 'video' ? (
+                  <video src={media.url} controls playsInline className="w-full max-h-64 bg-black" />
+                ) : (
+                  <img src={media.url} alt={media.name || `תמונה ${idx + 1}`} loading="lazy" className="w-full max-h-64 object-contain" />
+                )}
+                {media.name && (
+                  <div className="px-3 py-1.5 text-xs text-gray-500 border-t border-gray-100">{media.name}</div>
+                )}
+              </div>
+            ))}
           </div>
         </Section>
       )}

@@ -148,6 +148,9 @@ export function buildInspectionData(
     gearboxIssues: jsonOrNull(data.gearboxIssues),
     brakingSystem: jsonOrNull(data.brakingSystem),
 
+    // Undercar media (videos/photos uploaded to Vercel Blob)
+    undercarVideo: jsonOrNull(data.undercarMedia),
+
     // Summary & results
     summary: data.summary || null,
     recommendations: jsonOrNull(data.recommendations),

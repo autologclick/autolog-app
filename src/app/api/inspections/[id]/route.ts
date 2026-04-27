@@ -84,6 +84,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       engineIssues: safeJsonParse(inspection.engineIssues),
       gearboxIssues: safeJsonParse(inspection.gearboxIssues),
       brakingSystem: safeJsonParse(inspection.brakingSystem),
+      undercarMedia: safeJsonParse(inspection.undercarVideo),
       notes: safeJsonParse(inspection.notes),
       preTestChecklist: safeJsonParse(inspection.preTestChecklist),
       preTestNotes: inspection.preTestNotes || null,
