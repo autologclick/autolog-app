@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
-import { requireAuth, jsonResponse, errorResponse, handleApiError, requireOwnershipOrAdmin,
+import { requireAuth, jsonResponse, errorResponse, handleApiError,
   enforceRateLimit,
 } from '@/lib/api-helpers';
 import { analyzeInspection } from '@/lib/ai-analysis';
@@ -8,10 +8,18 @@ import { analyzeInspection } from '@/lib/ai-analysis';
 // GET /api/ai/inspection-analysis?inspectionId=xxx
 export async function GET(req: NextRequest) {
   try {
-    const payload = requireAuth(req);
+    // Try auth — but allow unauthenticated access (same as inspection page)
+    let payload: { userId: string; role: string } | null = null;
+    try {
+      payload = requireAuth(req);
+    } catch {
+      // Not authenticated — allowed for shared links (WhatsApp, etc.)
+    }
 
-    const rateLimitError = enforceRateLimit(payload.userId);
-    if (rateLimitError) return rateLimitError;
+    if (payload) {
+      const rateLimitError = enforceRateLimit(payload.userId);
+      if (rateLimitError) return rateLimitError;
+    }
 
     const url = new URL(req.url);
     const inspectionId = url.searchParams.get('inspectionId');
@@ -34,7 +42,25 @@ export async function GET(req: NextRequest) {
       return errorResponse('אבחון לא נמצא', 404);
     }
 
-    requireOwnershipOrAdmin(payload, inspection.vehicle.userId);
+    // Access control — mirror the inspection page logic:
+    // Unauthenticated: allowed (shared link viewers)
+    // Users: must own the vehicle
+    // Garage owners: must own the garage that performed the inspection
+    // Admins: always allowed
+    if (payload) {
+      if (payload.role === 'user' && payload.userId !== inspection.vehicle.userId) {
+        return errorResponse('אין הרשאה', 403);
+      }
+      if (payload.role === 'garage_owner') {
+        const garage = await prisma.garage.findUnique({
+          where: { ownerId: payload.userId },
+          select: { id: true },
+        });
+        if (garage?.id !== inspection.garageId) {
+          return errorResponse('אין הרשאה', 403);
+        }
+      }
+    }
 
     // Parse JSON fields (recommendations and workPerformed are stored as JSON strings)
     let recommendations: Array<{ text: string; urgency?: string; estimatedCost?: string }> | undefined;
