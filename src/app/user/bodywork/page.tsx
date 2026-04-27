@@ -113,7 +113,10 @@ export default function BodyworkPage() {
       ]);
       if (vehiclesRes?.ok) {
         const data = await vehiclesRes.json().catch(() => ({}));
-        setVehicles(Array.isArray(data) ? data : Array.isArray(data?.vehicles) ? data.vehicles : []);
+        const list = Array.isArray(data) ? data : Array.isArray(data?.vehicles) ? data.vehicles : [];
+        setVehicles(list);
+        // Auto-select if user has exactly one vehicle
+        if (list.length === 1) setSelectedVehicle(list[0].id);
       }
       if (requestsRes?.ok) {
         const data = await requestsRes.json().catch(() => []);
