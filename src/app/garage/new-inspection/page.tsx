@@ -1462,7 +1462,8 @@ export default function NewInspectionPage() {
                   </div>
                   <input type="range" min="0" max="100" step="5" value={(brakeSystem as any)[key]}
                     onChange={e => setBrakeSystem(p => ({ ...p, [key]: parseInt(e.target.value) }))}
-                    className="w-full accent-teal-600" />
+                    className="w-full accent-teal-600"
+                    style={{ touchAction: 'none' }} />
                 </div>
               ))}
               <VoiceInput value={brakeNotes} onChange={setBrakeNotes} placeholder="הערות בלמים..." rows={2} />
