@@ -245,18 +245,6 @@ export default function PrintInspectionPage() {
           </div>
         )}
 
-        {/* ===== NOTES ===== */}
-        {i.notes && (i.notes.general || i.notes.engine || i.notes.undercarriage) && (
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a5f', marginBottom: 6, paddingBottom: 4, borderBottom: '2px solid #e2e8f0' }}>הערות</div>
-            <div style={{ fontSize: 12, color: '#475569', lineHeight: 1.7, background: '#f8fafc', padding: 12, borderRadius: 8 }}>
-              {i.notes.general && <div><strong>כללי:</strong> {i.notes.general}</div>}
-              {i.notes.engine && <div><strong>מנוע:</strong> {i.notes.engine}</div>}
-              {i.notes.undercarriage && <div><strong>תחתית:</strong> {i.notes.undercarriage}</div>}
-            </div>
-          </div>
-        )}
-
         {/* ===== SUMMARY ===== */}
         {i.summary && (
           <div style={{ marginBottom: 16 }}>

@@ -1139,32 +1139,6 @@ export default function InspectionReportPage() {
         </Section>
       )}
 
-      {/* ===== NOTES ===== */}
-      {inspection.notes && (inspection.notes.undercarriage || inspection.notes.engine || inspection.notes.general) && (
-        <Section title="הערות" icon={<FileText size={18} className="text-teal-600" />} defaultOpen={false}>
-          <div className="space-y-3">
-            {inspection.notes.undercarriage && (
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500 mb-1">תחתית הרכב</p>
-                <p className="text-sm text-gray-700">{inspection.notes.undercarriage}</p>
-              </div>
-            )}
-            {inspection.notes.engine && (
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500 mb-1">מנוע</p>
-                <p className="text-sm text-gray-700">{inspection.notes.engine}</p>
-              </div>
-            )}
-            {inspection.notes.general && (
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500 mb-1">הערות כלליות</p>
-                <p className="text-sm text-gray-700">{inspection.notes.general}</p>
-              </div>
-            )}
-          </div>
-        </Section>
-      )}
-
       {/* ===== RECOMMENDATIONS ===== */}
       {inspection.recommendations && inspection.recommendations.length > 0 && (
         <Section title="המלצות לתיקון" icon={<AlertTriangle size={18} className="text-amber-500" />} defaultOpen={true}>
