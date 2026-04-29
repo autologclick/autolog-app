@@ -24,7 +24,7 @@ async function main() {
 
   // Create users
   const admin = await prisma.user.create({
-    data: { email: 'admin@autolog.co.il', passwordHash: hash, fullName: 'מנהל מערכת', role: 'admin', phone: '050-000-0000' },
+    data: { email: 'info@autolog.click', passwordHash: hash, fullName: 'מנהל מערכת', role: 'admin', phone: '050-000-0000' },
   });
 
   const user1 = await prisma.user.create({
@@ -118,7 +118,7 @@ async function main() {
   console.log('✅ Seed complete!');
   console.log('');
   console.log('👤 User:    philip@autolog.co.il / 123456');
-  console.log('📊 Admin:   admin@autolog.co.il / 123456');
+  console.log('📊 Admin:   info@autolog.click / 123456');
   console.log('🏪 Garage:  garage@autolog.co.il / 123456');
 }
 
