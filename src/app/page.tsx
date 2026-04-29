@@ -262,11 +262,6 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Text content */}
             <div className="text-right">
-              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-teal-200 text-sm font-medium px-4 py-2 rounded-full mb-6 border border-white/10">
-                <Zap size={14} />
-                <span>הפלטפורמה #1 לניהול רכבים בישראל</span>
-              </div>
-
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
                 כל מה שצריך{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-l from-teal-300 to-cyan-300">
