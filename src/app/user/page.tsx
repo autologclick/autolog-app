@@ -14,6 +14,8 @@ import PushPermissionBanner from '@/components/shared/PushPermissionBanner';
 import VehicleAssistant from '@/components/chat/VehicleAssistant';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import GlobalSearch from '@/components/ui/GlobalSearch';
+import { ComingSoonBadge } from '@/components/shared/ComingSoonBanner';
+import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 // Tesseract loaded dynamically in handleScanReceipt to avoid SSR issues
 
 // ── Types ──────────────────────────────────────────
@@ -1072,8 +1074,9 @@ export default function UserHomePage() {
           </button>
           <button
             onClick={() => router.push('/user/sos')}
-            className="flex-1 bg-red-500 text-white rounded-xl py-3 flex flex-col items-center gap-1 shadow-md active:scale-[0.97] transition-transform"
+            className="flex-1 bg-red-500 text-white rounded-xl py-3 flex flex-col items-center gap-1 shadow-md active:scale-[0.97] transition-transform relative"
           >
+            {!GARAGES_ENABLED && <span className="absolute top-1 left-1"><ComingSoonBadge className="bg-white/30 text-white" /></span>}
             <AlertTriangle size={20} />
             <span className="text-xs font-semibold">SOS</span>
           </button>
@@ -1310,8 +1313,8 @@ export default function UserHomePage() {
 
         )}
 
-        {/* Upcoming Appointments */}
-        {(() => {
+        {/* Upcoming Appointments — hidden when garages not yet connected */}
+        {GARAGES_ENABLED && (() => {
           const upcoming = appointments
             .filter(a => ['pending', 'confirmed'].includes(a.status) && new Date(a.date) >= new Date(new Date().toDateString()))
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -1430,7 +1433,10 @@ export default function UserHomePage() {
                   <Car size={20} />
                 </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-[#1e3a5f]">הזמן תור למוסך</div>
+                  <div className="font-semibold text-[#1e3a5f] flex items-center gap-2">
+                    הזמן תור למוסך
+                    {!GARAGES_ENABLED && <ComingSoonBadge />}
+                  </div>
                   <div className="text-xs text-gray-500">קבע מועד לטיפול הבא</div>
                 </div>
                 <ChevronLeft size={20} className="text-gray-400" />

@@ -10,6 +10,8 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Modal from '@/components/ui/Modal';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
+import ComingSoonBanner from '@/components/shared/ComingSoonBanner';
+import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 import {
   Camera, Upload, X, Car, Loader2, CheckCircle2,
   Clock, MapPin, ChevronLeft, Image as ImageIcon,
@@ -257,6 +259,20 @@ export default function BodyworkPage() {
     setUrgency('normal');
     setImages([]);
   };
+
+  if (!GARAGES_ENABLED) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="פחחות — הצעות מחיר" backUrl="/user/service" />
+        <div className="px-4">
+          <ComingSoonBanner
+            title="פחחות — בקרוב!"
+            description="בקרוב תוכל לצלם את הנזק, לקבל הצעות מחיר ממוסכי פחחות ולבחור את ההצעה הטובה ביותר."
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (loading) return <PageSkeleton />;
 

@@ -6,6 +6,9 @@ import {
   Calendar, MapPin, Wrench, AlertTriangle, ChevronLeft,
   Clock, CheckCircle, Loader2, Shield, Search, Hammer
 } from 'lucide-react';
+import ComingSoonBanner from '@/components/shared/ComingSoonBanner';
+import { ComingSoonBadge } from '@/components/shared/ComingSoonBanner';
+import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 
 interface Appointment {
   id: string;
@@ -65,7 +68,7 @@ export default function ServicePage() {
       {/* Header */}
       <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white px-4 pt-6 pb-6 rounded-b-3xl">
         <h1 className="text-2xl font-bold mb-1">שירות</h1>
-        <p className="text-sm text-white/70">בחר שירות והזמן תור למוסך</p>
+        <p className="text-sm text-white/70">{GARAGES_ENABLED ? 'בחר שירות והזמן תור למוסך' : 'שירותי רכב — חלק מהשירותים יהיו זמינים בקרוב'}</p>
       </div>
 
       <div className="px-4 mt-4 space-y-5">
@@ -77,8 +80,11 @@ export default function ServicePage() {
               <button
                 key={service.value}
                 onClick={() => router.push(`/user/book-garage?service=${service.value}`)}
-                className="bg-white rounded-2xl p-4 shadow-sm border-2 border-gray-100 hover:border-teal-500 transition-all text-center active:scale-[0.97]"
+                className="bg-white rounded-2xl p-4 shadow-sm border-2 border-gray-100 hover:border-teal-500 transition-all text-center active:scale-[0.97] relative"
               >
+                {!GARAGES_ENABLED && (
+                  <span className="absolute top-2 left-2"><ComingSoonBadge /></span>
+                )}
                 <div className="mb-2">{service.icon}</div>
                 <div className="font-bold text-sm text-[#1e3a5f]">{service.label}</div>
                 <div className="mt-2 pt-2 border-t border-gray-100">
@@ -94,8 +100,11 @@ export default function ServicePage() {
           {/* Bodywork — special card */}
           <button
             onClick={() => router.push('/user/bodywork')}
-            className="w-full bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-100 hover:border-orange-400 transition-all text-right active:scale-[0.98] flex items-center gap-4"
+            className="w-full bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-100 hover:border-orange-400 transition-all text-right active:scale-[0.98] flex items-center gap-4 relative"
           >
+            {!GARAGES_ENABLED && (
+              <span className="absolute top-3 left-3"><ComingSoonBadge /></span>
+            )}
             <div className="w-14 h-14 bg-gradient-to-br from-orange-100 to-amber-100 rounded-2xl flex items-center justify-center flex-shrink-0">
               <Hammer size={24} className="text-orange-500" />
             </div>
@@ -108,6 +117,7 @@ export default function ServicePage() {
         </div>
 
         {/* Upcoming Appointments */}
+        {GARAGES_ENABLED ? (
         <div>
           <h2 className="text-lg font-bold text-[#1e3a5f] mb-3 flex items-center gap-2">
             <Calendar size={18} className="text-teal-600" />
@@ -168,6 +178,13 @@ export default function ServicePage() {
             </div>
           )}
         </div>
+        ) : (
+          <ComingSoonBanner
+            variant="inline"
+            title="תורים ומעקב — בקרוב"
+            description="ניהול תורים, עדכונים בזמן אמת ושליחת תזכורות — ברגע שנחבר מוסכים."
+          />
+        )}
 
         {/* Past Appointments */}
         {past.length > 0 && (

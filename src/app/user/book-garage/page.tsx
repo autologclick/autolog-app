@@ -18,6 +18,8 @@ import {
   Clock, MapIcon, FileText, Coffee, Wifi, Monitor, Heart, Armchair, ChevronDown
 } from 'lucide-react';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
+import ComingSoonBanner from '@/components/shared/ComingSoonBanner';
+import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 
 interface GarageReview {
   id: string;
@@ -467,6 +469,20 @@ export default function BookGaragePage() {
       ))}
     </div>
   );
+
+  if (!GARAGES_ENABLED) {
+    return (
+      <div className="bg-[#fef7ed] min-h-screen pb-24" dir="rtl">
+        <PageHeader title="הזמן שירות" variant="teal" backUrl="/user/service" />
+        <div className="px-4 py-6 max-w-4xl mx-auto">
+          <ComingSoonBanner
+            title="הזמנת מוסך — בקרוב!"
+            description="אנחנו מחברים מוסכים שותפים לפלטפורמה. בקרוב תוכל להזמין תור לאבחון, טיפול, הכנה לטסט ועוד — הכל מתוך האפליקציה."
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return <PageSkeleton />;

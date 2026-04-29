@@ -10,6 +10,8 @@ import PageHeader from '@/components/ui/PageHeader';
 import PageSkeleton from '@/components/ui/PageSkeleton';
 import { AlertCircle, Phone, MapPin, Clock, Plus, Send, Car, Loader2, AlertTriangle, CheckCircle2, ArrowRight, Flame, Wrench, CircleDot, Fuel, Lock, HelpCircle } from 'lucide-react';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
+import ComingSoonBanner from '@/components/shared/ComingSoonBanner';
+import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 
 const eventTypeIcons: Record<string, typeof AlertCircle> = {
   accident: Flame,
@@ -208,6 +210,22 @@ export default function SosPage() {
       setTimeout(() => setSubmitMessage(''), 5000);
     }
   };
+
+  if (!GARAGES_ENABLED) {
+    return (
+      <div className="min-h-screen bg-[#fef7ed] pb-24 pt-12 lg:pt-0" dir="rtl">
+        <div className="space-y-6">
+          <PageHeader title="🆘 מצב חירום" variant="red" backUrl="/user/service" />
+          <div className="px-4">
+            <ComingSoonBanner
+              title="SOS חירום — בקרוב!"
+              description="שירות חירום עם חיבור ישיר למוסכים שותפים, שליחת מיקום ותיאום גרירה. בקרוב זמין באפליקציה."
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#fef7ed] pb-24 pt-12 lg:pt-0" dir="rtl">

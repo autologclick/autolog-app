@@ -13,6 +13,8 @@ import {
   ClipboardCheck, Car, Settings2, Play, Shield, Brain, TrendingUp, Target,
   Bell, Volume2, X,
 } from 'lucide-react';
+import ComingSoonBanner from '@/components/shared/ComingSoonBanner';
+import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 
 interface Appointment {
   id: string;
@@ -343,6 +345,20 @@ export default function AppointmentsPage() {
 
   const nextAppt = getNextAppointment();
   const mostVisited = getMostVisitedGarage();
+
+  if (!GARAGES_ENABLED) {
+    return (
+      <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+        <PageHeader title="התורים שלי" backUrl="/user/service" />
+        <div className="px-4 py-6 max-w-4xl mx-auto">
+          <ComingSoonBanner
+            title="תורים — בקרוב!"
+            description="ברגע שנחבר מוסכים שותפים, תוכל לעקוב אחרי התורים שלך, לקבל עדכונים בזמן אמת ולנהל הכל מהאפליקציה."
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

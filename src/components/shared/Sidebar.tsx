@@ -10,12 +10,14 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { LogoIcon } from '@/components/ui/Logo';
+import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 
 interface NavItem {
   label: string;
   href: string;
   icon: React.ReactNode;
   badge?: number;
+  comingSoon?: boolean;
 }
 
 const userNav: NavItem[] = [
@@ -24,8 +26,8 @@ const userNav: NavItem[] = [
   { label: 'טיפולים', href: '/user/treatments', icon: <Wrench size={20} /> },
   { label: 'מסמכים', href: '/user/documents', icon: <FolderOpen size={20} /> },
   { label: 'הוצאות', href: '/user/expenses', icon: <Receipt size={20} /> },
-  { label: 'הזמנת מוסך', href: '/user/book-garage', icon: <MapPin size={20} /> },
-  { label: 'SOS חירום', href: '/user/sos', icon: <AlertTriangle size={20} /> },
+  { label: 'הזמנת מוסך', href: '/user/book-garage', icon: <MapPin size={20} />, comingSoon: !GARAGES_ENABLED },
+  { label: 'SOS חירום', href: '/user/sos', icon: <AlertTriangle size={20} />, comingSoon: !GARAGES_ENABLED },
   { label: 'פרופיל', href: '/user/profile', icon: <User size={20} /> },
 ];
 
@@ -229,7 +231,12 @@ export default function Sidebar({ portal, userName = 'משתמש', userRole }: S
                   {item.icon}
                 </span>
                 {!collapsed && <span className="flex-1 text-right">{item.label}</span>}
-                {!collapsed && item.badge && (
+                {!collapsed && item.comingSoon && (
+                  <span className="ms-auto bg-amber-400/80 text-amber-900 text-[9px] px-1.5 py-0.5 rounded-full font-bold leading-none">
+                    בקרוב
+                  </span>
+                )}
+                {!collapsed && item.badge && !item.comingSoon && (
                   <span className="ms-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
                     {item.badge}
                   </span>
