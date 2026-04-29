@@ -22,13 +22,19 @@ export function generateMetadata(): Metadata {
 
 const baseMetadata: Metadata = {
   title: {
-    default: 'AutoLog - ניהול רכבים חכם',
+    default: 'AutoLog — ניהול רכב חכם | תזכורות טסט, מעקב הוצאות ו-AI בחינם',
     template: '%s | AutoLog',
   },
-  description: 'מערכת ניהול רכבים מקצועית - אבחונים, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד. הצטרפו ל-2,500+ משתמשים שכבר מנהלים את הרכב בצורה חכמה.',
-  keywords: ['ניהול רכבים', 'טסט', 'ביטוח רכב', 'מוסך', 'אבחון רכב', 'AutoLog', 'תזכורות רכב', 'SOS חירום'],
+  description: 'נמאס לפספס טסט וביטוח? AutoLog שולחת תזכורות, עוקבת אחרי הוצאות הרכב וסורקת מסמכים עם AI. חינם לחלוטין, ללא הורדה. הצטרפו עכשיו.',
+  keywords: [
+    'ניהול רכב', 'תזכורת טסט', 'מעקב הוצאות רכב', 'אפליקציה לרכב',
+    'ביטוח רכב', 'טסט רכב', 'מוסך', 'אבחון רכב', 'AutoLog',
+    'תזכורות רכב', 'הוצאות רכב חודשיות', 'חידוש רישיון רכב',
+    'טיפול רכב תקופתי', 'ניהול רכב פרטי', 'אפליקציית רכב ישראל',
+  ],
   authors: [{ name: 'AutoLog' }],
   creator: 'AutoLog',
+  publisher: 'AutoLog',
   icons: { icon: '/favicon.ico', apple: '/apple-touch-icon.png' },
   manifest: '/manifest.json',
   themeColor: '#1e3a5f',
@@ -37,7 +43,10 @@ const baseMetadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: 'AutoLog',
   },
-  // Note: mobile-web-app-capable is handled by Next.js manifest integration
+  metadataBase: new URL('https://autolog.click'),
+  alternates: {
+    canonical: '/',
+  },
   formatDetection: {
     telephone: true,
   },
@@ -46,17 +55,24 @@ const baseMetadata: Metadata = {
     locale: 'he_IL',
     url: 'https://autolog.click',
     siteName: 'AutoLog',
-    title: 'AutoLog - ניהול רכבים חכם ויעיל',
-    description: 'מערכת ניהול רכבים מקצועית - אבחונים, ביטוח, טסט, מוסכים, תזכורות חכמות ועוד',
+    title: 'AutoLog — ניהול רכב חכם | תזכורות טסט, מעקב הוצאות ו-AI',
+    description: 'נמאס לפספס טסט וביטוח? AutoLog שולחת תזכורות, עוקבת אחרי הוצאות הרכב וסורקת מסמכים עם AI. חינם לחלוטין.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AutoLog - ניהול רכבים חכם',
-    description: 'נהל את הרכב שלך בצורה חכמה - תזכורות, מסמכים, מוסכים ועוד',
+    title: 'AutoLog — ניהול רכב חכם | תזכורות, הוצאות ו-AI',
+    description: 'תזכורות טסט וביטוח, מעקב הוצאות, סריקת מסמכים עם AI, ועוזר רכב חכם. חינם וללא הורדה.',
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
