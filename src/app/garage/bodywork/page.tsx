@@ -11,7 +11,7 @@ import Input from '@/components/ui/Input';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import {
   Hammer, Car, Clock, DollarSign, Send, Eye, AlertCircle,
-  Star, MapPin, AlertCircle, CheckCircle2,
+  Star, MapPin, CheckCircle2,
   Calendar, ChevronLeft, Loader2, Image as ImageIcon
 } from 'lucide-react';
 
