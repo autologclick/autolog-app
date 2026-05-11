@@ -47,6 +47,10 @@ model User {
   // Preferences
   notificationPreferences String? // JSON: { email: bool, push: bool, sms: bool, whatsapp: bool }
 
+  // Referral / Affiliate program — set at signup if user came via a partner link
+  referredById  String?
+  referredBy    Partner?  @relation(fields: [referredById], references: [id])
+
   vehicles      Vehicle[]
   sosEvents     SosEvent[]
   appointments  Appointment[]
@@ -59,6 +63,7 @@ model User {
   @@index([email])
   @@index([role])
   @@index([city])
+  @@index([referredById])
 }
 
 // ============================================================
@@ -772,5 +777,48 @@ model BodyworkQuote {
   @@unique([requestId, garageId])               // מוסך יכול לשלוח הצעה אחת לכל בקשה
   @@index([requestId])
   @@index([garageId])
+  @@index([status])
+}
+
+// ============================================================
+// AFFILIATE / REFERRAL PROGRAM
+// Partners (garages, businesses) earn commission for each user
+// they refer via their personalized QR code on autolog.click/?ref=CODE
+// ============================================================
+
+enum PartnerStatus {
+  active     // accepting signups, posters live
+  paused     // temporarily not accepting signups (e.g., during dispute)
+  archived   // no longer a partner — kept for historical reference
+}
+
+model Partner {
+  id                    String   @id @default(cuid())
+  code                  String   @unique  // URL-safe identifier, e.g. "mosach-david-tlv"
+  name                  String              // public-facing name, e.g. "מוסך דוד תל אביב"
+
+  // Contact details (so the admin can pay them out / contact them)
+  contactName           String?
+  contactPhone          String?
+  contactEmail          String?
+
+  // Commercial terms
+  commissionPerSignup   Float    @default(1)    // ILS paid per signup (default ₪1)
+
+  // Running totals — updated each time a referred user signs up,
+  // and when a payout is recorded
+  totalSignups          Int      @default(0)
+  totalEarned           Float    @default(0)    // cumulative earnings, in ILS
+  totalPaid             Float    @default(0)    // cumulative payouts made
+
+  status                PartnerStatus @default(active)
+  notes                 String?              // free-form admin notes
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  referrals             User[]               // back-relation: users referred via this partner
+
+  @@index([code])
   @@index([status])
 }

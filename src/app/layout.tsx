@@ -6,6 +6,7 @@ import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import PWAInstallPrompt from '@/components/shared/PWAInstallPrompt';
 import MaintenanceGate from '@/components/shared/MaintenanceGate';
+import ReferralCapture from '@/components/shared/ReferralCapture';
 
 // Google Analytics 4 — Measurement ID
 // Override via NEXT_PUBLIC_GA_ID env var without code changes.
@@ -166,6 +167,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
               <PWAInstallPrompt />
               <MaintenanceGate />
+              <ReferralCapture />
         </body>
     </html>
   );

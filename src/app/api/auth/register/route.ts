@@ -7,6 +7,7 @@ import { AUTH_ERRORS, SUCCESS_MESSAGES } from '@/lib/messages';
 import { checkRegisterRateLimit } from '@/lib/rate-limit';
 import { createRequestLogger } from '@/lib/logger';
 import { logAuthEvent, logCreateEvent } from '@/lib/audit-log';
+import { creditReferral } from '@/lib/services/partner-service';
 import { ZodError } from 'zod';
 
 export async function POST(req: NextRequest) {
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
       return validationErrorResponse(validation.error);
     }
 
-    let { email, password, fullName, phone, idNumber, licenseNumber } = validation.data;
+    let { email, password, fullName, phone, idNumber, licenseNumber, referralCode } = validation.data;
 
     // Sanitize inputs to prevent XSS
     email = sanitizeInput(email)?.toLowerCase() || '';
@@ -41,6 +42,8 @@ export async function POST(req: NextRequest) {
     phone = sanitizeInput(phone) || undefined;
     idNumber = sanitizeInput(idNumber) || undefined;
     licenseNumber = sanitizeInput(licenseNumber) || undefined;
+    // referralCode already validated to a safe charset by Zod; lowercase for lookup
+    referralCode = referralCode ? referralCode.toLowerCase() : undefined;
 
     // Check if email already exists
     const existing = await prisma.user.findUnique({ where: { email } });
@@ -83,6 +86,20 @@ export async function POST(req: NextRequest) {
       fullName,
       role: 'user',
     }, { req });
+
+    // Credit the referring partner, if any. Non-blocking — a referral
+    // failure must never break signup, so creditReferral swallows errors
+    // internally. Awaited only to ensure the partner totals are updated
+    // before we respond (avoids race conditions in the admin dashboard).
+    if (referralCode) {
+      const result = await creditReferral({ userId: user.id, rawCode: referralCode });
+      logger.info('Referral credit attempt', {
+        userId: user.id,
+        referralCode,
+        credited: result.credited,
+        partnerId: result.partnerId,
+      });
+    }
 
     // Generate access token (2 hours) and refresh token (30 days) — same as login
     const accessToken = generateToken({

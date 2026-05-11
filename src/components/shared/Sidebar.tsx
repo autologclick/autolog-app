@@ -6,7 +6,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   Home, Car, FileCheck, MapPin, Calendar, Star, Bell, AlertTriangle, Settings,
   LogOut, BarChart3, Users, Wrench, ClipboardCheck, FilePlus, Menu, X,
-  ChevronRight, Shield, FolderOpen, Receipt, Clock, FileText, CreditCard, User
+  ChevronRight, Shield, FolderOpen, Receipt, Clock, FileText, CreditCard, User,
+  Handshake
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { LogoIcon } from '@/components/ui/Logo';
@@ -49,6 +50,7 @@ const adminNav: NavItem[] = [
   { label: 'הוצאות', href: '/admin/expenses', icon: <Receipt size={20} /> },
   { label: 'אירועי SOS', href: '/admin/sos', icon: <AlertTriangle size={20} /> },
   { label: 'בקשות מוסכים', href: '/admin/applications', icon: <FileText size={20} /> },
+  { label: 'שותפים (אפיליאט)', href: '/admin/partners', icon: <Handshake size={20} /> },
   { label: 'התראות', href: '/admin/alerts', icon: <Bell size={20} /> },
   { label: 'יומן אירועים', href: '/admin/audit-logs', icon: <ClipboardCheck size={20} /> },
   { label: 'מצב תחזוקה', href: '/admin/maintenance', icon: <Shield size={20} /> },

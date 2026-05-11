@@ -6,6 +6,7 @@ import Input from '@/components/ui/Input';
 import { LogIn, UserPlus, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/ui/Logo';
+import { getStoredReferralCode } from '@/components/shared/ReferralCapture';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -46,6 +47,10 @@ export default function LoginPage() {
     }
 
     try {
+      // On registration, attach the affiliate referral code (if a partner poster
+      // brought the user here). Empty string when no code is stored.
+      const referralCode = isRegister ? getStoredReferralCode() : '';
+
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -55,6 +60,7 @@ export default function LoginPage() {
           ...(isRegister && {
             fullName: form.get('fullName'),
             phone: form.get('phone') || undefined,
+            ...(referralCode ? { referralCode } : {}),
           }),
         }),
       });

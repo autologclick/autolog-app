@@ -25,6 +25,13 @@ export const registerSchema = z.object({
     .or(z.literal('')),
   idNumber: z.string().optional().or(z.literal('')),
   licenseNumber: z.string().optional().or(z.literal('')),
+  // Affiliate referral code — captured from URL by frontend, passed at signup.
+  // Lower-case letters, digits, and hyphens only. Max 40 chars.
+  referralCode: z.string()
+    .regex(/^[a-z0-9-]+$/, 'קוד הפניה לא תקין')
+    .max(40, 'קוד הפניה ארוך מדי')
+    .optional()
+    .or(z.literal('')),
 });
 
 export const updateProfileSchema = z.object({
@@ -470,6 +477,37 @@ export const updateDocumentSchema = z.object({
     .or(z.literal('')),
   expiryDate: z.string().optional().or(z.literal('')),
   isActive: z.boolean().optional(),
+});
+
+// ============================================================
+// PARTNERS (AFFILIATE PROGRAM)
+// ============================================================
+
+/**
+ * Used by /admin/partners — admin creates a new affiliate partner.
+ * `code` must be URL-safe; it appears in poster QR codes like
+ *   https://autolog.click/?ref=mosach-david-tlv
+ */
+export const partnerCreateSchema = z.object({
+  name: z.string().min(2, 'שם השותף קצר מדי').max(100, 'שם השותף ארוך מדי'),
+  code: z.string()
+    .min(3, 'קוד קצר מדי (לפחות 3 תווים)')
+    .max(40, 'קוד ארוך מדי')
+    .regex(/^[a-z0-9-]+$/, 'הקוד חייב להכיל רק אותיות לטיניות קטנות, ספרות, ומקפים'),
+  contactName: z.string().max(100).optional().or(z.literal('')),
+  contactPhone: z.string().max(30).optional().or(z.literal('')),
+  contactEmail: z.string().email('אימייל לא תקין').optional().or(z.literal('')),
+  commissionPerSignup: z.number().min(0).max(1000).optional(),
+  notes: z.string().max(1000).optional().or(z.literal('')),
+});
+
+export const partnerUpdateSchema = partnerCreateSchema.partial().extend({
+  status: z.enum(['active', 'paused', 'archived']).optional(),
+});
+
+/** Body for marking a payout on a partner. */
+export const partnerPayoutSchema = z.object({
+  amount: z.number().positive('סכום התשלום חייב להיות חיובי').max(100000),
 });
 
 // ============================================================
