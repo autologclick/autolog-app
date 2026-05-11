@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin/
-Disallow: /garage/
-Disallow: /api/
-Disallow: /auth/
-
-Sitemap: https://autolog.click/sitemap.xmlh
