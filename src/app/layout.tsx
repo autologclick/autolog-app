@@ -1,10 +1,16 @@
 import type { Metadata, Viewport } from 'next';
 import { Heebo } from 'next/font/google';
+import Script from 'next/script';
 import * as Sentry from '@sentry/nextjs';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import PWAInstallPrompt from '@/components/shared/PWAInstallPrompt';
 import MaintenanceGate from '@/components/shared/MaintenanceGate';
+
+// Google Analytics 4 — Measurement ID
+// Override via NEXT_PUBLIC_GA_ID env var without code changes.
+const GA_MEASUREMENT_ID =
+  process.env.NEXT_PUBLIC_GA_ID || 'G-S8258ZT72Q';
 
 const heebo = Heebo({
   subsets: ['hebrew', 'latin'],
@@ -91,6 +97,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="he" dir="rtl" className={heebo.variable}>
       <body className={`${heebo.className} bg-[#fef7ed] text-gray-800 min-h-screen`}>
+        {/*
+          Google Analytics (gtag.js) — loaded with strategy="afterInteractive"
+          per Next.js + Google recommendation: runs after page is interactive
+          so it doesn't block first paint, but still captures the initial page view.
+          Production-only to keep dev/preview traffic out of analytics.
+        */}
+        {process.env.NODE_ENV === 'production' && GA_MEASUREMENT_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_MEASUREMENT_ID}', {
+                  anonymize_ip: true,
+                  send_page_view: true
+                });
+              `}
+            </Script>
+          </>
+        )}
         {children}
         <Toaster
           position="top-center"

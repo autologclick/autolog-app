@@ -83,7 +83,7 @@ export default function PrivacyPage() {
             <p className="mb-3">אנו עשויים לשתף מידע עם:</p>
             <ul className="space-y-2 list-disc list-inside">
               <li><strong>מוסכים שותפים</strong> — מידע הכרחי לביצוע שירותים שהוזמנו</li>
-              <li><strong>ספקי שירות</strong> — חברות המסייעות לנו בהפעלת השירות (אחסון, תשלומים, אנליטיקה)</li>
+              <li><strong>ספקי שירות</strong> — חברות המסייעות לנו בהפעלת השירות (אחסון, תשלומים, אנליטיקה — כולל Google Analytics 4 עם IP מאונן)</li>
               <li><strong>רשויות חוק</strong> — במקרים הנדרשים על פי חוק</li>
             </ul>
             <p className="mt-3 font-medium text-gray-800">אנו לא מוכרים מידע אישי לצדדים שלישיים.</p>
