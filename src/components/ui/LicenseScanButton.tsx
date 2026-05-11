@@ -26,8 +26,13 @@ interface LicenseScanButtonProps {
 /**
  * Compress image to base64 data URL for API upload.
  * Supports HEIC/HEIF via createImageBitmap fallback.
+ *
+ * Sizing tuned for Hebrew OCR on Israeli vehicle registration documents:
+ *   - 1600px max dimension preserves small printed text
+ *   - JPEG quality 0.92 keeps file ~400KB while retaining fine detail
+ *   - Earlier 1200px / 0.8 lost too much detail and caused plate misreads
  */
-async function compressImage(file: File, maxDim = 1200): Promise<string> {
+async function compressImage(file: File, maxDim = 1600, quality = 0.92): Promise<string> {
   // Method 1: createImageBitmap (supports HEIC on modern browsers)
   if (typeof createImageBitmap === 'function') {
     try {
@@ -41,9 +46,12 @@ async function compressImage(file: File, maxDim = 1200): Promise<string> {
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
       const ctx = canvas.getContext('2d')!;
+      // Higher-quality resampling for downscale
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(bitmap, 0, 0, w, h);
       bitmap.close();
-      return canvas.toDataURL('image/jpeg', 0.8);
+      return canvas.toDataURL('image/jpeg', quality);
     } catch { /* fall through to Image element */ }
   }
 
@@ -63,8 +71,10 @@ async function compressImage(file: File, maxDim = 1200): Promise<string> {
       canvas.width = w; canvas.height = h;
       const ctx = canvas.getContext('2d');
       if (!ctx) { reject(new Error('Canvas not supported')); return; }
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.8));
+      resolve(canvas.toDataURL('image/jpeg', quality));
     };
     img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load image')); };
     img.src = url;
@@ -154,8 +164,8 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
       const imageDataUrl = await compressImage(file);
       setScanProgress(30);
 
-      // Step 2: Send to AI Vision API for plate extraction
-      setStatusMessage('מזהה מספר רכב עם AI...');
+      // Step 2: Send to AI Vision API — extracts ALL visible fields, not just plate
+      setStatusMessage('מזהה פרטי רכב עם AI...');
       const res = await fetch('/api/vehicles/scan-license', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -163,29 +173,75 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
       });
       setScanProgress(70);
 
-      let plate: string | null = null;
+      // The API now returns a rich result (any subset of fields the AI could read).
+      // API uses `vin`; our ScanResult interface uses `chassisNumber` — map it.
+      let aiData: ScanResult = {};
       if (res.ok) {
-        const data = await res.json();
-        plate = data.licensePlate || null;
+        const apiRes = await res.json() as Record<string, string | undefined>;
+        aiData = {
+          licensePlate: apiRes.licensePlate,
+          manufacturer: apiRes.manufacturer,
+          model: apiRes.model,
+          year: apiRes.year,
+          color: apiRes.color,
+          fuelType: apiRes.fuelType,
+          chassisNumber: apiRes.vin, // field name remap
+          ownerName: apiRes.ownerName,
+          testExpiryDate: apiRes.testExpiryDate,
+          // Build a default nickname from manufacturer+model if both present
+          nickname: apiRes.manufacturer && apiRes.model
+            ? `${apiRes.manufacturer} ${apiRes.model}`
+            : undefined,
+        };
       }
 
-      // Step 3: Lookup plate in MOT API
+      const plate = aiData.licensePlate || null;
+      const otherFieldsCount = Object.entries(aiData).filter(
+        ([k, v]) => k !== 'licensePlate' && typeof v === 'string' && v.length > 0
+      ).length;
+
+      // Step 3: Decide what to do based on what the AI found
       if (plate) {
+        // Best case — plate found. Try MOT lookup to enrich/verify.
         setStatusMessage(`בודק מספר ${plate} במשרד התחבורה...`);
         setScanProgress(85);
-        const found = await tryLookupAndResult(plate);
-        if (!found) {
-          // Plate found but no MOT data — fill plate and let user fill rest manually
+        const motData = await lookupVehicleByPlate(plate);
+
+        if (motData) {
+          // MOT succeeded — merge: MOT is authoritative for plate-derived fields,
+          // but keep AI's owner name / test expiry since they may be more current.
+          const fieldsFound = Object.values(motData).filter(Boolean).length;
+          const merged: ScanResult = { ...aiData, ...motData };
+          setScanStatus('success');
+          setStatusMessage(`נמצאו ${fieldsFound} פרטים עבור ${plate}! הנתונים מולאו אוטומטית.`);
+          onScanResult(merged);
+          setTimeout(() => { setScanStatus('idle'); setStatusMessage(''); setScanProgress(0); }, 5000);
+        } else if (otherFieldsCount > 0) {
+          // MOT failed BUT the AI extracted other fields directly from the photo —
+          // still a great result for the user.
+          setScanStatus('success');
+          setStatusMessage(`זוהה מספר ${plate} ועוד ${otherFieldsCount} פרטים מהרישיון. השלם פרטים חסרים.`);
+          onScanResult(aiData);
+          setTimeout(() => { setScanStatus('idle'); setStatusMessage(''); setScanProgress(0); }, 7000);
+        } else {
+          // MOT failed and AI only got the plate — pass the plate, ask for the rest.
           onScanResult({ licensePlate: plate });
           setScanStatus('success');
-          setStatusMessage(`זוהה מספר ${plate} — משרד התחבורה לא מזהה את הרכב (ייתכן שהטסט לא בתוקף או שמדובר ביבוא אישי). מלא את הפרטים ידנית.`);
+          setStatusMessage(`זוהה מספר ${plate} — משרד התחבורה לא מזהה (ייתכן שטסט לא בתוקף או יבוא אישי). מלא את הפרטים ידנית.`);
           setTimeout(() => { setScanStatus('idle'); setStatusMessage(''); setScanProgress(0); }, 8000);
         }
-      } else {
-        // No plate detected — manual entry
+      } else if (otherFieldsCount > 0) {
+        // No plate, but AI got SOMETHING from the image. Show partial fill
+        // and prompt for the plate via manual entry.
+        onScanResult(aiData);
         setScanStatus('manual');
         setManualPlate('');
-        setStatusMessage('לא זוהה מספר רכב. הזן ידנית:');
+        setStatusMessage(`חולצו ${otherFieldsCount} פרטים מהתמונה, אבל מספר הרכב לא ברור. הזן ידנית:`);
+      } else {
+        // Total failure — no plate, no other fields. Probably blurry/dark photo.
+        setScanStatus('manual');
+        setManualPlate('');
+        setStatusMessage('לא זוהה מידע בתמונה (ייתכן שהתמונה חשוכה או מטושטשת). הזן מספר רכב ידנית:');
       }
 
       setScanProgress(100);
