@@ -288,7 +288,10 @@ export default function UserTreatmentsPage() {
         body: JSON.stringify({ image: imageDataUrl, context: 'treatment receipt' }),
       });
       if (!res.ok) throw new Error('scan failed');
-      const sd = await res.json();
+      // The endpoint wraps the ScanResult in { success: true, data: {...} } —
+      // unwrap it here, otherwise every field is undefined and the count is 0.
+      const json = await res.json();
+      const sd = json.data || json;
 
       // Count what the AI actually extracted. Don't trust the request succeeding —
       // OpenAI/Anthropic can return an empty/null response when the image is
