@@ -289,10 +289,31 @@ export default function UserTreatmentsPage() {
       });
       if (!res.ok) throw new Error('scan failed');
       const sd = await res.json();
-      setScanData(sd);
 
-      // Populate the form from the scan. We only OVERWRITE empty fields —
-      // if the user already typed something, we respect that.
+      // Count what the AI actually extracted. Don't trust the request succeeding —
+      // OpenAI/Anthropic can return an empty/null response when the image is
+      // unreadable, off-topic, or doesn't contain receipt-like data.
+      const meaningfulFields = [
+        sd.businessName,
+        sd.totalAmount,
+        sd.date,
+        sd.summary,
+        sd.description,
+      ].filter((v) => v !== null && v !== undefined && v !== '');
+      const filledCount = meaningfulFields.length;
+
+      if (filledCount === 0) {
+        // The AI returned a response but found nothing useful.
+        // Keep the image (still saves as Document) but warn the user clearly
+        // so they know to fill the form manually.
+        setScanData(null);
+        setScanStatus('error');
+        setScanMessage('לא זוהו פרטים בתמונה. ודא שצולמה קבלה ברורה באור טוב — או המשך במילוי ידני.');
+        return;
+      }
+
+      // We have at least one meaningful field — populate the form.
+      setScanData(sd);
       const inferredType = mapToTreatmentType(sd);
       setAddForm(prev => ({
         ...prev,
@@ -304,7 +325,6 @@ export default function UserTreatmentsPage() {
         type: inferredType && !prev.title ? inferredType : prev.type,
       }));
 
-      const filledCount = [sd.businessName, sd.totalAmount, sd.date, sd.summary].filter(Boolean).length;
       setScanStatus('success');
       setScanMessage(`זוהו ${filledCount} פרטים מהקבלה. בדוק ועדכן אם צריך.`);
     } catch {
