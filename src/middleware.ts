@@ -1,42 +1,132 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getSecurityHeaders } from '@/lib/security-layer';
+import { inspectRequest } from '@/lib/pen-test-guard';
 
+// Pre-compute the headers once per cold start. Adds CSP, HSTS (prod only),
+// COOP/COEP, plus the original five basic headers — managed in one place
+// in src/lib/security-layer.ts.
+const SECURITY_HEADERS = getSecurityHeaders();
 
-// Security headers applied to all responses
+// Apply the full security-header set to a NextResponse.
+// Replaces the previous five hardcoded headers without removing any of them.
 function addSecurityHeaders(response: NextResponse): NextResponse {
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('X-XSS-Protection', '1; mode=block');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
+    if (value) response.headers.set(key, value);
+  }
   return response;
 }
 
-// Decode JWT payload without Node.js crypto (Edge Runtime compatible)
-function decodeJwtPayload(token: string): { userId: string; email: string; role: string; exp?: number } | null {
+// ---------------------------------------------------------------------------
+// JWT Verification — Edge Runtime, signature-checked.
+//
+// Verifies the HS256 signature using Web Crypto API (globalThis.crypto),
+// which is available natively in the Edge Runtime without any npm package.
+// This closes the previous gap where decode-only let attackers forge a
+// token with role="admin" and bypass middleware role checks.
+//
+// `jwt.verify()` in lib/auth.ts (Node-only) still runs in the API routes,
+// providing the second layer of defence. This middleware layer is the FIRST
+// gate — both must agree before sensitive routes are reached.
+// ---------------------------------------------------------------------------
+
+interface JwtPayloadLite {
+  userId: string;
+  email: string;
+  role: string;
+  exp?: number;
+}
+
+/**
+ * Convert a base64url-encoded string to a Uint8Array of its bytes.
+ * Web atob accepts standard base64 only, so we normalize and pad first.
+ */
+function base64UrlToBytes(input: string): Uint8Array {
+  const b64 = input.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = b64 + '==='.slice(0, (4 - (b64.length % 4)) % 4);
+  const binary = atob(padded);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+/**
+ * Cryptographically verify a JWT's HS256 signature and return the payload.
+ * Returns null on any failure — never throws. Fail-closed by design.
+ *
+ * @param token        The raw JWT (3 base64url-encoded parts, dot-separated)
+ * @param checkExpiry  When true, also rejects tokens where exp < now()
+ */
+async function verifyJwt(
+  token: string,
+  checkExpiry: boolean
+): Promise<JwtPayloadLite | null> {
   try {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error('[middleware] JWT_SECRET not configured — refusing all tokens');
+      return null;
+    }
+
     const parts = token.split('.');
     if (parts.length !== 3) return null;
-    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+
+    // 1. Verify header algorithm matches what lib/auth.ts signs with (HS256).
+    let header: { alg?: string };
+    try {
+      header = JSON.parse(new TextDecoder().decode(base64UrlToBytes(parts[0])));
+    } catch {
+      return null;
+    }
+    if (header.alg !== 'HS256') return null;
+
+    // 2. Verify the HMAC signature with Web Crypto API.
+    const enc  = new TextEncoder();
+    const key  = await crypto.subtle.importKey(
+      'raw',
+      enc.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['verify'],
+    );
+    const data       = enc.encode(`${parts[0]}.${parts[1]}`);
+    const signature  = base64UrlToBytes(parts[2]);
+    const isValidSig = await crypto.subtle.verify('HMAC', key, signature, data);
+    if (!isValidSig) return null;
+
+    // 3. Signature is good — now safe to trust the payload contents.
+    let payload: JwtPayloadLite;
+    try {
+      payload = JSON.parse(new TextDecoder().decode(base64UrlToBytes(parts[1])));
+    } catch {
+      return null;
+    }
     if (!payload.userId || !payload.role) return null;
-    // Check expiration
-    if (payload.exp && payload.exp * 1000 < Date.now()) return null;
+
+    // 4. Optional expiry check (skipped for the refresh-flow probe).
+    if (checkExpiry && payload.exp && payload.exp * 1000 < Date.now()) {
+      return null;
+    }
+
     return payload;
   } catch {
     return null;
   }
 }
 
-// Decode without expiration check (for refresh flow)
-function decodeJwtPayloadIgnoreExp(token: string): { userId: string; email: string; role: string; exp?: number } | null {
-  try {
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
-    if (!payload.userId || !payload.role) return null;
-    return payload;
-  } catch {
-    return null;
-  }
+/** Access-token verification — signature checked, expiry enforced. */
+function verifyAccessToken(token: string): Promise<JwtPayloadLite | null> {
+  return verifyJwt(token, true);
+}
+
+/**
+ * Refresh-token signature check.
+ * Expiry is intentionally NOT enforced here — the /api/auth/refresh endpoint
+ * does the authoritative expiry check after running the full Node verify.
+ * We just need to confirm the token wasn't forged before paying the cost
+ * of the internal refresh fetch.
+ */
+function verifyRefreshTokenSignature(token: string): Promise<JwtPayloadLite | null> {
+  return verifyJwt(token, false);
 }
 
 // Public routes that don't require auth
@@ -66,6 +156,12 @@ function isPublicRoute(pathname: string): boolean {
 
 // Middleware to protect routes with role-based access control
 export async function middleware(req: NextRequest) {
+  // Penetration-test probe detection.
+  // Runs first so we capture probes against public routes too. Log-only:
+  // we do NOT call blockIfAttackDetected — false-positives would break
+  // real users. Switch to blocking only after observing logs for a week.
+  inspectRequest(req);
+
   const token = req.cookies.get('auth-token')?.value;
   const refreshToken = req.cookies.get('refresh-token')?.value;
   const { pathname } = req.nextUrl;
@@ -75,13 +171,14 @@ export async function middleware(req: NextRequest) {
     return addSecurityHeaders(NextResponse.next());
   }
 
-  // Try to decode the access token
-  let payload = token ? decodeJwtPayload(token) : null;
+  // Try to verify the access token (signature + expiry).
+  let payload = token ? await verifyAccessToken(token) : null;
 
-  // If access token is expired but refresh token exists, try to refresh
+  // If access token is missing or invalid, fall back to the refresh token.
+  // We only check the refresh token's SIGNATURE here — the actual refresh
+  // endpoint runs the full expiry/blacklist check via lib/auth.ts.
   if (!payload && refreshToken) {
-    // Check if refresh token has valid structure (not expired)
-    const refreshPayload = decodeJwtPayloadIgnoreExp(refreshToken);
+    const refreshPayload = await verifyRefreshTokenSignature(refreshToken);
     if (refreshPayload) {
       try {
         // Call the refresh endpoint internally

@@ -34,9 +34,13 @@ const apiCallsPerUser: RateLimitStore = new Map();
 const accountLockouts: AccountLockoutStore = new Map();
 
 const LOCKOUT_THRESHOLD = 5; // Lock after 5 failed attempts
-const LOCKOUT_DURATION_MS = 30 * 1000; // 30 seconds
+// 15 minutes is OWASP's recommended minimum (was 30 s — allowed ~720 attempts/hr
+// against a known account before this change).
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
 const EXTENDED_LOCKOUT_DURATION_MS = 60 * 60 * 1000; // 1 hour
-const EXTENDED_LOCKOUT_AFTER = 4; // Extended lockout after 4 lockouts
+// Escalate to the 1-hour lockout after 3 normal lockouts (was 4) — gives a
+// persistent attacker fewer cycles to grind through before the long block.
+const EXTENDED_LOCKOUT_AFTER = 3;
 
 /**
  * Check if an account (by email) is currently locked

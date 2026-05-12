@@ -15,7 +15,11 @@ export const registerSchema = z.object({
     .min(8, 'הסיסמה חייבת להכיל לפחות 8 תווים')
     .regex(/[A-Z]/, 'הסיסמה חייבת להכיל אות גדולה באנגלית')
     .regex(/[a-z]/, 'הסיסמה חייבת להכיל אות קטנה באנגלית')
-    .regex(/[0-9]/, 'הסיסמה חייבת להכיל ספרה'),
+    .regex(/[0-9]/, 'הסיסמה חייבת להכיל ספרה')
+    // Match the special-char rule already enforced by validatePasswordStrength()
+    // in security.ts — without this, the two checks could disagree and produce
+    // confusing error messages between client and server.
+    .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, 'הסיסמה חייבת להכיל תו מיוחד (למשל ! @ # $)'),
   fullName: z.string()
     .min(2, 'שם מלא חייב להכיל לפחות 2 תווים')
     .max(100, 'שם מלא ארוך מדי'),
