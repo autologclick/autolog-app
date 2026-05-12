@@ -229,7 +229,7 @@ export function detectAttackInValue(value: string): AttackDetectionResult {
  *
  * Returns the detection result so the caller decides whether to block.
  */
-export function inspectRequest(req: NextRequest): AttackDetectionResult {
+export async function inspectRequest(req: NextRequest): Promise<AttackDetectionResult> {
   const result: Pick<AttackDetectionResult, 'categories' | 'evidence'> = {
     categories: [],
     evidence: [],
@@ -267,17 +267,18 @@ export function inspectRequest(req: NextRequest): AttackDetectionResult {
   const detected = result.categories.length > 0;
 
   if (detected) {
-    // Record against the IP for rate-limit escalation
-    recordIpSuspiciousActivity(ip);
+    // Record against the IP for rate-limit escalation. Bump first, then
+    // read the post-bump level so the log event reflects the new value.
+    await recordIpSuspiciousActivity(ip);
+    const suspicionLevel = await getIpSuspiciousLevel(ip);
 
-    // Emit structured log
     const event = createSecurityEvent('ATTACK_PROBE', ip, {
       path: pathname,
       userAgent: ua || undefined,
       details: {
         categories: result.categories,
         evidence: result.evidence,
-        suspicionLevel: getIpSuspiciousLevel(ip),
+        suspicionLevel,
       },
     });
     logSecurityEvent(event);
@@ -294,11 +295,11 @@ export function inspectRequest(req: NextRequest): AttackDetectionResult {
  * @param ip   Client IP (use extractClientIP from security-layer)
  * @param path Request path (for logging)
  */
-export function inspectRequestBody(
+export async function inspectRequestBody(
   body: Record<string, unknown>,
   ip: string,
   path: string
-): AttackDetectionResult {
+): Promise<AttackDetectionResult> {
   const result: Pick<AttackDetectionResult, 'categories' | 'evidence'> = {
     categories: [],
     evidence: [],
@@ -328,7 +329,7 @@ export function inspectRequestBody(
   const detected = result.categories.length > 0;
 
   if (detected) {
-    recordIpSuspiciousActivity(ip);
+    await recordIpSuspiciousActivity(ip);
     const event = createSecurityEvent('SUSPICIOUS_INPUT', ip, {
       path,
       details: { categories: result.categories, evidence: result.evidence },

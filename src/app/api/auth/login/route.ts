@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   const clientIp = getClientIp(req);
 
   try {
-    const rateLimit = checkLoginRateLimit(req);
+    const rateLimit = await checkLoginRateLimit(req);
     if (!rateLimit.allowed) {
       const secondsRemaining = Math.ceil((rateLimit.resetTime - Date.now()) / 1000);
       logger.warn('Login rate limit exceeded', { secondsRemaining });
@@ -54,8 +54,8 @@ export async function POST(req: NextRequest) {
     const { email, password } = validation.data;
     const normalizedEmail = email.toLowerCase();
 
-    if (isAccountLocked(normalizedEmail)) {
-      const remainingMs = getLockoutTimeRemaining(normalizedEmail);
+    if (await isAccountLocked(normalizedEmail)) {
+      const remainingMs = await getLockoutTimeRemaining(normalizedEmail);
       const secondsRemaining = Math.ceil(remainingMs / 1000);
       const minutesRemaining = Math.ceil(secondsRemaining / 60);
       const timeMessage = secondsRemaining > 120
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
         : `${secondsRemaining} שניות`;
 
       logger.warn('Login failed: account locked', { email: normalizedEmail });
-      recordIpSuspiciousActivity(clientIp);
+      await recordIpSuspiciousActivity(clientIp);
       return errorResponse(
         `החשבון נעול עקב מספר ניסיונות כושלים. אנא נסה שוב ב-${timeMessage}.`,
         403
@@ -73,8 +73,8 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
 
     if (!user) {
-      recordFailedAttempt(normalizedEmail);
-      recordIpSuspiciousActivity(clientIp);
+      await recordFailedAttempt(normalizedEmail);
+      await recordIpSuspiciousActivity(clientIp);
       logger.warn('Login failed: user not found', { email: normalizedEmail });
       logAuthEvent('LOGIN', 'unknown', { status: 'failure', errorMessage: 'User not found', req });
       return errorResponse(AUTH_ERRORS.INVALID_EMAIL_OR_PASSWORD, 401);
@@ -88,8 +88,8 @@ export async function POST(req: NextRequest) {
 
     const valid = await verifyPassword(password, user.passwordHash);
     if (!valid) {
-      recordFailedAttempt(normalizedEmail);
-      recordIpSuspiciousActivity(clientIp);
+      await recordFailedAttempt(normalizedEmail);
+      await recordIpSuspiciousActivity(clientIp);
       logger.warn('Login failed: invalid password', { userId: user.id });
       logAuthEvent('LOGIN', user.id, { status: 'failure', errorMessage: 'Invalid password', req });
       return errorResponse(AUTH_ERRORS.INVALID_EMAIL_OR_PASSWORD, 401);
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
     const trustedCookie = req.cookies.get(TRUSTED_DEVICE_COOKIE)?.value;
     if (trustedCookie && verifyTrustedDeviceToken(trustedCookie, user.id)) {
       // Device is trusted — skip OTP, issue tokens directly
-      resetFailedAttempts(normalizedEmail);
+      await resetFailedAttempts(normalizedEmail);
 
       const accessToken = generateToken({ userId: user.id, email: user.email, role: user.role });
       const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, role: user.role });

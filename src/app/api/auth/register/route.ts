@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
   try {
     // Check rate limiting - 3 attempts per minute per IP
-    const rateLimit = checkRegisterRateLimit(req);
+    const rateLimit = await checkRegisterRateLimit(req);
     if (!rateLimit.allowed) {
       const secondsRemaining = Math.ceil((rateLimit.resetTime - Date.now()) / 1000);
       logger.warn('Registration rate limit exceeded', { secondsRemaining });

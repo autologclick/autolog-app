@@ -12,7 +12,7 @@ import {
 export async function POST(req: NextRequest) {
   try {
     const payload = requireAuth(req);
-    const rateLimitError = enforceRateLimit(payload.userId);
+    const rateLimitError = await enforceRateLimit(payload.userId);
     if (rateLimitError) return rateLimitError;
 
     const body = await req.json();

@@ -160,7 +160,9 @@ export async function middleware(req: NextRequest) {
   // Runs first so we capture probes against public routes too. Log-only:
   // we do NOT call blockIfAttackDetected — false-positives would break
   // real users. Switch to blocking only after observing logs for a week.
-  inspectRequest(req);
+  // Wrapped in try/catch so a KV outage in the IP-tracking store never
+  // breaks request handling.
+  try { await inspectRequest(req); } catch { /* never block on instrumentation */ }
 
   const token = req.cookies.get('auth-token')?.value;
   const refreshToken = req.cookies.get('refresh-token')?.value;

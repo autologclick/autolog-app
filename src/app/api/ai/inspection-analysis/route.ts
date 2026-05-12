@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (payload) {
-      const rateLimitError = enforceRateLimit(payload.userId);
+      const rateLimitError = await enforceRateLimit(payload.userId);
       if (rateLimitError) return rateLimitError;
     }
 

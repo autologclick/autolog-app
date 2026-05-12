@@ -18,9 +18,13 @@ export function errorResponse(message: string, status = 400) {
 /**
  * Check API rate limit for the given user and return an error response if exceeded.
  * Returns null when the request is allowed to proceed.
+ *
+ * Async because rate-limit state now lives in Vercel KV (with in-memory fallback)
+ * so the underlying check has to await a network round-trip when KV is enabled.
+ * Every caller must `await` this call — TypeScript will surface any missing await.
  */
-export function enforceRateLimit(userId: string): NextResponse | null {
-  const rateLimit = checkApiRateLimit(userId);
+export async function enforceRateLimit(userId: string): Promise<NextResponse | null> {
+  const rateLimit = await checkApiRateLimit(userId);
   if (!rateLimit.allowed) {
     return errorResponse(RATE_LIMIT_ERRORS.TOO_MANY_REQUESTS, 429);
   }

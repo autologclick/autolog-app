@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
   const clientIp = getClientIp(req);
 
   try {
-    const rateLimit = checkLoginRateLimit(req);
+    const rateLimit = await checkLoginRateLimit(req);
     if (!rateLimit.allowed) {
       const s = Math.ceil((rateLimit.resetTime - Date.now()) / 1000);
       return errorResponse(`יותר מדי ניסיונות. נסה שוב ב-${s} שניות.`, 429);
@@ -56,24 +56,24 @@ export async function POST(req: NextRequest) {
     const { email, password, emailOtp, totpCode } = validation.data;
     const normalizedEmail = email.toLowerCase();
 
-    if (isAccountLocked(normalizedEmail)) {
-      const remainingMs = getLockoutTimeRemaining(normalizedEmail);
+    if (await isAccountLocked(normalizedEmail)) {
+      const remainingMs = await getLockoutTimeRemaining(normalizedEmail);
       const s = Math.ceil(remainingMs / 1000);
       return errorResponse(`החשבון נעול. נסה שוב ב-${s > 120 ? Math.ceil(s / 60) + ' דקות' : s + ' שניות'}.`, 403);
     }
 
     const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (!user || !user.isActive) {
-      recordFailedAttempt(normalizedEmail);
-      recordIpSuspiciousActivity(clientIp);
+      await recordFailedAttempt(normalizedEmail);
+      await recordIpSuspiciousActivity(clientIp);
       return errorResponse(AUTH_ERRORS.INVALID_EMAIL_OR_PASSWORD, 401);
     }
 
     // Re-verify password — step 2 must stand on its own
     const passwordOk = await verifyPassword(password, user.passwordHash);
     if (!passwordOk) {
-      recordFailedAttempt(normalizedEmail);
-      recordIpSuspiciousActivity(clientIp);
+      await recordFailedAttempt(normalizedEmail);
+      await recordIpSuspiciousActivity(clientIp);
       logAuthEvent('LOGIN', user.id, { status: 'failure', errorMessage: 'Invalid password (step 2)', req });
       return errorResponse(AUTH_ERRORS.INVALID_EMAIL_OR_PASSWORD, 401);
     }
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     // Verify email OTP
     const otpResult = await verifyEmailOtp(normalizedEmail, emailOtp);
     if (!otpResult.ok) {
-      recordFailedAttempt(normalizedEmail);
+      await recordFailedAttempt(normalizedEmail);
       const msg =
         otpResult.reason === 'expired' ? 'הקוד פג תוקף. התחל התחברות מחדש.' :
         otpResult.reason === 'too_many_attempts' ? 'יותר מדי ניסיונות. התחל התחברות מחדש.' :
@@ -109,14 +109,14 @@ export async function POST(req: NextRequest) {
         }
       }
       if (!totpOk) {
-        recordFailedAttempt(normalizedEmail);
+        await recordFailedAttempt(normalizedEmail);
         logAuthEvent('LOGIN', user.id, { status: 'failure', errorMessage: 'TOTP invalid', req });
         return errorResponse('קוד אפליקציית האימות שגוי.', 401);
       }
     }
 
     // All factors verified — issue tokens
-    resetFailedAttempts(normalizedEmail);
+    await resetFailedAttempts(normalizedEmail);
 
     const accessToken = generateToken({ userId: user.id, email: user.email, role: user.role });
     const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, role: user.role });

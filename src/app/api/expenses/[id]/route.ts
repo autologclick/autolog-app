@@ -24,7 +24,7 @@ export async function GET(
     const { id } = params;
 
     // Rate limit API calls
-    const rateLimitError = enforceRateLimit(payload.userId);
+    const rateLimitError = await enforceRateLimit(payload.userId);
     if (rateLimitError) return rateLimitError;
 
     const expense = await prisma.expense.findUnique({
@@ -63,7 +63,7 @@ export async function PUT(
     const { id } = params;
 
     // Rate limit API calls
-    const rateLimitError = enforceRateLimit(payload.userId);
+    const rateLimitError = await enforceRateLimit(payload.userId);
     if (rateLimitError) return rateLimitError;
 
     const body = await req.json();
@@ -177,7 +177,7 @@ export async function DELETE(
     const { id } = params;
 
     // Rate limit API calls
-    const rateLimitError = enforceRateLimit(payload.userId);
+    const rateLimitError = await enforceRateLimit(payload.userId);
     if (rateLimitError) return rateLimitError;
 
     // Verify expense exists and belongs to user

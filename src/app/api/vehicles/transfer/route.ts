@@ -68,7 +68,7 @@ function buildCancelRequestEmailHtml(
 export async function POST(req: NextRequest) {
   try {
     const payload = requireAuth(req);
-    const rateLimitError = enforceRateLimit(payload.userId);
+    const rateLimitError = await enforceRateLimit(payload.userId);
     if (rateLimitError) return rateLimitError;
 
     const body = await req.json();
@@ -180,7 +180,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const payload = requireAuth(req);
-    const rateLimitError = enforceRateLimit(payload.userId);
+    const rateLimitError = await enforceRateLimit(payload.userId);
     if (rateLimitError) return rateLimitError;
 
     const url = new URL(req.url);
@@ -264,7 +264,7 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const payload = requireAuth(req);
-    const rateLimitError = enforceRateLimit(payload.userId);
+    const rateLimitError = await enforceRateLimit(payload.userId);
     if (rateLimitError) return rateLimitError;
 
     const body = await req.json();

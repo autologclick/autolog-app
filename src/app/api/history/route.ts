@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     const payload = requireAuth(req);
 
     // Rate limit
-    const rateLimitError = enforceRateLimit(payload.userId);
+    const rateLimitError = await enforceRateLimit(payload.userId);
     if (rateLimitError) return rateLimitError;
 
     // Parse query parameters

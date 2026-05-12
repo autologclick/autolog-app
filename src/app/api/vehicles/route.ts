@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     const payload = requireAuth(req);
 
     // Rate limit general API calls: 100 per minute per user
-    const rateLimitError = enforceRateLimit(payload.userId);
+    const rateLimitError = await enforceRateLimit(payload.userId);
     if (rateLimitError) return rateLimitError;
 
     const { page, skip, limit } = getPaginationParams(req);
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     const payload = requireAuth(req);
 
     // Rate limit API calls
-    const rateLimitError = enforceRateLimit(payload.userId);
+    const rateLimitError = await enforceRateLimit(payload.userId);
     if (rateLimitError) return rateLimitError;
 
     const body = await req.json();

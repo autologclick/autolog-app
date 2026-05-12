@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     const payload = requireAuth(req);
 
     // Rate limit general API calls
-    const rateLimitError = enforceRateLimit(payload.userId);
+    const rateLimitError = await enforceRateLimit(payload.userId);
     if (rateLimitError) return rateLimitError;
 
     const url = new URL(req.url);
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
     const payload = requireAuth(req);
 
     // Rate limit API calls
-    const rateLimitError = enforceRateLimit(payload.userId);
+    const rateLimitError = await enforceRateLimit(payload.userId);
     if (rateLimitError) return rateLimitError;
 
     const body = await req.json();
