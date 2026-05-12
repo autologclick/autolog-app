@@ -8,7 +8,7 @@ import {
   Smartphone, Car, CalendarCheck, BarChart3, Lock,
   Mail, CheckCircle2, ArrowLeft, TrendingUp,
   ClipboardCheck, HeartPulse, Calendar, Sparkles,
-  Camera, Mic, DollarSign, ArrowLeftRight, Search
+  Camera, Mic, DollarSign, ArrowLeftRight, Search, BookOpen
 } from 'lucide-react';
 import Logo, { LogoIcon } from '@/components/ui/Logo';
 
@@ -196,6 +196,9 @@ export default function Home() {
             <a href="#faq" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1e3a5f]' : 'text-white/80 hover:text-white'}`}>
               שאלות נפוצות
             </a>
+            <Link href="/blog" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1e3a5f]' : 'text-white/80 hover:text-white'}`}>
+              בלוג
+            </Link>
             <div className="w-px h-6 bg-gray-300/30 mx-1" />
             <Link
               href="/auth/login"
@@ -233,6 +236,7 @@ export default function Home() {
               <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">איך זה עובד</a>
               <a href="#garages" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">למוסכים</a>
               <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">שאלות נפוצות</a>
+              <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">בלוג</Link>
               <hr className="my-2" />
               <Link href="/auth/login" className="block px-4 py-3 text-[#1e3a5f] font-medium hover:bg-[#fef7ed]/50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>
                 כניסה
@@ -772,6 +776,48 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ============ BLOG SHOWCASE ============ */}
+      <section className="py-20 sm:py-24 bg-gradient-to-b from-white to-[#fef7ed]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-700 bg-teal-50 px-4 py-1.5 rounded-full mb-5">
+            <BookOpen size={14} />
+            הבלוג שלנו
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-4 leading-tight">
+            מדריכים וטיפים לבעלי רכב בישראל
+          </h2>
+          <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto mb-10">
+            כל מה שכדאי לדעת על הרכב שלך — מטסט שנתי וביטוח, דרך אבחון מקצועי, ועד חיסכון בדלק והעברת בעלות. תוכן מקצועי, חינם, מתעדכן באופן שוטף.
+          </p>
+
+          {/* Big bold blog button */}
+          <Link
+            href="/blog"
+            className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-l from-teal-600 to-teal-500 text-white font-bold text-base sm:text-lg rounded-2xl hover:from-teal-700 hover:to-teal-600 transition-all duration-300 shadow-xl shadow-teal-600/30 hover:shadow-2xl hover:shadow-teal-600/40 hover:-translate-y-0.5"
+          >
+            <BookOpen size={22} />
+            <span>קרא את הבלוג</span>
+            <ArrowLeft size={20} className="transition-transform group-hover:-translate-x-1" />
+          </Link>
+
+          {/* Trust badges */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-400">
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 size={14} className="text-teal-500" />
+              <span>13+ מאמרים מקצועיים</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 size={14} className="text-teal-500" />
+              <span>עדכונים שוטפים 2026</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 size={14} className="text-teal-500" />
+              <span>חינם לחלוטין</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ============ CTA ============ */}
       <section ref={cta.ref} className="py-20 sm:py-24">
         <div className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-1000 ${cta.isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
@@ -821,6 +867,7 @@ export default function Home() {
                 <li><a href="#features" className="hover:text-white transition">תכונות</a></li>
                 <li><a href="#how-it-works" className="hover:text-white transition">איך זה עובד</a></li>
                 <li><a href="#garages" className="hover:text-white transition">למוסכים</a></li>
+                <li><Link href="/blog" className="hover:text-white transition">בלוג</Link></li>
                 <li><Link href="/auth/signup" className="hover:text-white transition">הרשמה</Link></li>
               </ul>
             </div>
