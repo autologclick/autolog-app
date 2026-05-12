@@ -12,6 +12,7 @@ import {
   CheckCircle, AlertCircle, Scan
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { isArchivalDocument } from '@/lib/constants/document-categories';
 
 // =============================================
 // Types & Constants
@@ -386,8 +387,18 @@ export default function DocumentsPage() {
     setDeleting(null);
   };
 
-  const getDocumentStatus = (expiryDate?: string) => {
+  /**
+   * Returns the visual expiry status of a document, OR null when the document
+   * is archival (receipts, invoices, photos — see document-categories.ts).
+   *
+   * For archival types we deliberately return null even when expiryDate is set,
+   * because a receipt's "date" is the issue date, not an expiration — showing
+   * "❌ פג תוקף" on a 2-year-old receipt is misleading and erodes trust
+   * in the alerts that DO matter (license, insurance, annual test).
+   */
+  const getDocumentStatus = (expiryDate?: string, type?: string) => {
     if (!expiryDate) return null;
+    if (isArchivalDocument(type)) return null;
     const today = new Date();
     const expiry = new Date(expiryDate);
     const daysLeft = Math.floor((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -791,7 +802,10 @@ export default function DocumentsPage() {
   function renderDocumentCard(doc: Document) {
     const catKey = mapOldType(doc.type);
     const cat = CATEGORY_MAP[catKey] || CATEGORY_MAP.receipt;
-    const status = getDocumentStatus(doc.expiryDate);
+    // For archival types (receipts, invoices, photos) status is intentionally null —
+    // these are historical records, not legally-expiring documents.
+    const status = getDocumentStatus(doc.expiryDate, doc.type);
+    const isArchival = isArchivalDocument(doc.type);
 
     return (
       <div key={doc.id} className={`relative bg-white rounded-2xl overflow-hidden shadow-sm transition border-2 ${status?.color || 'border-gray-200'}`}>
@@ -814,6 +828,7 @@ export default function DocumentsPage() {
               <p className="text-xs text-gray-500 mt-1 line-clamp-1">{doc.description}</p>
             )}
             <div className="flex items-center gap-3 mt-2 text-xs text-gray-500 flex-wrap">
+              {/* Validity docs (license, insurance, test): show red/amber/green expiry status */}
               {doc.expiryDate && status && (
                 <span className={`flex items-center gap-1 font-semibold ${status.textColor}`}>
                   {status.status === 'expired' && '❌ פג תוקף'}
@@ -821,6 +836,12 @@ export default function DocumentsPage() {
                   {status.status === 'valid' && '✓ בתוקף'}
                   {' עד '}
                   {new Date(doc.expiryDate).toLocaleDateString('he-IL')}
+                </span>
+              )}
+              {/* Archival docs (receipts, invoices): show date neutrally, no alarm coloring */}
+              {doc.expiryDate && !status && isArchival && (
+                <span className="flex items-center gap-1 text-gray-500">
+                  📅 תאריך: {new Date(doc.expiryDate).toLocaleDateString('he-IL')}
                 </span>
               )}
               {doc.uploadedAt && (
