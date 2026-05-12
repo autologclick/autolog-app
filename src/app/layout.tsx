@@ -94,10 +94,39 @@ export const viewport: Viewport = {
   themeColor: '#1e3a5f',
 };
 
+// Schema.org JSON-LD — Organization (site-wide)
+// Loaded on every page so Google has a consistent entity reference.
+// Home page (page.tsx) adds SoftwareApplication + FAQPage on top of this.
+// Inner pages (e.g. blog) reference this Organization via its @id.
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': 'https://autolog.click/#organization',
+  name: 'AutoLog',
+  url: 'https://autolog.click',
+  logo: 'https://autolog.click/logo.png',
+  description: 'פלטפורמה חינמית לניהול רכב פרטי בישראל — תזכורות טסט וביטוח, סריקת מסמכים עם AI, מעקב הוצאות ועוד.',
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'info@autolog.click',
+    contactType: 'customer support',
+    areaServed: 'IL',
+    availableLanguage: ['Hebrew', 'he'],
+  },
+  areaServed: { '@type': 'Country', name: 'Israel' },
+  knowsLanguage: ['he', 'Hebrew'],
+  sameAs: ['https://autolog.click'],
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl" className={heebo.variable}>
       <body className={`${heebo.className} bg-[#fef7ed] text-gray-800 min-h-screen`}>
+        {/* Schema.org structured data — Organization + WebApplication */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
         {/*
           Google Analytics (gtag.js) — loaded with strategy="afterInteractive"
           per Next.js + Google recommendation: runs after page is interactive

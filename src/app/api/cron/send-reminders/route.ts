@@ -1,6 +1,10 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { createNotification } from '@/lib/services/notification-service';
+import { sendEmail, buildExpiryReminderEmailHtml } from '@/lib/email';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('cron-reminders');
 
 // Reminder thresholds in days
 const REMINDER_DAYS = [30, 14, 7, 3, 1];
@@ -73,6 +77,8 @@ export async function GET(req: NextRequest) {
     const stats = {
       testReminders: 0,
       insuranceReminders: 0,
+      emailsSent: 0,
+      emailsFailed: 0,
       alreadySent: 0,
       errors: 0,
       processedVehicles: 0,
@@ -89,7 +95,7 @@ export async function GET(req: NextRequest) {
         ],
       },
       include: {
-        user: { select: { id: true, fullName: true, phone: true } },
+        user: { select: { id: true, fullName: true, phone: true, email: true } },
       },
     });
 
@@ -126,6 +132,34 @@ export async function GET(req: NextRequest) {
                 link: '/user/vehicles/' + vehicle.id,
               });
               stats.testReminders++;
+
+              // Send email reminder
+              if (vehicle.user.email) {
+                try {
+                  const emailHtml = buildExpiryReminderEmailHtml({
+                    fullName: vehicle.user.fullName || 'נהג יקר',
+                    vehicleName,
+                    licensePlate: vehicle.licensePlate,
+                    reminderType: 'test',
+                    expiryDate: vehicle.testExpiryDate,
+                    daysUntil: daysUntilTest,
+                  });
+                  const sent = await sendEmail({
+                    to: vehicle.user.email,
+                    subject: urgency + ' תזכורת טסט - ' + vehicleName + ' (' + vehicle.licensePlate + ')',
+                    html: emailHtml,
+                  });
+                  if (sent) stats.emailsSent++;
+                  else stats.emailsFailed++;
+                } catch (e) {
+                  stats.emailsFailed++;
+                  logger.error('Failed to send test reminder email', {
+                    userId: vehicle.user.id,
+                    vehicleId: vehicle.id,
+                    error: e instanceof Error ? e.message : String(e),
+                  });
+                }
+              }
             } catch (e) {
               stats.errors++;
             }
@@ -164,6 +198,34 @@ export async function GET(req: NextRequest) {
                 link: '/user/vehicles/' + vehicle.id,
               });
               stats.insuranceReminders++;
+
+              // Send email reminder
+              if (vehicle.user.email) {
+                try {
+                  const emailHtml = buildExpiryReminderEmailHtml({
+                    fullName: vehicle.user.fullName || 'נהג יקר',
+                    vehicleName,
+                    licensePlate: vehicle.licensePlate,
+                    reminderType: 'insurance',
+                    expiryDate: vehicle.insuranceExpiry,
+                    daysUntil: daysUntilIns,
+                  });
+                  const sent = await sendEmail({
+                    to: vehicle.user.email,
+                    subject: urgency + ' תזכורת ביטוח - ' + vehicleName + ' (' + vehicle.licensePlate + ')',
+                    html: emailHtml,
+                  });
+                  if (sent) stats.emailsSent++;
+                  else stats.emailsFailed++;
+                } catch (e) {
+                  stats.emailsFailed++;
+                  logger.error('Failed to send insurance reminder email', {
+                    userId: vehicle.user.id,
+                    vehicleId: vehicle.id,
+                    error: e instanceof Error ? e.message : String(e),
+                  });
+                }
+              }
             } catch (e) {
               stats.errors++;
             }

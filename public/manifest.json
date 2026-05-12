@@ -4,7 +4,7 @@
   "description": "מערכת ניהול רכבים מקצועית - אבחון, ביטוח, טסט, מוסכים ועוד",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fef7ed",
+  "background_color": "#ffffff",
   "theme_color": "#1e3a5f",
   "orientation": "portrait",
   "dir": "rtl",
@@ -25,12 +25,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ],
   "shortcuts": [

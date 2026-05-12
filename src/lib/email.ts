@@ -554,3 +554,96 @@ export function buildBodyworkAcceptedAdminEmailHtml({
 
   return emailWrapper('linear-gradient(135deg,#7c3aed,#6d28d9)', header, body);
 }
+
+/**
+ * Test/Insurance Expiry Reminder Email
+ * Sent to vehicle owner when test (MOT) or insurance is approaching expiry.
+ */
+export function buildExpiryReminderEmailHtml({
+  fullName,
+  vehicleName,
+  licensePlate,
+  reminderType,
+  expiryDate,
+  daysUntil,
+}: {
+  fullName: string;
+  vehicleName: string;
+  licensePlate: string;
+  reminderType: 'test' | 'insurance';
+  expiryDate: Date;
+  daysUntil: number;
+}): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+  const isTest = reminderType === 'test';
+  const isUrgent = daysUntil <= 3;
+  const isExpired = daysUntil <= 0;
+
+  const typeLabel = isTest ? 'טסט' : 'ביטוח';
+  const typeIcon = isTest ? '🔧' : '🛡️';
+  const accentColor = isExpired ? '#dc2626' : isUrgent ? '#f59e0b' : '#2563eb';
+  const headerGradient = isExpired
+    ? 'linear-gradient(135deg,#dc2626,#b91c1c)'
+    : isUrgent
+    ? 'linear-gradient(135deg,#f59e0b,#d97706)'
+    : 'linear-gradient(135deg,#1e3a5f,#2d5a8e)';
+
+  const dateStr = expiryDate.toLocaleDateString('he-IL', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
+  let timeText: string;
+  let titleText: string;
+  if (isExpired) {
+    timeText = 'פג!';
+    titleText = `ה${typeLabel} פג — נדרש טיפול דחוף`;
+  } else if (daysUntil === 1) {
+    timeText = 'מחר';
+    titleText = `ה${typeLabel} פג מחר!`;
+  } else if (daysUntil <= 7) {
+    timeText = `תוך ${daysUntil} ימים`;
+    titleText = `ה${typeLabel} פג בקרוב`;
+  } else if (daysUntil <= 14) {
+    timeText = 'תוך שבועיים';
+    titleText = `תזכורת — ה${typeLabel} פג עוד שבועיים`;
+  } else {
+    timeText = `תוך ${daysUntil} יום`;
+    titleText = `תזכורת — ה${typeLabel} פג בקרוב`;
+  }
+
+  const ctaLabel = isTest ? 'מצא מוסך לטסט' : 'נהל את הביטוח';
+  const ctaUrl = isTest ? `${baseUrl}/user/garages` : `${baseUrl}/user/vehicles`;
+
+  const header = `<h1 style="color:#ffffff;margin:0;font-size:20px">${typeIcon} ${titleText}</h1>`;
+
+  const rows = [
+    detailRow('רכב', vehicleName),
+    detailRow('מספר רישוי', licensePlate),
+    detailRow(isTest ? 'תאריך טסט' : 'תאריך פקיעת ביטוח', dateStr),
+    detailRow('זמן נותר', `<strong style="color:${accentColor}">${timeText}</strong>`, true),
+  ].join('');
+
+  const tipText = isTest
+    ? 'מומלץ לקבוע תור לאבחון לפני מועד הטסט. במערכת AutoLog תמצא מוסכים זמינים באזור שלך.'
+    : 'מומלץ לחדש את פוליסת הביטוח לפני המועד כדי להימנע מנסיעה ללא ביטוח.';
+
+  const urgentBanner = isExpired
+    ? `<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:14px;margin:0 0 20px;text-align:center"><p style="font-size:15px;color:#991b1b;margin:0;font-weight:700">⚠️ הרכב לא רשאי להיסע עד שתחדש ${typeLabel}!</p></div>`
+    : isUrgent
+    ? `<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:14px;margin:0 0 20px"><p style="font-size:14px;color:#92400e;margin:0;font-weight:600">⏰ נותרו ${daysUntil <= 1 ? 'פחות מ-' : ''}${daysUntil} ימים. מומלץ לטפל בכך עכשיו.</p></div>`
+    : '';
+
+  const body = [
+    p(`שלום ${fullName},`),
+    p(`זוהי תזכורת ידידותית — ה${typeLabel} של הרכב שלך מתקרב למועד הפקיעה.`),
+    detailTable(rows),
+    urgentBanner,
+    pSmall(tipText),
+    `<div style="text-align:center;margin:24px 0">${btnHtml(ctaUrl, ctaLabel, accentColor)}</div>`,
+    pSmall('כדי לעצור את התזכורות האלה לרכב מסוים, נהל את הרכב מהאפליקציה.', 'text-align:center;color:#94a3b8;font-size:12px;'),
+  ].join('');
+
+  return emailWrapper(headerGradient, header, body);
+}

@@ -13,7 +13,7 @@
  * The client can also trigger a SW update by posting { type: 'SKIP_WAITING' }.
  */
 
-const CACHE_VERSION = 2;
+const CACHE_VERSION = 3;
 const CACHE_NAME = `autolog-v${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline';
 

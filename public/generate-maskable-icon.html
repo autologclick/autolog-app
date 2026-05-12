@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<title>יצירת אייקון Maskable ל-PWA</title>
+<style>
+  body { font-family: -apple-system, Arial, sans-serif; max-width: 720px; margin: 40px auto; padding: 20px; background: #f5f7fa; color: #1e3a5f; }
+  h1 { margin: 0 0 8px; }
+  p { color: #5a6b7d; line-height: 1.6; }
+  .preview-row { display: flex; gap: 24px; margin: 32px 0; flex-wrap: wrap; }
+  .preview { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); text-align: center; }
+  .preview h3 { margin: 0 0 12px; color: #1e3a5f; font-size: 14px; }
+  .preview canvas, .preview .circle-frame { display: block; margin: 0 auto; }
+  .circle-frame { width: 200px; height: 200px; border-radius: 50%; overflow: hidden; border: 3px solid #29b6e4; }
+  .circle-frame canvas { display: block; }
+  button { background: #29b6e4; color: white; border: 0; padding: 16px 32px; border-radius: 50px; font-size: 16px; font-weight: 700; cursor: pointer; margin: 8px; transition: all .2s; }
+  button:hover { background: #1e9bc7; transform: translateY(-2px); }
+  .ok { color: #38a169; font-weight: 700; }
+  .step { background: white; padding: 20px; border-radius: 12px; margin: 12px 0; border-right: 4px solid #29b6e4; }
+  code { background: #e2e8f0; padding: 2px 8px; border-radius: 4px; font-size: 14px; direction: ltr; display: inline-block; }
+</style>
+</head>
+<body>
+
+<h1>יצירת אייקון Maskable ל-PWA</h1>
+<p>זה הכלי שיוצר אייקון מיוחד עבור התקנה כ-PWA על אנדרואיד. הוא מרפד את הלוגו על רקע לבן עם safe zone, כך שכשאנדרואיד חותך לעיגול — הלוגו לא נחתך.</p>
+
+<div class="preview-row">
+  <div class="preview">
+    <h3>איך זה ייראה כקובץ (512×512)</h3>
+    <canvas id="iconCanvas" width="512" height="512" style="width:200px;height:200px;border:1px solid #e2e8f0;border-radius:8px;"></canvas>
+  </div>
+  <div class="preview">
+    <h3>איך זה ייראה אחרי חיתוך עיגולי באנדרואיד</h3>
+    <div class="circle-frame">
+      <canvas id="circleCanvas" width="200" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+<div style="text-align: center;">
+  <button onclick="downloadIcon()">הורד את icon-maskable-512.png</button>
+</div>
+
+<h2 style="margin-top: 40px;">מה לעשות אחרי ההורדה:</h2>
+<div class="step">
+  <strong>1.</strong> שמור את הקובץ <code>icon-maskable-512.png</code> בתיקייה <code>autolog-app/public/</code>
+</div>
+<div class="step">
+  <strong>2.</strong> פתח את <code>autolog-app/public/manifest.json</code>
+</div>
+<div class="step">
+  <strong>3.</strong> מצא את הסוגריים המרובעים <code>"icons": [</code> והוסף שם את הרשומה הבאה (לפני <code>]</code>):
+  <pre style="background:#1e3a5f;color:#29b6e4;padding:12px;border-radius:6px;direction:ltr;text-align:left;font-size:13px;overflow-x:auto;">,{
+  "src": "/icon-maskable-512.png",
+  "sizes": "512x512",
+  "type": "image/png",
+  "purpose": "maskable"
+}</pre>
+</div>
+<div class="step">
+  <strong>4.</strong> Deploy לפרודקשן + הסר את ה-PWA הקיים מהמסך הבית, ועיין שוב באתר → התקן מחדש. הפעם האייקון יתנהג יפה.
+</div>
+
+<script>
+const LOGO_URL = '/logo.png';
+
+function drawIcon(canvas) {
+  const ctx = canvas.getContext('2d');
+  const size = canvas.width;
+
+  // White background fills entire canvas
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, size, size);
+
+  // Draw the logo centered with safe zone (60% of canvas)
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    const safe = size * 0.6;
+    const ratio = Math.min(safe / img.width, safe / img.height);
+    const w = img.width * ratio;
+    const h = img.height * ratio;
+    const x = (size - w) / 2;
+    const y = (size - h) / 2;
+    ctx.drawImage(img, x, y, w, h);
+
+    // Also draw circle preview
+    const circleCanvas = document.getElementById('circleCanvas');
+    const cctx = circleCanvas.getContext('2d');
+    cctx.drawImage(canvas, 0, 0, 200, 200);
+  };
+  img.src = LOGO_URL;
+}
+
+function downloadIcon() {
+  const canvas = document.getElementById('iconCanvas');
+  const link = document.createElement('a');
+  link.download = 'icon-maskable-512.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+drawIcon(document.getElementById('iconCanvas'));
+</script>
+
+</body>
+</html>
