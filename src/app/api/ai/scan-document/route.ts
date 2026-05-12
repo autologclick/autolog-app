@@ -139,7 +139,7 @@ IMPORTANT EXTRACTION RULES:
 1. Dates: Convert ANY date format to ISO YYYY-MM-DD. Israeli dates are often DD/MM/YYYY or DD.MM.YYYY
 2. Amounts: Extract the TOTAL amount. Look for "סה״כ", "סה\"כ", "סך הכל", "TOTAL", "סך". Remove ₪ symbol, return as number
 3. License plate: Israeli plates are 7-8 digits (e.g., 1234567 or 12345678). Field is "מספר רכב"
-4. Mileage: Look for "ק״מ", "קילומטראז", "מד אוכל", "km", "KM", "odometer"
+4. Mileage: Look for "ק״מ", "קילומטראז", "מד אוכל", "ספידומטר", "מד מרחק", "km", "KM", "odometer", "speedometer". IMPORTANT: Israeli receipts often write mileage with a DOT as thousands separator — "99.882" or "120.500" means 99,882 or 120,500 kilometers, NOT decimal. If a "mileage" value appears with a single dot followed by exactly 3 digits, treat the dot as a thousands separator and return the value as a whole integer (e.g., "99.882" → 99882). Sane vehicle mileage is between 1,000 and 999,999 km — values outside this range are likely misread.
 5. Invoice number: Look for "מס׳ חשבונית", "מס׳ קבלה", "אסמכתא", "#". For רישיון רכב — put the "בעלים קודמים" count here (the number like 00, 01, 02)
 6. Business name: Usually at the top of the document, often with logo. For רישיון רכב — use the test station name if visible
 7. Line items: Individual services/parts with their costs

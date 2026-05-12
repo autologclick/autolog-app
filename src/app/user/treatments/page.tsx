@@ -324,6 +324,9 @@ export default function UserTreatmentsPage() {
         description: prev.description || sd.summary || sd.description || prev.description,
         garageName: prev.garageName || sd.businessName || prev.garageName,
         cost: prev.cost || (sd.totalAmount ? String(sd.totalAmount) : prev.cost),
+        // Mileage (a.k.a. ספידומטר on Israeli receipts). The AI prompt
+        // normalizes "99.882" to 99882 etc., so we trust whatever number we get.
+        mileage: prev.mileage || (sd.mileage ? String(sd.mileage) : prev.mileage),
         date: sd.date || prev.date,
         type: inferredType && !prev.title ? inferredType : prev.type,
       }));
