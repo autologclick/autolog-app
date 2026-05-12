@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Wrench, Clock, CheckCircle, XCircle, AlertTriangle,
   ChevronDown, ChevronUp, Car, MapPin, User, Calendar,
-  FileText, DollarSign, Eye, Loader2, Plus
+  FileText, DollarSign, Eye, Loader2, Plus, Camera, Upload, Scan, X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
@@ -114,6 +114,29 @@ export default function UserTreatmentsPage() {
     date: new Date().toISOString().split('T')[0],
   });
 
+  // ─── Receipt scan state ───
+  // When the user takes a photo / uploads a receipt, we:
+  //   1) compress it to base64
+  //   2) send it to /api/ai/scan-document
+  //   3) auto-fill the form fields from the AI response
+  //   4) keep the image in state so it's POSTed alongside the treatment,
+  //      which lets the backend save it as a Document and link it to the Expense.
+  const [scanStatus, setScanStatus] = useState<'idle' | 'scanning' | 'success' | 'error'>('idle');
+  const [scanMessage, setScanMessage] = useState('');
+  const [receiptImage, setReceiptImage] = useState<string | null>(null);
+  const [scanData, setScanData] = useState<{
+    totalAmount?: number;
+    date?: string;
+    documentType?: string;
+    description?: string;
+    summary?: string;
+    businessName?: string;
+    suggestedCategory?: string;
+    invoiceNumber?: string;
+  } | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const fetchTreatments = useCallback(async () => {
     try {
       const res = await fetch('/api/treatments');
@@ -175,6 +198,137 @@ export default function UserTreatmentsPage() {
     }
   };
 
+  /**
+   * Compress a user-supplied image to a base64 JPEG.
+   * Mirrors the approach used by the document/license scanners so the
+   * AI gets a manageable payload while preserving Hebrew receipt detail.
+   */
+  const compressReceiptImage = async (file: File): Promise<string> => {
+    const maxDim = 1400;
+    const quality = 0.9;
+    if (typeof createImageBitmap === 'function') {
+      try {
+        const bitmap = await createImageBitmap(file);
+        let w = bitmap.width, h = bitmap.height;
+        if (w > maxDim || h > maxDim) {
+          const ratio = Math.min(maxDim / w, maxDim / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d')!;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(bitmap, 0, 0, w, h);
+        bitmap.close();
+        return canvas.toDataURL('image/jpeg', quality);
+      } catch { /* fall through */ }
+    }
+    return new Promise<string>((resolve, reject) => {
+      const img = new window.Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) {
+          const ratio = Math.min(maxDim / w, maxDim / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('canvas')); return; }
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('image')); };
+      img.src = url;
+    });
+  };
+
+  /**
+   * Best-effort mapping from the AI's free-form receipt categorization
+   * to one of our 9 treatment types. We look at suggestedCategory first,
+   * then scan the description/summary for Hebrew keywords as a fallback.
+   * If nothing matches we leave the user's current selection alone.
+   */
+  const mapToTreatmentType = (sd: { suggestedCategory?: string; description?: string; summary?: string }): string | null => {
+    const cat = (sd.suggestedCategory || '').toLowerCase();
+    const text = `${sd.description || ''} ${sd.summary || ''}`.toLowerCase();
+    if (cat === 'tires' || text.includes('צמיג') || text.includes('גלגל')) return 'tires';
+    if (cat === 'brakes' || text.includes('בלמ') || text.includes('בלם')) return 'brakes';
+    if (cat === 'electrical' || text.includes('חשמל') || text.includes('מצבר')) return 'electrical';
+    if (cat === 'ac' || text.includes('מיזוג') || text.includes('מזגן')) return 'ac';
+    if (cat === 'bodywork' || text.includes('פחחות') || text.includes('צבע') || text.includes('פגוש')) return 'bodywork';
+    if (text.includes('שמן') || text.includes('פילטר')) return 'oil_change';
+    if (cat === 'maintenance' || text.includes('טיפול') || text.includes('תחזוקה')) return 'maintenance';
+    if (cat === 'repair' || text.includes('תיקון')) return 'repair';
+    return null;
+  };
+
+  /** Handle a chosen file: compress, send to AI, populate form. */
+  const handleReceiptFile = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setScanStatus('error');
+      setScanMessage('נא לבחור תמונה בלבד');
+      return;
+    }
+    setScanStatus('scanning');
+    setScanMessage('מעבד תמונה...');
+    try {
+      const imageDataUrl = await compressReceiptImage(file);
+      setReceiptImage(imageDataUrl);
+      setScanMessage('מזהה פרטים עם AI...');
+
+      const res = await fetch('/api/ai/scan-document', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageDataUrl, context: 'treatment receipt' }),
+      });
+      if (!res.ok) throw new Error('scan failed');
+      const sd = await res.json();
+      setScanData(sd);
+
+      // Populate the form from the scan. We only OVERWRITE empty fields —
+      // if the user already typed something, we respect that.
+      const inferredType = mapToTreatmentType(sd);
+      setAddForm(prev => ({
+        ...prev,
+        title: prev.title || sd.businessName || sd.description?.slice(0, 60) || prev.title,
+        description: prev.description || sd.summary || sd.description || prev.description,
+        garageName: prev.garageName || sd.businessName || prev.garageName,
+        cost: prev.cost || (sd.totalAmount ? String(sd.totalAmount) : prev.cost),
+        date: sd.date || prev.date,
+        type: inferredType && !prev.title ? inferredType : prev.type,
+      }));
+
+      const filledCount = [sd.businessName, sd.totalAmount, sd.date, sd.summary].filter(Boolean).length;
+      setScanStatus('success');
+      setScanMessage(`זוהו ${filledCount} פרטים מהקבלה. בדוק ועדכן אם צריך.`);
+    } catch {
+      setScanStatus('error');
+      setScanMessage('סריקה נכשלה — המשך במילוי ידני.');
+      setReceiptImage(null);
+      setScanData(null);
+    }
+  };
+
+  const handleReceiptInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleReceiptFile(file);
+    e.target.value = '';
+  };
+
+  /** Wipe the scan so the user can take a different photo. */
+  const clearReceiptScan = () => {
+    setReceiptImage(null);
+    setScanData(null);
+    setScanStatus('idle');
+    setScanMessage('');
+  };
+
   const handleAddTreatment = async () => {
     if (!addForm.vehicleId || !addForm.title || !addForm.type || !addForm.date) {
       setError('נא למלא רכב, סוג טיפול, כותרת ותאריך');
@@ -195,6 +349,10 @@ export default function UserTreatmentsPage() {
           mileage: addForm.mileage ? Number(addForm.mileage) : undefined,
           cost: addForm.cost ? Number(addForm.cost) : undefined,
           date: addForm.date,
+          // When the user scanned a receipt, send the image + AI data along —
+          // the backend will save it as a Document and link to the Expense.
+          ...(receiptImage ? { receiptImage } : {}),
+          ...(scanData ? { scanData } : {}),
         }),
       });
       const data = await res.json();
@@ -203,7 +361,14 @@ export default function UserTreatmentsPage() {
         setSaving(false);
         return;
       }
-      toast.success('הטיפול נוסף בהצלחה!');
+      // Tailor the success message so the user knows what got created
+      if (receiptImage && data.documentId) {
+        toast.success('הטיפול נוסף, הקבלה נשמרה במסמכים, וההוצאה עודכנה');
+      } else if (data.expenseId) {
+        toast.success('הטיפול נוסף וההוצאה עודכנה');
+      } else {
+        toast.success('הטיפול נוסף בהצלחה!');
+      }
       setShowAddModal(false);
       setAddForm({
         vehicleId: vehicles.length === 1 ? vehicles[0].id : '',
@@ -211,6 +376,7 @@ export default function UserTreatmentsPage() {
         garageName: '', mileage: '', cost: '',
         date: new Date().toISOString().split('T')[0],
       });
+      clearReceiptScan();
       fetchTreatments();
     } catch {
       setError('שגיאת חיבור');
@@ -544,8 +710,98 @@ export default function UserTreatmentsPage() {
       </div>
 
       {/* Add Treatment Modal */}
-      <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)} title="הוספת טיפול" size="lg">
+      <Modal
+        isOpen={showAddModal}
+        onClose={() => { setShowAddModal(false); clearReceiptScan(); }}
+        title="הוספת טיפול"
+        size="lg"
+      >
         <div className="space-y-4">
+          {/* ─── Receipt scan section ───
+              Hidden file inputs trigger native camera / file picker.
+              The card changes color based on scan state to give clear feedback. */}
+          <div className={`rounded-xl border-2 border-dashed p-3 transition-all ${
+            scanStatus === 'scanning' ? 'border-teal-400 bg-teal-50' :
+            scanStatus === 'success' ? 'border-green-400 bg-green-50' :
+            scanStatus === 'error' ? 'border-red-300 bg-red-50' :
+            'border-blue-300 bg-gradient-to-l from-blue-50 to-indigo-50'
+          }`}>
+            <div className="flex items-center gap-2 mb-2">
+              {scanStatus === 'scanning' ? (
+                <Loader2 size={16} className="text-teal-600 animate-spin" />
+              ) : scanStatus === 'success' ? (
+                <CheckCircle size={16} className="text-green-600" />
+              ) : scanStatus === 'error' ? (
+                <AlertTriangle size={16} className="text-red-500" />
+              ) : (
+                <Scan size={16} className="text-blue-600" />
+              )}
+              <span className={`text-xs font-medium ${
+                scanStatus === 'success' ? 'text-green-700' :
+                scanStatus === 'error' ? 'text-red-700' :
+                scanStatus === 'scanning' ? 'text-teal-700' :
+                'text-blue-700'
+              }`}>
+                {scanMessage || 'יש קבלה? צלם אותה והפרטים יתמלאו אוטומטית'}
+              </span>
+            </div>
+
+            {/* Show thumbnail when we have a scanned image */}
+            {receiptImage && (
+              <div className="mb-2 flex items-center gap-2">
+                <img
+                  src={receiptImage}
+                  alt="קבלה שנסרקה"
+                  className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                />
+                <button
+                  type="button"
+                  onClick={clearReceiptScan}
+                  className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 text-gray-600"
+                >
+                  <X size={12} />
+                  הסר קבלה
+                </button>
+                <span className="text-xs text-gray-500">תישמר כקבלה במסמכים</span>
+              </div>
+            )}
+
+            {scanStatus !== 'scanning' && (
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => cameraInputRef.current?.click()}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition"
+                >
+                  <Camera size={14} /> צלם קבלה
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 bg-white text-blue-700 border border-blue-300 rounded-lg text-xs font-semibold hover:bg-blue-50 transition"
+                >
+                  <Upload size={14} /> העלה תמונה
+                </button>
+              </div>
+            )}
+
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={handleReceiptInputChange}
+            />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleReceiptInputChange}
+            />
+          </div>
+
           {/* Vehicle selector */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">רכב *</label>
