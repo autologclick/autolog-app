@@ -86,8 +86,12 @@ const nextConfig = {
         ],
       },
       // HTML pages: no-cache + explicit UTF-8 charset
+      // IMPORTANT: Exclude static asset extensions (images, fonts, manifests, etc.)
+      // so we don't override their Content-Type to text/html. Without this exclusion,
+      // PNGs/SVGs in /public render as binary garbage in browsers and break Facebook/
+      // WhatsApp link previews (they refuse to load images served as text/html).
       {
-        source: '/((?!_next/static|_next/image|favicon.ico|api/).*)',
+        source: '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|avif|woff|woff2|ttf|otf|eot|json|xml|txt|pdf|mp4|webm)$).*)',
         headers: [
           {
             key: 'Cache-Control',
