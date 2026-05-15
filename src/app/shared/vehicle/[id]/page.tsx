@@ -223,7 +223,7 @@ export default function SharedVehicleHistoryPage({ params }: { params: { id: str
             הופק ע\"י AutoLog · {new Date(data.generatedAt).toLocaleDateString('he-IL')}
           </p>
           <Link href="/" className="text-xs text-blue-500 hover:underline">
-            הירשם ל-AutoLog בחינם
+            הרשמה ל-AutoLog בחינם
           </Link>
         </div>
       </div>

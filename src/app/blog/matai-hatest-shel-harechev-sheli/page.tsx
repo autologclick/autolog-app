@@ -107,7 +107,7 @@ export default function BlogPostPage() {
           <div className="bg-teal-50 border border-teal-200 rounded-2xl p-6 my-6">
             <p className="font-bold text-teal-800 mb-2">טיפ מ-AutoLog</p>
             <p className="text-teal-700 text-sm">
-              ניתן לבצע את הטסט עד 60 יום לפני תאריך התפוגה ללא אובדן ימים. כלומר, אם הטסט שלך פג ב-1 בספטמבר, אתה יכול לעשות אותו כבר ב-3 ביולי והטסט הבא עדיין יהיה ב-1 בספטמבר של השנה הבאה.
+              ניתן לבצע את הטסט עד 60 יום לפני תאריך התפוגה ללא אובדן ימים. כלומר, אם הטסט פג ב-1 בספטמבר, אפשר לעשות אותו כבר ב-3 ביולי והטסט הבא עדיין יהיה ב-1 בספטמבר של השנה הבאה.
             </p>
           </div>
 
@@ -125,18 +125,18 @@ export default function BlogPostPage() {
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">איך לא לפספס את הטסט — אף פעם?</h2>
           <p>
-            הדרך הכי בטוחה היא להשתמש בתזכורות אוטומטיות. ב-AutoLog, ברגע שאתה מוסיף את הרכב שלך, המערכת:
+            הדרך הכי בטוחה היא להשתמש בתזכורות אוטומטיות. ב-AutoLog, ברגע שמוסיפים את הרכב, המערכת:
           </p>
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li>מזהה אוטומטית את תאריך הטסט הבא</li>
-            <li>שולחת תזכורת 30 יום לפני — כדי שתספיק לקבוע תור</li>
+            <li>שולחת תזכורת 30 יום לפני — כדי שתספיקו לקבוע תור</li>
             <li>שולחת תזכורת נוספת 7 ימים לפני — תזכורת אחרונה</li>
             <li>עוקבת גם אחרי ביטוח, טיפולים תקופתיים, ורישיון נהיגה</li>
           </ul>
 
           <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
-            <h3 className="text-xl font-bold mb-3">לעולם לא תפספס טסט שוב</h3>
-            <p className="text-white/80 mb-5 text-sm">הצטרף בחינם ל-AutoLog וקבל תזכורות אוטומטיות על טסט, ביטוח וטיפולים.</p>
+            <h3 className="text-xl font-bold mb-3">לעולם לא תפספסו טסט שוב</h3>
+            <p className="text-white/80 mb-5 text-sm">הצטרפו בחינם ל-AutoLog וקבלו תזכורות אוטומטיות על טסט, ביטוח וטיפולים.</p>
             <Link
               href="/auth/signup"
               className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg"

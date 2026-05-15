@@ -43,10 +43,10 @@ export default function NotFound() {
         {/* Additional Info */}
         <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col items-center gap-2">
           <p className="text-sm text-gray-500">
-            אם הבעיה מתמשכת, אנא <a href="mailto:info@autolog.click" className="text-teal-600 hover:text-teal-700 font-semibold">צור קשר</a>
+            אם הבעיה מתמשכת, אפשר <a href="mailto:info@autolog.click" className="text-teal-600 hover:text-teal-700 font-semibold">ליצור קשר</a>
           </p>
           <Link href="/garage-apply" className="text-sm text-teal-600 hover:text-teal-700 font-medium">
-            בעל מוסך? הצטרף כשותף
+            בעלי מוסך? הצטרפו כשותפים
           </Link>
         </div>
       </div>

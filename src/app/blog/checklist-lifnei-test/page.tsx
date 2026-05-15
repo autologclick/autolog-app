@@ -130,15 +130,15 @@ export default function BlogPostPage() {
             </p>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה AutoLog עושה בשבילך?</h2>
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה AutoLog עושה בשבילכם?</h2>
           <p>
-            ב-AutoLog, המערכת שולחת לך תזכורת 30 יום לפני הטסט — מספיק זמן לבדוק את הרכב, לתקן מה שצריך, ולקבוע תור למכון רישוי.
-            ככה אתה מגיע לטסט מוכן, בלי לחץ, ועובר בפעם הראשונה.
+            ב-AutoLog, המערכת שולחת תזכורת 30 יום לפני הטסט — מספיק זמן לבדוק את הרכב, לתקן מה שצריך, ולקבוע תור למכון רישוי.
+            ככה מגיעים לטסט מוכנים, בלי לחץ, ועוברים בפעם הראשונה.
           </p>
 
           <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
-            <h3 className="text-xl font-bold mb-3">אל תפספס את הטסט הבא</h3>
-            <p className="text-white/80 mb-5 text-sm">הצטרף ל-AutoLog וקבל תזכורת חודש לפני — עם מספיק זמן להתכונן.</p>
+            <h3 className="text-xl font-bold mb-3">אל תפספסו את הטסט הבא</h3>
+            <p className="text-white/80 mb-5 text-sm">הצטרפו ל-AutoLog וקבלו תזכורת חודש לפני — עם מספיק זמן להתכונן.</p>
             <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg">
               הרשמה בחינם
               <ArrowLeft size={16} />

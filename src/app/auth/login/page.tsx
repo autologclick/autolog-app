@@ -206,8 +206,8 @@ export default function LoginPage() {
               {otpStep
                 ? `שלחנו קוד בן 6 ספרות ל-${savedEmail}`
                 : isRegister
-                  ? 'צור חשבון חדש לניהול רכבך'
-                  : 'התחבר לחשבונך הקיים'}
+                  ? 'יצירת חשבון חדש לניהול הרכב שלכם'
+                  : 'כניסה לחשבון הקיים'}
             </p>
           </div>
 
@@ -403,7 +403,7 @@ export default function LoginPage() {
                   }}
                   className="text-teal-600 hover:text-teal-700 text-sm font-medium transition-colors"
                 >
-                  {isRegister ? 'כבר יש לך חשבון? התחבר כאן' : 'אין לך חשבון? הירשם כאן'}
+                  {isRegister ? 'כבר יש לכם חשבון? כניסה כאן' : 'אין לכם חשבון? הרשמה כאן'}
                 </button>
               </div>
             )}

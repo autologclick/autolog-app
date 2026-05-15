@@ -90,7 +90,7 @@ export default function BlogPostPage() {
           <div className="bg-teal-50 border border-teal-200 rounded-2xl p-6 my-6">
             <p className="font-bold text-teal-800 mb-2">חשוב לדעת</p>
             <p className="text-teal-700 text-sm">
-              האגרה משתנה כל שנה. תוכל לבדוק את הסכום המדויק לרכב שלך באתר משרד התחבורה לפני התשלום.
+              האגרה משתנה כל שנה. אפשר לבדוק את הסכום המדויק לרכב באתר משרד התחבורה לפני התשלום.
             </p>
           </div>
 
@@ -132,8 +132,8 @@ export default function BlogPostPage() {
 
           <h3 className="text-lg font-bold text-[#1e3a5f]">מה קורה אם לא עוברים את הטסט?</h3>
           <p>
-            תקבל &quot;תיקון מותנה&quot; — תצטרך לתקן את הליקוי תוך 30 יום ולחזור לטסט (חיובי בכמחצית המחיר).
-            אם לא תחזור, הרישיון יבוטל.
+            תקבלו &quot;תיקון מותנה&quot; — תצטרכו לתקן את הליקוי תוך 30 יום ולחזור לטסט (חיובי בכמחצית המחיר).
+            אם לא תחזרו, הרישיון יבוטל.
           </p>
 
           <h3 className="text-lg font-bold text-[#1e3a5f]">האם אפשר לשלם את האגרה בתשלומים?</h3>
@@ -161,7 +161,7 @@ export default function BlogPostPage() {
                   mainEntity: [
                     { '@type': 'Question', name: 'האם אפשר לעשות טסט באיחור?', acceptedAnswer: { '@type': 'Answer', text: 'כן, מותר לבצע את הטסט בתוך 90 יום מתום תוקף הרישיון הקודם, אבל הרכב נחשב לא תקין במהלך התקופה הזו. ייגבה קנס איחור של 200-500 ש"ח.' } },
                     { '@type': 'Question', name: 'מי פטור מטסט שנתי?', acceptedAnswer: { '@type': 'Answer', text: 'רכב חדש פטור מטסט בשלוש השנים הראשונות.' } },
-                    { '@type': 'Question', name: 'מה קורה אם לא עוברים את הטסט?', acceptedAnswer: { '@type': 'Answer', text: 'תקבל תיקון מותנה - תצטרך לתקן את הליקוי תוך 30 יום ולחזור לטסט.' } },
+                    { '@type': 'Question', name: 'מה קורה אם לא עוברים את הטסט?', acceptedAnswer: { '@type': 'Answer', text: 'תקבלו תיקון מותנה - תצטרכו לתקן את הליקוי תוך 30 יום ולחזור לטסט.' } },
                   ],
                 },
               ],

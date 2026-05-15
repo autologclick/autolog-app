@@ -99,7 +99,7 @@ export default function BlogPostPage() {
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">8. תדלק בתחנות זולות</h2>
           <p>
             ההפרש בין תחנה זולה ליקרה הוא 0.5-1.5 אגורות לליטר. על 1,200 ק&quot;מ בחודש — זה 50-150 ש&quot;ח חיסכון.
-            בדוק במחשבון מחירי דלק (Pelephone, Yellow, וגם אפליקציות כמו דלק) לפני שאתה מתדלק.
+            כדאי לבדוק במחשבון מחירי דלק (Pelephone, Yellow, וגם אפליקציות כמו דלק) לפני התדלוק.
           </p>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">9. הקפד על טיפולים תקופתיים</h2>

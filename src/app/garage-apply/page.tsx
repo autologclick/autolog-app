@@ -202,7 +202,7 @@ export default function GarageApplyPage() {
             </div>
             <h1 className="text-2xl font-bold text-[#1e3a5f] mb-3">הבקשה נשלחה בהצלחה!</h1>
             <p className="text-gray-500 mb-6 leading-relaxed">
-              תודה על ההתעניינות! צוות AutoLog יבדוק את הבקשה שלך ויחזור אליך תוך 1-3 ימי עסקים.
+              תודה על ההתעניינות! צוות AutoLog יבדוק את הבקשה ויחזור אליכם תוך 1-3 ימי עסקים.
             </p>
             <div className="bg-emerald-50 rounded-xl p-4 mb-6 text-right">
               <h3 className="font-bold text-emerald-800 text-sm mb-2">מה קורה עכשיו?</h3>
@@ -213,11 +213,11 @@ export default function GarageApplyPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5">2.</span>
-                  <span>נצור איתך קשר לתיאום</span>
+                  <span>נצור אתכם קשר לתיאום</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5">3.</span>
-                  <span>לאחר אישור — תקבל גישה מלאה למערכת</span>
+                  <span>לאחר אישור — תקבלו גישה מלאה למערכת</span>
                 </li>
               </ul>
             </div>
@@ -255,9 +255,9 @@ export default function GarageApplyPage() {
             <Building2 size={14} />
             <span>בקשת הצטרפות למוסכים</span>
           </div>
-          <h1 className="text-3xl font-extrabold text-[#1e3a5f] mb-3">הצטרף כמוסך שותף</h1>
+          <h1 className="text-3xl font-extrabold text-[#1e3a5f] mb-3">הצטרפו כמוסך שותף</h1>
           <p className="text-gray-500 max-w-md mx-auto">
-            מלא את הפרטים ונחזור אליך בהקדם. ההצטרפות כמוסך שותף היא בחינם.
+            מלאו את הפרטים ונחזור אליכם בהקדם. ההצטרפות כמוסך שותף היא בחינם.
           </p>
         </div>
 
@@ -467,7 +467,7 @@ export default function GarageApplyPage() {
                   <Camera size={14} className="inline ml-1" />
                   תמונות מהמוסך <span className="text-gray-400 font-normal">(אופציונלי, עד 6)</span>
                 </label>
-                <p className="text-xs text-gray-400 mb-3">צרף תמונות מבפנים ומבחוץ — עוזר לנו להכיר את המוסך שלך</p>
+                <p className="text-xs text-gray-400 mb-3">צרפו תמונות מבפנים ומבחוץ — עוזר לנו להכיר את המוסך שלכם</p>
 
                 {imagePreviews.length > 0 && (
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-3">

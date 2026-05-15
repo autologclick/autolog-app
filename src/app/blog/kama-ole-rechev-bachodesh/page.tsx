@@ -95,20 +95,20 @@ export default function BlogPostPage() {
           </div>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">איך לחסוך?</h2>
-          <p>הצעד הראשון לחיסכון הוא לדעת כמה אתה מוציא. ואלה כמה טיפים:</p>
+          <p>הצעד הראשון לחיסכון הוא לדעת כמה באמת מוציאים. ואלה כמה טיפים:</p>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li>עקוב אחרי כל הוצאה — AutoLog עושה את זה אוטומטית</li>
-            <li>השווה מחירי ביטוח כל שנה — ההבדלים יכולים להגיע לאלפי שקלים</li>
-            <li>אל תדחה טיפולים — טיפול מונע זול בהרבה מתיקון חירום</li>
-            <li>בדוק לחץ אוויר בצמיגים — חוסך 5-10% בדלק</li>
-            <li>שקול מעבר לרכב חשמלי/היברידי — חיסכון של 50-70% בדלק</li>
+            <li>מעקב אחרי כל הוצאה — AutoLog עושה את זה אוטומטית</li>
+            <li>השוואת מחירי ביטוח כל שנה — ההבדלים יכולים להגיע לאלפי שקלים</li>
+            <li>לא לדחות טיפולים — טיפול מונע זול בהרבה מתיקון חירום</li>
+            <li>בדיקת לחץ אוויר בצמיגים — חוסכת 5-10% בדלק</li>
+            <li>שקילת מעבר לרכב חשמלי/היברידי — חיסכון של 50-70% בדלק</li>
           </ul>
 
           <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
-            <h3 className="text-xl font-bold mb-3">תדע בדיוק כמה הרכב עולה לך</h3>
-            <p className="text-white/80 mb-5 text-sm">AutoLog עוקבת אחרי כל הוצאה ומראה לך בדיוק לאן הכסף הולך.</p>
+            <h3 className="text-xl font-bold mb-3">תדעו בדיוק כמה הרכב עולה</h3>
+            <p className="text-white/80 mb-5 text-sm">AutoLog עוקבת אחרי כל הוצאה ומראה בדיוק לאן הכסף הולך.</p>
             <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg">
-              התחל מעקב בחינם
+              התחילו מעקב בחינם
               <ArrowLeft size={16} />
             </Link>
           </div>

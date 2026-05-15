@@ -140,7 +140,7 @@ export default function BlogPostPage() {
 
           <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
             <h3 className="text-xl font-bold mb-3">תעדו את הרכב מהיום הראשון</h3>
-            <p className="text-white/80 mb-5 text-sm">AutoLog שומרת את כל ההיסטוריה — דוח בדיקה, פוליסות, טיפולים. הירשם בחינם.</p>
+            <p className="text-white/80 mb-5 text-sm">AutoLog שומרת את כל ההיסטוריה — דוח בדיקה, פוליסות, טיפולים. הרשמה חינמית.</p>
             <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg">
               הרשמה בחינם<ArrowLeft size={16} />
             </Link>

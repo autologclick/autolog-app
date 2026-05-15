@@ -26,7 +26,7 @@ function buildTransferEmailHtml(
   const actionLink = isRegistered
     ? `${appUrl}/user/vehicles/transfer/accept?code=${code}`
     : `${appUrl}/auth/login?mode=register&transfer=${code}`;
-  const actionText = isRegistered ? 'צפה ואשר העברה' : 'הירשם ואשר העברה';
+  const actionText = isRegistered ? 'צפייה ואישור העברה' : 'הרשמה ואישור העברה';
 
   return `<div dir="rtl" style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
     <div style="background:#f8fafc;border-radius:12px;padding:24px;border:1px solid #e2e8f0;">

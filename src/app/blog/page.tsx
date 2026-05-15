@@ -98,15 +98,15 @@ export default function BlogPage() {
 
         {/* CTA */}
         <div className="mt-16 bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sm:p-12 text-center">
-          <h2 className="text-2xl font-extrabold text-[#1e3a5f] mb-3">רוצה לנהל את הרכב בצורה חכמה?</h2>
+          <h2 className="text-2xl font-extrabold text-[#1e3a5f] mb-3">רוצים לנהל את הרכב בצורה חכמה?</h2>
           <p className="text-gray-500 mb-6 max-w-lg mx-auto">
-            הצטרף בחינם ל-AutoLog — תזכורות טסט וביטוח, מעקב הוצאות, סריקת מסמכים עם AI ועוד.
+            הצטרפו בחינם ל-AutoLog — תזכורות טסט וביטוח, מעקב הוצאות, סריקת מסמכים עם AI ועוד.
           </p>
           <Link
             href="/auth/signup"
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-teal-600 text-white font-bold rounded-xl hover:bg-teal-700 transition shadow-lg shadow-teal-600/20"
           >
-            הירשם בחינם
+            הרשמה חינם
             <ChevronLeft size={18} />
           </Link>
         </div>

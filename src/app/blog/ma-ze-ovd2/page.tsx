@@ -67,7 +67,7 @@ export default function BlogPostPage() {
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">איפה נמצא שקע ה-OBD2 ברכב?</h2>
           <p>
             ב-99% מהרכבים, שקע ה-OBD2 נמצא <strong>מתחת ללוח השעונים, באזור הברך השמאלית של הנהג</strong>.
-            השקע הוא מלבני, עם 16 פינים, וקל לזיהוי. אם אתה לא מוצא אותו, חפש בגוגל את דגם הרכב שלך + &quot;OBD2 location&quot;.
+            השקע הוא מלבני, עם 16 פינים, וקל לזיהוי. אם הוא לא נמצא — חיפוש בגוגל של דגם הרכב + &quot;OBD2 location&quot; יראה את המיקום המדויק.
           </p>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה אפשר לעשות עם סורק OBD2?</h2>
@@ -80,7 +80,7 @@ export default function BlogPostPage() {
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">2. ניטור בזמן אמת</h3>
           <p>
-            תוכל לראות סיבובי מנוע, טמפרטורת מנוע, צריכת דלק רגעית, מהירות, מתח סוללה, לחץ מנוע ועוד עשרות פרמטרים — בזמן אמת תוך כדי נסיעה.
+            אפשר לראות סיבובי מנוע, טמפרטורת מנוע, צריכת דלק רגעית, מהירות, מתח סוללה, לחץ מנוע ועוד עשרות פרמטרים — בזמן אמת תוך כדי נסיעה.
           </p>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">3. מחיקת קוד התקלה</h3>
@@ -90,7 +90,7 @@ export default function BlogPostPage() {
           </p>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">4. בדיקת מוכנות לטסט</h3>
-          <p>לפני שאתה מגיע לטסט, סורק OBD יגיד לך אם הרכב &quot;מוכן&quot; לבדיקה (כל המערכות הראו תקינות לפחות פעם אחת מאז המחיקה האחרונה).</p>
+          <p>לפני הגעה לטסט, סורק OBD יגיד אם הרכב &quot;מוכן&quot; לבדיקה (כל המערכות הראו תקינות לפחות פעם אחת מאז המחיקה האחרונה).</p>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה סורק OBD2?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
@@ -103,13 +103,13 @@ export default function BlogPostPage() {
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">איך משלבים OBD2 עם ניהול רכב חכם?</h2>
           <p>
             הנתונים מ-OBD2 מעניינים, אבל חסרים להם הקשר לאורך זמן. למשל: ידעת שצריכת הדלק שלך עלתה ב-15% בחצי שנה האחרונה?
-            זה דגל אדום שדורש בדיקה. בלי תיעוד שיטתי, אתה לא תזהה את המגמה.
+            זה דגל אדום שדורש בדיקה. בלי תיעוד שיטתי, קשה לזהות את המגמה.
           </p>
 
           <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
             <h3 className="text-xl font-bold mb-3">תעד הכל ב-AutoLog</h3>
             <p className="text-white/80 mb-5 text-sm">
-              נתוני אבחון, היסטוריית טיפולים, הוצאות ותזכורות — הכל במקום אחד. כשתגיע למוסך, תוכל להראות מה צברת לאורך החודש.
+              נתוני אבחון, היסטוריית טיפולים, הוצאות ותזכורות — הכל במקום אחד. בהגעה למוסך, אפשר להציג בדיוק מה נצבר לאורך החודש.
             </p>
             <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg">
               הרשמה בחינם<ArrowLeft size={16} />
