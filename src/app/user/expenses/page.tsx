@@ -375,7 +375,7 @@ export default function ExpensesPage() {
         {/* Vehicle Selector */}
         {vehicles.length > 0 && (
           <div className="relative">
-            <label className="block text-sm font-semibold text-[#1e3a5f] mb-3 text-right">בחר רכב</label>
+            <label className="block text-sm font-semibold text-[#1e3a5f] mb-3 text-right">בחירת רכב</label>
             <select
               value={selectedVehicleId || ''}
               onChange={(e) => setSelectedVehicleId(e.target.value)}
@@ -551,7 +551,7 @@ export default function ExpensesPage() {
           <div className="text-center py-16">
             <div className="text-5xl mb-4">💰</div>
             <h3 className="text-lg font-bold text-[#1e3a5f] mb-2">אין הוצאות עדיין</h3>
-            <p className="text-gray-500 mb-6">הוסף הוצאה כדי להתחיל לעקוב על הוצאות הרכב שלך</p>
+            <p className="text-gray-500 mb-6">הוסיפו הוצאה כדי להתחיל לעקוב אחרי הוצאות הרכב</p>
             <Button
               icon={<Plus size={16} />}
               onClick={() => {
@@ -694,7 +694,7 @@ export default function ExpensesPage() {
                   className="w-full p-3 rounded-2xl border border-gray-200 bg-white text-right text-sm hover:border-teal-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition appearance-none cursor-pointer text-[#1e3a5f]"
                   style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 12 12%27%3E%3Cpath fill=%27%23666%27 d=%27M6 9L1 4h10z%27/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'left 12px center', paddingRight: '32px', paddingLeft: '12px' }}
                 >
-                  <option value="">בחר רכב</option>
+                  <option value="">בחירת רכב</option>
                   {vehicles.map(v => (
                     <option key={v.id} value={v.id}>
                       {v.nickname} ({v.licensePlate})
@@ -753,7 +753,7 @@ export default function ExpensesPage() {
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <Button variant="ghost" onClick={() => { setShowAddModal(false); resetForm(); }} className="w-full sm:w-auto">סיום</Button>
-              <Button loading={saving} disabled={!formData.vehicleId || !formData.amount || !formData.category} onClick={handleAddExpense} className="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-teal-600">הוסף הוצאה</Button>
+              <Button loading={saving} disabled={!formData.vehicleId || !formData.amount || !formData.category} onClick={handleAddExpense} className="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-teal-600">הוספת הוצאה</Button>
             </div>
           </div>
         </Modal>
@@ -774,7 +774,7 @@ export default function ExpensesPage() {
                   className="w-full p-3 rounded-2xl border border-gray-200 bg-white text-right text-sm hover:border-teal-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition appearance-none cursor-pointer text-[#1e3a5f]"
                   style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 12 12%27%3E%3Cpath fill=%27%23666%27 d=%27M6 9L1 4h10z%27/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'left 12px center', paddingRight: '32px', paddingLeft: '12px' }}
                 >
-                  <option value="">בחר רכב</option>
+                  <option value="">בחירת רכב</option>
                   {vehicles.map(v => (
                     <option key={v.id} value={v.id}>
                       {v.nickname} ({v.licensePlate})
@@ -831,7 +831,7 @@ export default function ExpensesPage() {
                 setEditExpenseId(null);
                 resetForm();
               }} className="w-full sm:w-auto">ביטול</Button>
-              <Button loading={saving} disabled={!formData.amount || !formData.category} onClick={handleEditExpense} className="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-teal-600">שמור שינויים</Button>
+              <Button loading={saving} disabled={!formData.amount || !formData.category} onClick={handleEditExpense} className="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-teal-600">שמירת שינויים</Button>
             </div>
           </div>
         </Modal>

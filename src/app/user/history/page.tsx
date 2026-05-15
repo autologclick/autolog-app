@@ -318,7 +318,7 @@ export default function HistoryPage() {
               <Calendar size={24} className="text-gray-400" />
             </div>
             <h3 className="text-lg font-bold text-gray-600 mb-2">אין אירועים</h3>
-              <p className="text-gray-400 text-sm">לא נמצאו אירועים התואמים את הפילטר שלך</p>
+              <p className="text-gray-400 text-sm">לא נמצאו אירועים התואמים לפילטר שנבחר</p>
                 </Card>
               </div>
             ) : (

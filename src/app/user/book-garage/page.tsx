@@ -501,7 +501,7 @@ export default function BookGaragePage() {
 
             <div>
               <h2 className="text-lg font-bold text-gray-800 mb-1">באיזה שירות אתה מעוניין?</h2>
-              <p className="text-sm text-gray-500 mb-5">בחר את סוג השירות ונציג לך מוסכים מתאימים</p>
+              <p className="text-sm text-gray-500 mb-5">בחרו את סוג השירות ונציג לכם מוסכים מתאימים</p>
 
               <div className="grid grid-cols-2 gap-4">
                 {serviceOptions.map(service => (
@@ -535,7 +535,7 @@ export default function BookGaragePage() {
 
             {/* Header with service context */}
             <div>
-              <h2 className="text-lg font-bold text-gray-800 mb-1">בחר מוסך</h2>
+              <h2 className="text-lg font-bold text-gray-800 mb-1">בחירת מוסך</h2>
               <div className="flex items-center gap-2">
                 <p className="text-sm text-gray-500">
                   שירות: <span className="font-semibold text-teal-600">{serviceValueToLabel[selectedService]}</span>
@@ -562,7 +562,7 @@ export default function BookGaragePage() {
             </div>
 
             {/* Search */}
-            <Input placeholder="חפש מוסך לפי שם או עיר..." icon={<Search size={16} />}
+            <Input placeholder="חיפוש מוסך לפי שם או עיר..." icon={<Search size={16} />}
               value={search} onChange={e => setSearch(e.target.value)} />
 
             {/* Sort options */}
@@ -893,13 +893,13 @@ export default function BookGaragePage() {
                 className="w-full flex items-center justify-between text-sm font-bold text-gray-800 p-3 rounded-xl border border-gray-200 hover:bg-gray-50 transition"
               >
                 <ChevronDown size={16} className={`text-gray-600 transition-transform ${showNotesInput ? 'rotate-180' : ''}`} />
-                <span>הוסף הערות</span>
+                <span>הוספת הערות</span>
               </button>
               {showNotesInput && (
                 <div className="mt-2 flex items-start gap-2">
                   <VoiceMicButton value={bookingData.notes} onResult={v => setBookingData({ ...bookingData, notes: v })} className="mt-2" />
                   <textarea
-                    placeholder="ספר למוסך על תקלות או בקשות מיוחדות..."
+                    placeholder="תיאור תקלות או בקשות מיוחדות למוסך..."
                     value={bookingData.notes}
                     onChange={e => setBookingData({ ...bookingData, notes: e.target.value })}
                     className="flex-1 px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 transition resize-none"
@@ -958,12 +958,12 @@ export default function BookGaragePage() {
             <div className="flex items-start gap-2">
               <VoiceMicButton value={reviewComment} onResult={setReviewComment} className="mt-2" />
               <textarea className="flex-1 px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 transition resize-none"
-                rows={3} placeholder="ספר על החוויה שלך..." value={reviewComment} onChange={e => setReviewComment(e.target.value)} />
+                rows={3} placeholder="תיאור החוויה..." value={reviewComment} onChange={e => setReviewComment(e.target.value)} />
             </div>
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={() => setShowReviewModal(false)} className="flex-1">ביטול</Button>
-            <Button onClick={handleSubmitReview} loading={reviewSubmitting} disabled={reviewRating < 1} className="flex-1" icon={<Star size={16} />}>שלח ביקורת</Button>
+            <Button onClick={handleSubmitReview} loading={reviewSubmitting} disabled={reviewRating < 1} className="flex-1" icon={<Star size={16} />}>שליחת ביקורת</Button>
           </div>
         </div>
       </Modal>

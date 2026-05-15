@@ -398,7 +398,7 @@ export default function SosPage() {
                             <div className="flex items-start gap-2">
                               <VoiceMicButton value={eventNote} onResult={setEventNote} className="mt-1.5" />
                               <textarea
-                                placeholder="הוסף עדכון או הערה..."
+                                placeholder="עדכון או הערה..."
                                 value={eventNote}
                                 onChange={(e) => setEventNote(e.target.value)}
                                 className="flex-1 px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-right focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none bg-gray-50"

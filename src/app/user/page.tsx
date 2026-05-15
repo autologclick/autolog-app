@@ -833,8 +833,8 @@ export default function UserHomePage() {
               <ClipboardCheck size={28} className="text-teal-600" />
             </div>
             <div className="flex-1">
-              <div className="font-bold text-gray-800 text-base">הזמן אבחון רכב</div>
-              <p className="text-sm text-gray-500 mt-0.5">בחר מוסך, הזן מספר רכב והזמן אבחון</p>
+              <div className="font-bold text-gray-800 text-base">הזמנת אבחון רכב</div>
+              <p className="text-sm text-gray-500 mt-0.5">בוחרים מוסך, מזינים מספר רכב ומזמינים אבחון</p>
             </div>
             <ChevronLeft size={20} className="text-gray-400 flex-shrink-0" />
           </button>
@@ -852,8 +852,8 @@ export default function UserHomePage() {
               <Car size={28} className="text-gray-500 group-hover:text-teal-600 transition" />
             </div>
             <div className="flex-1">
-              <div className="font-bold text-gray-800 text-base">הוסף רכב משלי</div>
-              <p className="text-sm text-gray-500 mt-0.5">נהל את הרכב שלך — תזכורות, הוצאות, טיפולים</p>
+              <div className="font-bold text-gray-800 text-base">הוספת רכב משלי</div>
+              <p className="text-sm text-gray-500 mt-0.5">ניהול הרכב — תזכורות, הוצאות, טיפולים</p>
             </div>
             <ChevronLeft size={20} className="text-gray-400 flex-shrink-0" />
           </button>
@@ -931,7 +931,7 @@ export default function UserHomePage() {
                 className="w-full flex items-center gap-3 px-4 py-3 text-right border-t hover:bg-gray-50"
               >
                 <Plus size={18} className="text-teal-600" />
-                <span className="text-sm font-semibold text-teal-600">הוסף רכב</span>
+                <span className="text-sm font-semibold text-teal-600">הוספת רכב</span>
               </button>
             </div>
           )}
@@ -1460,7 +1460,7 @@ export default function UserHomePage() {
                   <Wrench size={20} />
                 </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-[#1e3a5f]">הוסף טיפול/תיקון חדש</div>
+                  <div className="font-semibold text-[#1e3a5f]">הוספת טיפול/תיקון חדש</div>
                   <div className="text-xs text-gray-500">רישום טיפול / תיקון שבוצע ברכב</div>
                 </div>
                 <ChevronLeft size={20} className="text-gray-400" />
@@ -1502,7 +1502,7 @@ export default function UserHomePage() {
           <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-y-auto">
             {/* Modal header */}
             <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white rounded-t-3xl z-10">
-              <h3 className="text-lg font-bold text-[#1e3a5f]">הוסף טיפול</h3>
+              <h3 className="text-lg font-bold text-[#1e3a5f]">הוספת טיפול</h3>
               <button onClick={() => setShowAddTreatment(false)} className="p-2 hover:bg-gray-100 rounded-full">
                 <X size={20} />
               </button>

@@ -331,7 +331,7 @@ export default function SecurityCenterPage() {
                   type={showCurrent ? 'text' : 'password'}
                   value={passwordData.currentPassword}
                   onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                  placeholder="הכנס סיסמה נוכחית"
+                  placeholder="סיסמה נוכחית"
                   className="w-full px-4 py-2 pr-10 rounded-2xl border border-gray-300 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
                 />
                 <button
@@ -370,7 +370,7 @@ export default function SecurityCenterPage() {
                 type="password"
                 value={passwordData.confirmPassword}
                 onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                placeholder="הכנס שוב את הסיסמה החדשה"
+                placeholder="אישור הסיסמה החדשה"
                 className="w-full px-4 py-2 rounded-2xl border border-gray-300 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
               />
             </div>
