@@ -1328,15 +1328,15 @@ export default function InspectionReportPage() {
             {/* Key Findings */}
             {aiAnalysis.keyFindings?.length > 0 && (
               <div>
-                <h4 className="text-xs font-bold text-[#1e3a5f] text-right mb-2 flex items-center gap-1.5 justify-end">
-                  ממצאים עיקריים
+                <h4 className="text-xs font-bold text-[#1e3a5f] text-right mb-2 flex items-center gap-1.5">
                   <FileText size={14} className="text-teal-500" />
+                  ממצאים עיקריים
                 </h4>
                 <div className="space-y-1.5">
                   {aiAnalysis.keyFindings.map((finding: string, i: number) => (
                     <div key={i} className="flex items-start gap-2 text-right bg-white/50 rounded-lg p-2.5">
-                      <span className="text-xs text-gray-600 leading-relaxed">{finding}</span>
                       <div className="w-1.5 h-1.5 rounded-full bg-teal-400 mt-1.5 flex-shrink-0" />
+                      <span className="text-xs text-gray-600 leading-relaxed flex-1">{finding}</span>
                     </div>
                   ))}
                 </div>
@@ -1346,15 +1346,15 @@ export default function InspectionReportPage() {
             {/* Urgent Items */}
             {aiAnalysis.urgentItems?.length > 0 && (
               <div>
-                <h4 className="text-xs font-bold text-red-700 text-right mb-2 flex items-center gap-1.5 justify-end">
-                  פריטים דחופים
+                <h4 className="text-xs font-bold text-red-700 text-right mb-2 flex items-center gap-1.5">
                   <AlertTriangle size={14} className="text-red-500" />
+                  פריטים דחופים
                 </h4>
                 <div className="space-y-1.5">
                   {aiAnalysis.urgentItems.map((item: string, i: number) => (
                     <div key={i} className="flex items-center gap-2 text-right bg-red-50 border border-red-200 rounded-lg p-2.5">
-                      <span className="text-xs text-red-700 font-medium">{item}</span>
                       <X size={12} className="text-red-500 flex-shrink-0" />
+                      <span className="text-xs text-red-700 font-medium flex-1">{item}</span>
                     </div>
                   ))}
                 </div>
@@ -1364,15 +1364,15 @@ export default function InspectionReportPage() {
             {/* Positive Items */}
             {aiAnalysis.positiveItems?.length > 0 && (
               <div>
-                <h4 className="text-xs font-bold text-green-700 text-right mb-2 flex items-center gap-1.5 justify-end">
-                  נקודות חיוביות
+                <h4 className="text-xs font-bold text-green-700 text-right mb-2 flex items-center gap-1.5">
                   <Check size={14} className="text-green-500" />
+                  נקודות חיוביות
                 </h4>
                 <div className="space-y-1.5">
                   {aiAnalysis.positiveItems.map((item: string, i: number) => (
                     <div key={i} className="flex items-center gap-2 text-right bg-green-50 border border-green-200 rounded-lg p-2.5">
-                      <span className="text-xs text-green-700">{item}</span>
                       <Check size={12} className="text-green-500 flex-shrink-0" />
+                      <span className="text-xs text-green-700 flex-1">{item}</span>
                     </div>
                   ))}
                 </div>
@@ -1382,8 +1382,8 @@ export default function InspectionReportPage() {
             {/* Estimated Repair Cost */}
             {aiAnalysis.estimatedRepairCost && aiAnalysis.estimatedRepairCost !== '₪0' && (
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-right flex items-center justify-between">
-                <span className="text-sm font-bold text-amber-800">{aiAnalysis.estimatedRepairCost}</span>
                 <span className="text-xs font-medium text-amber-700">עלות תיקון משוערת</span>
+                <span className="text-sm font-bold text-amber-800">{aiAnalysis.estimatedRepairCost}</span>
               </div>
             )}
           </div>

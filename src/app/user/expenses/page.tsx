@@ -451,11 +451,11 @@ export default function ExpensesPage() {
         {/* AI Expense Analysis */}
         {(aiExpenseLoading || aiExpenseAnalysis) && (
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-teal-100">
-            <div className="flex items-center gap-2 mb-4 justify-end">
-              <h3 className="text-sm font-bold text-[#1e3a5f]">ניתוח AI של הוצאות</h3>
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center flex-shrink-0">
                 <Brain size={16} className="text-white" />
               </div>
+              <h3 className="text-sm font-bold text-[#1e3a5f]">ניתוח AI של הוצאות</h3>
             </div>
 
           {aiExpenseLoading ? (
@@ -494,8 +494,8 @@ export default function ExpensesPage() {
                 <div className="space-y-2">
                   {aiExpenseAnalysis.insights.map((insight: string, i: number) => (
                     <div key={i} className="flex items-start gap-2 bg-white/50 rounded-lg p-2.5 text-right">
-                      <span className="text-xs text-gray-600 leading-relaxed">{insight}</span>
                       <Lightbulb size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-xs text-gray-600 leading-relaxed flex-1">{insight}</span>
                     </div>
                   ))}
                 </div>
@@ -504,9 +504,9 @@ export default function ExpensesPage() {
               {/* Forecast */}
               {aiExpenseAnalysis.forecast && (
                 <div className="bg-teal-50 border border-teal-200 rounded-xl p-3 text-right">
-                  <div className="text-xs font-bold text-teal-800 mb-1 flex items-center gap-1.5 justify-end">
-                    תחזית
+                  <div className="text-xs font-bold text-teal-800 mb-1 flex items-center gap-1.5">
                     <BarChart3 size={14} className="text-teal-500" />
+                    תחזית
                   </div>
                   <p className="text-xs text-teal-700">{aiExpenseAnalysis.forecast}</p>
                 </div>
