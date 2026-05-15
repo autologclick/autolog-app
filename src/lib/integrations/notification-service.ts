@@ -339,33 +339,33 @@ export function getNotificationTemplate(type: NotificationType) {
   const templates: Record<NotificationType, { title: string; defaultBody: string }> = {
     test_reminder: {
       title: 'תזכורת אבחון',
-      defaultBody: 'הרכב שלך זקוק לאבחון',
+      defaultBody: 'הרכב שלכם זקוק לאבחון',
     },
     appointment_reminder: {
       title: 'תזכורת תור',
-      defaultBody: 'יש לך תור מתוכנן',
+      defaultBody: 'יש לכם תור מתוכנן',
     },
     insurance_expiry: {
-      title: 'ביטוח פוג',
-      defaultBody: 'הביטוח שלך על סיום',
+      title: 'ביטוח על סף פג תוקף',
+      defaultBody: 'תוקף הביטוח שלכם עומד להסתיים',
     },
     sos_alert: {
       title: 'התראת חירום',
-      defaultBody: 'קיימת התראת חירום לרכב שלך',
+      defaultBody: 'יש התראת חירום עבור הרכב שלכם',
     },
     payment_confirmation: {
       title: 'אישור תשלום',
-      defaultBody: 'התשלום שלך בוצע בהצלחה',
+      defaultBody: 'התשלום בוצע בהצלחה',
     },
     payment_failed: {
       title: 'תשלום נכשל',
-      defaultBody: 'התשלום שלך נכשל, אנא נסה שוב',
+      defaultBody: 'התשלום נכשל — נסו שוב',
     },
     appointment_booked: {
-      title: 'תור נוסף',
-      defaultBody: 'קביעת תור חדשה ממתינה לאישור',
+      title: 'תור חדש',
+      defaultBody: 'קביעת תור חדשה ממתינה לאישורכם',
     },
   };
 
-  return templates[type] || { title: 'התראה', defaultBody: 'יש לך התראה חדשה' };
+  return templates[type] || { title: 'התראה', defaultBody: 'יש לכם התראה חדשה' };
 }

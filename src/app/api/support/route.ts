@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     return jsonResponse({
       success: true,
       ticketNumber,
-      message: 'הפנייה נשלחה בהצלחה! נחזור אליך בהקדם.',
+      message: 'הפנייה נשלחה בהצלחה! נחזור אליכם בהקדם.',
     }, 201);
   } catch (error) {
     return handleApiError(error);

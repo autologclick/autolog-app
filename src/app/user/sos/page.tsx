@@ -164,7 +164,7 @@ export default function SosPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setSubmitMessage('הדיווח נשלח בהצלחה! נחזור אליך בהקדם.');
+        setSubmitMessage('הדיווח נשלח בהצלחה! נחזור אליכם בהקדם.');
         setShowReportModal(false);
         resetForm();
         const evRes = await fetch('/api/sos');
@@ -284,7 +284,7 @@ export default function SosPage() {
                 <AlertTriangle size={36} className="text-white" />
               </div>
               <h2 className="text-xl font-bold text-[#1e3a5f] mb-2">צריך עזרה דחופה?</h2>
-              <p className="text-gray-500 text-sm mb-6">דווח על אירוע ונשלח לך עזרה בהקדם</p>
+              <p className="text-gray-500 text-sm mb-6">דווחו על אירוע ונשלח לכם עזרה בהקדם</p>
               <button
                 onClick={() => { setShowReportModal(true); resetForm(); }}
                 className="w-full bg-gradient-to-l from-red-600 to-red-500 text-white font-bold text-lg py-4 px-6 rounded-2xl shadow-lg shadow-red-200 hover:shadow-xl hover:from-red-700 hover:to-red-600 transition-all active:scale-[0.98] flex items-center justify-center gap-3"

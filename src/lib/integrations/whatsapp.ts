@@ -12,15 +12,15 @@ const logger = createLogger('business');
 const MESSAGE_TEMPLATES = {
   test_reminder: {
     title: 'תזכורת אבחון חודשי',
-    body: 'שלום {{vehicleName}},\n\nזהו תזכורת לביצוע אבחון חודשי של הרכב שלך.\n\nתאריך האבחון המתוכנן: {{testDate}}\n\nבואו לביקור בגראז שלנו כדי לוודא שהרכב בתנאי מעולה.\n\nתודה,\nצוות AutoLog',
+    body: 'שלום {{customerName}},\n\nזוהי תזכורת לביצוע אבחון חודשי לרכב {{vehicleName}}.\n\nתאריך מתוכנן: {{testDate}}\n\nאנו מזמינים אתכם לביקור במוסך כדי לוודא שהרכב במצב מעולה.\n\nתודה,\nצוות AutoLog',
   },
   appointment_confirmation: {
     title: 'אישור תור',
-    body: 'שלום {{customerName}},\n\nתור שלך אושר בהצלחה!\n\nגראז: {{garageName}}\nתאריך: {{date}}\nשעה: {{time}}\n\nאנא הגיעו 5 דקות לפני המועד. במידה וצריכים לבטל או לשנות את התות, אנא הודיעו לנו בהקדם.\n\nתודה,\nצוות AutoLog',
+    body: 'שלום {{customerName}},\n\nהתור שלכם אושר בהצלחה!\n\nמוסך: {{garageName}}\nתאריך: {{date}}\nשעה: {{time}}\n\nנא להגיע 5 דקות לפני המועד. במידה ויש צורך לבטל או לשנות את התור, נא להודיע לנו בהקדם.\n\nתודה,\nצוות AutoLog',
   },
   sos_alert: {
     title: 'התראת חירום',
-    body: 'התראת חירום לרכג {{vehicleName}}\n\nמיקום: {{location}}\nזמן: {{timestamp}}\n\nאנא בדוקו את מצב הרכב ובטאו תרומה לשירותי החרום במידת הצורך.',
+    body: 'שלום {{customerName}},\n\nהתראת חירום עבור הרכב {{vehicleName}}.\n\nמיקום: {{location}}\nזמן: {{timestamp}}\n\nנא לבדוק את מצב הרכב ולפנות לשירותי החירום במידת הצורך.',
   },
 };
 

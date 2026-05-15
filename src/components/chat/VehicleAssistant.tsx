@@ -43,10 +43,22 @@ export default function VehicleAssistant({
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [userFirstName, setUserFirstName] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Fetch user's first name for personalized welcome message
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch('/api/auth/me')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.user?.fullName) setUserFirstName(data.user.fullName.split(' ')[0]);
+      })
+      .catch(() => {});
+  }, [isOpen]);
 
   // Auto-scroll to bottom
   const scrollToBottom = useCallback(() => {
@@ -245,10 +257,10 @@ export default function VehicleAssistant({
               </div>
 
               <h4 className="font-bold text-[#1e3a5f] text-lg mb-1">
-                מה נוכל לעזור?
+                {userFirstName ? `שלום ${userFirstName}, איך אפשר לעזור?` : 'איך אפשר לעזור?'}
               </h4>
               <p className="text-[13px] text-gray-400 text-center mb-8 max-w-[260px] leading-relaxed">
-                אני מכיר את ה{vehicleName} שלך ויכול לעזור בכל שאלה על הרכב
+                אני מכיר את ה-{vehicleName} שלכם ויכול לעזור בכל שאלה על הרכב
               </p>
 
               {/* Suggestion grid */}

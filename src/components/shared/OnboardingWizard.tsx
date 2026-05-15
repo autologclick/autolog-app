@@ -39,6 +39,18 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
   const [sharePlate, setSharePlate] = useState('');
   const lookupDoneRef = useState('')[0]; // track last looked-up plate
   const [lastLookedUp, setLastLookedUp] = useState('');
+  const [userFirstName, setUserFirstName] = useState('');
+
+  // Fetch user's first name for personalized welcome message
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch('/api/auth/me')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.user?.fullName) setUserFirstName(data.user.fullName.split(' ')[0]);
+      })
+      .catch(() => {});
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -199,9 +211,11 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
           <div className="p-8 space-y-6 text-center">
             <div className="space-y-4">
               <div className="text-6xl">🚗</div>
-              <h1 className="text-3xl font-bold text-[#1e3a5f]">ברוכים הבאים ל-AutoLog!</h1>
+              <h1 className="text-3xl font-bold text-[#1e3a5f]">
+                {userFirstName ? `ברוכים הבאים, ${userFirstName}!` : 'ברוכים הבאים ל-AutoLog!'}
+              </h1>
               <p className="text-gray-600 text-base leading-relaxed">
-                אפליקציה חכמה לניהול כל צרכי הרכב שלך במקום אחד
+                אפליקציה חכמה לניהול כל צרכי הרכב שלכם במקום אחד
               </p>
             </div>
 
