@@ -1752,7 +1752,7 @@ export default function UserHomePage() {
               </p>
               <button
                 onClick={() => setShowMaintenanceModal(false)}
-                className="w-full bg-teal-600 text-white rounded-xl py-3 font-semibold text-sm"
+                className="w-full bg-teal-600 text-white rounded-xl py-3 font-semibold text-sm text-center"
               >
                 סגור
               </button>

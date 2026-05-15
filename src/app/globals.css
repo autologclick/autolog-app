@@ -5,7 +5,18 @@
 /* ===== BASE ===== */
 * {
   direction: rtl;
+}
+
+/* Apply right-alignment as the inherited default — but only via html/body so
+   user-agent styles (e.g. <button>'s text-align: center) still win on form
+   controls. The previous `* { text-align: right }` was too aggressive: it
+   overrode button defaults and forced manual `text-center` everywhere. */
+html {
   text-align: right;
+}
+
+button, input[type="button"], input[type="submit"], input[type="reset"] {
+  text-align: center;
 }
 
 html {

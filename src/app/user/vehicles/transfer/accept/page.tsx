@@ -224,7 +224,7 @@ export default function AcceptTransferPage() {
           <button
             onClick={() => findTransfer()}
             disabled={busy || code.length < 6}
-            className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50"
+            className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50 text-center"
           >
             {busy ? 'מחפש…' : 'אימות'}
           </button>

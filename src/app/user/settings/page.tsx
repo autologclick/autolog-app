@@ -289,7 +289,7 @@ export default function SettingsPage() {
             <button
               onClick={handleSave}
               disabled={saving || !profile.fullName.trim()}
-              className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-medium py-2 rounded-xl hover:from-teal-600 hover:to-teal-700 transition disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-medium py-2 rounded-xl hover:from-teal-600 hover:to-teal-700 transition disabled:opacity-50 text-center"
             >
               {saving ? (
                 <span className="flex items-center justify-center gap-2">
