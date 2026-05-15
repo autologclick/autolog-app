@@ -543,6 +543,10 @@ export default function InspectionReportPage() {
   const score = inspection.overallScore ?? 0;
   const isScored = inspection.overallScore !== null && inspection.overallScore > 0;
   const v = inspection.vehicle;
+  // Ref for capturing the inspection report DOM into a PDF (client-side rendering).
+  // Wraps everything except the action buttons (which would clutter the PDF).
+  const pdfRef = useRef<HTMLDivElement>(null);
+  const [pdfGenerating, setPdfGenerating] = useState(false);
   const g = inspection.garage;
   const vehicleLabel = v.nickname || `${v.manufacturer || ''} ${v.model}`.trim();
 
@@ -610,7 +614,8 @@ export default function InspectionReportPage() {
 
   const pdfUrl = `/api/public/inspections/${inspection.id}/pdf`;
 
-  // Get a signed public PDF URL via the share-link API
+  // Get a signed public PDF URL via the share-link API.
+  // Used for sharing a link rather than the file itself.
   const getSignedPdfUrl = async (): Promise<string> => {
     try {
       const res = await fetch(`/api/inspections/${inspection.id}/share-link`, { method: 'POST' });
@@ -619,8 +624,59 @@ export default function InspectionReportPage() {
         return data.url;
       }
     } catch {}
-    // Fallback: unsigned URL (works only for authenticated users)
-    return `${window.location.origin}${pdfUrl}`;
+    // Fallback: link to the inspection page itself
+    return `${window.location.origin}/inspection/${inspection.id}`;
+  };
+
+  // Generate a PDF entirely on the client side using jsPDF + html2canvas.
+  // The previous server-side implementation required Python which Vercel's
+  // Node.js runtime doesn't ship with — causing PDF generation to fail in production.
+  // This client-side approach captures the rendered DOM and packs it into A4 pages.
+  const generateClientPdf = async (): Promise<Blob | null> => {
+    const element = pdfRef.current;
+    if (!element) return null;
+    try {
+      // Dynamic imports keep these heavy libs out of the initial bundle
+      const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+        import('jspdf'),
+        import('html2canvas'),
+      ]);
+
+      // Capture at 2x for retina-quality output
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#fef7ed',
+        logging: false,
+        windowWidth: element.scrollWidth,
+      });
+
+      const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+      let position = 0;
+      let heightLeft = imgHeight;
+
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position -= pageHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      return pdf.output('blob');
+    } catch (err) {
+      console.error('PDF generation failed', err);
+      return null;
+    }
   };
 
   const buildShareText = (pdfLink?: string) => {
@@ -638,14 +694,13 @@ export default function InspectionReportPage() {
   };
 
   const handleShare = async () => {
+    setPdfGenerating(true);
     try {
-      // Try to fetch PDF and share as file
-      const res = await fetch(pdfUrl);
-      if (res.ok) {
-        const blob = await res.blob();
+      const blob = await generateClientPdf();
+      if (blob) {
         const file = new File([blob], `AutoLog-${v.licensePlate}.pdf`, { type: 'application/pdf' });
 
-        // Use Web Share API with PDF file if supported
+        // Use Web Share API with PDF file if supported (mobile)
         if (navigator.share && navigator.canShare) {
           const shareData = { title: `דוח אבחון — ${vehicleLabel}`, text: buildShareText(), files: [file] };
           if (navigator.canShare(shareData)) {
@@ -653,9 +708,18 @@ export default function InspectionReportPage() {
             return;
           }
         }
+
+        // Desktop fallback: trigger download instead
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `AutoLog-${v.licensePlate}.pdf`;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        return;
       }
 
-      // Fallback: share signed link to PDF
+      // PDF generation failed — share a link to the inspection page instead
       const fullPdfUrl = await getSignedPdfUrl();
       if (navigator.share) {
         await navigator.share({
@@ -670,54 +734,42 @@ export default function InspectionReportPage() {
       const fullPdfUrl = await getSignedPdfUrl();
       const waUrl = `https://wa.me/?text=${encodeURIComponent(buildShareText(fullPdfUrl))}`;
       window.open(waUrl, '_blank');
+    } finally {
+      setPdfGenerating(false);
     }
   };
 
   const handleDownload = async () => {
+    setPdfGenerating(true);
     try {
-      // Try fetching PDF directly (authenticated users)
-      const res = await fetch(pdfUrl);
-      if (res.ok) {
-        const blob = await res.blob();
+      const blob = await generateClientPdf();
+      if (blob) {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
         link.download = `AutoLog-${v.licensePlate}.pdf`;
         link.click();
         setTimeout(() => URL.revokeObjectURL(url), 5000);
-        return;
       }
-    } catch {}
-    // Fallback: use signed URL (for unauthenticated / shared link viewers)
-    try {
-      const signedUrl = await getSignedPdfUrl();
-      const res = await fetch(signedUrl);
-      if (res.ok) {
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `AutoLog-${v.licensePlate}.pdf`;
-        link.click();
-        setTimeout(() => URL.revokeObjectURL(url), 5000);
-        return;
-      }
-    } catch {}
-    // Last resort: open PDF URL in new tab
-    window.open(pdfUrl, '_blank');
+    } catch (err) {
+      console.error('Download failed', err);
+    } finally {
+      setPdfGenerating(false);
+    }
   };
 
   return (
-    <div className="space-y-3 sm:space-y-4 pt-12 lg:pt-0 pb-20 max-w-3xl mx-auto px-2 sm:px-0" dir="rtl">
+    <div ref={pdfRef} className="space-y-3 sm:space-y-4 pt-12 lg:pt-0 pb-20 max-w-3xl mx-auto px-2 sm:px-0" dir="rtl">
 
       {/* ===== HEADER WITH SCORE ===== */}
       <div className={`rounded-2xl bg-gradient-to-br ${isScored ? scoreBg(score) : 'from-slate-500 to-slate-600'} text-white p-4 sm:p-6 shadow-lg`}>
         <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <div className="flex gap-2">
-            <button onClick={handleDownload} aria-label="הורד דוח" className="w-8 h-8 sm:w-9 sm:h-9 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
-              <Download size={16} />
+          {/* html2canvas-ignore: action buttons should not appear in the generated PDF */}
+          <div className="flex gap-2" data-html2canvas-ignore="true">
+            <button onClick={handleDownload} aria-label="הורד דוח" disabled={pdfGenerating} className="w-8 h-8 sm:w-9 sm:h-9 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition disabled:opacity-50">
+              {pdfGenerating ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
             </button>
-            <button onClick={handleShare} aria-label="שתף דוח" className="w-8 h-8 sm:w-9 sm:h-9 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
+            <button onClick={handleShare} aria-label="שתף דוח" disabled={pdfGenerating} className="w-8 h-8 sm:w-9 sm:h-9 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition disabled:opacity-50">
               <Share2 size={16} />
             </button>
             <button
@@ -1340,13 +1392,13 @@ export default function InspectionReportPage() {
 
       {/* ===== SHARE ACTIONS ===== */}
       <Card>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3" data-html2canvas-ignore="true">
           <div className="flex gap-3">
-            <Button className="flex-1" icon={<Share2 size={16} />} onClick={handleShare}>
-              שתף דוח
+            <Button className="flex-1" icon={pdfGenerating ? <Loader2 size={16} className="animate-spin" /> : <Share2 size={16} />} onClick={handleShare} disabled={pdfGenerating}>
+              {pdfGenerating ? 'מכין PDF...' : 'שתף דוח'}
             </Button>
-            <Button variant="outline" className="flex-1" icon={<Download size={16} />} onClick={handleDownload}>
-              שמור PDF
+            <Button variant="outline" className="flex-1" icon={pdfGenerating ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />} onClick={handleDownload} disabled={pdfGenerating}>
+              {pdfGenerating ? 'מכין PDF...' : 'שמור PDF'}
             </Button>
           </div>
           <button
@@ -1357,7 +1409,7 @@ export default function InspectionReportPage() {
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-xl font-medium text-sm transition shadow-sm"
           >
             <MessageCircle size={16} />
-            שלח בוואטסאפ עם PDF
+            שלח לוואטסאפ עם קישור לדוח
           </button>
         </div>
       </Card>

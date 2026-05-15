@@ -522,6 +522,21 @@ export function analyzeInspection(inspection: InspectionData): InspectionAnalysi
   const totalChecked = items.length;
   const passRate = totalChecked > 0 ? Math.round((okItems.length / totalChecked) * 100) : 0;
 
+  // INCOMPLETE INSPECTION: no score and no items checked.
+  // Don't generate a misleading "vehicle is broken" assessment.
+  // This happens when an inspection was created but not yet filled in by the mechanic.
+  if ((!score || score === 0) && totalChecked === 0 && criticalItems.length === 0) {
+    const incompleteAssessment = 'האבחון עדיין בתהליך — הציון והממצאים יתעדכנו ברגע שהמכונאי ישלים את הבדיקה.';
+    return {
+      summary: incompleteAssessment,
+      keyFindings: ['האבחון לא הושלם'],
+      urgentItems: [],
+      positiveItems: [],
+      estimatedRepairCost: '₪0',
+      overallAssessment: incompleteAssessment,
+    };
+  }
+
   // Generate key findings
   const keyFindings: string[] = [];
 
