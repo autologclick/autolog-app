@@ -360,7 +360,11 @@ export default function InspectionReportPage() {
   useEffect(() => {
     const fetchInspection = async () => {
       try {
-        const res = await fetch(`/api/inspections/${params.id}`);
+        // Forward share token from URL (?token=...&exp=...) to the API.
+        // This allows recipients of WhatsApp share links to view the report
+        // without needing an account.
+        const search = typeof window !== 'undefined' ? window.location.search : '';
+        const res = await fetch(`/api/inspections/${params.id}${search}`);
         if (!res.ok) {
           const data = await res.json();
           setError(data.error || 'שגיאה בטעינת האבחון');

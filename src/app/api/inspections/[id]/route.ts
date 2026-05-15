@@ -3,12 +3,21 @@ import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, errorResponse, handleApiError, validationErrorResponse } from '@/lib/api-helpers';
 import { AUTH_ERRORS } from '@/lib/messages';
 import { safeJsonParse } from '@/lib/utils';
+import { verifyShareToken } from '@/lib/share-tokens';
 import { z } from 'zod';
 
 // GET /api/inspections/[id] - Get single inspection with all details
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { id } = params;
+
+    // Check for share token first — these are HMAC-signed URLs sent via WhatsApp.
+    // A valid token grants public read access without requiring login.
+    const url = new URL(req.url);
+    const token = url.searchParams.get('token') || '';
+    const expStr = url.searchParams.get('exp') || '0';
+    const expiresAt = parseInt(expStr, 10);
+    const tokenOk = token && verifyShareToken('inspection-pdf', id, token, expiresAt);
 
     // Try auth — but allow unauthenticated access for awaiting_signature inspections
     // (customers receive a WhatsApp link to view & sign without logging in)
@@ -42,24 +51,29 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return errorResponse('אבחון לא נמצא', 404);
     }
 
-    // Access control
-    if (!payload) {
-      // Unauthenticated: only allow viewing inspections awaiting customer signature
-      if (inspection.status !== 'awaiting_signature') {
-        return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
-      }
-      // Allowed — customer is viewing via shared WhatsApp link to sign
-    } else if (payload.role === 'user') {
-      if (inspection.vehicle.userId !== payload.userId) {
-        return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
-      }
-    } else if (payload.role === 'garage_owner') {
-      const garage = await prisma.garage.findUnique({
-        where: { ownerId: payload.userId },
-        select: { id: true },
-      });
-      if (garage?.id !== inspection.garageId) {
-        return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
+    // Access control: allowed if any of these are true:
+    // 1. Valid share token (public WhatsApp link)
+    // 2. Customer view of awaiting_signature inspection
+    // 3. Authenticated owner / garage / admin
+    if (!tokenOk) {
+      if (!payload) {
+        // Unauthenticated: only allow viewing inspections awaiting customer signature
+        if (inspection.status !== 'awaiting_signature') {
+          return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
+        }
+        // Allowed — customer is viewing via shared WhatsApp link to sign
+      } else if (payload.role === 'user') {
+        if (inspection.vehicle.userId !== payload.userId) {
+          return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
+        }
+      } else if (payload.role === 'garage_owner') {
+        const garage = await prisma.garage.findUnique({
+          where: { ownerId: payload.userId },
+          select: { id: true },
+        });
+        if (garage?.id !== inspection.garageId) {
+          return errorResponse(AUTH_ERRORS.FORBIDDEN, 403);
+        }
       }
     }
 
