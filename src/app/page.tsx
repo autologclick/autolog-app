@@ -414,10 +414,10 @@ export default function Home() {
           <div className="text-center mb-16">
             <span className="text-teal-600 font-semibold text-sm mb-2 block">למה AutoLog?</span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-4">
-              הכל שלך — במקום אחד
+              די עם הסטרס מהרכב
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto text-lg">
-              ניהול רכבים חכם שחוסך לך זמן, כסף ודאגות. כל מה שצריך לדעת על הרכב שלך, תמיד בהישג יד.
+              AutoLog דואגת לכל ההתעסקות עם הרכב — תזכורות לטסט וביטוח, סריקת מסמכים עם AI, מעקב הוצאות, היסטוריית טיפולים. הכל חכם, אוטומטי, וחינם.
             </p>
           </div>
 
