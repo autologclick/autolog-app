@@ -34,9 +34,12 @@ export async function POST(
       return errorResponse('אין הרשאה', 403);
     }
 
+    // Return a link to the inspection report PAGE (not the PDF API directly).
+    // The page lets the recipient view the report and download the PDF client-side.
+    // This works because the server-side PDF API (Python) doesn't run on Vercel.
     const { token, expiresAt } = createShareToken('inspection-pdf', id);
     const origin = new URL(req.url).origin;
-    const url = `${origin}/api/public/inspections/${id}/pdf?token=${token}&exp=${expiresAt}`;
+    const url = `${origin}/inspection/${id}?token=${token}&exp=${expiresAt}`;
 
     return jsonResponse({ url, expiresAt });
   } catch (error) {
