@@ -412,18 +412,19 @@ export default function InspectionReportPage() {
   // ====== SIGNATURE GATE ======
   if (inspection.status === 'awaiting_signature') {
     const gateScore = inspection.overallScore ?? 0;
+    const gateScored = inspection.overallScore !== null && inspection.overallScore > 0;
     const gateVehicle = inspection.vehicle;
     const gateGarage = inspection.garage;
     return (
       <div className="space-y-4 pt-12 lg:pt-0 pb-20 max-w-lg mx-auto px-3" dir="rtl">
         {/* Blurred preview header */}
-        <div className={`rounded-2xl bg-gradient-to-br ${scoreBg(gateScore)} text-white p-6 text-center`}>
+        <div className={`rounded-2xl bg-gradient-to-br ${gateScored ? scoreBg(gateScore) : 'from-slate-500 to-slate-600'} text-white p-6 text-center`}>
           <div className="flex items-center justify-center gap-2 mb-3">
             <LogoIcon className="h-6 w-6 text-white" />
             <span className="text-white/80 text-sm">AutoLog</span>
           </div>
-          <div className="text-5xl font-bold mb-2">{gateScore}</div>
-          <div className="text-white/80">ציון כללי</div>
+          <div className="text-5xl font-bold mb-2">{gateScored ? gateScore : '—'}</div>
+          <div className="text-white/80">{gateScored ? 'ציון כללי' : 'ממתין לציון'}</div>
         </div>
 
         {/* Vehicle info */}
@@ -540,6 +541,7 @@ export default function InspectionReportPage() {
     );
   }
   const score = inspection.overallScore ?? 0;
+  const isScored = inspection.overallScore !== null && inspection.overallScore > 0;
   const v = inspection.vehicle;
   const g = inspection.garage;
   const vehicleLabel = v.nickname || `${v.manufacturer || ''} ${v.model}`.trim();
@@ -709,7 +711,7 @@ export default function InspectionReportPage() {
     <div className="space-y-3 sm:space-y-4 pt-12 lg:pt-0 pb-20 max-w-3xl mx-auto px-2 sm:px-0" dir="rtl">
 
       {/* ===== HEADER WITH SCORE ===== */}
-      <div className={`rounded-2xl bg-gradient-to-br ${scoreBg(score)} text-white p-4 sm:p-6 shadow-lg`}>
+      <div className={`rounded-2xl bg-gradient-to-br ${isScored ? scoreBg(score) : 'from-slate-500 to-slate-600'} text-white p-4 sm:p-6 shadow-lg`}>
         <div className="flex items-center justify-between mb-3 sm:mb-4">
           <div className="flex gap-2">
             <button onClick={handleDownload} aria-label="הורד דוח" className="w-8 h-8 sm:w-9 sm:h-9 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition">
@@ -736,8 +738,8 @@ export default function InspectionReportPage() {
         </div>
 
         <div className="text-center mb-3 sm:mb-4">
-          <div className="text-5xl sm:text-6xl font-black mb-1">{score}</div>
-          <div className="text-base sm:text-lg font-medium opacity-90">{scoreLabel(score)}</div>
+          <div className="text-5xl sm:text-6xl font-black mb-1">{isScored ? score : '—'}</div>
+          <div className="text-base sm:text-lg font-medium opacity-90">{isScored ? scoreLabel(score) : 'אבחון בתהליך'}</div>
           <div className="text-xs sm:text-sm opacity-75 mt-1">{inspectionTypeLabel(inspection.inspectionType)}</div>
         </div>
 
