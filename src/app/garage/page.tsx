@@ -304,14 +304,14 @@ export default function GarageDashboard() {
                 {stats.pendingAppointments === 1 ? 'תור חדש ממתין לאישור!' : `${stats.pendingAppointments} תורים חדשים ממתינים!`}
               </h3>
               <p className="text-teal-700 text-xs mt-0.5">
-                לחץ כדי לאשר או לדחות
+                לחיצה לאישור או דחייה
               </p>
             </div>
             <button
               onClick={() => router.push('/garage/appointments')}
               className="bg-teal-600 hover:bg-teal-700 text-white rounded-xl px-5 py-2.5 text-sm font-bold flex-shrink-0 transition-colors whitespace-nowrap shadow-sm"
             >
-              צפה ואשר
+              צפייה ואישור
             </button>
           </div>
         )}
@@ -331,7 +331,7 @@ export default function GarageDashboard() {
               <h3 className="font-bold text-orange-900 text-base">
                 {bodyworkCount === 1 ? 'בקשת פחחות חדשה!' : `${bodyworkCount} בקשות פחחות חדשות!`}
               </h3>
-              <p className="text-orange-700 text-xs mt-0.5">לחץ לצפייה ושליחת הצעת מחיר</p>
+              <p className="text-orange-700 text-xs mt-0.5">לחיצה לצפייה ושליחת הצעת מחיר</p>
             </div>
             <button
               onClick={() => router.push('/garage/bodywork')}

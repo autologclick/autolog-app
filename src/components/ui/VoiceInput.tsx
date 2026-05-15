@@ -161,7 +161,7 @@ export default function VoiceInput({ value, onChange, placeholder, rows = 3, cla
               ? 'bg-gray-200 text-gray-400'
               : 'bg-gray-100 text-gray-500 hover:bg-teal-100 hover:text-teal-600'
         )}
-        title={isListening ? 'לחץ לעצור' : 'לחץ לדיבור'}
+        title={isListening ? 'לחיצה לעצירה' : 'לחיצה לדיבור'}
       >
         {permissionState === 'requesting' ? (
           <Loader2 size={20} className="animate-spin" />
@@ -175,7 +175,7 @@ export default function VoiceInput({ value, onChange, placeholder, rows = 3, cla
       {/* Status messages */}
       {isListening && (
         <p className="text-xs text-red-500 mt-1 text-right animate-pulse">
-          🎤 מאזין... לחץ שוב לעצור
+          🎤 מאזין... לחיצה נוספת לעצירה
         </p>
       )}
       {errorMsg && !isListening && (

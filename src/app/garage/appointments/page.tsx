@@ -480,7 +480,7 @@ export default function AppointmentsPage() {
             <p className="font-bold text-base">
               {newAlertCount === 1 ? '🔔 תור חדש התקבל!' : `🔔 ${newAlertCount} תורים חדשים התקבלו!`}
             </p>
-            <p className="text-sm text-white/90">לחץ על &quot;ממתינים&quot; כדי לצפות ולאשר</p>
+            <p className="text-sm text-white/90">לחיצה על &quot;ממתינים&quot; לצפייה ואישור</p>
           </div>
           <button
             onClick={() => { setShowNewAlert(false); setFilter('pending'); }}

@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
           userId: buyer.id,
           type: 'system',
           title: '🚗 בקשת העברת בעלות על רכב',
-          message: `${seller.fullName} רוצה להעביר לך את הרכב ${vehicle.nickname || vehicle.licensePlate}. לחץ לצפייה ואישור.`,
+          message: `${seller.fullName} רוצה להעביר לך את הרכב ${vehicle.nickname || vehicle.licensePlate}. לחיצה לצפייה ואישור.`,
           link: `/user/vehicles/transfer/accept?code=${code}`,
         },
       });
@@ -333,7 +333,7 @@ export async function PATCH(req: NextRequest) {
           userId: transfer.fromUserId,
           type: 'system',
           title: '✅ העברת בעלות אושרה',
-          message: `${user.fullName} אישר/ה את העברת הרכב ${vehicleLabel}. לחץ להשלמת ההעברה.`,
+          message: `${user.fullName} אישר/ה את העברת הרכב ${vehicleLabel}. לחיצה להשלמת ההעברה.`,
           link: `/user/vehicles/transfer`,
         },
       });

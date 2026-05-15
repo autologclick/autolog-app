@@ -264,7 +264,7 @@ export default function GarageInspectionsPage() {
             {inspections.length === 0 ? 'אין אבחונים עדיין' : 'אין תוצאות'}
           </h3>
           <p className="text-gray-400 text-sm mb-4">
-            {inspections.length === 0 ? 'לחץ על "פעולה חדשה" להתחיל' : 'נסה לשנות את הסינון'}
+            {inspections.length === 0 ? 'לחיצה על "פעולה חדשה" כדי להתחיל' : 'נסו לשנות את הסינון'}
           </p>
         </Card>
       ) : (

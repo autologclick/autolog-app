@@ -573,7 +573,7 @@ export default function GarageSettingsPage() {
           ) : (
             <label className="flex flex-col items-center justify-center py-10 border-2 border-dashed border-gray-300 rounded-xl text-gray-400 hover:border-emerald-400 hover:text-emerald-500 cursor-pointer transition bg-gray-50">
               <Image size={36} className="mb-2" />
-              <span className="text-sm font-medium">לחץ להעלאת תמונות</span>
+              <span className="text-sm font-medium">לחיצה להעלאת תמונות</span>
               <span className="text-xs mt-1">תמונות מבפנים, מבחוץ, ציוד, חניה ועוד</span>
               <input
                 type="file"

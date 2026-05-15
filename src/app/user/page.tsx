@@ -960,7 +960,7 @@ export default function UserHomePage() {
             <ReminderCard
               icon="🧪" title="טסט"
               value={testDays !== null ? (testDays < 0 ? 'פג תוקף!' : `${testDays} יום`) : 'העלה טסט'}
-              subtitle={vehicle.testExpiryDate ? new Date(vehicle.testExpiryDate).toLocaleDateString('he-IL') : 'לחץ להעלאה'}
+              subtitle={vehicle.testExpiryDate ? new Date(vehicle.testExpiryDate).toLocaleDateString('he-IL') : 'לחיצה להעלאה'}
               status={testDays !== null ? (testDays < 0 ? 'danger' : testDays < 30 ? 'warning' : 'success') : 'warning'}
             />
           </div>
@@ -979,7 +979,7 @@ export default function UserHomePage() {
                     const d = insuranceLabel === 'חובה' ? vehicle.compulsoryInsuranceExpiry : vehicle.insuranceExpiry;
                     return d ? new Date(d).toLocaleDateString('he-IL') : '';
                   })()}`
-                : 'לחץ להעלאה'}
+                : 'לחיצה להעלאה'}
               status={insuranceDays !== null ? (insuranceDays < 0 ? 'danger' : insuranceDays < 30 ? 'warning' : 'success') : 'warning'}
             />
           </div>
@@ -1008,7 +1008,7 @@ export default function UserHomePage() {
                 const currentKm = vehicle?.mileage || maintenanceSchedule.basedOnMileage;
                 const remaining = maintenanceSchedule.nextServiceKm - currentKm;
                 return remaining > 0 ? `בעוד ${remaining.toLocaleString()} ק"מ` : 'עבר מועד — מומלץ לטפל';
-              })() : maintenanceError ? 'נסה שוב' : 'לחץ לחישוב'}
+              })() : maintenanceError ? 'לנסות שוב' : 'לחיצה לחישוב'}
               status={maintenanceSchedule ? (() => {
                 const currentKm = vehicle?.mileage || maintenanceSchedule.basedOnMileage;
                 const remaining = maintenanceSchedule.nextServiceKm - currentKm;

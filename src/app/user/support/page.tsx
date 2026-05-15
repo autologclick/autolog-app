@@ -59,7 +59,7 @@ const faqItems = [
   },
   {
     q: 'מה לעשות במקרה חירום?',
-    a: 'לחץ על כפתור SOS האדום בדף הבית. המערכת תאתר את מיקומך ותשלח הודעה למוקד. לסיוע בדרכים חייג ל-053-313-1310.',
+    a: 'לחיצה על כפתור SOS האדום בדף הבית. המערכת תאתר את המיקום ותשלח הודעה למוקד. לסיוע בדרכים חייגו ל-053-313-1310.',
     icon: AlertTriangle,
   },
   {
@@ -271,7 +271,7 @@ export default function SupportPage() {
         </div>
         <div className="flex-1">
           <p className="font-bold text-sm">במקרה חירום?</p>
-          <p className="text-red-100 text-xs">לחץ על כפתור SOS או חייג לסיוע בדרכים: 053-313-1310</p>
+          <p className="text-red-100 text-xs">לחיצה על כפתור SOS או חיוג לסיוע בדרכים: 053-313-1310</p>
         </div>
         <a href="/user/sos" className="px-4 py-2 bg-white text-red-600 rounded-xl text-sm font-bold hover:bg-red-50 transition flex-shrink-0 shadow">
           SOS

@@ -219,7 +219,7 @@ export async function POST(req: NextRequest) {
             userId: vehicleOwnerId,
             type: 'system',
             title: 'טיפול חדש ממתין לאישורך',
-            message: `${garage.name} שלח/ה ${treatmentAction} מסוג ${typeLabel} לרכב ${vehicleLabel}. לחץ כאן לצפייה ואישור.`,
+            message: `${garage.name} שלח/ה ${treatmentAction} מסוג ${typeLabel} לרכב ${vehicleLabel}. לחיצה כאן לצפייה ואישור.`,
             link: '/user/treatments',
           },
         });

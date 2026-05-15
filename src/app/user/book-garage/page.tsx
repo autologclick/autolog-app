@@ -797,7 +797,7 @@ export default function BookGaragePage() {
                 /* Multiple vehicles — tap to select */
                 <div className="space-y-2">
                   {!bookingData.vehicleId && (
-                    <p className="text-xs text-amber-600 font-medium mb-1">לחץ על הרכב הרצוי כדי להמשיך</p>
+                    <p className="text-xs text-amber-600 font-medium mb-1">לחיצה על הרכב הרצוי כדי להמשיך</p>
                   )}
                   <div className="flex gap-2 overflow-x-auto pb-2">
                     {vehicles.map(v => {

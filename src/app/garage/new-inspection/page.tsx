@@ -1854,7 +1854,7 @@ export default function NewInspectionPage() {
       {inspectionType === 'pre_test' && step === 2 && (
         <Card>
           <CardTitle icon={<Search className="text-blue-600" />}>צ'קליסט הכנה לטסט</CardTitle>
-          <p className="text-xs text-gray-500 mt-1 mb-3 text-right">סמן V לכל פריט שנבדק ותקין. לחץ על הפריט להוספת הערה.</p>
+          <p className="text-xs text-gray-500 mt-1 mb-3 text-right">סימון V לכל פריט שנבדק ותקין. לחיצה על הפריט להוספת הערה.</p>
           <div className="space-y-2 mt-3">
             {[
               { key: 'tires', label: 'צמיגים (מצב + לחץ)' },

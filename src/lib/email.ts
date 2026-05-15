@@ -162,7 +162,7 @@ export function buildPasswordResetEmailHtml({
 
   const body = [
     p(`שלום ${fullName},`),
-    p('קיבלנו בקשה לאיפוס הסיסמה שלך ב-AutoLog. לחץ על הכפתור למטה כדי לבחור סיסמה חדשה:'),
+    p('קיבלנו בקשה לאיפוס הסיסמה ב-AutoLog. לחצו על הכפתור למטה כדי לבחור סיסמה חדשה:'),
     `<div style="text-align:center;margin:24px 0">${btnHtml(resetUrl, 'איפוס סיסמה', '#10b981')}</div>`,
     pSmall('הקישור תקף לשעה אחת בלבד.'),
     pSmall('אם לא ביקשת איפוס סיסמה, ניתן להתעלם מהודעה זו.'),

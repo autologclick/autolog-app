@@ -184,8 +184,8 @@ export default function VoiceMicButton({
           permState === 'denied'
             ? 'הגישה למיקרופון נדחתה'
             : isListening
-              ? 'לחץ לעצור'
-              : 'לחץ לדיבור'
+              ? 'לחיצה לעצירה'
+              : 'לחיצה לדיבור'
         }
       >
         {permState === 'requesting' ? (
@@ -220,7 +220,7 @@ export default function VoiceMicButton({
 
             <h3 className="font-bold text-lg text-[#1e3a5f] mb-2">הפעלת מיקרופון</h3>
             <p className="text-sm text-gray-500 leading-relaxed mb-6">
-              AutoLog משתמש במיקרופון כדי להמיר דיבור לטקסט — במקום להקליד, פשוט תדבר.
+              AutoLog משתמש/ת במיקרופון כדי להמיר דיבור לטקסט — במקום להקליד, פשוט מדברים.
               <br />
               <span className="text-gray-400 text-xs mt-1 block">ההקלטה לא נשמרת ומשמשת רק למילוי השדה.</span>
             </p>
@@ -230,7 +230,7 @@ export default function VoiceMicButton({
                 onClick={handleConsentApprove}
                 className="w-full py-3 rounded-xl bg-teal-600 text-white font-bold text-sm hover:bg-teal-700 transition-colors shadow-sm"
               >
-                אשר והפעל
+                אישור והפעלה
               </button>
               <button
                 onClick={handleConsentDecline}
@@ -268,8 +268,8 @@ export default function VoiceMicButton({
             </p>
 
             <div className="bg-gray-50 rounded-xl p-4 text-right text-sm text-gray-600 space-y-2 mb-5">
-              <p><strong>בטלפון:</strong> הגדרות → אפליקציות → Chrome (או הדפדפן שלך) → הרשאות → מיקרופון → אפשר</p>
-              <p><strong>במחשב:</strong> לחץ על 🔒 בשורת הכתובת → הרשאות אתר → מיקרופון → אפשר</p>
+              <p><strong>בטלפון:</strong> הגדרות → אפליקציות → Chrome (או הדפדפן שלכם) → הרשאות → מיקרופון → אפשר</p>
+              <p><strong>במחשב:</strong> לחיצה על 🔒 בשורת הכתובת → הרשאות אתר → מיקרופון → אפשר</p>
             </div>
 
             <button
