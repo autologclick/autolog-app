@@ -216,6 +216,7 @@ export default function UserHomePage() {
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showInspectBanner, setShowInspectBanner] = useState(false);
+  const [userFirstName, setUserFirstName] = useState<string>('');
 
   // Transfer notifications
   const [pendingTransfers, setPendingTransfers] = useState<{
@@ -334,6 +335,16 @@ export default function UserHomePage() {
 
   // ── Data Fetching ──
   useEffect(() => {
+    // Fetch user info for personalized greeting
+    fetch('/api/auth/me')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.user?.fullName) {
+          setUserFirstName(data.user.fullName.split(' ')[0]);
+        }
+      })
+      .catch(() => {});
+
     fetch('/api/vehicles').then(r => {
         if (r.status === 401) { window.location.href = '/auth/login'; return null; }
         return r.json();
@@ -808,8 +819,8 @@ export default function UserHomePage() {
       <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
         {/* Header */}
         <div className="bg-gradient-to-bl from-teal-600 to-teal-700 text-white px-4 pt-12 pb-8 rounded-b-3xl">
-          <h1 className="text-xl font-bold mb-1">שלום! 👋</h1>
-          <p className="text-teal-100 text-sm">מה תרצה לעשות היום?</p>
+          <h1 className="text-xl font-bold mb-1">שלום{userFirstName ? `, ${userFirstName}` : ''}! 👋</h1>
+          <p className="text-teal-100 text-sm">מה תרצו לעשות היום?</p>
         </div>
 
         <div className="px-4 py-6 space-y-4 max-w-lg mx-auto">
