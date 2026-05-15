@@ -12,7 +12,8 @@ import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import {
   Plus, Edit, Trash2, Car, TrendingUp, Fuel, Wrench, Shield,
   AlertTriangle, MapPin, DollarSign, Calendar, Download,
-  Loader2, BarChart3, Zap, TrendingDown, Brain, Lightbulb, Activity
+  Loader2, BarChart3, Zap, TrendingDown, Brain, Lightbulb, Activity,
+  BatteryCharging
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Pagination from '@/components/ui/Pagination';
@@ -26,7 +27,7 @@ interface Expense {
   id: string;
   vehicleId: string;
   vehicle?: { id: string; nickname: string; model: string };
-  category: 'fuel' | 'maintenance' | 'insurance' | 'test' | 'parking' | 'fines' | 'other';
+  category: 'fuel' | 'charging' | 'maintenance' | 'insurance' | 'test' | 'parking' | 'fines' | 'other';
   amount: number;
   description: string;
   date: string;
@@ -43,6 +44,7 @@ interface Vehicle {
 
 const CATEGORIES = {
   fuel: { label: 'דלק', color: 'orange', icon: Fuel, emoji: '⛽' },
+  charging: { label: 'טעינה', color: 'green', icon: BatteryCharging, emoji: '🔌' },
   maintenance: { label: 'תחזוקה', color: 'purple', icon: Wrench, emoji: '🔧' },
   insurance: { label: 'ביטוח', color: 'blue', icon: Shield, emoji: '🛡️' },
   test: { label: 'אבחון', color: 'cyan', icon: Zap, emoji: '📄' },
@@ -739,7 +741,7 @@ export default function ExpensesPage() {
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">תיאור</label>
               <div className="flex items-center gap-2">
                 <input
-                  placeholder="לדוגמה: תדלוק דלק, החלפת שמן, ביטוח שנתי..."
+                  placeholder="לדוגמה: תדלוק דלק, טעינה ב-EVgo, החלפת שמן, ביטוח שנתי..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="flex-1 px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"

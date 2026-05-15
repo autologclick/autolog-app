@@ -349,7 +349,7 @@ export const appointmentSchema = z.object({
 export const expenseSchema = z.object({
   vehicleId: z.string().min(1, 'בחר רכב'),
   category: z.enum([
-    'fuel', 'maintenance', 'insurance', 'test', 'parking', 'fines', 'other'
+    'fuel', 'charging', 'maintenance', 'insurance', 'test', 'parking', 'fines', 'other'
   ], {
     errorMap: () => ({ message: 'קטגוריה לא תקינה' }),
   }),

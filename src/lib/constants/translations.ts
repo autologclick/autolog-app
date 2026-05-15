@@ -139,11 +139,13 @@ export const INSPECTION_TYPE_HEB: Record<string, string> = {
 
 export const EXPENSE_CATEGORY_HEB: Record<string, string> = {
   fuel: 'דלק',
+  charging: 'טעינה',
   maintenance: 'תחזוקה',
   insurance: 'ביטוח',
   test: 'אבחון טכני',
   parking: 'חנייה',
   fine: 'קנס',
+  fines: 'קנסות',
   other: 'אחר',
 };
 

@@ -23,6 +23,7 @@ const serviceTypeHeb: Record<string, string> = {
 
 const expenseCategoryHeb: Record<string, string> = {
   fuel: 'דלק',
+  charging: 'טעינה',
   maintenance: 'תחזוקה',
   insurance: 'ביטוח',
   test: 'טסט',

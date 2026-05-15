@@ -281,7 +281,7 @@ model Expense {
   id          String    @id @default(cuid())
   vehicleId   String
   vehicle     Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
-  category    String    // fuel | maintenance | insurance | test | parking | fines | other
+  category    String    // fuel | charging | maintenance | insurance | test | parking | fines | other
   amount      Float
   description String?   @db.Text
   date        DateTime

@@ -10,7 +10,7 @@ import { prisma } from '@/lib/db';
 
 // ── Auto-categorization: document type / keywords → expense category ──
 
-const EXPENSE_CATEGORIES = ['fuel', 'maintenance', 'insurance', 'test', 'parking', 'fines', 'other'] as const;
+const EXPENSE_CATEGORIES = ['fuel', 'charging', 'maintenance', 'insurance', 'test', 'parking', 'fines', 'other'] as const;
 type ExpenseCategory = typeof EXPENSE_CATEGORIES[number];
 
 /** Map AI document type to expense category */
@@ -24,8 +24,11 @@ const DOC_TYPE_TO_EXPENSE: Record<string, ExpenseCategory> = {
   other: 'other',
 };
 
-/** Hebrew keyword patterns → expense category (checked in order, first match wins) */
+/** Hebrew keyword patterns → expense category (checked in order, first match wins).
+ *  IMPORTANT: charging is checked BEFORE fuel because EV charging stations sometimes
+ *  contain words like "תחנה" that overlap with fuel keywords. */
 const KEYWORD_RULES: Array<{ keywords: RegExp; category: ExpenseCategory }> = [
+  { keywords: /טעינה|מטען|מטעין|מטעני|עמדת טעינה|תחנת טעינה|טעינת רכב|charging|EVgo|Electra|אלקטרה|Better Place|פז Power|חשמל לרכב/i, category: 'charging' },
   { keywords: /דלק|תדלוק|בנזין|סולר|גז|תחנת דלק|פז|דור אלון|סונול|אלון/i, category: 'fuel' },
   { keywords: /ביטוח|פוליסה|כלל|הראל|מגדל|הפניקס|ביטוח חובה|ביטוח מקיף/i, category: 'insurance' },
   { keywords: /טסט|מכון בדיקה|בדיקת שנתית|רישוי|test/i, category: 'test' },
@@ -76,6 +79,7 @@ export function categorizeExpense(params: {
 /** Hebrew labels for expense categories */
 const CATEGORY_LABELS: Record<string, string> = {
   fuel: 'דלק',
+  charging: 'טעינה',
   maintenance: 'תחזוקה',
   insurance: 'ביטוח',
   test: 'טסט',

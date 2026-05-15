@@ -21,10 +21,12 @@ import {
   ParkingCircle,
   AlertTriangle,
   FileCheck,
+  BatteryCharging,
 } from 'lucide-react';
 
 const categoryConfig = {
   fuel: { label: 'דלק', icon: Fuel, color: 'text-orange-600 bg-orange-50' },
+  charging: { label: 'טעינה', icon: BatteryCharging, color: 'text-green-600 bg-green-50' },
   maintenance: { label: 'תחזוקה', icon: Wrench, color: 'text-blue-600 bg-blue-50' },
   insurance: { label: 'ביטוח', icon: Shield, color: 'text-teal-600 bg-teal-50' },
   test: { label: 'טסט', icon: FileCheck, color: 'text-green-600 bg-green-50' },

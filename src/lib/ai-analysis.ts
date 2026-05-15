@@ -712,8 +712,8 @@ function getMonthSpan(items: Array<{ date: string }>): number {
 
 function categoryLabelHe(c: string): string {
   const map: Record<string, string> = {
-    fuel: 'דלק', insurance: 'ביטוח', maintenance: 'תחזוקה', repair: 'תיקון',
-    parking: 'חניה', toll: 'אגרה', test: 'טסט', fine: 'קנס', wash: 'שטיפה',
+    fuel: 'דלק', charging: 'טעינה', insurance: 'ביטוח', maintenance: 'תחזוקה', repair: 'תיקון',
+    parking: 'חניה', toll: 'אגרה', test: 'טסט', fine: 'קנס', fines: 'קנסות', wash: 'שטיפה',
     other: 'אחר', tires: 'צמיגים', lights: 'תאורה', brakes: 'בלמים',
     engine: 'מנוע', steering: 'היגוי', suspension: 'מתלים', body: 'מרכב',
     fluids: 'נוזלים', electrical: 'חשמל', interior: 'פנים', exterior: 'חיצוני',

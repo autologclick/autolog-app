@@ -149,8 +149,8 @@ const docIcon = (t: string) => {
 
 const expenseCatLabel = (c: string) => {
   const map: Record<string, string> = {
-    fuel: 'דלק', maintenance: 'טיפול', repairs: 'תיקון', insurance: 'ביטוח',
-    parking: 'חניה', fines: 'קנסות', registration: 'רישוי', other: 'אחר',
+    fuel: 'דלק', charging: 'טעינה', maintenance: 'טיפול', repairs: 'תיקון', insurance: 'ביטוח',
+    test: 'אבחון', parking: 'חניה', fines: 'קנסות', registration: 'רישוי', other: 'אחר',
   };
   return map[c] || c;
 };

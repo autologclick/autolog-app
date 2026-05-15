@@ -9,6 +9,7 @@
 
 export const VALID_EXPENSE_CATEGORIES = [
   'fuel',
+  'charging',  // EV charging at external charging stations
   'maintenance',
   'insurance',
   'test',

@@ -38,6 +38,7 @@ const SERVICE_TYPE_LABELS: Record<string, string> = {
   repair: 'תיקון',
   test_prep: 'הכנה לטסט',
   fuel: 'דלק',
+  charging: 'טעינה',
   insurance: 'ביטוח',
   test: 'טסט',
   parking: 'חניה',
