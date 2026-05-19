@@ -4,11 +4,20 @@ import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/
 import { verifyPassword } from '@/lib/auth';
 import { verifyTotp, verifyBackupCode } from '@/lib/totp';
 import { logAuditEvent } from '@/lib/audit-log';
+import { checkLoginRateLimit } from '@/lib/rate-limit';
 
 // POST /api/auth/2fa/disable - Disable 2FA. Requires current password
 // plus a valid TOTP/backup code. Admins are blocked from disabling (see below).
 export async function POST(req: NextRequest) {
   try {
+    // Rate-limit per IP so a stolen password cannot brute-force the 6-digit
+    // TOTP code (1M combinations) or short backup codes.
+    const rateLimit = await checkLoginRateLimit(req);
+    if (!rateLimit.allowed) {
+      const secondsRemaining = Math.ceil((rateLimit.resetTime - Date.now()) / 1000);
+      return errorResponse(`יותר מדי ניסיונות. נסה שוב בעוד ${secondsRemaining} שניות.`, 429);
+    }
+
     const payload = requireAuth(req);
     const body = await req.json();
     const password: string = (body?.password || '').toString();

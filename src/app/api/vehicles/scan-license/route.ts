@@ -257,7 +257,6 @@ async function extractWithOpenAI(apiKey: string, imageDataUrl: string): Promise<
     const data = await response.json();
     const text = data.choices?.[0]?.message?.content?.trim() || '';
     const parsed = parseAiJson(text);
-    console.log('[scan-license] OpenAI extracted fields:', Object.keys(parsed));
     return parsed;
   } catch (error) {
     console.error('OpenAI Vision extraction failed:', error);
@@ -309,7 +308,6 @@ async function extractWithAnthropic(apiKey: string, imageDataUrl: string): Promi
     const data = await response.json();
     const text = data.content?.[0]?.text?.trim() || '';
     const parsed = parseAiJson(text);
-    console.log('[scan-license] Anthropic extracted fields:', Object.keys(parsed));
     return parsed;
   } catch (error) {
     console.error('Anthropic Vision extraction failed:', error);

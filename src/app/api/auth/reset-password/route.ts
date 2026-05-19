@@ -35,35 +35,29 @@ export async function POST(req: NextRequest) {
     // Hash the token to compare with stored hash
     const hashedToken = createHash('sha256').update(token).digest('hex');
 
-    // Find user with matching, non-expired token using parameterized Prisma query
-    const user = await prisma.user.findFirst({
-      where: {
-        resetToken: hashedToken,
-        resetTokenExpiry: {
-          gt: new Date(),
-        },
-      },
-      select: {
-        id: true,
-        email: true,
-      },
-    });
-
-    if (!user) {
-      return errorResponse(AUTH_ERRORS.RESET_LINK_EXPIRED, 400);
-    }
-
-    // Hash new password and clear reset token
+    // Hash new password first (so an attacker who finds the token can't
+    // exploit a slow bcrypt to extend the race window).
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    await prisma.user.update({
-      where: { id: user.id },
+    // Atomic "consume + update" — updateMany returns count=0 if the token was
+    // already consumed (cleared), eliminating the replay race condition where
+    // two simultaneous requests with the same token could both succeed.
+    const result = await prisma.user.updateMany({
+      where: {
+        resetToken: hashedToken,
+        resetTokenExpiry: { gt: new Date() },
+      },
       data: {
         passwordHash: hashedPassword,
         resetToken: null,
         resetTokenExpiry: null,
       },
     });
+
+    if (result.count === 0) {
+      // Either token didn't exist, expired, or was already used by another request
+      return errorResponse(AUTH_ERRORS.RESET_LINK_EXPIRED, 400);
+    }
 
     return jsonResponse({
       message: SUCCESS_MESSAGES.PASSWORD_CHANGED,

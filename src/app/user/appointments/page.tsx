@@ -217,11 +217,15 @@ export default function AppointmentsPage() {
     fetchAppointments();
   }, [filter]);
 
-  // Poll for status changes every 30 seconds
+  // Poll for status changes every 30 seconds.
+  // Note: `initialLoadDone` is a ref, not reactive — including it in deps
+  // was a bug (refs don't trigger re-renders). Empty deps + cleanup ensures
+  // exactly ONE interval lives at a time, regardless of re-renders.
   useEffect(() => {
-    if (!initialLoadDone.current) return;
-
+    // Guard at run-time: if the first-load fetch hasn't populated knownStatusRef
+    // yet, the first poll tick will simply find no changes. Safe to start now.
     pollRef.current = setInterval(async () => {
+      if (!initialLoadDone.current) return;
       try {
         const res = await fetch('/api/appointments');
         if (!res.ok) return;
@@ -263,9 +267,14 @@ export default function AppointmentsPage() {
     }, 30000);
 
     return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
     };
-  }, [initialLoadDone.current, playNotificationSound]);
+    // Intentionally empty deps — see comment above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCancelAppointment = async () => {
     if (!selectedAppointment) return;

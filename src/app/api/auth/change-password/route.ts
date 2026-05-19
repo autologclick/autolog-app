@@ -2,11 +2,21 @@ import { NextRequest } from 'next/server';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { NOT_FOUND, AUTH_ERRORS, SUCCESS_MESSAGES } from '@/lib/messages';
 import { z } from 'zod';
 
+// Match the registration password policy. Allowing a weaker password here
+// was a silent security regression — an attacker who steals a session can
+// downgrade the victim's password to something easy to brute-force.
 const schema = z.object({
   currentPassword: z.string().min(1, 'סיסמה נוכחית נדרשת'),
-  newPassword: z.string().min(6, 'סיסמה חדשה חייבת להכיל לפחות 6 תווים'),
+  newPassword: z
+    .string()
+    .min(8, 'סיסמה חדשה חייבת להכיל לפחות 8 תווים')
+    .regex(/[A-Z]/, 'הסיסמה חייבת לכלול אות גדולה באנגלית')
+    .regex(/[a-z]/, 'הסיסמה חייבת לכלול אות קטנה באנגלית')
+    .regex(/[0-9]/, 'הסיסמה חייבת לכלול ספרה')
+    .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~`]/, 'הסיסמה חייבת לכלול תו מיוחד'),
 });
 
 export async function POST(req: NextRequest) {
@@ -36,6 +46,12 @@ export async function POST(req: NextRequest) {
     const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
     if (!isValid) {
       return errorResponse(AUTH_ERRORS.CURRENT_PASSWORD_WRONG, 401);
+    }
+
+    // Reject reusing the same password
+    const sameAsOld = await bcrypt.compare(newPassword, user.passwordHash);
+    if (sameAsOld) {
+      return errorResponse('הסיסמה החדשה זהה לקיימת. אנא בחר סיסמה שונה.', 400);
     }
 
     // Hash new password
