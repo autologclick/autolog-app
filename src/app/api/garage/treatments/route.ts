@@ -5,6 +5,21 @@ import prisma from '@/lib/db';
 import { NOT_FOUND, AUTH_ERRORS } from '@/lib/messages';
 import { z } from 'zod';
 import { updateVehicleMileage, MileageError } from '@/lib/mileage';
+import { createNotification } from '@/lib/services/notification-service';
+import { sendEmail, buildTreatmentEmailHtml } from '@/lib/email';
+import { sendPushToUser } from '@/lib/push-sender';
+
+const TREATMENT_TYPE_HEB: Record<string, string> = {
+  maintenance: 'טיפול תקופתי',
+  repair: 'תיקון',
+  oil_change: 'החלפת שמן',
+  tires: 'צמיגים',
+  brakes: 'בלמים',
+  electrical: 'חשמל',
+  ac: 'מיזוג',
+  bodywork: 'פחחות/צבע',
+  other: 'אחר',
+};
 
 const garageTreatmentSchema = z.object({
   licensePlate: z.string().min(1),
@@ -72,7 +87,7 @@ export async function POST(req: NextRequest) {
     // Find the vehicle by license plate
     const vehicle = await prisma.vehicle.findUnique({
       where: { licensePlate: data.licensePlate as string },
-      select: { id: true, userId: true, nickname: true },
+      select: { id: true, userId: true, nickname: true, manufacturer: true, model: true, licensePlate: true },
     });
 
     if (!vehicle) {
@@ -104,6 +119,64 @@ export async function POST(req: NextRequest) {
       date: data.date,
       notes: data.notes,
     });
+
+    // ──────────────────────────────────────────────────────────────
+    // Notify the customer through 3 channels (best-effort, fire-and-forget)
+    // We skip notifications if the vehicle is "garage-owned" — i.e., the
+    // garage owner created the vehicle manually and there's no real customer.
+    // ──────────────────────────────────────────────────────────────
+    const isOwnedByGarage = vehicle.userId === payload.userId;
+
+    if (!isOwnedByGarage) {
+      const vehicleLabel = vehicle.nickname || `${vehicle.manufacturer} ${vehicle.model}`;
+      const typeLabel = TREATMENT_TYPE_HEB[data.type] || data.type;
+
+      // 1. In-app notification
+      createNotification({
+        userId: vehicle.userId,
+        type: 'system',
+        title: 'טיפול חדש ממתין לאישורך',
+        message: `${garage.name} שלח/ה ${typeLabel} — "${data.title}" לרכב ${vehicleLabel} (${vehicle.licensePlate}). לחיצה כאן לאישור.`,
+        link: '/user/treatments',
+      }).catch(() => {});
+
+      // 2. Email + 3. Push — only if we can fetch the customer's contact details
+      prisma.user
+        .findUnique({ where: { id: vehicle.userId }, select: { email: true, fullName: true } })
+        .then((customer) => {
+          if (!customer) return;
+
+          // Email (Resend)
+          if (customer.email) {
+            sendEmail({
+              to: customer.email,
+              subject: `AutoLog — טיפול חדש מ${garage.name} ממתין לאישור`,
+              html: buildTreatmentEmailHtml({
+                recipientName: customer.fullName || 'לקוח/ה',
+                garageName: garage.name,
+                vehicleLabel: `${vehicleLabel} (${vehicle.licensePlate})`,
+                treatmentTitle: data.title,
+                treatmentType: typeLabel,
+                cost: data.cost,
+                mileage: data.mileage,
+                date: data.date,
+                status: 'sent',
+                description: data.description,
+              }),
+            }).catch(() => {});
+          }
+
+          // Web push
+          sendPushToUser(vehicle.userId, {
+            title: '🔧 טיפול חדש ממתין לאישור',
+            body: `${garage.name}: ${data.title} — ${vehicleLabel}`,
+            tag: `treatment-${treatment.id}-new`,
+            requireInteraction: true,
+            data: { link: '/user/treatments', type: 'treatment_new' },
+          }).catch(() => {});
+        })
+        .catch(() => {});
+    }
 
     return jsonResponse({ treatment, message: 'הטיפול נשלח ללקוח לאישור!' }, 201);
   } catch (error) {

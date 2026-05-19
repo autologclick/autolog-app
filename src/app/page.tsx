@@ -790,13 +790,29 @@ export default function Home() {
             כל מה שכדאי לדעת על הרכב שלך — מטסט שנתי וביטוח, דרך אבחון מקצועי, ועד חיסכון בדלק והעברת בעלות. תוכן מקצועי, חינם, מתעדכן באופן שוטף.
           </p>
 
+          {/* Pillar feature */}
+          <Link
+            href="/blog/madrich-male-baal-rechev-chadash-2026"
+            className="group block max-w-2xl mx-auto bg-white rounded-2xl shadow-md hover:shadow-xl border border-teal-100 p-6 sm:p-7 mb-6 transition-all hover:-translate-y-0.5 text-right"
+          >
+            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-amber-600 bg-amber-50 px-3 py-1 rounded-full mx-auto mb-3 w-max">
+              ⭐ המדריך המקיף ביותר
+            </div>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-[#1e3a5f] mb-2 group-hover:text-teal-700 transition text-center">
+              המדריך השלם לבעל רכב חדש בישראל 2026
+            </h3>
+            <p className="text-sm text-gray-500 text-center leading-relaxed">
+              25 דקות קריאה · ביטוח, טסט, תחזוקה, הוצאות, רישוי, חירום ועוד — הכל במקום אחד.
+            </p>
+          </Link>
+
           {/* Big bold blog button */}
           <Link
             href="/blog"
             className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-l from-teal-600 to-teal-500 text-white font-bold text-base sm:text-lg rounded-2xl hover:from-teal-700 hover:to-teal-600 transition-all duration-300 shadow-xl shadow-teal-600/30 hover:shadow-2xl hover:shadow-teal-600/40 hover:-translate-y-0.5"
           >
             <BookOpen size={22} />
-            <span>קרא את הבלוג</span>
+            <span>כל המאמרים בבלוג</span>
             <ArrowLeft size={20} className="transition-transform group-hover:-translate-x-1" />
           </Link>
 
@@ -804,7 +820,7 @@ export default function Home() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-400">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 size={14} className="text-teal-500" />
-              <span>13+ מאמרים מקצועיים</span>
+              <span>24+ מאמרים מקצועיים</span>
             </div>
             <div className="flex items-center gap-1.5">
               <CheckCircle2 size={14} className="text-teal-500" />

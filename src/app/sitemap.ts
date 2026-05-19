@@ -50,13 +50,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
+  // Pillar article slugs get higher priority and weekly crawl
+  const PILLAR_SLUGS = new Set(['madrich-male-baal-rechev-chadash-2026']);
+
   // Blog posts
-  const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-    url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.updatedAt || post.publishedAt),
-    changeFrequency: 'monthly' as const,
-    priority: 0.7,
-  }));
+  const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => {
+    const isPillar = PILLAR_SLUGS.has(post.slug);
+    return {
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: new Date(post.updatedAt || post.publishedAt),
+      changeFrequency: (isPillar ? 'weekly' : 'monthly') as 'weekly' | 'monthly',
+      priority: isPillar ? 0.9 : 0.7,
+    };
+  });
 
   return [...staticPages, ...blogPages];
 }

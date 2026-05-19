@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Calendar, Clock, ChevronLeft, BookOpen } from 'lucide-react';
+import { Calendar, Clock, ChevronLeft, BookOpen, Star } from 'lucide-react';
 import { blogPosts } from '@/lib/blog/posts';
 import Logo from '@/components/ui/Logo';
+
+const PILLAR_SLUG = 'madrich-male-baal-rechev-chadash-2026';
 
 export const metadata: Metadata = {
   title: 'בלוג AutoLog — מדריכים וטיפים לבעלי רכב',
@@ -47,8 +49,36 @@ export default function BlogPage() {
 
       {/* Posts Grid */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 -mt-8 pb-20">
+        {/* Pillar feature */}
+        {(() => {
+          const pillar = blogPosts.find((p) => p.slug === PILLAR_SLUG);
+          if (!pillar) return null;
+          return (
+            <Link
+              href={`/blog/${pillar.slug}`}
+              className="block bg-gradient-to-l from-teal-600 to-teal-700 text-white rounded-3xl shadow-lg p-8 sm:p-10 mb-10 hover:shadow-xl transition group"
+            >
+              <div className="flex items-center gap-2 text-xs font-semibold mb-3 opacity-90">
+                <Star size={14} className="fill-yellow-300 text-yellow-300" />
+                המדריך המקיף ביותר באתר
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold mb-3 leading-tight">{pillar.title}</h2>
+              <p className="text-white/85 text-sm sm:text-base leading-relaxed mb-5 max-w-2xl">{pillar.description}</p>
+              <div className="flex items-center gap-4 text-xs text-white/80">
+                <span className="flex items-center gap-1"><Clock size={12} />{pillar.readingTime}</span>
+                <span className="flex items-center gap-1 font-semibold group-hover:gap-2 transition-all">
+                  קראו עכשיו <ChevronLeft size={14} />
+                </span>
+              </div>
+            </Link>
+          );
+        })()}
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {blogPosts.map((post) => (
+          {[...blogPosts]
+            .filter((p) => p.slug !== PILLAR_SLUG)
+            .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+            .map((post) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}

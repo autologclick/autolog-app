@@ -9,6 +9,95 @@ import {
   rejectTreatment,
 } from '@/lib/treatments-db';
 import prisma from '@/lib/db';
+import { createNotification } from '@/lib/services/notification-service';
+import { sendEmail, buildTreatmentEmailHtml } from '@/lib/email';
+import { sendPushToUser } from '@/lib/push-sender';
+
+const TREATMENT_TYPE_HEB: Record<string, string> = {
+  maintenance: 'טיפול תקופתי',
+  repair: 'תיקון',
+  oil_change: 'החלפת שמן',
+  tires: 'צמיגים',
+  brakes: 'בלמים',
+  electrical: 'חשמל',
+  ac: 'מיזוג',
+  bodywork: 'פחחות/צבע',
+  inspection: 'אבחון',
+  other: 'אחר',
+};
+
+/**
+ * Notify the garage owner when their customer approves or rejects a treatment.
+ * Best-effort — does not throw on failure.
+ */
+async function notifyGarageOfDecision(
+  treatmentId: string,
+  decision: 'approved' | 'rejected',
+  rejectionReason?: string,
+) {
+  try {
+    const treatment = await prisma.treatment.findUnique({
+      where: { id: treatmentId },
+      include: {
+        vehicle: { select: { nickname: true, licensePlate: true, manufacturer: true, model: true } },
+        user: { select: { fullName: true } },
+      },
+    });
+    if (!treatment || !treatment.garageId) return;
+
+    const garage = await prisma.garage.findUnique({
+      where: { id: treatment.garageId },
+      select: { ownerId: true, name: true, owner: { select: { email: true, fullName: true } } },
+    });
+    if (!garage) return;
+
+    const vehicleLabel = treatment.vehicle.nickname || `${treatment.vehicle.manufacturer} ${treatment.vehicle.model}`;
+    const customerName = treatment.user.fullName || 'לקוח/ה';
+    const typeLabel = TREATMENT_TYPE_HEB[treatment.type] || treatment.type;
+
+    const reasonSuffix = decision === 'rejected' && rejectionReason ? ` סיבה: ${rejectionReason}` : '';
+
+    // 1. In-app notification
+    createNotification({
+      userId: garage.ownerId,
+      type: 'system',
+      title: decision === 'approved' ? 'הטיפול אושר ✅' : 'הטיפול נדחה ❌',
+      message: `${customerName} ${decision === 'approved' ? 'אישר/ה' : 'דחה/דחתה'} את הטיפול "${treatment.title}" לרכב ${vehicleLabel} (${treatment.vehicle.licensePlate}).${reasonSuffix}`,
+      link: '/garage/treatments',
+    }).catch(() => {});
+
+    // 2. Email to garage owner
+    if (garage.owner?.email) {
+      sendEmail({
+        to: garage.owner.email,
+        subject: `AutoLog — ${decision === 'approved' ? 'טיפול אושר' : 'טיפול נדחה'} ע״י ${customerName}`,
+        html: buildTreatmentEmailHtml({
+          recipientName: garage.owner.fullName || 'בעל/ת מוסך',
+          garageName: garage.name,
+          vehicleLabel: `${vehicleLabel} (${treatment.vehicle.licensePlate})`,
+          treatmentTitle: treatment.title,
+          treatmentType: typeLabel,
+          cost: treatment.cost,
+          mileage: treatment.mileage,
+          date: treatment.date,
+          status: decision,
+          rejectionReason,
+          description: treatment.description,
+        }),
+      }).catch(() => {});
+    }
+
+    // 3. Push notification
+    sendPushToUser(garage.ownerId, {
+      title: decision === 'approved' ? '✅ טיפול אושר' : '❌ טיפול נדחה',
+      body: `${customerName}: ${treatment.title} — ${vehicleLabel}`,
+      tag: `treatment-${treatmentId}-${decision}`,
+      data: { link: '/garage/treatments', type: `treatment_${decision}` },
+    }).catch(() => {});
+  } catch {
+    // best-effort; never break the response
+  }
+}
 
 // GET /api/treatments/[id] - Get single treatment
 export async function GET(
@@ -117,6 +206,8 @@ export async function PATCH(
       if (!approved) {
         return errorResponse(TREATMENT_ERRORS.CANNOT_APPROVE, 400);
       }
+      // Notify garage owner — best-effort, fire-and-forget
+      notifyGarageOfDecision(params.id, 'approved').catch(() => {});
       return jsonResponse({ message: SUCCESS_MESSAGES.TREATMENT_APPROVED });
     }
 
@@ -125,6 +216,8 @@ export async function PATCH(
       if (!rejected) {
         return errorResponse(TREATMENT_ERRORS.CANNOT_REJECT, 400);
       }
+      // Notify garage owner — best-effort, fire-and-forget
+      notifyGarageOfDecision(params.id, 'rejected', reason).catch(() => {});
       return jsonResponse({ message: SUCCESS_MESSAGES.TREATMENT_REJECTED });
     }
 

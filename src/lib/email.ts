@@ -425,6 +425,93 @@ export function buildCustomerStatusEmailHtml({
 }
 
 /**
+ * Treatment Email — sent to customer when garage submits a treatment for approval,
+ * and sent to the garage when the customer approves or rejects it.
+ */
+export function buildTreatmentEmailHtml({
+  recipientName,
+  garageName,
+  vehicleLabel,
+  treatmentTitle,
+  treatmentType,
+  cost,
+  mileage,
+  date,
+  status,
+  rejectionReason,
+  description,
+}: {
+  recipientName: string;
+  garageName: string;
+  vehicleLabel: string;
+  treatmentTitle: string;
+  treatmentType: string;
+  cost?: number | null;
+  mileage?: number | null;
+  date: string;
+  status: 'sent' | 'approved' | 'rejected';
+  rejectionReason?: string | null;
+  description?: string | null;
+}): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+
+  const cfg: Record<string, { emoji: string; title: string; color: string; message: string; cta: string; ctaUrl: string }> = {
+    sent: {
+      emoji: '🔧',
+      title: 'טיפול חדש ממתין לאישורך',
+      color: '#0d9488',
+      message: `<strong>${garageName}</strong> שלח/ה לך פירוט טיפול לרכב <strong>${vehicleLabel}</strong>. אנא בדוק/בדקי את הפרטים ואשר/י או דחה/דחי.`,
+      cta: 'צפה/י באישור הטיפול',
+      ctaUrl: `${baseUrl}/user/treatments`,
+    },
+    approved: {
+      emoji: '✅',
+      title: 'הטיפול אושר על ידי הלקוח/ה',
+      color: '#059669',
+      message: `<strong>${recipientName}</strong> אישר/ה את הטיפול <strong>${treatmentTitle}</strong> לרכב <strong>${vehicleLabel}</strong>.`,
+      cta: 'צפה/י בטיפולים',
+      ctaUrl: `${baseUrl}/garage/treatments`,
+    },
+    rejected: {
+      emoji: '❌',
+      title: 'הטיפול נדחה על ידי הלקוח/ה',
+      color: '#dc2626',
+      message: `<strong>${recipientName}</strong> דחה/דחתה את הטיפול <strong>${treatmentTitle}</strong> לרכב <strong>${vehicleLabel}</strong>.${rejectionReason ? ` סיבה: ${rejectionReason}` : ''}`,
+      cta: 'צפה/י בטיפולים',
+      ctaUrl: `${baseUrl}/garage/treatments`,
+    },
+  };
+
+  const c = cfg[status];
+  const header = `<h1 style="color:#ffffff;margin:0;font-size:20px">${c.emoji} ${c.title}</h1>`;
+
+  const rows = [
+    detailRow('מוסך', garageName),
+    detailRow('רכב', vehicleLabel),
+    detailRow('סוג', treatmentType),
+    detailRow('כותרת', treatmentTitle),
+    detailRow('תאריך', date),
+    ...(mileage ? [detailRow('ק״מ', mileage.toLocaleString())] : []),
+    ...(cost && cost > 0 ? [detailRow('עלות', `₪${cost.toLocaleString()}`, true)] : []),
+  ].join('');
+
+  const descriptionHtml = description
+    ? `<div style="background:#f8fafc;border-right:3px solid ${c.color};border-radius:6px;padding:12px 14px;margin:0 0 16px"><p style="margin:0;font-size:14px;color:#475569;line-height:1.5">${description}</p></div>`
+    : '';
+
+  const body = [
+    p(`שלום ${recipientName},`),
+    p(c.message),
+    descriptionHtml,
+    detailTable(rows),
+    `<div style="text-align:center;margin:24px 0">${btnHtml(c.ctaUrl, c.cta, c.color)}</div>`,
+    pSmall('הודעה זו נשלחה אוטומטית ע״י מערכת AutoLog. אין צורך להשיב.'),
+  ].join('');
+
+  return emailWrapper(c.color, header, body);
+}
+
+/**
  * Vehicle Share Request Email
  */
 export function buildVehicleShareRequestEmailHtml(

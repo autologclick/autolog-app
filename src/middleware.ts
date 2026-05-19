@@ -219,7 +219,7 @@ export async function middleware(req: NextRequest) {
   // No valid token at all
   if (!payload) {
     if (pathname.startsWith('/api')) {
-      return NextResponse.json({ error: 'ÃÂ¤ÃÂ ÃÂªÃÂÃÂ§ÃÂ£ ÃÂÃÂÃÂªÃÂÃÂÃÂ¨ÃÂÃÂª. ÃÂÃÂ© ÃÂÃÂÃÂªÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ©.', code: 'UNAUTHORIZED' }, { status: 401 });
+      return NextResponse.json({ error: 'פג תוקף ההתחברות. יש להתחבר מחדש.', code: 'UNAUTHORIZED' }, { status: 401 });
     }
     const loginUrl = new URL('/auth/login', req.url);
     return NextResponse.redirect(loginUrl);
