@@ -8,6 +8,7 @@ import { checkRegisterRateLimit } from '@/lib/rate-limit';
 import { createRequestLogger } from '@/lib/logger';
 import { logAuthEvent, logCreateEvent } from '@/lib/audit-log';
 import { creditReferral } from '@/lib/services/partner-service';
+import { notifyAdmins } from '@/lib/services/notification-service';
 import { ZodError } from 'zod';
 
 export async function POST(req: NextRequest) {
@@ -100,6 +101,19 @@ export async function POST(req: NextRequest) {
         partnerId: result.partnerId,
       });
     }
+
+    // Notify admins about the new signup (best-effort — never blocks the response).
+    // Admin sees the new user appear in their NotificationBell + dashboard list.
+    notifyAdmins(
+      'system',
+      'משתמש חדש נרשם 🎉',
+      `${fullName} (${email}) הצטרף/ה ל-AutoLog${phone ? ` · ${phone}` : ''}${referralCode ? ` · קוד הפניה: ${referralCode}` : ''}`,
+      `/admin/users/${user.id}`,
+    ).catch((notifyErr) => {
+      logger.warn('Failed to notify admins about new user', {
+        error: notifyErr instanceof Error ? notifyErr.message : String(notifyErr),
+      });
+    });
 
     // Generate access token (2 hours) and refresh token (30 days) — same as login
     const accessToken = generateToken({

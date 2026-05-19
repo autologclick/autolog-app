@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
         orderBy: { isPrimary: 'desc' },
       });
     }
-    if (!vehicle) return errorResponse('×× × ××¦× ×¨××. ××© ××××¡××£ ×¨×× ×ª××××.', 404);
+    if (!vehicle) return errorResponse('רכב לא נמצא. יש להוסיף רכב תחילה.', 404);
 
     const event = await prisma.sosEvent.create({
       data: {
@@ -85,9 +85,9 @@ export async function POST(req: NextRequest) {
       'אירוע SOS חדש!',
       `${vehicle.nickname} (${vehicle.licensePlate}) - ${eventType}`,
       `/admin/sos/${event.id}`,
-    )
+    );
 
-    return jsonResponse({ event, message: '×××¨××¢ SOS ×××× ×××¦×××. ×¦×××ª ×©×× × ×××¨×!' }, 201);
+    return jsonResponse({ event, message: 'אירוע SOS נקלט בהצלחה. צוות AutoLog בדרך אליך!' }, 201);
   } catch (error) {
     return handleApiError(error);
   }

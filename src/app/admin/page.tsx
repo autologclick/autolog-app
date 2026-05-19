@@ -120,22 +120,51 @@ export default function AdminDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
   useEffect(() => {
-    async function fetchDashboard() {
+    let cancelled = false;
+
+    async function fetchDashboard(isBackground = false) {
       try {
-        const res = await fetch('/api/admin/dashboard');
+        const res = await fetch('/api/admin/dashboard', { cache: 'no-store' });
         if (!res.ok) throw new Error('שגיאה בטעינת הדשבורד');
         const json = await res.json();
+        if (cancelled) return;
         setData(json);
+        setError(false);
+        setLastRefreshed(new Date());
       } catch (err) {
-        setError(true);
+        // Only show the error screen for the initial load — silently keep
+        // the last good data if a background refresh fails (e.g. offline).
+        if (!isBackground && !cancelled) setError(true);
       } finally {
-        setLoading(false);
+        if (!isBackground && !cancelled) setLoading(false);
       }
     }
 
-    fetchDashboard();
+    // Initial load
+    fetchDashboard(false);
+
+    // Background refresh every 30s — admin sees live counts without manual reload.
+    // Skips when tab is hidden to avoid pointless work.
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        fetchDashboard(true);
+      }
+    }, 30_000);
+
+    // Also refresh immediately when the tab comes back into focus
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') fetchDashboard(true);
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, []);
 
   return (
@@ -159,7 +188,15 @@ export default function AdminDashboard() {
             <p className="text-sm text-gray-500">דשבורד ניהול מערכת</p>
           </div>
         </div>
-        <Badge variant="info" size="md">אדמין</Badge>
+        <div className="flex items-center gap-2">
+          {lastRefreshed && (
+            <span className="hidden sm:flex items-center gap-1 text-xs text-gray-400" title={`עודכן לאחרונה: ${lastRefreshed.toLocaleTimeString('he-IL')}`}>
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              חי · {lastRefreshed.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          )}
+          <Badge variant="info" size="md">אדמין</Badge>
+        </div>
       </div>
 
       {/* Live Statistics Cards - 6 Main Stats */}

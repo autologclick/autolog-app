@@ -138,6 +138,41 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       });
     }
 
+    // ─── Send rejection email to applicant ───
+    // Without this, applicants submit a heartfelt application and never hear
+    // back — terrible brand experience. Fire-and-forget so a Resend outage
+    // doesn't break the admin's UI flow.
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+      const reasonHtml = adminNotes
+        ? `<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:14px;margin:0 0 20px"><p style="margin:0 0 6px;font-size:15px;color:#92400e;font-weight:600">📋 הסבר מהצוות:</p><p style="margin:0;font-size:14px;color:#92400e;line-height:1.5">${adminNotes}</p></div>`
+        : '';
+      const rejectionHtml = `<!DOCTYPE html>
+<html dir="rtl" lang="he"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<body style="font-family:Arial,Helvetica,sans-serif;background:#f4f4f7;margin:0;padding:24px 8px;direction:rtl">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+<table role="presentation" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;max-width:520px;width:100%;box-shadow:0 2px 8px rgba(0,0,0,0.06)">
+<tr><td style="background:linear-gradient(135deg,#dc2626,#b91c1c);padding:22px 28px;text-align:center"><h1 style="color:#fff;margin:0;font-size:20px">❌ עדכון לגבי הבקשה שלך</h1></td></tr>
+<tr><td style="padding:28px">
+<p style="font-size:16px;color:#1e293b;margin:0 0 18px;line-height:1.6">שלום ${application.ownerName},</p>
+<p style="font-size:16px;color:#1e293b;margin:0 0 18px;line-height:1.6">לצערנו, הבקשה של <strong>${application.garageName}</strong> להצטרפות ל-AutoLog לא אושרה כרגע.</p>
+${reasonHtml}
+<p style="font-size:15px;color:#475569;margin:0 0 18px;line-height:1.6">אתם מוזמנים לפנות אלינו במייל לקבלת הבהרות, או להגיש בקשה מחודשת לאחר השלמת הפרטים החסרים.</p>
+<div style="text-align:center;margin:24px 0"><a href="${baseUrl}/garage-apply" style="display:inline-block;background:#0d9488;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:700">הגש/י בקשה חדשה</a></div>
+<p style="font-size:13px;color:#94a3b8;margin:24px 0 0;line-height:1.4">תודה על ההתעניינות ב-AutoLog · צוות AutoLog</p>
+</td></tr></table></td></tr></table></body></html>`;
+      await sendEmail({
+        to: application.email,
+        subject: `AutoLog — עדכון לגבי בקשת ההצטרפות של ${application.garageName}`,
+        html: rejectionHtml,
+      });
+    } catch (emailErr) {
+      logger.warn('Failed to send rejection email to applicant', {
+        email: application.email,
+        error: emailErr instanceof Error ? emailErr.message : String(emailErr),
+      });
+    }
+
     return jsonResponse({
       message: 'הבקשה נדחתה בהצלחה.',
     });

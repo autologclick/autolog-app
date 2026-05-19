@@ -104,7 +104,9 @@ export default function AdminUsersPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'שגיאה באיפוס סיסמה');
-      setCredentialsInfo({ email: data.email, password: data.tempPassword });
+      // Server now sends the temp password by email instead of returning it.
+      // Show a clear confirmation instead of an undefined password.
+      setActionMsg(data.message || `סיסמה זמנית חדשה נשלחה למייל של המשתמש (${data.email})`);
       setEditModal(false);
     } catch {
       setError('לא הצלחנו לאפס את הסיסמה. נסה שוב מאוחר יותר.');
