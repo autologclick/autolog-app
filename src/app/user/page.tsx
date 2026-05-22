@@ -506,62 +506,113 @@ export default function UserHomePage() {
     reader.readAsDataURL(file);
   };
 
-  const handleSaveInsurance = async () => {
-    if (!vehicle) return;
-    setInsuranceSaving(true);
-    setInsuranceError('');
+  /**
+   * Treat a form as "having data" if the user filled any meaningful field —
+   * company OR expiry OR start date. Empty company name + empty dates = ignore.
+   */
+  const hasFormData = (form: typeof compulsoryForm) =>
+    Boolean(form.insuranceCompany || form.insuranceExpiry || form.insuranceStart);
 
-    const isCompulsory = insuranceTab === 'compulsory';
+  /**
+   * Save one of the two insurance forms. Returns true on success, false on error.
+   * The combined "save all" handler below calls this in parallel for each form
+   * that the user actually filled.
+   */
+  const saveOneInsurance = async (which: 'compulsory' | 'comprehensive'): Promise<boolean> => {
+    if (!vehicle) return false;
+    const isCompulsory = which === 'compulsory';
     const form = isCompulsory ? compulsoryForm : insuranceForm;
-
+    const bodyData: Record<string, unknown> = {
+      insuranceCompany: form.insuranceCompany || null,
+      insuranceStart: form.insuranceStart || null,
+      insuranceExpiry: form.insuranceExpiry || null,
+      insuranceCost: form.insuranceCost ? parseFloat(form.insuranceCost) : null,
+      insurancePolicyNumber: form.insurancePolicyNumber || null,
+    };
+    if (!isCompulsory) {
+      bodyData.insuranceType = insuranceForm.insuranceType || null;
+    }
     try {
-      const bodyData: Record<string, unknown> = {
-        insuranceCompany: form.insuranceCompany || null,
-        insuranceStart: form.insuranceStart || null,
-        insuranceExpiry: form.insuranceExpiry || null,
-        insuranceCost: form.insuranceCost ? parseFloat(form.insuranceCost) : null,
-        insurancePolicyNumber: form.insurancePolicyNumber || null,
-      };
-      if (!isCompulsory) {
-        bodyData.insuranceType = insuranceForm.insuranceType || null;
-      }
-
-      const res = await fetch(`/api/vehicles/${vehicle.id}/insurance?type=${insuranceTab}`, {
+      const res = await fetch(`/api/vehicles/${vehicle.id}/insurance?type=${which}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bodyData),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setInsuranceError(data.error || 'שגיאה בשמירה');
-        return;
-      }
+      if (!res.ok) return false;
 
-      const label = isCompulsory ? 'ביטוח חובה' : 'ביטוח מקיף/צד ג\'';
-      setInsuranceSuccess(`פרטי ${label} נשמרו בהצלחה!`);
-      toast.success(`${label} עודכן!`);
-
-      // Update local vehicle data
+      // Patch local cache so the user sees fresh data without refetching
       if (form.insuranceExpiry) {
-        if (isCompulsory) {
-          setVehicles(prev => prev.map(v =>
-            v.id === vehicle.id ? { ...v, compulsoryInsuranceExpiry: form.insuranceExpiry } : v
-          ));
-        } else {
-          setVehicles(prev => prev.map(v =>
-            v.id === vehicle.id ? { ...v, insuranceExpiry: form.insuranceExpiry } : v
-          ));
-        }
+        setVehicles(prev => prev.map(v => v.id === vehicle.id
+          ? (isCompulsory
+              ? { ...v, compulsoryInsuranceExpiry: form.insuranceExpiry }
+              : { ...v, insuranceExpiry: form.insuranceExpiry })
+          : v));
       }
-
-      setTimeout(() => {
-        setInsuranceSuccess('');
-      }, 2000);
+      return true;
     } catch {
-      setInsuranceError('שגיאת רשת');
-    } finally {
-      setInsuranceSaving(false);
+      return false;
     }
+  };
+
+  /**
+   * Main save handler — smart about which forms to save.
+   * - Both filled → saves both in parallel
+   * - Only one filled → saves just that one
+   * - Neither filled → error
+   * On success, closes the modal and scrolls back to top so the user
+   * lands on the main dashboard.
+   */
+  const handleSaveInsurance = async () => {
+    if (!vehicle) return;
+
+    const hasCompulsory = hasFormData(compulsoryForm);
+    const hasComprehensive = hasFormData(insuranceForm);
+
+    if (!hasCompulsory && !hasComprehensive) {
+      setInsuranceError('נא למלא לפחות פוליסה אחת לפני שמירה');
+      return;
+    }
+
+    setInsuranceSaving(true);
+    setInsuranceError('');
+
+    // Fire both saves in parallel if applicable — faster + atomic UX
+    const results = await Promise.all([
+      hasCompulsory ? saveOneInsurance('compulsory') : Promise.resolve(null),
+      hasComprehensive ? saveOneInsurance('comprehensive') : Promise.resolve(null),
+    ]);
+
+    setInsuranceSaving(false);
+
+    const compOk = results[0];
+    const compreOk = results[1];
+
+    // Build a precise success message based on what was actually saved
+    const savedLabels: string[] = [];
+    if (compOk === true) savedLabels.push('ביטוח חובה');
+    if (compreOk === true) savedLabels.push("ביטוח מקיף/צד ג'");
+
+    if (savedLabels.length === 0) {
+      setInsuranceError('השמירה נכשלה. אנא נסה שוב.');
+      return;
+    }
+
+    const allSucceeded = (compOk !== false) && (compreOk !== false);
+    if (!allSucceeded) {
+      setInsuranceError(`חלק נשמר, אבל היו תקלות. שמרנו: ${savedLabels.join(' + ')}`);
+      return;
+    }
+
+    toast.success(`נשמר: ${savedLabels.join(' + ')}`);
+    setInsuranceSuccess(`✓ ${savedLabels.join(' + ')} נשמרו בהצלחה!`);
+
+    // Close the modal and return to main page after a short success flash
+    setTimeout(() => {
+      setShowInsuranceModal(false);
+      setInsuranceSuccess('');
+      // Scroll to top so the user lands on the fresh dashboard view
+      if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 900);
   };
 
   // ── Test (טסט) handlers ──
@@ -1990,17 +2041,78 @@ export default function UserHomePage() {
                 </div>
               </div>
 
-              {/* Save Button */}
-              <button
-                onClick={handleSaveInsurance}
-                disabled={insuranceSaving || (!currentForm.insuranceExpiry && !currentForm.insuranceCompany)}
-                className={`w-full text-white rounded-xl py-3 font-semibold disabled:opacity-50 flex items-center justify-center gap-2 ${
-                  insuranceTab === 'compulsory' ? 'bg-teal-600' : 'bg-green-600'
-                }`}
-              >
-                {insuranceSaving ? <Loader2 size={18} className="animate-spin" /> : <Shield size={18} />}
-                {insuranceSaving ? 'שומר...' : insuranceTab === 'compulsory' ? 'שמור ביטוח חובה' : 'שמור ביטוח מקיף / צד ג׳'}
-              </button>
+              {/* Smart save area — saves whichever forms have data */}
+              {(() => {
+                const hasComp = hasFormData(compulsoryForm);
+                const hasMakif = hasFormData(insuranceForm);
+                const hasBoth = hasComp && hasMakif;
+                const hasNone = !hasComp && !hasMakif;
+                const onlyComp = hasComp && !hasMakif;
+                const onlyMakif = hasMakif && !hasComp;
+
+                const otherTab = insuranceTab === 'compulsory' ? 'comprehensive' : 'compulsory';
+                const otherLabel = otherTab === 'compulsory' ? 'ביטוח חובה' : "ביטוח מקיף / צד ג'";
+
+                // Show a friendly recommendation when only the current tab is filled —
+                // most users have both policies, so a missing tab is usually an oversight.
+                const showRecommendation =
+                  (onlyComp && insuranceTab === 'compulsory') ||
+                  (onlyMakif && insuranceTab === 'comprehensive');
+
+                return (
+                  <div className="space-y-3">
+                    {showRecommendation && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm">
+                        <p className="text-amber-800 font-semibold mb-1">💡 ממליצים גם למלא {otherLabel}</p>
+                        <p className="text-amber-700 text-xs leading-relaxed">
+                          רוב הנהגים מבוטחים בשני סוגי הביטוח — חובה (לפי חוק) ומקיף/צד ג&apos; (לפי בחירה).
+                          לחץ/י על הטאב למעלה ומלא/מלאי גם אותו, או שמור/שמרי רק מה שיש לך עכשיו ותחזור/תחזרי אחר כך.
+                        </p>
+                        <button
+                          onClick={() => setInsuranceTab(otherTab as 'compulsory' | 'comprehensive')}
+                          className="mt-2 text-xs font-semibold text-amber-900 hover:text-amber-700 underline"
+                        >
+                          ← עבור/עברי למילוי {otherLabel}
+                        </button>
+                      </div>
+                    )}
+
+                    <button
+                      onClick={handleSaveInsurance}
+                      disabled={insuranceSaving || hasNone}
+                      className={`w-full text-white rounded-xl py-3 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+                        hasBoth ? 'bg-gradient-to-l from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700'
+                          : insuranceTab === 'compulsory' ? 'bg-teal-600 hover:bg-teal-700'
+                          : 'bg-green-600 hover:bg-green-700'
+                      } transition-colors`}
+                    >
+                      {insuranceSaving ? (
+                        <>
+                          <Loader2 size={18} className="animate-spin" />
+                          שומר...
+                        </>
+                      ) : (
+                        <>
+                          <Shield size={18} />
+                          {hasBoth
+                            ? 'שמור את שני הביטוחים'
+                            : hasNone
+                            ? 'מלא/י פוליסה לפני שמירה'
+                            : onlyComp
+                            ? 'שמור ביטוח חובה'
+                            : 'שמור ביטוח מקיף / צד ג׳'}
+                        </>
+                      )}
+                    </button>
+
+                    {hasBoth && (
+                      <p className="text-xs text-gray-400 text-center">
+                        ✓ שני הביטוחים ישמרו בו זמנית, החלון ייסגר אוטומטית
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
