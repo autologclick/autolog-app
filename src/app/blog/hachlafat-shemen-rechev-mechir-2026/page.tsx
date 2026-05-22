@@ -62,21 +62,21 @@ export default function BlogPostPage() {
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה החלפת שמן 2026?</h2>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">לפי סוג שמן:</h3>
+          <h3 className="text-xl font-bold text-[#1e3a5f]">לפי סוג שמן (כולל פילטר ועבודה):</h3>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li><strong>שמן מינרלי:</strong> 250-350 ש&quot;ח</li>
-            <li><strong>שמן סינטטי-חצי:</strong> 350-500 ש&quot;ח</li>
-            <li><strong>שמן סינטטי מלא:</strong> 500-800 ש&quot;ח</li>
-            <li><strong>שמן מקורי יצרן (BMW/מרצדס):</strong> 800-1,400 ש&quot;ח</li>
+            <li><strong>שמן מינרלי (פחות נפוץ ב-2026):</strong> 350-500 ש&quot;ח</li>
+            <li><strong>שמן סינטטי-חצי:</strong> 480-700 ש&quot;ח</li>
+            <li><strong>שמן סינטטי מלא (הסטנדרט):</strong> 650-1,000 ש&quot;ח</li>
+            <li><strong>שמן מקורי יצרן (BMW/מרצדס/אאודי):</strong> 1,200-2,200 ש&quot;ח</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">לפי סוג רכב:</h3>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li><strong>רכב משפחתי קטן (יאריס, פיקנטו):</strong> 280-450 ש&quot;ח (3-4 ליטר)</li>
-            <li><strong>רכב משפחתי רגיל (קורולה, מאזדה 3):</strong> 350-550 ש&quot;ח (4-5 ליטר)</li>
-            <li><strong>SUV (טיגון, RAV4):</strong> 450-700 ש&quot;ח (5-6 ליטר)</li>
-            <li><strong>רכב יוקרה:</strong> 700-1,400 ש&quot;ח (5-8 ליטר שמן יקר)</li>
-            <li><strong>רכב דיזל:</strong> +50-100 ש&quot;ח (שמן ספציפי)</li>
+            <li><strong>רכב משפחתי קטן (יאריס, פיקנטו):</strong> 400-650 ש&quot;ח (3-4 ליטר)</li>
+            <li><strong>רכב משפחתי רגיל (קורולה, מאזדה 3):</strong> 550-850 ש&quot;ח (4-5 ליטר)</li>
+            <li><strong>SUV (טיגון, RAV4):</strong> 700-1,100 ש&quot;ח (5-6 ליטר)</li>
+            <li><strong>רכב יוקרה:</strong> 1,200-2,200 ש&quot;ח (5-8 ליטר שמן יקר)</li>
+            <li><strong>רכב דיזל:</strong> +80-150 ש&quot;ח (שמן ספציפי)</li>
           </ul>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה כולל המחיר?</h2>
@@ -164,7 +164,7 @@ export default function BlogPostPage() {
             { '@type': 'Article', headline: post.title, description: post.description, datePublished: post.publishedAt, author: { '@type': 'Organization', name: 'AutoLog', url: 'https://autolog.click' }, publisher: { '@type': 'Organization', name: 'AutoLog', url: 'https://autolog.click' }, mainEntityOfPage: { '@type': 'WebPage', '@id': `https://autolog.click/blog/${post.slug}` } },
             { '@type': 'FAQPage', mainEntity: [
               { '@type': 'Question', name: 'מתי להחליף שמן רכב?', acceptedAnswer: { '@type': 'Answer', text: 'בהתאם לסוג השמן: מינרלי כל 5,000-7,500 ק"מ, סינטטי מלא כל 10,000-15,000 ק"מ.' } },
-              { '@type': 'Question', name: 'כמה עולה החלפת שמן 2026?', acceptedAnswer: { '@type': 'Answer', text: 'בין 250-1,400 ש"ח, בהתאם לסוג השמן וגודל המנוע. לרכב משפחתי רגיל סביב 350-550 ש"ח.' } },
+              { '@type': 'Question', name: 'כמה עולה החלפת שמן 2026?', acceptedAnswer: { '@type': 'Answer', text: 'בין 400-2,200 ש"ח, בהתאם לסוג השמן וגודל המנוע. לרכב משפחתי רגיל סביב 550-850 ש"ח, ולרכב יוקרה 1,200-2,200 ש"ח.' } },
               { '@type': 'Question', name: 'חשמלי צריך החלפת שמן?', acceptedAnswer: { '@type': 'Answer', text: 'לא. ברכב חשמלי מלא אין מנוע בנזין ולכן אין שמן מנוע.' } },
             ] },
           ],

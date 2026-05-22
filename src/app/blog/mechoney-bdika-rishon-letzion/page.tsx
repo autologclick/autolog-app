@@ -59,7 +59,7 @@ export default function BlogPostPage() {
             <li><strong>שני סניפים:</strong> מערב (משה בקר 19) ומזרח (אזור התעשייה הישן)</li>
             <li><strong>טלפון:</strong> 03-9661958</li>
             <li><strong>דירוג Google:</strong> 4.0</li>
-            <li><strong>מחיר:</strong> 380-450 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 680-850 ש&quot;ח</li>
             <li><strong>שעות:</strong> א&apos;-ה&apos; 7:30-17:30, ו&apos; 7:30-12:30</li>
             <li><strong>התמחות:</strong> רשת ותיקה (מ-1986), מקצועיים</li>
           </ul>
@@ -67,13 +67,13 @@ export default function BlogPostPage() {
           <h3 className="text-xl font-bold text-[#1e3a5f]">2. טכנו טסט ראשון לציון</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>דירוג Google:</strong> 4.1</li>
-            <li><strong>מחיר:</strong> 400-480 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 720-900 ש&quot;ח</li>
             <li><strong>התמחות מיוחדת:</strong> רכבים חשמליים והיברידיים, בדיקת סוללה לחשמלי</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">3. נבדקי רכב — בדיקות ממוחשבות</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 350-420 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 640-820 ש&quot;ח</li>
             <li><strong>שעות:</strong> א&apos;-ה&apos; 8:30-17:30, ו&apos; 8:00-12:30</li>
             <li><strong>התמקצעות:</strong> בדיקה לפני קנייה, כיווני פרונט, בדיקות חורף</li>
           </ul>
@@ -81,12 +81,12 @@ export default function BlogPostPage() {
           <h3 className="text-xl font-bold text-[#1e3a5f]">4. PT Motors — סניף ראשון לציון</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>כתובת:</strong> משה שרת 6, ראשון לציון</li>
-            <li><strong>מחיר:</strong> 350-400 ש&quot;ח (עם שמאות 700-850 ש&quot;ח)</li>
+            <li><strong>מחיר:</strong> 640-820 ש&quot;ח (עם שמאות 1,300-1,800 ש&quot;ח)</li>
             <li><strong>חניה חינם</strong></li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">5-7. פרונט מוטורס, גריז, המומחים</h3>
-          <p>אופציות נוספות במחירים 350-450 ש&quot;ח, שירותים מקיפים.</p>
+          <p>אופציות נוספות במחירים 650-850 ש&quot;ח, שירותים מקיפים.</p>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה הופך את ראשון לציון למיקום אטרקטיבי לבדיקה?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
@@ -98,7 +98,7 @@ export default function BlogPostPage() {
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">איך לבחור מכון בראשון לציון?</h2>
           <p><strong>לפי קריטריון:</strong></p>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li><strong>המחיר הזול ביותר:</strong> PT Motors (350-400 ש&quot;ח)</li>
+            <li><strong>המחיר הזול ביותר:</strong> PT Motors (640-820 ש&quot;ח)</li>
             <li><strong>לרכב חשמלי:</strong> טכנו טסט (התמחות מיוחדת)</li>
             <li><strong>שירות מקצועי וותיק:</strong> קומפיוטסט מערב</li>
             <li><strong>תור מהיר:</strong> נבדקי רכב או פרונט מוטורס</li>

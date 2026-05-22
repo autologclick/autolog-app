@@ -37,7 +37,7 @@ export default function BlogPostPage() {
 
         <div className="prose-rtl space-y-6 text-gray-700 leading-relaxed text-[15px]">
           <p className="text-lg text-gray-600 font-medium">
-            ביטוח רכב מקיף הוא לרוב ההוצאה הביטוחית הגדולה ביותר על הרכב — בין 2,000 ל-7,000 ש&quot;ח לשנה. בחירה נכונה יכולה לחסוך לכם אלפי שקלים ולהבטיח כיסוי מלא במקרה תאונה. במאמר נסביר את כל מה שצריך לדעת לבחור פוליסה חכם.
+            ביטוח רכב מקיף הוא לרוב ההוצאה הביטוחית הגדולה ביותר על הרכב — בין 3,000 ל-9,000 ש&quot;ח לשנה לרכב משפחתי, ועד 15,000 ש&quot;ח לרכבי יוקרה. בחירה נכונה יכולה לחסוך לכם אלפי שקלים ולהבטיח כיסוי מלא במקרה תאונה. במאמר נסביר את כל מה שצריך לדעת לבחור פוליסה חכם.
           </p>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה זה ביטוח רכב מקיף?</h2>
@@ -85,10 +85,10 @@ export default function BlogPostPage() {
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה ביטוח מקיף 2026?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li><strong>רכב משפחתי בן 5-10 שנים:</strong> 3,000-5,000 ש&quot;ח</li>
-            <li><strong>רכב חדש משפחתי:</strong> 4,500-7,500 ש&quot;ח</li>
+            <li><strong>רכב משפחתי בן 5-10 שנים:</strong> 3,500-6,000 ש&quot;ח</li>
+            <li><strong>רכב חדש משפחתי:</strong> 5,000-9,000 ש&quot;ח</li>
             <li><strong>רכב יוקרה:</strong> 6,000-15,000 ש&quot;ח</li>
-            <li><strong>רכב היברידי/חשמלי:</strong> 4,000-8,000 ש&quot;ח</li>
+            <li><strong>רכב היברידי/חשמלי:</strong> 4,500-9,000 ש&quot;ח</li>
             <li><strong>רכב ישן (מעל 12 שנים):</strong> לרוב לא משתלם — שקלו צד ג&apos;</li>
           </ul>
 

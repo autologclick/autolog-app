@@ -56,7 +56,7 @@ export default function BlogPostPage() {
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">למה בכלל צריך בדיקה במכון?</h2>
           <p>
             מוכרים פרטיים — וגם סוחרים — לא תמיד מגלים את כל האמת על הרכב. תאונות שכוסו, תיקוני גוף שהוסתרו, בעיות במנוע שנפתרו זמנית —
-            כל אלה דברים שעין לא מקצועית לא תזהה. <strong>בדיקה במכון ב-300-600 ש&quot;ח יכולה לחסוך לכם תיקון של 15,000 ש&quot;ח שלושה חודשים אחרי הקנייה.</strong>
+            כל אלה דברים שעין לא מקצועית לא תזהה. <strong>בדיקה במכון ב-600-1,200 ש&quot;ח יכולה לחסוך לכם תיקון של 15,000 ש&quot;ח שלושה חודשים אחרי הקנייה.</strong>
           </p>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מכוני בדיקה מובילים בתל אביב והסביבה</h2>
@@ -66,7 +66,7 @@ export default function BlogPostPage() {
             <li><strong>כתובת:</strong> חרוץ 3, אזור תעשייה תל אביב</li>
             <li><strong>טלפון:</strong> 03-688-1888</li>
             <li><strong>דירוג Google:</strong> 3.9 (מעל 130 ביקורות)</li>
-            <li><strong>מחיר בדיקה לפני קנייה:</strong> 380-450 ש&quot;ח</li>
+            <li><strong>מחיר בדיקה לפני קנייה:</strong> 700-900 ש&quot;ח</li>
             <li><strong>שעות פעילות:</strong> א&apos;-ה&apos; 7:30-17:00, ו&apos; 7:30-12:30</li>
           </ul>
 
@@ -74,29 +74,29 @@ export default function BlogPostPage() {
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>כתובת:</strong> השלושה 7, יד אליהו</li>
             <li><strong>טלפון:</strong> 03-537-0574</li>
-            <li><strong>מחיר:</strong> 350-420 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 650-850 ש&quot;ח</li>
             <li><strong>ותק:</strong> מעל 60 שנה בענף</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">3. טכנו טסט תל אביב (סניף אנילביץ)</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 400-480 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 750-950 ש&quot;ח</li>
             <li><strong>התמחות:</strong> חשמליים — בדיקת סוללה ייחודית</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">4. נבדקי רכב + PT Motors</h3>
-          <p>אופציות נוספות, מחיר 350-450 ש&quot;ח, שירותים מקיפים.</p>
+          <p>אופציות נוספות, מחיר 650-850 ש&quot;ח, שירותים מקיפים.</p>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה בדיקת רכב לפני קנייה בתל אביב?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li><strong>בדיקה בסיסית לרכב פרטי:</strong> 350-450 ש&quot;ח</li>
-            <li><strong>רכב 4x4 / SUV:</strong> 450-550 ש&quot;ח</li>
-            <li><strong>רכב יוקרה:</strong> 500-700 ש&quot;ח</li>
-            <li><strong>רכב חשמלי / היברידי:</strong> 450-600 ש&quot;ח</li>
-            <li><strong>בדיקה + שמאות:</strong> 700-1,000 ש&quot;ח</li>
+            <li><strong>בדיקה בסיסית לרכב פרטי:</strong> 650-900 ש&quot;ח</li>
+            <li><strong>רכב 4x4 / SUV:</strong> 800-1,100 ש&quot;ח</li>
+            <li><strong>רכב חשמלי / היברידי:</strong> 900-1,200 ש&quot;ח (כולל בדיקת סוללה)</li>
+            <li><strong>רכב יוקרה (BMW / מרצדס / אאודי):</strong> 1,200-2,000 ש&quot;ח</li>
+            <li><strong>בדיקה + שמאות מקצועית:</strong> 1,400-2,200 ש&quot;ח</li>
           </ul>
           <p>
-            <strong>טיפ:</strong> רוב המכונים בתל אביב יקרים ב-15-25% ממכוני בדיקה בפריפריה.
+            <strong>טיפ:</strong> רוב המכונים בתל אביב יקרים ב-10-15% ממכוני בדיקה בפריפריה.
             אם הרכב נמצא בפתח תקווה או בראשון לציון, שווה לקחת אותו לבדיקה שם — תחסכו 100-200 ש&quot;ח.
           </p>
 

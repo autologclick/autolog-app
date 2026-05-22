@@ -69,13 +69,13 @@ export default function BlogPostPage() {
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>כתובת:</strong> אזור תעשייה תלפיות</li>
             <li><strong>דירוג Google:</strong> 4.0+</li>
-            <li><strong>מחיר:</strong> 380-450 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 680-850 ש&quot;ח</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">2. טכנו טסט ירושלים</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>שני סניפים:</strong> מערב ירושלים ותלפיות</li>
-            <li><strong>מחיר:</strong> 400-480 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 700-900 ש&quot;ח</li>
             <li><strong>התמחות:</strong> חשמליים והיברידיים</li>
           </ul>
 
@@ -83,22 +83,22 @@ export default function BlogPostPage() {
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>כתובת:</strong> גבעת שאול</li>
             <li><strong>דירוג Google:</strong> 4.2</li>
-            <li><strong>מחיר:</strong> 350-420 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 650-820 ש&quot;ח</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">4. מכון בדיקה הר חוצבים</h3>
-          <p>קרוב לאזור היי-טק, מחיר 380-450 ש&quot;ח, חניה רחבה.</p>
+          <p>קרוב לאזור היי-טק, מחיר 680-850 ש&quot;ח, חניה רחבה.</p>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">5. מבדק ארצי — סניף בית שמש (אלטרנטיבה זולה)</h3>
-          <p>20-30 דקות נסיעה מירושלים. מחיר: 320-400 ש&quot;ח (חוסך ~50-100 ש&quot;ח).</p>
+          <p>20-30 דקות נסיעה מירושלים. מחיר: 600-780 ש&quot;ח (חוסך ~80-150 ש&quot;ח).</p>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה בדיקה לפני קנייה בירושלים?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li><strong>רכב פרטי בסיסי:</strong> 350-450 ש&quot;ח</li>
-            <li><strong>4x4 / SUV:</strong> 420-550 ש&quot;ח</li>
-            <li><strong>חשמלי / היברידי:</strong> 450-600 ש&quot;ח</li>
-            <li><strong>יוקרה:</strong> 500-700 ש&quot;ח</li>
-            <li><strong>בדיקה + שמאות:</strong> 750-1,000 ש&quot;ח</li>
+            <li><strong>רכב פרטי בסיסי:</strong> 650-850 ש&quot;ח</li>
+            <li><strong>4x4 / SUV:</strong> 800-1,050 ש&quot;ח</li>
+            <li><strong>חשמלי / היברידי:</strong> 900-1,200 ש&quot;ח (כולל בדיקת סוללה)</li>
+            <li><strong>רכב יוקרה:</strong> 1,200-2,000 ש&quot;ח</li>
+            <li><strong>בדיקה + שמאות:</strong> 1,400-2,200 ש&quot;ח</li>
           </ul>
           <p>ירושלים בדרך כלל זולה ב-5-10% מתל אביב, אבל יקרה ממכונים בפריפריה.</p>
 
@@ -182,7 +182,7 @@ export default function BlogPostPage() {
                   mainEntity: [
                     { '@type': 'Question', name: 'האם יש מכוני בדיקה במזרח ירושלים?', acceptedAnswer: { '@type': 'Answer', text: 'יש, אבל הרשתות הגדולות פועלות בעיקר בחלקים המערביים והדרומיים של העיר.' } },
                     { '@type': 'Question', name: 'מה זמני ההמתנה לתור בירושלים?', acceptedAnswer: { '@type': 'Answer', text: 'בימי שיא יכול להיות 3-5 ימים. ביום עבודה רגיל לרוב אפשר באותו יום.' } },
-                    { '@type': 'Question', name: 'כמה עולה בדיקת רכב לפני קנייה בירושלים?', acceptedAnswer: { '@type': 'Answer', text: 'רכב פרטי 350-450 ש"ח, רכב יוקרה עד 700 ש"ח.' } },
+                    { '@type': 'Question', name: 'כמה עולה בדיקת רכב לפני קנייה בירושלים?', acceptedAnswer: { '@type': 'Answer', text: 'רכב פרטי 650-850 ש"ח, רכב יוקרה 1,200-2,000 ש"ח.' } },
                   ],
                 },
               ],

@@ -70,7 +70,7 @@ export default function BlogPostPage() {
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li><strong>נהג צעיר (פחות מ-3 שנות ותק):</strong> 2,500-4,500 ש&quot;ח לשנה</li>
             <li><strong>נהג ממוצע (3-10 שנות ותק):</strong> 1,500-2,800 ש&quot;ח</li>
-            <li><strong>נהג ותיק (10+ שנים):</strong> 1,000-2,000 ש&quot;ח</li>
+            <li><strong>נהג ותיק (10+ שנים):</strong> 1,300-2,500 ש&quot;ח</li>
             <li><strong>אופנוע:</strong> 1,800-4,000 ש&quot;ח (תלוי בנפח)</li>
           </ul>
 
@@ -130,7 +130,7 @@ export default function BlogPostPage() {
             { '@type': 'Article', headline: post.title, description: post.description, datePublished: post.publishedAt, author: { '@type': 'Organization', name: 'AutoLog', url: 'https://autolog.click' }, publisher: { '@type': 'Organization', name: 'AutoLog', url: 'https://autolog.click' }, mainEntityOfPage: { '@type': 'WebPage', '@id': `https://autolog.click/blog/${post.slug}` } },
             { '@type': 'FAQPage', mainEntity: [
               { '@type': 'Question', name: 'מה ההבדל בין חובה למקיף?', acceptedAnswer: { '@type': 'Answer', text: 'חובה מכסה נזק גוף בלבד. מקיף מכסה גם נזק לרכב שלכם וגם לצד שלישי.' } },
-              { '@type': 'Question', name: 'כמה עולה ביטוח חובה?', acceptedAnswer: { '@type': 'Answer', text: 'נע בין 1,000 ש"ח לנהג ותיק ועד 4,500 ש"ח לנהג צעיר, בהתאם לפרטי הנהג והרכב.' } },
+              { '@type': 'Question', name: 'כמה עולה ביטוח חובה?', acceptedAnswer: { '@type': 'Answer', text: 'נע בין 1,300 ש"ח לנהג ותיק ועד 4,500 ש"ח לנהג צעיר, בהתאם לפרטי הנהג והרכב.' } },
               { '@type': 'Question', name: 'מה קורה אם נוסעים בלי ביטוח חובה?', acceptedAnswer: { '@type': 'Answer', text: 'קנס פלילי עד 14,500 ש"ח, פסילת רישיון, ואחריות אישית למאות אלפי שקלים במקרה נזק גוף.' } },
             ] },
           ],

@@ -79,7 +79,7 @@ export default function BlogPostPage() {
           <h3 className="text-xl font-bold text-[#1e3a5f]">צ&apos;קליסט קניית רכב יד שנייה</h3>
           <p>לפני שמשלמים, ודאו:</p>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li>בדיקה מקצועית במכון בדיקה (350-500 ש&quot;ח)</li>
+            <li>בדיקה מקצועית במכון בדיקה (650-900 ש&quot;ח, ועד 2,000 ש&quot;ח לרכבי יוקרה)</li>
             <li>דוח היסטוריה (בלק&quot;ר / לוי יצחק)</li>
             <li>בדיקת בעלות ושעבודים</li>
             <li>נסיעת מבחן של לפחות 30 דקות</li>
@@ -117,7 +117,7 @@ export default function BlogPostPage() {
             <li>היכנסו לאתר משרד התחבורה (gov.il)</li>
             <li>הזדהות עם תעודת זהות וכרטיס אשראי</li>
             <li>מילוי טופס דיגיטלי (פרטי רכב, מוכר, קונה)</li>
-            <li>תשלום אגרה — כ-240 ש&quot;ח</li>
+            <li>תשלום אגרה — כ-265 ש&quot;ח</li>
             <li>אישור ישלח במייל מיד</li>
           </ol>
           <p>📖 מדריך מלא: <Link href="/blog/haavarat-baalut-al-rechev-2026" className="text-teal-600 hover:text-teal-700 underline">החלפת בעלות על רכב 2026 — צעד אחר צעד</Link></p>
@@ -127,11 +127,11 @@ export default function BlogPostPage() {
           <p>אסור לנסוע בלי ביטוח חובה — חובה חוקית. ביטוח מקיף מומלץ לרכב חדש או יקר.</p>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">ביטוח חובה</h3>
-          <p>מכסה רק <strong>נזק גוף</strong> שאתם גורמים לאחרים. עולה 1,000-4,500 ש&quot;ח בשנה.</p>
+          <p>מכסה רק <strong>נזק גוף</strong> שאתם גורמים לאחרים. עולה 1,200-2,500 ש&quot;ח בשנה לרכב פרטי, עד 4,500 ש&quot;ח לנהגים צעירים.</p>
           <p>📖 <Link href="/blog/bituach-rechev-chova-madrich-male-2026" className="text-teal-600 hover:text-teal-700 underline">המדריך המלא לביטוח חובה 2026</Link></p>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">ביטוח מקיף</h3>
-          <p>מכסה גם <strong>נזק לרכב שלכם</strong> + נזק לצד שלישי + שירותים נלווים. עולה 2,000-7,000 ש&quot;ח בשנה.</p>
+          <p>מכסה גם <strong>נזק לרכב שלכם</strong> + נזק לצד שלישי + שירותים נלווים. עולה 4,000-9,000 ש&quot;ח בשנה לרכב משפחתי, ו-8,000-15,000 ש&quot;ח לרכבי יוקרה.</p>
           <p>📖 <Link href="/blog/bituach-rechev-makif-eich-bocharim" className="text-teal-600 hover:text-teal-700 underline">איך בוחרים ביטוח מקיף נכון</Link></p>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">איך לחסוך אלפי שקלים על ביטוח</h3>
@@ -154,8 +154,8 @@ export default function BlogPostPage() {
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">כמה זה עולה?</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li>רכב פרטי: 180-220 ש&quot;ח</li>
-            <li>רכב מסחרי: 220-600 ש&quot;ח</li>
+            <li>רכב פרטי: 220-300 ש&quot;ח (במרכז עד 360)</li>
+            <li>רכב מסחרי: 300-850 ש&quot;ח</li>
             <li>אגרת רישוי שנתית: 1,300-7,000 ש&quot;ח (לפי הרכב)</li>
           </ul>
           <p>📖 פירוט מלא: <Link href="/blog/kama-ole-test-shnati-2026" className="text-teal-600 hover:text-teal-700 underline">כמה עולה טסט שנתי 2026</Link></p>
@@ -173,7 +173,7 @@ export default function BlogPostPage() {
 
           {/* MAINTENANCE */}
           <h2 id="maintenance" className="text-2xl font-bold text-[#1e3a5f] pt-8 scroll-mt-20">6. תחזוקה שוטפת</h2>
-          <p>תחזוקה מונעת היא <strong>הדרך הזולה ביותר</strong> לשמור על הרכב. טיפול ב-450 ש&quot;ח חוסך תיקון של 5,000+ ש&quot;ח.</p>
+          <p>תחזוקה מונעת היא <strong>הדרך הזולה ביותר</strong> לשמור על הרכב. טיפול ב-650-900 ש&quot;ח חוסך תיקון של 5,000+ ש&quot;ח.</p>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">לוח זמנים לתחזוקה</h3>
           <ul className="list-disc list-inside space-y-2 mr-4">
@@ -188,19 +188,19 @@ export default function BlogPostPage() {
           <p>📖 <Link href="/blog/hachlafat-shemen-rechev-mechir-2026" className="text-teal-600 hover:text-teal-700 underline">החלפת שמן — מתי, איך וכמה עולה</Link></p>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">אבחון עצמי עם OBD2</h3>
-          <p>סורק קטן ב-50-150 ש&quot;ח שמתחבר לרכב ומגלה בעיות לפני שהן מחמירות.</p>
+          <p>סורק קטן ב-80-250 ש&quot;ח שמתחבר לרכב ומגלה בעיות לפני שהן מחמירות.</p>
           <p>📖 <Link href="/blog/ma-ze-ovd2" className="text-teal-600 hover:text-teal-700 underline">המדריך המלא ל-OBD2</Link></p>
 
           {/* EXPENSES */}
           <h2 id="expenses" className="text-2xl font-bold text-[#1e3a5f] pt-8 scroll-mt-20">7. ניהול הוצאות</h2>
-          <p>הרכב הוא ההוצאה השנייה בגודלה במשק בית ישראלי — אחרי הדיור. ממוצע: <strong>3,000-5,000 ש&quot;ח לחודש</strong>.</p>
+          <p>הרכב הוא ההוצאה השנייה בגודלה במשק בית ישראלי — אחרי הדיור. ממוצע: <strong>3,500-5,500 ש&quot;ח לחודש</strong> (לרכבי יוקרה עד 8,000).</p>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">פילוח הוצאות חודשיות</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li>דלק / טעינה: 950-1,200 ש&quot;ח</li>
-            <li>ביטוח: 350-500 ש&quot;ח</li>
-            <li>אגרה + טסט: 200 ש&quot;ח</li>
-            <li>תחזוקה: 400-600 ש&quot;ח</li>
+            <li>ביטוח (חובה + מקיף): 450-1,000 ש&quot;ח</li>
+            <li>אגרה + טסט: 150-300 ש&quot;ח</li>
+            <li>תחזוקה: 500-900 ש&quot;ח</li>
             <li>חניה: 200-400 ש&quot;ח</li>
             <li>הפחתת ערך: 800-1,500 ש&quot;ח</li>
           </ul>

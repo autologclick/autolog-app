@@ -125,8 +125,8 @@ export default function BlogPostPage() {
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 my-6">
             <p className="font-bold text-amber-800 mb-2">טיפ חשוב</p>
             <p className="text-amber-700 text-sm">
-              אם מצאתם תקלה — תקנו אותה לפני הטסט. עלות תיקון נורה שרופה: 20-50 ש&quot;ח.
-              עלות כישלון בטסט + בדיקה חוזרת: 80-120 ש&quot;ח + עוד יום חופש מהעבודה.
+              אם מצאתם תקלה — תקנו אותה לפני הטסט. עלות תיקון נורה שרופה: 40-80 ש&quot;ח.
+              עלות כישלון בטסט + בדיקה חוזרת: 130-180 ש&quot;ח + עוד יום חופש מהעבודה.
             </p>
           </div>
 

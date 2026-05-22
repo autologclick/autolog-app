@@ -59,20 +59,21 @@ export default function BlogPostPage() {
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מחיר טסט לרכב פרטי 2026</h2>
           <p>
-            לרכב פרטי שמשקלו עד 3,500 ק&quot;ג, המחיר הממוצע בטסט במכוני בדיקה ברחבי הארץ נע בין <strong>180 ל-220 שקלים</strong>
+            לרכב פרטי שמשקלו עד 3,500 ק&quot;ג, המחיר הממוצע בטסט במכוני בדיקה ברחבי הארץ נע בין <strong>220 ל-300 שקלים</strong>
             (ללא אגרת הרישוי). ההבדלים נובעים מאזור גיאוגרפי, רמת השירות במכון, ושעות העבודה.
+            המחיר עלה משמעותית בשנים האחרונות, ובמכונים פרטיים גדולים בגוש דן הוא יכול להגיע ל-320-360 ש&quot;ח.
           </p>
           <p>
-            <strong>טיפ לחיסכון:</strong> מכוני בדיקה בפריפריה (באר שבע, חיפה, אזור הצפון) מציעים בדרך כלל מחירים נמוכים יותר ב-15-25% ממכונים בגוש דן.
+            <strong>טיפ לחיסכון:</strong> מכוני בדיקה בפריפריה (באר שבע, חיפה, אזור הצפון) מציעים בדרך כלל מחירים נמוכים יותר ב-10-20% ממכונים בגוש דן.
           </p>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מחיר טסט לסוגי רכב שונים</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li><strong>רכב פרטי:</strong> 180-220 ש&quot;ח</li>
-            <li><strong>רכב מסחרי קל (עד 3,500 ק&quot;ג):</strong> 220-280 ש&quot;ח</li>
-            <li><strong>רכב מסחרי בינוני וכבד:</strong> 400-600 ש&quot;ח</li>
-            <li><strong>ג&apos;יפ ורכב 4x4:</strong> 240-320 ש&quot;ח</li>
-            <li><strong>אופנוע:</strong> 140-180 ש&quot;ח</li>
+            <li><strong>רכב פרטי:</strong> 220-300 ש&quot;ח (במרכז עד 360)</li>
+            <li><strong>רכב מסחרי קל (עד 3,500 ק&quot;ג):</strong> 300-400 ש&quot;ח</li>
+            <li><strong>רכב מסחרי בינוני וכבד:</strong> 550-850 ש&quot;ח</li>
+            <li><strong>ג&apos;יפ ורכב 4x4:</strong> 320-420 ש&quot;ח</li>
+            <li><strong>אופנוע:</strong> 180-240 ש&quot;ח</li>
           </ul>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">אגרת רישוי 2026 — הסכום שמתחבר לטסט</h2>
@@ -97,7 +98,7 @@ export default function BlogPostPage() {
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">4 טיפים לחיסכון אמיתי</h2>
           <ol className="list-decimal list-inside space-y-2 mr-4">
             <li><strong>הזמן תור מראש</strong> — מכונים רבים מציעים הנחות של 10-15% להזמנות אונליין מראש</li>
-            <li><strong>בדוק את הרכב בעצמך לפני</strong> — תיקון מנורת בלם שבורה (50 ש&quot;ח) במקום לחזור לטסט (180 ש&quot;ח כפול 2)</li>
+            <li><strong>בדוק את הרכב בעצמך לפני</strong> — תיקון מנורת בלם שבורה (50-80 ש&quot;ח) במקום בדיקה חוזרת בטסט (120-180 ש&quot;ח)</li>
             <li><strong>אל תדחה</strong> — איחור בחידוש הרישיון גורר קנסות שמתחילים ב-450 ש&quot;ח</li>
             <li><strong>שמור את כל הקבלות</strong> — תזדקק להן לטיפול בתביעות ביטוח עתידיות</li>
           </ol>

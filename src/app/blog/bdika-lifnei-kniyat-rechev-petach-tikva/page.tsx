@@ -47,35 +47,35 @@ export default function BlogPostPage() {
           <h3 className="text-xl font-bold text-[#1e3a5f]">1. קומפיוטסט פתח תקווה</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>מיקום:</strong> אזור התעשייה סגולה</li>
-            <li><strong>מחיר:</strong> 370-450 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 660-840 ש&quot;ח</li>
             <li><strong>דירוג:</strong> 4.0+</li>
             <li><strong>שעות:</strong> א&apos;-ה&apos; 7:30-17:30, ו&apos; 7:30-12:30</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">2. טכנו טסט פתח תקווה</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 390-470 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 1,300-2,100 ש&quot;ח</li>
             <li><strong>התמחות:</strong> רכבים חשמליים, היברידיים</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">3. נבדקי רכב — סניף פתח תקווה</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 350-420 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 640-820 ש&quot;ח</li>
             <li><strong>שירותים:</strong> בדיקה מלאה, כיווני פרונט, בדיקות חורף</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">4. PT Motors פתח תקווה</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 340-400 ש&quot;ח (זול יחסית)</li>
+            <li><strong>מחיר:</strong> 620-770 ש&quot;ח (זול יחסית)</li>
             <li><strong>חניה חינם</strong></li>
           </ul>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה בדיקה בפתח תקווה?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li><strong>רכב פרטי:</strong> 340-450 ש&quot;ח</li>
-            <li><strong>4x4 / SUV:</strong> 420-520 ש&quot;ח</li>
-            <li><strong>חשמלי / היברידי:</strong> 440-560 ש&quot;ח</li>
-            <li><strong>בדיקה + שמאות:</strong> 700-900 ש&quot;ח</li>
+            <li><strong>רכב פרטי:</strong> 620-840 ש&quot;ח</li>
+            <li><strong>4x4 / SUV:</strong> 780-1,050 ש&quot;ח</li>
+            <li><strong>חשמלי / היברידי:</strong> 850-1,150 ש&quot;ח</li>
+            <li><strong>בדיקה + שמאות:</strong> 1,300-2,100 ש&quot;ח</li>
           </ul>
           <p>פתח תקווה דומה במחירים לראשון לציון, וזולה ב-10-15% מתל אביב.</p>
 

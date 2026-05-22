@@ -44,27 +44,27 @@ export default function BlogPostPage() {
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">1. קומפיוטסט באר שבע</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 320-400 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 600-780 ש&quot;ח</li>
             <li><strong>דירוג:</strong> 4.0+</li>
             <li><strong>מיקום:</strong> אזור התעשייה</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">2. טכנו טסט באר שבע</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 350-430 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 640-830 ש&quot;ח</li>
             <li><strong>התמחות:</strong> בדיקות מקיפות</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">3. PT Motors באר שבע</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 300-380 ש&quot;ח (הזול ביותר)</li>
+            <li><strong>מחיר:</strong> 580-740 ש&quot;ח (הזול ביותר)</li>
           </ul>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה בבאר שבע?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li><strong>רכב פרטי:</strong> 300-430 ש&quot;ח (הזול בארץ!)</li>
-            <li><strong>4x4 / SUV:</strong> 380-490 ש&quot;ח</li>
-            <li><strong>חשמלי:</strong> 400-520 ש&quot;ח</li>
+            <li><strong>רכב פרטי:</strong> 580-770 ש&quot;ח (הזול בארץ!)</li>
+            <li><strong>4x4 / SUV:</strong> 720-980 ש&quot;ח</li>
+            <li><strong>חשמלי:</strong> 720-1,000 ש&quot;ח</li>
           </ul>
           <p>באר שבע היא לרוב הזולה ביותר בישראל — חיסכון של 50-150 ש&quot;ח לעומת מרכז.</p>
 

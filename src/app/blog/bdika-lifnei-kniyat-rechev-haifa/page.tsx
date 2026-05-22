@@ -65,14 +65,14 @@ export default function BlogPostPage() {
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>מיקום:</strong> אזור התעשייה חיפה</li>
             <li><strong>דירוג Google:</strong> 4.0+</li>
-            <li><strong>מחיר בדיקה לפני קנייה:</strong> 360-440 ש&quot;ח</li>
+            <li><strong>מחיר בדיקה לפני קנייה:</strong> 650-830 ש&quot;ח</li>
             <li><strong>שעות:</strong> א&apos;-ה&apos; 7:30-17:00, ו&apos; 7:30-12:30</li>
             <li><strong>התמחות:</strong> רכבים פרטיים, יוקרה, היברידיים</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">2. טכנו טסט חיפה</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 380-460 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 680-870 ש&quot;ח</li>
             <li><strong>התמחות:</strong> רכבים חשמליים — בדיקת סוללה</li>
             <li><strong>חניה זמינה</strong></li>
           </ul>
@@ -80,24 +80,25 @@ export default function BlogPostPage() {
           <h3 className="text-xl font-bold text-[#1e3a5f]">3. דינמומטר חיפה</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>ותק:</strong> מעל 50 שנה</li>
-            <li><strong>מחיר:</strong> 340-420 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 620-820 ש&quot;ח</li>
             <li><strong>התמחות:</strong> בדיקות מקיפות, שמאות</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">4. מבדק קריות (לתושבי הקריות)</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>מיקום:</strong> קרית אתא / קרית מוצקין</li>
-            <li><strong>מחיר:</strong> 320-400 ש&quot;ח (זול יחסית)</li>
+            <li><strong>מחיר:</strong> 580-750 ש&quot;ח (זול יחסית)</li>
           </ul>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה בדיקת רכב לפני קנייה בחיפה?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li><strong>רכב פרטי:</strong> 340-440 ש&quot;ח</li>
-            <li><strong>4x4 / SUV:</strong> 420-520 ש&quot;ח</li>
-            <li><strong>חשמלי / היברידי:</strong> 440-580 ש&quot;ח</li>
-            <li><strong>בדיקה + שמאות:</strong> 700-900 ש&quot;ח</li>
+            <li><strong>רכב פרטי:</strong> 620-830 ש&quot;ח</li>
+            <li><strong>4x4 / SUV:</strong> 780-1,050 ש&quot;ח</li>
+            <li><strong>חשמלי / היברידי:</strong> 850-1,150 ש&quot;ח (כולל בדיקת סוללה)</li>
+            <li><strong>רכב יוקרה:</strong> 1,200-2,000 ש&quot;ח</li>
+            <li><strong>בדיקה + שמאות מקצועית:</strong> 1,300-2,100 ש&quot;ח</li>
           </ul>
-          <p>חיפה בדרך כלל זולה ב-5-15% מתל אביב.</p>
+          <p>חיפה בדרך כלל זולה ב-5-10% מתל אביב.</p>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">דברים מיוחדים לבדוק ברכב מחיפה</h2>
           <ol className="list-decimal list-inside space-y-2 mr-4">
@@ -135,7 +136,7 @@ export default function BlogPostPage() {
           <p>לא. מרבית המכונים סגורים בשבת. הרבה פתוחים ביום שישי בבוקר עד 12:30.</p>
 
           <h3 className="text-lg font-bold text-[#1e3a5f]">איפה הכי זול בחיפה?</h3>
-          <p>מבדק קריות בקרית אתא הוא לרוב הזול ביותר באזור — סביב 320-360 ש&quot;ח.</p>
+          <p>מבדק קריות בקרית אתא הוא לרוב הזול ביותר באזור — סביב 580-680 ש&quot;ח.</p>
 
           <h3 className="text-lg font-bold text-[#1e3a5f]">כמה זמן לוקחת בדיקה?</h3>
           <p>60-90 דקות לבדיקה סטנדרטית. עם נסיעת מבחן — עד שעתיים.</p>
@@ -163,7 +164,7 @@ export default function BlogPostPage() {
                   '@type': 'FAQPage',
                   mainEntity: [
                     { '@type': 'Question', name: 'האם יש מכוני בדיקה הפתוחים בשבת בחיפה?', acceptedAnswer: { '@type': 'Answer', text: 'לא, מרבית המכונים סגורים בשבת. הרבה פתוחים ביום שישי בבוקר עד 12:30.' } },
-                    { '@type': 'Question', name: 'איפה הכי זול לבדוק רכב בחיפה?', acceptedAnswer: { '@type': 'Answer', text: 'מבדק קריות בקרית אתא הוא לרוב הזול ביותר באזור — סביב 320-360 ש"ח.' } },
+                    { '@type': 'Question', name: 'איפה הכי זול לבדוק רכב בחיפה?', acceptedAnswer: { '@type': 'Answer', text: 'מבדק קריות בקרית אתא הוא לרוב הזול ביותר באזור — סביב 580-680 ש"ח.' } },
                     { '@type': 'Question', name: 'כמה זמן לוקחת בדיקה?', acceptedAnswer: { '@type': 'Answer', text: '60-90 דקות לבדיקה סטנדרטית. עם נסיעת מבחן עד שעתיים.' } },
                   ],
                 },

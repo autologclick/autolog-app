@@ -45,20 +45,20 @@ export default function BlogPostPage() {
           <h3 className="text-xl font-bold text-[#1e3a5f]">1. סיטי סנטר טסט חולון</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>מיקום:</strong> מרכז העיר חולון</li>
-            <li><strong>מחיר:</strong> 350-430 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 640-830 ש&quot;ח</li>
             <li><strong>דירוג:</strong> 4.0+</li>
             <li><strong>שירות:</strong> בדיקות מהירות, חניה זמינה</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">2. קומפיוטסט חולון</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 380-460 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 680-870 ש&quot;ח</li>
             <li><strong>התמחות:</strong> רכבים פרטיים, מסחריים</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">3. דינמומטר חולון (סניף השלושה)</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 350-420 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 640-820 ש&quot;ח</li>
             <li><strong>ותק:</strong> מעל 60 שנה</li>
           </ul>
 
@@ -67,9 +67,9 @@ export default function BlogPostPage() {
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה בחולון?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li><strong>רכב פרטי:</strong> 350-460 ש&quot;ח</li>
-            <li><strong>4x4 / SUV:</strong> 430-540 ש&quot;ח</li>
-            <li><strong>חשמלי / היברידי:</strong> 450-580 ש&quot;ח</li>
+            <li><strong>רכב פרטי:</strong> 650-870 ש&quot;ח</li>
+            <li><strong>4x4 / SUV:</strong> 800-1,050 ש&quot;ח</li>
+            <li><strong>חשמלי / היברידי:</strong> 870-1,200 ש&quot;ח (כולל בדיקת סוללה)</li>
           </ul>
           <p>חולון דומה במחירים לתל אביב — אבל המכונים פחות עמוסים.</p>
 

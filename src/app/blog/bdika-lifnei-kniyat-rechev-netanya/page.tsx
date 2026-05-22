@@ -45,19 +45,19 @@ export default function BlogPostPage() {
           <h3 className="text-xl font-bold text-[#1e3a5f]">1. קומפיוטסט נתניה</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>מיקום:</strong> אזור התעשייה פולג</li>
-            <li><strong>מחיר:</strong> 360-440 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 650-830 ש&quot;ח</li>
             <li><strong>דירוג:</strong> 4.0+</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">2. טכנו טסט נתניה</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 380-460 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 680-870 ש&quot;ח</li>
             <li><strong>התמחות:</strong> חשמלי, היברידי</li>
           </ul>
 
           <h3 className="text-xl font-bold text-[#1e3a5f]">3. מבדק נתניה</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
-            <li><strong>מחיר:</strong> 340-410 ש&quot;ח</li>
+            <li><strong>מחיר:</strong> 620-790 ש&quot;ח</li>
             <li><strong>שירות:</strong> בדיקה + שמאות בחבילה</li>
           </ul>
 
@@ -66,10 +66,10 @@ export default function BlogPostPage() {
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה בנתניה?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
-            <li><strong>רכב פרטי:</strong> 340-440 ש&quot;ח</li>
-            <li><strong>4x4 / SUV:</strong> 420-520 ש&quot;ח</li>
-            <li><strong>חשמלי / היברידי:</strong> 440-560 ש&quot;ח</li>
-            <li><strong>בדיקה + שמאות:</strong> 700-880 ש&quot;ח</li>
+            <li><strong>רכב פרטי:</strong> 620-830 ש&quot;ח</li>
+            <li><strong>4x4 / SUV:</strong> 780-1,050 ש&quot;ח</li>
+            <li><strong>חשמלי / היברידי:</strong> 850-1,150 ש&quot;ח</li>
+            <li><strong>בדיקה + שמאות:</strong> 1,300-2,100 ש&quot;ח</li>
           </ul>
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">דברים מיוחדים לבדוק ברכב מנתניה</h2>
@@ -96,7 +96,7 @@ export default function BlogPostPage() {
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">שאלות נפוצות</h2>
           <h3 className="text-lg font-bold text-[#1e3a5f]">איפה הכי זול בנתניה?</h3>
-          <p>מבדק נתניה — סביב 340-410 ש&quot;ח לרכב פרטי.</p>
+          <p>מבדק נתניה — סביב 620-790 ש&quot;ח לרכב פרטי.</p>
           <h3 className="text-lg font-bold text-[#1e3a5f]">האם תושבי הוד השרון יבואו לנתניה?</h3>
           <p>לרוב כפר סבא יותר נוחה — 10 דקות בלי פקקים.</p>
           <h3 className="text-lg font-bold text-[#1e3a5f]">כמה לוקחת בדיקה בנתניה?</h3>
@@ -108,7 +108,7 @@ export default function BlogPostPage() {
           '@graph': [
             { '@type': 'Article', headline: post.title, description: post.description, datePublished: post.publishedAt, author: { '@type': 'Organization', name: 'AutoLog', url: 'https://autolog.click' }, publisher: { '@type': 'Organization', name: 'AutoLog', url: 'https://autolog.click' }, mainEntityOfPage: { '@type': 'WebPage', '@id': `https://autolog.click/blog/${post.slug}` } },
             { '@type': 'FAQPage', mainEntity: [
-              { '@type': 'Question', name: 'איפה הכי זול לבדוק רכב בנתניה?', acceptedAnswer: { '@type': 'Answer', text: 'מבדק נתניה — סביב 340-410 ש"ח.' } },
+              { '@type': 'Question', name: 'איפה הכי זול לבדוק רכב בנתניה?', acceptedAnswer: { '@type': 'Answer', text: 'מבדק נתניה — סביב 620-790 ש"ח.' } },
               { '@type': 'Question', name: 'כמה זמן לוקחת בדיקה?', acceptedAnswer: { '@type': 'Answer', text: '60-90 דקות לבדיקה רגילה.' } },
             ] },
           ],

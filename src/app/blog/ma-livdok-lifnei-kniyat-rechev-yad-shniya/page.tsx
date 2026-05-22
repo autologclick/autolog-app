@@ -129,7 +129,7 @@ export default function BlogPostPage() {
 
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">שלב 6: בדיקה במכון מקצועי</h2>
           <p>
-            זהו השלב הקריטי שאסור לוותר עליו. גם אם הכל נראה תקין — בדיקה במכון של 350-450 ש&quot;ח חיונית.
+            זהו השלב הקריטי שאסור לוותר עליו. גם אם הכל נראה תקין — בדיקה במכון של 650-850 ש&quot;ח חיונית.
           </p>
           <p>
             <Link href="/blog/bdika-lifnei-kniyat-rechev-tel-aviv" className="text-teal-600 hover:text-teal-700 underline mr-1">
@@ -173,7 +173,7 @@ export default function BlogPostPage() {
           <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">שאלות נפוצות</h2>
 
           <h3 className="text-lg font-bold text-[#1e3a5f]">כמה שווה לי לבדוק רכב יד שנייה?</h3>
-          <p>350-450 ש&quot;ח על בדיקה במכון. הסכום הזה יכול לחסוך לכם 5,000-50,000 ש&quot;ח.</p>
+          <p>650-850 ש&quot;ח על בדיקה במכון. הסכום הזה יכול לחסוך לכם 5,000-50,000 ש&quot;ח.</p>
 
           <h3 className="text-lg font-bold text-[#1e3a5f]">האם להעדיף רכב מסוחר או פרטי?</h3>
           <p>פרטי: לרוב זול ב-5-10%, אבל פחות אחריות. סוחר: יותר יקר אבל מקבל אחריות חוקית של 6 חודשים על תקלות סמויות.</p>
@@ -207,7 +207,7 @@ export default function BlogPostPage() {
                 {
                   '@type': 'FAQPage',
                   mainEntity: [
-                    { '@type': 'Question', name: 'כמה שווה לי לבדוק רכב יד שנייה?', acceptedAnswer: { '@type': 'Answer', text: '350-450 ש"ח על בדיקה במכון. הסכום הזה יכול לחסוך 5,000-50,000 ש"ח.' } },
+                    { '@type': 'Question', name: 'כמה שווה לי לבדוק רכב יד שנייה?', acceptedAnswer: { '@type': 'Answer', text: '650-850 ש"ח על בדיקה במכון. הסכום הזה יכול לחסוך 5,000-50,000 ש"ח.' } },
                     { '@type': 'Question', name: 'האם להעדיף רכב מסוחר או פרטי?', acceptedAnswer: { '@type': 'Answer', text: 'פרטי לרוב זול ב-5-10% אבל פחות אחריות. סוחר יותר יקר אבל עם אחריות חוקית של 6 חודשים.' } },
                     { '@type': 'Question', name: 'באילו דגמים יש פחות תקלות?', acceptedAnswer: { '@type': 'Answer', text: 'טויוטה, מאזדה, יונדאי ב-3-7 שנים האחרונות נחשבים אמינים.' } },
                   ],
