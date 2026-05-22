@@ -39,6 +39,7 @@ const MANUFACTURER_MAP: Record<string, string> = {
   'מיצובישי יפן': 'מיצובישי',
   'מיצובישי תאילנד': 'מיצובישי',
   'לקסוס יפן': 'לקסוס',
+  'לקסוס': 'לקסוס',
   'אינפיניטי יפן': 'אינפיניטי',
   'דייהטסו יפן': 'דייהטסו',
 
@@ -73,6 +74,17 @@ const MANUFACTURER_MAP: Record<string, string> = {
   'אופל פולין': 'אופל',
   'פורשה גרמניה': 'פורשה',
   'מיני אנגליה': 'מיני',
+  'מיני הולנד': 'מיני',
+  // Cupra (Spain) — sport sub-brand of SEAT
+  'קופרה ספרד': 'קופרה',
+  'CUPRA ספרד': 'קופרה',
+  // DS Automobiles (France, premium PSA brand)
+  'DS צרפת': 'DS',
+  'DS גרמניה': 'DS',
+  // Smart (Germany/China since 2022)
+  'סמארט גרמניה': 'סמארט',
+  'סמארט סלובניה': 'סמארט',
+  'סמארט סין': 'סמארט',
 
   // French
   'רנו צרפת': 'רנו',
@@ -108,6 +120,10 @@ const MANUFACTURER_MAP: Record<string, string> = {
   'וולוו שבדיה': 'וולוו',
   'וולוו בלגיה': 'וולוו',
   'וולוו סין': 'וולוו',
+  // Polestar (Sweden, Volvo's EV sub-brand — produced in China)
+  'פולסטאר שבדיה': 'פולסטאר',
+  'פולסטאר סין': 'פולסטאר',
+  'POLESTAR סין': 'פולסטאר',
 
   // Spanish / Czech
   'סיאט ספרד': 'סיאט',
@@ -124,7 +140,9 @@ const MANUFACTURER_MAP: Record<string, string> = {
   'XPENG סין': 'XPENG',
   'LI AUTO סין': 'LI AUTO',
   'ZEEKR סין': 'ZEEKR',
-  'LYNK&CO סין': 'LYNK & CO',
+  'LYNK&CO סין': 'לינק וקו',
+  'LYNK & CO סין': 'לינק וקו',
+  'לינק וקו סין': 'לינק וקו',
 };
 
 // --- Model code → commercial name ---
@@ -559,6 +577,150 @@ const MODEL_MAP: Record<string, Record<string, string>> = {
     'MARVELR': 'Marvel R',
     'MG4': 'MG4',
     'MG5': 'MG5',
+    'MG7': 'MG7',
+    'CYBERSTER': 'Cyberster',
+  },
+  'סיאט': {
+    // Ibiza
+    'KJ': 'איביזה', '6F': 'איביזה', '6J': 'איביזה', '6P': 'איביזה',
+    // Leon
+    'KL': 'ליאון', '5F': 'ליאון', '1P': 'ליאון',
+    // Arona
+    'KJ7': 'ארונה',
+    // Ateca
+    '5FP': 'אטקה', 'KH7': 'אטקה',
+    // Tarraco
+    'KN2': 'טאראקו',
+    // Mii
+    'KF': 'מיי',
+    // Toledo
+    'KG': 'טולדו',
+    // Alhambra
+    '7N': 'אלהמברה',
+  },
+  'קופרה': {
+    // Born (EV)
+    'KL1F': 'בורן', 'BORN': 'בורן',
+    // Formentor
+    'KM7': 'פורמנטור', 'FORMENTOR': 'פורמנטור',
+    // Leon (Cupra version)
+    'KL8': 'ליאון',
+    // Ateca (Cupra version)
+    'KH7C': 'אטקה',
+    // Tavascan
+    'TAVASCAN': 'טבסקאן',
+    // Terramar
+    'TERRAMAR': 'טראמאר',
+  },
+  'וולוו': {
+    // XC40
+    'XC40': 'XC40', '536': 'XC40',
+    // XC60
+    'XC60': 'XC60', '246': 'XC60',
+    // XC90
+    'XC90': 'XC90', '256': 'XC90',
+    // S60
+    'S60': 'S60', '224': 'S60',
+    // S90
+    'S90': 'S90', '234': 'S90',
+    // V60
+    'V60': 'V60', '225': 'V60',
+    // V90
+    'V90': 'V90', '235': 'V90',
+    // C40 (EV)
+    'C40': 'C40', '536R': 'C40',
+    // EX30 / EX90 (newer EVs)
+    'EX30': 'EX30',
+    'EX90': 'EX90',
+  },
+  'מיני': {
+    // Cooper Hatch
+    'F66': 'קופר', 'F56': 'קופר', 'F55': 'קופר', 'R56': 'קופר', 'R53': 'קופר',
+    // Cooper Convertible
+    'F57': 'קופר קבריולה',
+    // Clubman
+    'F54': 'קלאבמן', 'R55': 'קלאבמן',
+    // Countryman
+    'U25': 'קאנטרימן', 'F60': 'קאנטרימן', 'R60': 'קאנטרימן',
+    // Aceman (EV)
+    'J05': 'אייסמן',
+    // Cooper SE (electric)
+    'F66E': 'קופר SE',
+  },
+  'לקסוס': {
+    // RX
+    'AL20': 'RX', 'AL10': 'RX',
+    // NX
+    'AZ20': 'NX', 'AZ10': 'NX',
+    // UX
+    'MZAA': 'UX',
+    // IS
+    'GSE': 'IS', 'ASE': 'IS',
+    // ES
+    'AXZH': 'ES', 'AXZA': 'ES',
+    // LS
+    'VXFA': 'LS',
+    // LX
+    'VJA': 'LX', 'URJ': 'LX',
+    // CT
+    'ZWA': 'CT',
+    // LBX (newest)
+    'LBX': 'LBX',
+    // RZ (EV)
+    'XEBM': 'RZ',
+  },
+  'DS': {
+    'DS3': 'DS3',
+    'DS4': 'DS4',
+    'DS5': 'DS5',
+    'DS7': 'DS7 Crossback',
+    'DS9': 'DS9',
+    'CROSSBACK': 'DS7 Crossback',
+  },
+  'פולסטאר': {
+    'POLESTAR1': 'Polestar 1',
+    'POLESTAR2': 'Polestar 2',
+    'POLESTAR3': 'Polestar 3',
+    'POLESTAR4': 'Polestar 4',
+    '533': 'Polestar 2',
+    '634': 'Polestar 3',
+  },
+  'ג\'נסיס': {
+    'G70': 'G70',
+    'G80': 'G80',
+    'G90': 'G90',
+    'GV60': 'GV60',
+    'GV70': 'GV70',
+    'GV80': 'GV80',
+  },
+  'ג\'ילי': {
+    'COOLRAY': 'Coolray',
+    'TUGELLA': 'Tugella',
+    'EMGRAND': 'Emgrand',
+    'GEOMETRYC': 'Geometry C',
+    'OKAVANGO': 'Okavango',
+  },
+  'צ\'רי': {
+    'TIGGO2': 'Tiggo 2',
+    'TIGGO3': 'Tiggo 3',
+    'TIGGO4': 'Tiggo 4',
+    'TIGGO7': 'Tiggo 7',
+    'TIGGO8': 'Tiggo 8',
+    'OMODA5': 'Omoda 5',
+    'JAECOO7': 'Jaecoo 7',
+  },
+  'לינק וקו': {
+    'LYNK01': '01',
+    'LYNK02': '02',
+    'LYNK03': '03',
+    'LYNK05': '05',
+    'LYNK09': '09',
+  },
+  'סמארט': {
+    'FORTWO': 'Fortwo', 'C453': 'Fortwo', 'C451': 'Fortwo',
+    'FORFOUR': 'Forfour', 'W453': 'Forfour',
+    'SMART1': '#1', 'HX11': '#1',
+    'SMART3': '#3',
   },
 };
 
@@ -661,6 +823,55 @@ export function generateNickname(manufacturer: string, model: string): string {
   const mfr = normalizeManufacturer(manufacturer);
   const mdl = normalizeModel(model, manufacturer);
   return `${mfr} ${mdl}`.trim();
+}
+
+/**
+ * Heuristic: did normalizeModel actually find a friendly name, or did the
+ * raw MOT code pass through unchanged?
+ *
+ * We treat the result as a "raw code" when:
+ *   - it still contains digits AND uppercase letters (e.g. "XTA03", "BN627")
+ *   - it has no spaces (commercial names usually have spaces or are pure words)
+ *
+ * Used by the API layer to decide whether to fall back to a friendlier
+ * display string like "מיצובישי 2019" instead of showing an ugly code.
+ */
+export function looksLikeMotCode(text: string | null | undefined): boolean {
+  if (!text) return false;
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  // Already-friendly Hebrew names — never a code
+  if (/[א-ת]/.test(trimmed)) return false;
+  const hasDigit = /\d/.test(trimmed);
+  const hasUpper = /[A-Z]/.test(trimmed);
+  const hasSpace = /\s/.test(trimmed);
+  // Codes like "XTA03", "BN627", "MZEA11L" — letters + digits, no spaces
+  if (hasDigit && hasUpper && !hasSpace) return true;
+  // Codes like "U625", "G20", "F56" — short alphanumeric without spaces
+  if (hasDigit && hasUpper && trimmed.length <= 6 && !hasSpace) return true;
+  return false;
+}
+
+/**
+ * Build the best human-readable display name for a vehicle, with a
+ * graceful fallback when the model can't be translated to a commercial
+ * name. Used at the API layer.
+ *
+ * Examples:
+ *   normalizeModel returned "ספייס סטאר"  → "ספייס סטאר" (use as-is)
+ *   normalizeModel returned "XTA03"        → "" (don't show the code at all
+ *                                                — the manufacturer + year +
+ *                                                plate already identifies it)
+ */
+export function friendlyModel(rawModel: string | null | undefined, manufacturer: string | null | undefined): string {
+  if (!rawModel) return '';
+  if (!manufacturer) return rawModel;
+  const normalized = normalizeModel(rawModel, manufacturer);
+  // If the result still looks like a raw MOT code, hide it rather than
+  // confuse the user with "XTA03". The other fields (mfr, year, plate)
+  // are enough to identify the vehicle.
+  if (looksLikeMotCode(normalized)) return '';
+  return normalized;
 }
 
 /**

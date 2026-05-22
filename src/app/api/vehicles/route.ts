@@ -5,18 +5,22 @@ import { requireAuth, jsonResponse, errorResponse, handleApiError, getPagination
 } from '@/lib/api-helpers';
 import { vehicleSchema } from '@/lib/validations';
 import { parseFlexDate, getExpiryStatus } from '@/lib/utils';
-import { normalizeManufacturer, normalizeModel } from '@/lib/vehicle-names';
+import { normalizeManufacturer, friendlyModel } from '@/lib/vehicle-names';
 
 /**
  * Convert raw MOT codes ("מיצובישי תאילנד" + "XTA03") to the friendly
  * commercial names users actually recognize ("מיצובישי" + "ספייס סטאר").
  * Applied on every response so existing rows in the DB are presented
  * cleanly without a schema migration.
+ *
+ * If the model code can't be translated (not in our mapping yet),
+ * friendlyModel returns '' rather than the ugly MOT code — the
+ * manufacturer + year + plate are enough to identify the vehicle.
  */
 function withFriendlyNames<T extends { manufacturer?: string | null; model?: string | null }>(v: T): T {
   if (!v) return v;
   const mfr = v.manufacturer ? normalizeManufacturer(v.manufacturer) : v.manufacturer;
-  const model = v.model && v.manufacturer ? normalizeModel(v.model, v.manufacturer) : v.model;
+  const model = v.model && v.manufacturer ? friendlyModel(v.model, v.manufacturer) : v.model;
   return { ...v, manufacturer: mfr, model };
 }
 
