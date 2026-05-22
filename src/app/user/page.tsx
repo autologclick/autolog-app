@@ -16,6 +16,9 @@ import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import GlobalSearch from '@/components/ui/GlobalSearch';
 import InsuranceCompanyPicker from '@/components/ui/InsuranceCompanyPicker';
 import { ROAD_SERVICES, matchRoadServiceFromText, getRoadServiceById } from '@/lib/constants/road-services';
+import ConflictResolutionModal from '@/components/shared/ConflictResolutionModal';
+import ScanConflictBanner from '@/components/shared/ScanConflictBanner';
+import { detectAllConflicts, type CriticalConflict, type SoftConflict } from '@/lib/scan-conflict';
 import { ComingSoonBadge } from '@/components/shared/ComingSoonBanner';
 import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 // Tesseract loaded dynamically in handleScanReceipt to avoid SSR issues
@@ -307,6 +310,23 @@ export default function UserHomePage() {
   const [insuranceSuccess, setInsuranceSuccess] = useState('');
   const insuranceFileRef = useRef<HTMLInputElement>(null);
 
+  // Scan conflict resolution — populated when a scan returned values that
+  // disagree with what's already saved. Critical conflicts (license plate)
+  // block the auto-fill via modal; soft conflicts (company name) show a
+  // dismissible banner above the field.
+  const [scanCriticalConflict, setScanCriticalConflict] = useState<CriticalConflict | null>(null);
+  const [scanSoftConflict, setScanSoftConflict] = useState<SoftConflict | null>(null);
+  // The full scan result is held aside while the user resolves a critical
+  // conflict — we apply it AFTER they pick "use scanned" or discard it on
+  // "keep existing".
+  const [pendingScanData, setPendingScanData] = useState<{
+    extracted: { insuranceCompany: string; insuranceStart: string; insuranceExpiry: string; insuranceCost: string; insurancePolicyNumber: string };
+    isCompulsory: boolean;
+    insuranceType: 'comprehensive' | 'third_party';
+    roadServiceProvider: string;
+    roadServicePhone: string;
+  } | null>(null);
+
   // Test (טסט) upload modal
   const [showTestModal, setShowTestModal] = useState(false);
   const [testScanning, setTestScanning] = useState(false);
@@ -482,32 +502,57 @@ export default function UserHomePage() {
             insurancePolicyNumber: d.invoiceNumber || '',
           };
 
-          // Try to match the AI's extracted road service text to a known
-          // provider id. If no match found, fall back to leaving it empty
-          // — silently, no user-facing warning. The feature is bonus-only.
+          // Match AI's extracted road service text to a known provider id.
           const matchedProviderId = matchRoadServiceFromText(d.roadServiceProvider);
           const roadServiceFields = {
             roadServiceProvider: matchedProviderId || '',
             roadServicePhone: d.roadServicePhone || '',
           };
 
-          if (isCompulsory && insuranceTab === 'compulsory') {
-            setCompulsoryForm(extracted);
-          } else if (insuranceTab === 'comprehensive') {
-            setInsuranceForm({
-              ...extracted,
-              ...roadServiceFields,
-              insuranceType: d.description?.includes('צד ג') ? 'third_party' : 'comprehensive',
-            });
+          // ─── Conflict detection — must run BEFORE we overwrite the form ───
+          // Compare the scan's plate to the active vehicle's plate, and the
+          // scan's business name to whatever insurance company is already saved.
+          const currentExisting = isCompulsory
+            ? compulsoryForm.insuranceCompany
+            : insuranceForm.insuranceCompany;
+          const { critical, soft } = detectAllConflicts(
+            {
+              existingPlate: vehicle?.licensePlate,
+              existingCompany: currentExisting,
+            },
+            { licensePlate: d.licensePlate, businessName: d.businessName },
+            'insurance',
+          );
+
+          const insuranceType: 'comprehensive' | 'third_party' =
+            d.description?.includes('צד ג') ? 'third_party' : 'comprehensive';
+
+          if (critical) {
+            // Hard stop — stash the scan result and show the resolution modal.
+            // The form keeps its existing values until the user picks "use scanned".
+            setPendingScanData({ extracted, isCompulsory, insuranceType, ...roadServiceFields });
+            setScanCriticalConflict(critical);
+            // Don't show the success toast — there's an active conflict to resolve
           } else {
-            // AI detected compulsory but user is on comprehensive tab — put it in current tab
-            if (insuranceTab === 'compulsory') {
-              setCompulsoryForm(extracted);
+            // No critical conflict → apply the scan now.
+            // Soft conflict (if any) gets surfaced as a banner above the field;
+            // the existing value stays in the form, scanned value shown only in banner.
+            const applyExtracted = soft
+              ? { ...extracted, insuranceCompany: currentExisting }  // keep existing on soft conflict
+              : extracted;
+
+            if (isCompulsory && insuranceTab === 'compulsory') {
+              setCompulsoryForm(applyExtracted);
+            } else if (insuranceTab === 'comprehensive') {
+              setInsuranceForm({ ...applyExtracted, ...roadServiceFields, insuranceType });
+            } else if (insuranceTab === 'compulsory') {
+              setCompulsoryForm(applyExtracted);
             } else {
-              setInsuranceForm({ ...extracted, ...roadServiceFields, insuranceType: 'comprehensive' });
+              setInsuranceForm({ ...applyExtracted, ...roadServiceFields, insuranceType: 'comprehensive' });
             }
+            setScanSoftConflict(soft);
+            toast.success('הפרטים חולצו בהצלחה! בדוק ואשר.');
           }
-          toast.success('הפרטים חולצו בהצלחה! בדוק ואשר.');
         } else {
           setInsuranceError('לא הצלחנו לחלץ פרטים. מלא ידנית.');
         }
@@ -526,6 +571,57 @@ export default function UserHomePage() {
    */
   const hasFormData = (form: typeof compulsoryForm) =>
     Boolean(form.insuranceCompany || form.insuranceExpiry || form.insuranceStart);
+
+  // ─── Conflict resolution handlers ───────────────────────────────────
+  // User confirmed: yes, the scan was right — overwrite saved data with it.
+  const handleAcceptScannedConflict = () => {
+    if (!pendingScanData) {
+      setScanCriticalConflict(null);
+      return;
+    }
+    const { extracted, isCompulsory, insuranceType, roadServiceProvider, roadServicePhone } = pendingScanData;
+    if (isCompulsory && insuranceTab === 'compulsory') {
+      setCompulsoryForm(extracted);
+    } else if (insuranceTab === 'comprehensive') {
+      setInsuranceForm({ ...extracted, roadServiceProvider, roadServicePhone, insuranceType });
+    } else if (insuranceTab === 'compulsory') {
+      setCompulsoryForm(extracted);
+    } else {
+      setInsuranceForm({ ...extracted, roadServiceProvider, roadServicePhone, insuranceType: 'comprehensive' });
+    }
+    toast.success('הפרטים מהמסמך הוחלו על הטופס');
+    setPendingScanData(null);
+    setScanCriticalConflict(null);
+  };
+
+  // User said: my saved data is correct, ignore the scan
+  const handleKeepExistingOnConflict = () => {
+    setPendingScanData(null);
+    setScanCriticalConflict(null);
+    toast.success('הנתונים שלך נשמרו ללא שינוי');
+  };
+
+  // User dismissed the modal entirely — same as "keep existing" but without toast
+  const handleCancelConflict = () => {
+    setPendingScanData(null);
+    setScanCriticalConflict(null);
+  };
+
+  // Soft conflict (e.g. company name) — user wants to replace
+  const handleAcceptSoftConflict = () => {
+    if (!scanSoftConflict) return;
+    const field = scanSoftConflict.field;
+    const scanned = scanSoftConflict.scanned;
+    if (field === 'insuranceCompany') {
+      if (insuranceTab === 'compulsory') {
+        setCompulsoryForm((f) => ({ ...f, insuranceCompany: scanned }));
+      } else {
+        setInsuranceForm((f) => ({ ...f, insuranceCompany: scanned }));
+      }
+    }
+    setScanSoftConflict(null);
+  };
+  const handleDismissSoftConflict = () => setScanSoftConflict(null);
 
   /**
    * Convert an ISO date string (or full Date string) to YYYY-MM-DD,
@@ -2066,6 +2162,16 @@ export default function UserHomePage() {
 
               {/* Form Fields */}
               <div className="space-y-3">
+                {/* Soft conflict banner — shown only when scan found a different
+                    insurance company than what's already saved. Default action
+                    is to keep existing; user can opt to replace. */}
+                {scanSoftConflict && scanSoftConflict.field === 'insuranceCompany' && (
+                  <ScanConflictBanner
+                    conflict={scanSoftConflict}
+                    onAccept={handleAcceptSoftConflict}
+                    onDismiss={handleDismissSoftConflict}
+                  />
+                )}
                 <InsuranceCompanyPicker
                   value={currentForm.insuranceCompany}
                   onChange={(v) => setCurrentForm({ ...currentForm, insuranceCompany: v })}
@@ -2237,6 +2343,18 @@ export default function UserHomePage() {
         </div>
         );
       })()}
+
+      {/* ═══ Critical Conflict Modal — license plate mismatch on scan ═══
+            Shown on TOP of the insurance modal when AI extracts a plate
+            that doesn't match the vehicle the user is editing.
+            User must explicitly choose what wins. */}
+      <ConflictResolutionModal
+        conflict={scanCriticalConflict}
+        source="insurance"
+        onKeepExisting={handleKeepExistingOnConflict}
+        onUseScanned={handleAcceptScannedConflict}
+        onCancel={handleCancelConflict}
+      />
 
       {/* ═══ Test (טסט) Modal ═══ */}
       {showTestModal && vehicle && (
