@@ -13,15 +13,40 @@ import { normalizeManufacturer, friendlyModel } from '@/lib/vehicle-names';
  * Applied on every response so existing rows in the DB are presented
  * cleanly without a schema migration.
  *
+ * Also fixes auto-generated nicknames — if `nickname` looks like the
+ * raw "${manufacturer} ${model}" concatenation (the default the wizard
+ * sets at signup), we rebuild it with friendly names. User-customized
+ * nicknames (anything else) are left untouched out of respect.
+ *
  * If the model code can't be translated (not in our mapping yet),
  * friendlyModel returns '' rather than the ugly MOT code — the
  * manufacturer + year + plate are enough to identify the vehicle.
  */
-function withFriendlyNames<T extends { manufacturer?: string | null; model?: string | null }>(v: T): T {
+function withFriendlyNames<T extends { manufacturer?: string | null; model?: string | null; nickname?: string | null }>(v: T): T {
   if (!v) return v;
-  const mfr = v.manufacturer ? normalizeManufacturer(v.manufacturer) : v.manufacturer;
-  const model = v.model && v.manufacturer ? friendlyModel(v.model, v.manufacturer) : v.model;
-  return { ...v, manufacturer: mfr, model };
+  const rawMfr = v.manufacturer || '';
+  const rawModel = v.model || '';
+  const mfr = rawMfr ? normalizeManufacturer(rawMfr) : rawMfr;
+  const model = rawModel && rawMfr ? friendlyModel(rawModel, rawMfr) : rawModel;
+
+  // Detect auto-generated nicknames so we can update them. We compare against
+  // both the raw and the normalized forms because the wizard might have used
+  // either at the time of creation.
+  let nickname = v.nickname;
+  if (nickname) {
+    const trimmed = nickname.trim();
+    const autoCandidates = [
+      `${rawMfr} ${rawModel}`.trim(),
+      `${mfr} ${rawModel}`.trim(),
+      `${rawMfr} ${model}`.trim(),
+    ];
+    if (autoCandidates.includes(trimmed)) {
+      // It's an auto-generated nickname → regenerate with friendly names
+      nickname = `${mfr} ${model}`.trim() || mfr || rawMfr;
+    }
+  }
+
+  return { ...v, manufacturer: mfr, model, nickname };
 }
 
 // GET /api/vehicles - List user's vehicles (owned + shared)

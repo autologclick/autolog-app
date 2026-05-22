@@ -99,12 +99,31 @@ export async function GET(
     // "מיצובישי תאילנד" → "מיצובישי") — see /api/vehicles for full rationale.
     // friendlyModel returns '' for unmapped codes rather than showing
     // raw "XTA03" — the manufacturer + year already identifies the vehicle.
+    // Auto-generated nicknames ("מיצובישי XTA03") are also rebuilt with
+    // friendly names; user-customized nicknames stay as-is.
+    const rawMfr = vehicle.manufacturer || '';
+    const rawModel = vehicle.model || '';
+    const friendlyMfr = rawMfr ? normalizeManufacturer(rawMfr) : rawMfr;
+    const friendlyModelName = rawModel && rawMfr ? friendlyModel(rawModel, rawMfr) : rawModel;
+
+    let nickname = vehicle.nickname;
+    if (nickname) {
+      const trimmed = nickname.trim();
+      const autoCandidates = [
+        `${rawMfr} ${rawModel}`.trim(),
+        `${friendlyMfr} ${rawModel}`.trim(),
+        `${rawMfr} ${friendlyModelName}`.trim(),
+      ];
+      if (autoCandidates.includes(trimmed)) {
+        nickname = `${friendlyMfr} ${friendlyModelName}`.trim() || friendlyMfr || rawMfr;
+      }
+    }
+
     const friendly = {
       ...vehicle,
-      manufacturer: vehicle.manufacturer ? normalizeManufacturer(vehicle.manufacturer) : vehicle.manufacturer,
-      model: vehicle.model && vehicle.manufacturer
-        ? friendlyModel(vehicle.model, vehicle.manufacturer)
-        : vehicle.model,
+      manufacturer: friendlyMfr,
+      model: friendlyModelName,
+      nickname,
     };
 
     return jsonResponse({ vehicle: friendly });
