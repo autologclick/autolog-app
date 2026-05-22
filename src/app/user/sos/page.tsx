@@ -10,6 +10,7 @@ import {
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import ComingSoonBanner from '@/components/shared/ComingSoonBanner';
 import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
+import { getRoadServiceById } from '@/lib/constants/road-services';
 
 /* ────────────────────── Types ────────────────────── */
 
@@ -29,6 +30,10 @@ interface Vehicle {
   nickname: string;
   licensePlate: string;
   model: string;
+  // Optional roadside assistance info — only present if user uploaded
+  // a comprehensive policy AND we extracted the provider from it.
+  roadServiceProvider?: string | null;
+  roadServicePhone?: string | null;
 }
 
 /* ────────────────────── Constants ────────────────────── */
@@ -562,6 +567,34 @@ export default function SosPage() {
                       ))}
                     </select>
                   </div>
+
+                  {/* ─── Quick-call to user's roadside provider ───
+                      Silent feature: only renders if the selected vehicle
+                      has a saved provider. If not, this section disappears
+                      entirely — no warning, no "set up your tow" CTA. */}
+                  {(() => {
+                    const selected = vehicles.find(v => v.id === selectedVehicleId);
+                    if (!selected?.roadServiceProvider) return null;
+                    const provider = getRoadServiceById(selected.roadServiceProvider);
+                    if (!provider) return null;
+                    const dialNumber = selected.roadServicePhone || provider.dialablePhone;
+                    return (
+                      <a
+                        href={`tel:${dialNumber}`}
+                        className="flex items-center gap-3 p-4 bg-gradient-to-l from-green-500 to-emerald-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow"
+                      >
+                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <PhoneCall size={22} className="text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs text-white/85 mb-0.5">חיוג מהיר לגרר שלך</div>
+                          <div className="font-bold text-base truncate">{provider.name}</div>
+                          <div className="text-xs text-white/90" dir="ltr">{provider.displayPhone}</div>
+                        </div>
+                        <ChevronLeft size={20} className="text-white/80 flex-shrink-0" />
+                      </a>
+                    );
+                  })()}
 
                   {/* Event type grid */}
                   <div>

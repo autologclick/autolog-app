@@ -83,6 +83,9 @@ export async function PUT(
         insuranceCost,
         insurancePolicyNumber,
         insuranceDocUrl,
+        // Roadside assistance — comprehensive policies only
+        roadServiceProvider,
+        roadServicePhone,
       } = body;
 
       if (insuranceCompany !== undefined) {
@@ -112,6 +115,14 @@ export async function PUT(
       if (insuranceDocUrl !== undefined) {
         updateData.insuranceDocUrl = insuranceDocUrl || null;
       }
+      // Roadside provider — optional, silent on missing.
+      // Accept empty string as "clear it" (so user can manually remove a bad scan).
+      if (roadServiceProvider !== undefined) {
+        updateData.roadServiceProvider = roadServiceProvider || null;
+      }
+      if (roadServicePhone !== undefined) {
+        updateData.roadServicePhone = roadServicePhone || null;
+      }
     }
 
     if (Object.keys(updateData).length === 0) {
@@ -140,6 +151,9 @@ export async function PUT(
         compulsoryInsurancePolicyNumber: true,
         compulsoryInsuranceDocUrl: true,
         compulsoryInsuranceStatus: true,
+        // Roadside assistance — silent feature, only surfaces if populated
+        roadServiceProvider: true,
+        roadServicePhone: true,
       },
     });
 
@@ -247,6 +261,9 @@ export async function GET(
         compulsoryInsurancePolicyNumber: true,
         compulsoryInsuranceDocUrl: true,
         compulsoryInsuranceStatus: true,
+        // Roadside assistance
+        roadServiceProvider: true,
+        roadServicePhone: true,
       },
     });
 
@@ -266,6 +283,8 @@ export async function GET(
         insurancePolicyNumber: vehicle.insurancePolicyNumber,
         insuranceDocUrl: vehicle.insuranceDocUrl,
         insuranceStatus: vehicle.insuranceStatus,
+        roadServiceProvider: vehicle.roadServiceProvider,
+        roadServicePhone: vehicle.roadServicePhone,
       },
       compulsory: {
         insuranceCompany: vehicle.compulsoryInsuranceCompany,

@@ -15,6 +15,7 @@ import VehicleAssistant from '@/components/chat/VehicleAssistant';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import GlobalSearch from '@/components/ui/GlobalSearch';
 import InsuranceCompanyPicker from '@/components/ui/InsuranceCompanyPicker';
+import { ROAD_SERVICES, matchRoadServiceFromText, getRoadServiceById } from '@/lib/constants/road-services';
 import { ComingSoonBadge } from '@/components/shared/ComingSoonBanner';
 import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 // Tesseract loaded dynamically in handleScanReceipt to avoid SSR issues
@@ -289,6 +290,9 @@ export default function UserHomePage() {
     insuranceExpiry: '',
     insuranceCost: '',
     insurancePolicyNumber: '',
+    // Roadside assistance — optional, silent if missing. AI extracts when possible.
+    roadServiceProvider: '',  // ROAD_SERVICES.id (e.g. 'shagrir') or '' for none
+    roadServicePhone: '',     // optional override for custom providers
   });
   // Compulsory (ביטוח חובה) form
   const [compulsoryForm, setCompulsoryForm] = useState({
@@ -478,11 +482,21 @@ export default function UserHomePage() {
             insurancePolicyNumber: d.invoiceNumber || '',
           };
 
+          // Try to match the AI's extracted road service text to a known
+          // provider id. If no match found, fall back to leaving it empty
+          // — silently, no user-facing warning. The feature is bonus-only.
+          const matchedProviderId = matchRoadServiceFromText(d.roadServiceProvider);
+          const roadServiceFields = {
+            roadServiceProvider: matchedProviderId || '',
+            roadServicePhone: d.roadServicePhone || '',
+          };
+
           if (isCompulsory && insuranceTab === 'compulsory') {
             setCompulsoryForm(extracted);
           } else if (insuranceTab === 'comprehensive') {
             setInsuranceForm({
               ...extracted,
+              ...roadServiceFields,
               insuranceType: d.description?.includes('צד ג') ? 'third_party' : 'comprehensive',
             });
           } else {
@@ -490,7 +504,7 @@ export default function UserHomePage() {
             if (insuranceTab === 'compulsory') {
               setCompulsoryForm(extracted);
             } else {
-              setInsuranceForm({ ...extracted, insuranceType: 'comprehensive' });
+              setInsuranceForm({ ...extracted, ...roadServiceFields, insuranceType: 'comprehensive' });
             }
           }
           toast.success('הפרטים חולצו בהצלחה! בדוק ואשר.');
@@ -564,6 +578,8 @@ export default function UserHomePage() {
         insuranceExpiry: isoToDateInput(compre.insuranceExpiry),
         insuranceCost: compre.insuranceCost != null ? String(compre.insuranceCost) : '',
         insurancePolicyNumber: compre.insurancePolicyNumber || '',
+        roadServiceProvider: compre.roadServiceProvider || '',
+        roadServicePhone: compre.roadServicePhone || '',
       });
     } catch {
       // Silent fallback — form will be empty, user can re-enter
@@ -618,6 +634,9 @@ export default function UserHomePage() {
     };
     if (!isCompulsory) {
       bodyData.insuranceType = insuranceForm.insuranceType || null;
+      // Roadside assistance fields only travel with comprehensive policies
+      bodyData.roadServiceProvider = insuranceForm.roadServiceProvider || null;
+      bodyData.roadServicePhone = insuranceForm.roadServicePhone || null;
     }
     try {
       const res = await fetch(`/api/vehicles/${vehicle.id}/insurance?type=${which}`, {
@@ -2114,6 +2133,31 @@ export default function UserHomePage() {
                     />
                   </div>
                 </div>
+
+                {/* Roadside assistance — comprehensive only, totally optional.
+                    No asterisk, no warning if empty. We use it only if present. */}
+                {insuranceTab === 'comprehensive' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      שירותי דרך / גרר <span className="text-gray-400 font-normal">(אופציונלי — לשעת חירום)</span>
+                    </label>
+                    <select
+                      value={insuranceForm.roadServiceProvider}
+                      onChange={e => setInsuranceForm({ ...insuranceForm, roadServiceProvider: e.target.value })}
+                      className="w-full border-2 rounded-xl p-2.5 text-sm bg-white"
+                    >
+                      <option value="">— אם רוצה, בחר/י —</option>
+                      {ROAD_SERVICES.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} ({p.displayPhone})
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-[11px] text-gray-400 mt-1 leading-relaxed">
+                      אם שמור, נציג לך כפתור חיוג ישיר במסך SOS. אפשר תמיד להשאיר ריק.
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Smart save area — saves whichever forms have data */}

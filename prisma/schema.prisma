@@ -130,6 +130,12 @@ model Vehicle {
   compulsoryInsuranceDocUrl      String?   // uploaded document URL
   compulsoryInsuranceStatus      String    @default("valid") // valid | expiring | expired
 
+  // Roadside assistance (שירותי דרך) — usually bundled with ביטוח מקיף.
+  // Set by AI extraction from the policy or manually by the user.
+  // Both fields nullable — never required, never nags the user if missing.
+  roadServiceProvider String?  // matches ROAD_SERVICES.id in src/lib/constants/road-services.ts
+  roadServicePhone    String?  // optional override for custom/non-listed providers
+
   // Metadata
   isPrimary         Boolean   @default(false)
   mileage           Int?

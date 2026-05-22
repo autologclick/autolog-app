@@ -48,6 +48,11 @@ export interface ScanResult {
   // Category suggestion for documents page
   suggestedCategory: string | null;  // insurance, test, registration, receipt, other
 
+  // Roadside assistance — only present on ביטוח מקיף policies.
+  // Both are optional; we silently skip if not found (never alert the user).
+  roadServiceProvider: string | null;  // e.g. "שגריר", "דרכים", "ממסי"
+  roadServicePhone: string | null;     // shortcode (e.g. "*8888") or full number
+
   // Raw text summary for reference
   summary: string;
 }
@@ -144,6 +149,7 @@ IMPORTANT EXTRACTION RULES:
 6. Business name: Usually at the top of the document, often with logo. For רישיון רכב — use the test station name if visible
 7. Line items: Individual services/parts with their costs
 8. For רישיון רכב (vehicle registration): "בתוקף עד" = expiryDate, "כינוי מסחרי" = vehicleInfo (model name like CX-5, NOT the manufacturer), "תוצר" = manufacturer (WITHOUT country name)
+9. For פוליסת ביטוח מקיף (comprehensive insurance policy) ONLY: look for the roadside assistance section ("שירותי דרך", "גרירה", "שירות דרך"). Common providers: שגריר (Shagrir), דרכים (Drachim), ממסי (Memsi/איגוד הנהיגה), ש.א.ת (SAT), פז שירות, תחבורה, ביטוח ישיר דרך. If found, set roadServiceProvider to the provider name and roadServicePhone to the contact number (often shown as *8888, *3500, etc). If the policy doesn't mention roadside service, leave BOTH as null — do NOT guess and do NOT fail.
 
 Return a JSON object with these exact fields (use null for fields you can't find):`;
 
@@ -173,6 +179,8 @@ Return ONLY valid JSON with this structure — no markdown, no explanation:
   "description": "string — brief Hebrew summary of what the document is about",
   "lineItems": [{"description": "string", "amount": number or null}] or null,
   "suggestedCategory": "insurance" | "test" | "registration" | "receipt" | "other",
+  "roadServiceProvider": "string (provider name in Hebrew, e.g. שגריר) or null — ONLY for ביטוח מקיף policies",
+  "roadServicePhone": "string (phone or shortcode like *8888) or null — ONLY for ביטוח מקיף policies",
   "summary": "string — 1-2 sentence Hebrew summary of the document"
 }`;
 }
@@ -353,6 +361,12 @@ function parseAndValidate(rawJson: string): ScanResult | null {
         amount: typeof item.amount === 'number' ? Math.round(item.amount * 100) / 100 : null,
       })) : null,
       suggestedCategory: validateEnum(parsed.suggestedCategory, ['insurance', 'test', 'registration', 'receipt', 'other'], 'other'),
+      roadServiceProvider: typeof parsed.roadServiceProvider === 'string' && parsed.roadServiceProvider.trim()
+        ? parsed.roadServiceProvider.trim()
+        : null,
+      roadServicePhone: typeof parsed.roadServicePhone === 'string' && parsed.roadServicePhone.trim()
+        ? parsed.roadServicePhone.trim()
+        : null,
       summary: typeof parsed.summary === 'string' ? parsed.summary.trim() : 'מסמך שזוהה',
     };
 
