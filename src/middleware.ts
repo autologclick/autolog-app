@@ -140,6 +140,7 @@ const PUBLIC_ROUTES = [
   '/api/garage-applications',
   '/api/public', // HMAC-signed share links (PDF, vehicle history) — tokens verified in route handlers
   '/api/inspections', // Inspection APIs — route handlers enforce auth; public access for awaiting_signature
+  '/api/bug-report', // Bug reports — accessible to anonymous prospects too; handler identifies the user when possible
   '/inspection', // Inspection view page — accessible for customer signature via shared links
   '/garage-apply',
   '/help', // User guide — accessible to both prospects and logged-in users

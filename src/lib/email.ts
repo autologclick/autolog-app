@@ -512,6 +512,106 @@ export function buildTreatmentEmailHtml({
 }
 
 /**
+ * Bug Report Email — sent to the dev team whenever a user reports a bug
+ * (via the floating "report bug" button OR when ErrorBoundary catches a
+ * render error). Designed to give you everything you need to reproduce
+ * and fix without bothering the user.
+ */
+export function buildBugReportEmailHtml({
+  source,
+  userDescription,
+  errorMessage,
+  errorStack,
+  pageUrl,
+  userAgent,
+  viewport,
+  userEmail,
+  userName,
+  userId,
+  timestamp,
+  sentryEventId,
+}: {
+  source: 'user-report' | 'error-boundary' | 'global-error';
+  userDescription?: string | null;
+  errorMessage?: string | null;
+  errorStack?: string | null;
+  pageUrl: string;
+  userAgent: string;
+  viewport?: string;
+  userEmail?: string | null;
+  userName?: string | null;
+  userId?: string | null;
+  timestamp: string;
+  sentryEventId?: string | null;
+}): string {
+  const sourceConfig: Record<typeof source, { emoji: string; title: string; color: string; bg: string }> = {
+    'user-report': {
+      emoji: '👤',
+      title: 'דיווח באג ממשתמש',
+      color: '#0d9488',
+      bg: 'linear-gradient(135deg,#0d9488,#0f766e)',
+    },
+    'error-boundary': {
+      emoji: '⚠️',
+      title: 'קריסת רינדור (Error Boundary)',
+      color: '#f59e0b',
+      bg: 'linear-gradient(135deg,#f59e0b,#d97706)',
+    },
+    'global-error': {
+      emoji: '🚨',
+      title: 'קריסה גלובלית של האפליקציה',
+      color: '#dc2626',
+      bg: 'linear-gradient(135deg,#dc2626,#b91c1c)',
+    },
+  };
+  const cfg = sourceConfig[source];
+
+  const header = `<h1 style="color:#ffffff;margin:0;font-size:20px">${cfg.emoji} ${cfg.title}</h1>`;
+
+  // What the user said (only present for 'user-report')
+  const userSaidHtml = userDescription
+    ? `<div style="background:#f0fdfa;border-right:4px solid ${cfg.color};border-radius:8px;padding:16px;margin:0 0 20px"><p style="margin:0 0 6px;font-size:13px;color:#0f766e;font-weight:700">מה המשתמש אמר:</p><p style="margin:0;font-size:15px;color:#1e293b;line-height:1.6;white-space:pre-wrap">${userDescription.replace(/[<>]/g, '')}</p></div>`
+    : '';
+
+  // What the system caught (always present for errors, optional for user reports)
+  const errorHtml = errorMessage
+    ? `<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px;margin:0 0 20px"><p style="margin:0 0 6px;font-size:13px;color:#991b1b;font-weight:700">שגיאה טכנית:</p><p style="margin:0;font-size:14px;color:#7f1d1d;font-family:monospace;word-break:break-word">${errorMessage.replace(/[<>]/g, '')}</p></div>`
+    : '';
+
+  // Stack trace (truncated to first 15 lines for readability)
+  const stackHtml = errorStack
+    ? `<details style="margin:0 0 20px"><summary style="cursor:pointer;font-size:13px;color:#64748b;font-weight:600;margin-bottom:8px">Stack trace (לחץ להרחבה)</summary><pre style="background:#1e293b;color:#e2e8f0;border-radius:6px;padding:12px;font-size:11px;line-height:1.5;overflow-x:auto;direction:ltr;text-align:left;max-height:280px">${errorStack.split('\n').slice(0, 15).join('\n').replace(/[<>]/g, '')}</pre></details>`
+    : '';
+
+  // Context table — everything we know about the environment
+  const rows = [
+    detailRow('עמוד', `<span style="direction:ltr;font-family:monospace;font-size:13px">${pageUrl}</span>`),
+    ...(userName ? [detailRow('משתמש', userName)] : []),
+    ...(userEmail ? [detailRow('מייל לחזרה', `<a href="mailto:${userEmail}" style="color:${cfg.color}">${userEmail}</a>`)] : []),
+    ...(userId ? [detailRow('User ID', `<span style="direction:ltr;font-family:monospace;font-size:12px">${userId}</span>`)] : []),
+    ...(viewport ? [detailRow('גודל מסך', viewport)] : []),
+    detailRow('דפדפן', `<span style="direction:ltr;font-size:12px;color:#475569">${userAgent.slice(0, 120)}</span>`),
+    detailRow('זמן', new Date(timestamp).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'medium' })),
+    ...(sentryEventId ? [detailRow('Sentry ID', `<span style="direction:ltr;font-family:monospace;font-size:12px">${sentryEventId.slice(0, 16)}...</span>`, true)] : [detailRow('זמן', new Date(timestamp).toLocaleString('he-IL'), true)].slice(1)),
+  ].join('');
+
+  const replyButton = userEmail
+    ? `<div style="text-align:center;margin:24px 0">${btnHtml(`mailto:${userEmail}?subject=AutoLog%20-%20בנוגע%20לדיווח%20שלך`, '✉️ השב/י למשתמש', cfg.color)}</div>`
+    : '';
+
+  const body = [
+    userSaidHtml,
+    errorHtml,
+    detailTable(rows),
+    stackHtml,
+    replyButton,
+    pSmall('דיווח אוטומטי ממערכת AutoLog. כדי לעצור — הסר/י את ה-handler ב-/api/bug-report.'),
+  ].join('');
+
+  return emailWrapper(cfg.bg, header, body);
+}
+
+/**
  * Vehicle Share Request Email
  */
 export function buildVehicleShareRequestEmailHtml(

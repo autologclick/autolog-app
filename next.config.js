@@ -130,4 +130,36 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+// ─────────────────────────────────────────────────────────────────────
+// Sentry integration — auto-uploads source maps + injects instrumentation.
+// Without this wrap, stack traces in Sentry show minified function names
+// like `function a(b,c)` instead of meaningful symbols.
+// ─────────────────────────────────────────────────────────────────────
+const { withSentryConfig } = require('@sentry/nextjs');
+
+module.exports = withSentryConfig(nextConfig, {
+  // Sentry organization / project — must match the DSN in sentry.*.config.ts.
+  org: 'autolog',
+  project: 'autolog-nextjs',
+
+  // Suppresses source-map upload logs during build (keeps Vercel logs clean).
+  silent: !process.env.CI,
+
+  // Upload a larger set of source maps for better stack traces.
+  widenClientFileUpload: true,
+
+  // Route browser requests to Sentry through a rewrite to bypass ad-blockers.
+  // Tiny perf hit, big win in real-world error capture rate (~30% more
+  // reports get through because ublock/brave/iOS-content-blockers don't
+  // filter same-origin requests).
+  tunnelRoute: '/monitoring',
+
+  // Automatically tree-shake Sentry logger statements in production.
+  disableLogger: true,
+
+  // Skip the build-time check that warns about missing SENTRY_AUTH_TOKEN —
+  // until you generate one, source-map upload silently skips (still works,
+  // just less helpful traces). Add SENTRY_AUTH_TOKEN to Vercel env vars
+  // when you want full traces.
+  automaticVercelMonitors: false,
+});
