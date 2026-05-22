@@ -15,6 +15,7 @@ import {
   Check, Flag, CheckCircle, Wrench, TrendingUp, MapPinIcon, Upload, ArrowLeftRight
 } from 'lucide-react';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
+import MarkReminderDoneModal, { type ReminderType as MarkReminderType } from '@/components/shared/MarkReminderDoneModal';
 // Tesseract is dynamically imported inside handleScanReceipt() to keep it out of
 // the initial bundle. It's a heavy OCR library (~5MB) used only when the user
 // explicitly scans a receipt.
@@ -80,6 +81,8 @@ interface VehicleData {
   testStatus: string;
   insuranceExpiry?: string;
   insuranceStatus: string;
+  compulsoryInsuranceExpiry?: string;
+  compulsoryInsuranceStatus?: string;
   isPrimary: boolean;
   inspections: Inspection[];
   appointments: Appointment[];
@@ -117,7 +120,16 @@ const LicensePlate = ({ plate }: { plate: string }) => {
   );
 };
 
-const ReminderCard = ({ title, value, subtitle, status }: { title: string; value: string | number; subtitle?: string; status?: 'warning' | 'danger' | 'success' }) => {
+const ReminderCard = ({
+  title, value, subtitle, status, onMarkDone,
+}: {
+  title: string;
+  value: string | number;
+  subtitle?: string;
+  status?: 'warning' | 'danger' | 'success';
+  /** When provided, renders a "✅ ביצעתי" button that calls this on click */
+  onMarkDone?: () => void;
+}) => {
   let valueColor = 'text-gray-800';
   if (status === 'danger') valueColor = 'text-red-600';
   if (status === 'warning') valueColor = 'text-orange-600';
@@ -128,6 +140,14 @@ const ReminderCard = ({ title, value, subtitle, status }: { title: string; value
       <p className="text-xs text-gray-500 mb-2">{title}</p>
       <p className={`text-2xl font-bold ${valueColor}`}>{value}</p>
       {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
+      {onMarkDone && (
+        <button
+          onClick={onMarkDone}
+          className="mt-2 inline-flex items-center justify-center gap-1 px-2 py-1 text-[10px] font-semibold bg-green-50 text-green-700 hover:bg-green-100 rounded-full transition-colors border border-green-200"
+        >
+          ✓ ביצעתי
+        </button>
+      )}
     </Card>
   );
 };
@@ -462,32 +482,66 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
     return { days: diff, status: 'success' };
   };
 
-  const reminders = [
+  const reminders: Array<{
+    title: string;
+    value: string | number | null | undefined;
+    subtitle: string | null | undefined;
+    status: 'warning' | 'danger' | 'success' | null | undefined;
+    reminderType: MarkReminderType;
+  }> = [
     {
-      title: 'טסט לרכב',
+      title: 'טסט שנתי',
       value: vehicle?.testExpiryDate ? calculateDaysUntil(vehicle.testExpiryDate)?.days : null,
       subtitle: vehicle?.testExpiryDate ? new Date(vehicle.testExpiryDate).toLocaleDateString('he-IL') : null,
       status: vehicle?.testExpiryDate ? calculateDaysUntil(vehicle.testExpiryDate)?.status : null,
+      reminderType: 'test',
     },
     {
-      title: 'טיפול שגרתי',
-      value: (vehicle?.mileage ? (Math.ceil((vehicle.mileage + 5000) / 10000) * 10000).toLocaleString('he-IL') : 'N/A'),
-      subtitle: 'עד לק"ן הבא',
-      status: 'success' as const,
+      title: 'ביטוח חובה',
+      value: vehicle?.compulsoryInsuranceExpiry ? calculateDaysUntil(vehicle.compulsoryInsuranceExpiry)?.days : null,
+      subtitle: vehicle?.compulsoryInsuranceExpiry ? new Date(vehicle.compulsoryInsuranceExpiry).toLocaleDateString('he-IL') : null,
+      status: vehicle?.compulsoryInsuranceExpiry ? calculateDaysUntil(vehicle.compulsoryInsuranceExpiry)?.status : null,
+      reminderType: 'compulsory_insurance',
     },
     {
-      title: 'חידוש ביטוח',
+      title: 'ביטוח מקיף',
       value: vehicle?.insuranceExpiry ? calculateDaysUntil(vehicle.insuranceExpiry)?.days : null,
       subtitle: vehicle?.insuranceExpiry ? new Date(vehicle.insuranceExpiry).toLocaleDateString('he-IL') : null,
       status: vehicle?.insuranceExpiry ? calculateDaysUntil(vehicle.insuranceExpiry)?.status : null,
+      reminderType: 'comprehensive_insurance',
     },
     {
-      title: 'צמיגים קדמיים',
+      title: 'החלפת שמן',
+      value: (vehicle?.mileage ? (Math.ceil((vehicle.mileage + 5000) / 10000) * 10000).toLocaleString('he-IL') : 'N/A'),
+      subtitle: 'עד לק"מ הבא',
+      status: 'success' as const,
+      reminderType: 'oil_change',
+    },
+    {
+      title: 'צמיגים',
       value: (vehicle?.mileage ? (Math.ceil((vehicle.mileage + 15000) / 20000) * 20000).toLocaleString('he-IL') : 'N/A'),
       subtitle: 'עד לק"מ הבא',
       status: 'success' as const,
+      reminderType: 'tires',
+    },
+    {
+      title: 'בלמים',
+      value: (vehicle?.mileage ? (Math.ceil((vehicle.mileage + 30000) / 60000) * 60000).toLocaleString('he-IL') : 'N/A'),
+      subtitle: 'עד לק"מ הבא',
+      status: 'success' as const,
+      reminderType: 'brakes',
+    },
+    {
+      title: 'רצועת תזמון',
+      value: (vehicle?.mileage ? (Math.ceil((vehicle.mileage + 40000) / 80000) * 80000).toLocaleString('he-IL') : 'N/A'),
+      subtitle: 'עד לק"מ הבא',
+      status: 'success' as const,
+      reminderType: 'timing_belt',
     },
   ];
+
+  // Track which reminder modal is open (or null if none)
+  const [activeMarkDoneType, setActiveMarkDoneType] = useState<MarkReminderType | null>(null);
 
   const visibleReminders = reminders.slice(selectedReminderIndex, selectedReminderIndex + 2);
 
@@ -697,8 +751,9 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
                 key={selectedReminderIndex + idx}
                 title={reminder.title}
                 value={reminder.value || '—'}
-                subtitle={reminder.subtitle}
-                status={reminder.status}
+                subtitle={reminder.subtitle || undefined}
+                status={reminder.status || undefined}
+                onMarkDone={() => setActiveMarkDoneType(reminder.reminderType)}
               />
             ))}
           </div>
@@ -1133,6 +1188,20 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
           </div>
         </div>
       </Modal>
+
+      {/* "Mark as done" modal — shared by all reminder types */}
+      <MarkReminderDoneModal
+        isOpen={activeMarkDoneType !== null}
+        vehicleId={id}
+        reminderType={activeMarkDoneType || 'test'}
+        defaultMileage={vehicle?.mileage}
+        onClose={() => setActiveMarkDoneType(null)}
+        onSuccess={() => {
+          // Reload the page to refresh all vehicle data + reminder dates.
+          // Cleaner than threading a refetch through the existing useEffect.
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }
