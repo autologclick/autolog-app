@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {
   Calendar, ChevronLeft, ChevronRight, BookOpen, Car, Wrench, Scan,
   Bell, MapPin, FileText, Gauge, Share2, Lightbulb, ChevronDown,
+  Phone, MessageCircle, Mail,
 } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 
@@ -387,19 +388,58 @@ export default function HelpPage() {
           </article>
         ))}
 
-        {/* Final CTA — Support */}
-        <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] rounded-3xl p-8 sm:p-10 text-white text-center">
-          <h2 className="text-2xl font-extrabold mb-3">לא מצאת תשובה?</h2>
-          <p className="text-white/80 mb-6 max-w-md mx-auto leading-relaxed">
-            הצוות שלנו כאן בשבילך. שלח/י פנייה ונחזור אליך תוך 24 שעות.
-          </p>
-          <Link
-            href="/user/support"
-            className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-[#1e3a5f] font-bold rounded-2xl hover:bg-white/90 transition shadow-lg"
-          >
-            פנה/פני לתמיכה
-            <ChevronLeft size={18} />
-          </Link>
+        {/* Final CTA — Direct contact methods (works for both logged-in
+            and anonymous visitors — no auth required) */}
+        <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] rounded-3xl p-6 sm:p-10 text-white">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-extrabold mb-3">לא מצאת תשובה?</h2>
+            <p className="text-white/80 max-w-md mx-auto leading-relaxed">
+              הצוות שלנו כאן בשבילך. בחר/י איך נוח לך לפנות אלינו.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Phone */}
+            <a
+              href="tel:0543161610"
+              className="bg-white/10 hover:bg-white/15 transition rounded-2xl p-4 text-center border border-white/15"
+            >
+              <div className="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center mx-auto mb-2">
+                <Phone size={20} className="text-white" />
+              </div>
+              <div className="font-bold mb-0.5">טלפון</div>
+              <div className="text-xs text-white/70 mb-2">א׳-ה׳ 08:00-18:00</div>
+              <div className="text-sm font-semibold" dir="ltr">054-316-1610</div>
+            </a>
+
+            {/* WhatsApp */}
+            <a
+              href="https://wa.me/972543161610"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-green-500/20 hover:bg-green-500/30 transition rounded-2xl p-4 text-center border border-green-400/30"
+            >
+              <div className="w-11 h-11 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-2">
+                <MessageCircle size={20} className="text-white" />
+              </div>
+              <div className="font-bold mb-0.5">וואטסאפ</div>
+              <div className="text-xs text-white/70 mb-2">מענה מהיר בצ׳אט</div>
+              <div className="text-sm font-semibold" dir="ltr">054-316-1610</div>
+            </a>
+
+            {/* Email */}
+            <a
+              href="mailto:info@autolog.click"
+              className="bg-white/10 hover:bg-white/15 transition rounded-2xl p-4 text-center border border-white/15"
+            >
+              <div className="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center mx-auto mb-2">
+                <Mail size={20} className="text-white" />
+              </div>
+              <div className="font-bold mb-0.5">אימייל</div>
+              <div className="text-xs text-white/70 mb-2">מענה תוך 24 שעות</div>
+              <div className="text-sm font-semibold break-all">info@autolog.click</div>
+            </a>
+          </div>
         </div>
       </section>
 
