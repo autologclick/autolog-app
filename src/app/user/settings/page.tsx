@@ -120,8 +120,25 @@ export default function SettingsPage() {
       setPasswordError('יש למלא את כל השדות');
       return;
     }
-    if (passwordData.newPassword.length < 6) {
-      setPasswordError('סיסמה חדשה חייבת להכיל לפחות 6 תווים');
+    // Mirror the server-side policy (see /api/auth/change-password)
+    if (passwordData.newPassword.length < 8) {
+      setPasswordError('סיסמה חדשה חייבת להכיל לפחות 8 תווים');
+      return;
+    }
+    if (!/[A-Z]/.test(passwordData.newPassword)) {
+      setPasswordError('הסיסמה חייבת לכלול אות גדולה באנגלית');
+      return;
+    }
+    if (!/[a-z]/.test(passwordData.newPassword)) {
+      setPasswordError('הסיסמה חייבת לכלול אות קטנה באנגלית');
+      return;
+    }
+    if (!/[0-9]/.test(passwordData.newPassword)) {
+      setPasswordError('הסיסמה חייבת לכלול ספרה');
+      return;
+    }
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~`]/.test(passwordData.newPassword)) {
+      setPasswordError('הסיסמה חייבת לכלול תו מיוחד (!@#$%^&* וכו׳)');
       return;
     }
     if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -314,8 +331,8 @@ export default function SettingsPage() {
           </h3>
           <div className="space-y-3">
             {[
-              { key: 'testReminder' as const, label: 'תזכורת טסט', desc: 'התראה 30 יום לפני פקיעת הטסט', icon: ClipboardList },
-              { key: 'insuranceReminder' as const, label: 'תזכורת ביטוח', desc: 'התראה 30 יום לפני פקיעת הביטוח', icon: Shield },
+              { key: 'testReminder' as const, label: 'תזכורת טסט', desc: 'תזכורת במייל, באפליקציה ובפוש 30/14/7/1 ימים לפני', icon: ClipboardList },
+              { key: 'insuranceReminder' as const, label: 'תזכורת ביטוח (חובה + מקיף)', desc: 'תזכורת לפני פקיעת ביטוח חובה וביטוח מקיף', icon: Shield },
               { key: 'inspectionUpdate' as const, label: 'עדכוני אבחון', desc: 'עדכון כשדוח אבחון מוכן', icon: Search },
               { key: 'appointmentReminder' as const, label: 'תזכורת תורים', desc: 'תזכורת יום לפני תור מוסך', icon: Calendar },
               { key: 'sosAlerts' as const, label: 'התראות חירום', desc: 'עדכונים על אירועי חירום', icon: AlertTriangle },

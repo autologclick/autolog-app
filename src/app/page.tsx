@@ -884,6 +884,7 @@ export default function Home() {
                 <li><a href="#how-it-works" className="hover:text-white transition">איך זה עובד</a></li>
                 <li><a href="#garages" className="hover:text-white transition">למוסכים</a></li>
                 <li><Link href="/blog" className="hover:text-white transition">בלוג</Link></li>
+                <li><Link href="/help" className="hover:text-white transition">מדריך משתמש</Link></li>
                 <li><Link href="/auth/signup" className="hover:text-white transition">הרשמה</Link></li>
               </ul>
             </div>

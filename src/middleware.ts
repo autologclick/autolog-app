@@ -142,6 +142,7 @@ const PUBLIC_ROUTES = [
   '/api/inspections', // Inspection APIs — route handlers enforce auth; public access for awaiting_signature
   '/inspection', // Inspection view page — accessible for customer signature via shared links
   '/garage-apply',
+  '/help', // User guide — accessible to both prospects and logged-in users
   '/terms',
   '/privacy',
   '/warranty',

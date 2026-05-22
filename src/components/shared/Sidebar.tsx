@@ -7,7 +7,7 @@ import {
   Home, Car, FileCheck, MapPin, Calendar, Star, Bell, AlertTriangle, Settings,
   LogOut, BarChart3, Users, Wrench, ClipboardCheck, FilePlus, Menu, X,
   ChevronRight, Shield, FolderOpen, Receipt, Clock, FileText, CreditCard, User,
-  Handshake
+  Handshake, Megaphone, HelpCircle
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { LogoIcon } from '@/components/ui/Logo';
@@ -29,6 +29,7 @@ const userNav: NavItem[] = [
   { label: 'הוצאות', href: '/user/expenses', icon: <Receipt size={20} /> },
   { label: 'הזמנת מוסך', href: '/user/book-garage', icon: <MapPin size={20} />, comingSoon: !GARAGES_ENABLED },
   { label: 'SOS חירום', href: '/user/sos', icon: <AlertTriangle size={20} />, comingSoon: !GARAGES_ENABLED },
+  { label: 'מדריך משתמש', href: '/help', icon: <HelpCircle size={20} /> },
   { label: 'פרופיל', href: '/user/profile', icon: <User size={20} /> },
 ];
 
@@ -51,6 +52,7 @@ const adminNav: NavItem[] = [
   { label: 'אירועי SOS', href: '/admin/sos', icon: <AlertTriangle size={20} /> },
   { label: 'בקשות מוסכים', href: '/admin/applications', icon: <FileText size={20} /> },
   { label: 'שותפים (אפיליאט)', href: '/admin/partners', icon: <Handshake size={20} /> },
+  { label: 'מרכז סושיאל', href: '/admin/social', icon: <Megaphone size={20} /> },
   { label: 'התראות', href: '/admin/alerts', icon: <Bell size={20} /> },
   { label: 'יומן אירועים', href: '/admin/audit-logs', icon: <ClipboardCheck size={20} /> },
   { label: 'מצב תחזוקה', href: '/admin/maintenance', icon: <Shield size={20} /> },

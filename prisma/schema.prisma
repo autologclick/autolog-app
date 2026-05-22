@@ -822,3 +822,147 @@ model Partner {
   @@index([code])
   @@index([status])
 }
+
+// ============================================================
+// SOCIAL MEDIA MANAGEMENT
+// Admin tools for generating, scheduling, and publishing posts
+// to Facebook (Page), Instagram (Feed + Story) and WhatsApp.
+// ============================================================
+
+enum SocialPlatform {
+  facebook
+  instagram
+  instagram_story
+  whatsapp
+}
+
+enum SocialPostStatus {
+  draft        // saved, not scheduled
+  scheduled    // queued for future publish
+  publishing   // currently being sent to provider
+  published    // successfully posted
+  failed       // provider rejected — see errorMessage
+  archived     // soft-deleted from the dashboard
+}
+
+/// Stores OAuth tokens / page IDs needed to publish on behalf of the brand.
+/// One row per (platform, accountId). For WhatsApp this can hold the
+/// Cloud API phone number ID + permanent access token.
+model SocialAccount {
+  id              String         @id @default(cuid())
+  platform        SocialPlatform
+  accountId       String         // Facebook page ID / IG business account ID / WA phone number ID
+  accountName     String         // human-readable, e.g. "AutoLog Israel"
+  accessToken     String         @db.Text  // long-lived token (encrypted at rest is recommended)
+  tokenExpiresAt  DateTime?      // null = permanent token (WA cloud) or unknown
+  metadata        Json?          // extra fields, e.g. { instagramAccountId, businessId, wabaId }
+  isActive        Boolean        @default(true)
+  lastUsedAt      DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  posts           SocialPost[]
+
+  @@unique([platform, accountId])
+  @@index([platform])
+  @@index([isActive])
+}
+
+/// A piece of content drafted in the admin dashboard.
+/// Same row tracks the lifecycle through publish.
+model SocialPost {
+  id                String           @id @default(cuid())
+  platform          SocialPlatform
+  status            SocialPostStatus @default(draft)
+
+  // Content
+  caption           String           @db.Text       // post text / IG caption / WA body
+  mediaUrls         String[]         @default([])   // Vercel Blob URLs for images
+  graphicConfig     Json?            // saved layout from the in-app graphic editor
+  hashtags          String?          // space-separated, e.g. "#AutoLog #רכב"
+  callToAction      String?          // CTA text, e.g. "הורידו את האפליקציה"
+  linkUrl           String?          // URL appended to the post (FB only)
+
+  // AI provenance
+  aiPrompt          String?          @db.Text  // what the admin typed to generate
+  aiModel           String?          // e.g. "claude-sonnet-4-6"
+  brandVoiceVersion String?          // for A/B-testing voice changes over time
+
+  // Scheduling
+  scheduledFor      DateTime?
+  publishedAt       DateTime?
+  externalPostId    String?          // ID returned by FB/IG/WA after publish
+  errorMessage      String?          @db.Text
+
+  // Audit
+  createdById       String           // admin user who drafted it
+  socialAccountId   String?
+  socialAccount     SocialAccount?   @relation(fields: [socialAccountId], references: [id], onDelete: SetNull)
+
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([status])
+  @@index([platform])
+  @@index([scheduledFor])
+  @@index([createdById])
+}
+
+/// Reusable post templates — e.g. "תזכורת טסט", "מבצע סוף שבוע".
+/// Admin picks a template, the AI fills it in with current context.
+model PostTemplate {
+  id            String          @id @default(cuid())
+  name          String          // e.g. "תזכורת טסט שנתי"
+  category      String          // seasonal | promo | educational | reminder | announcement
+  platforms     SocialPlatform[]
+  promptTemplate String         @db.Text   // skeleton sent to Claude with {{placeholders}}
+  exampleOutput String?         @db.Text
+  graphicConfig Json?           // optional default visual layout
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([category])
+  @@index([isActive])
+}
+
+/// WhatsApp-specific templates (broadcasts, customer support snippets).
+/// Distinct from PostTemplate because WA has its own restrictions
+/// (24-hour window, approved template names for outbound, variables).
+model WhatsAppTemplate {
+  id              String   @id @default(cuid())
+  name            String   @unique           // e.g. "test_reminder_he"
+  language        String   @default("he")
+  category        String   // marketing | utility | authentication
+  body            String   @db.Text           // template body with {{1}}, {{2}} placeholders
+  variables       String[] @default([])       // descriptions of each placeholder
+  header          String?                     // optional header text
+  footer          String?                     // optional footer
+  buttons         Json?                       // [{type:'url'|'quick_reply', text, url?}]
+  metaTemplateId  String?                     // ID returned by Meta after approval
+  approvalStatus  String   @default("draft")  // draft | submitted | approved | rejected
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([approvalStatus])
+}
+
+/// Brand assets the AI/graphic editor can pull from
+/// (logos, color palette, fonts, sample copy in brand voice).
+model BrandAsset {
+  id          String   @id @default(cuid())
+  type        String   // logo | logo_dark | color | font | tagline | voice_sample
+  name        String   // human label, e.g. "Primary blue", "Logo (SVG)"
+  value       String   @db.Text  // hex code / URL / sample text
+  metadata    Json?    // any extra config for the editor
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type])
+  @@index([isActive])
+}
+

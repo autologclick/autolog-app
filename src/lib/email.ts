@@ -657,16 +657,17 @@ export function buildExpiryReminderEmailHtml({
   fullName: string;
   vehicleName: string;
   licensePlate: string;
-  reminderType: 'test' | 'insurance';
+  reminderType: 'test' | 'insurance' | 'compulsory';
   expiryDate: Date;
   daysUntil: number;
 }): string {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
   const isTest = reminderType === 'test';
+  const isCompulsory = reminderType === 'compulsory';
   const isUrgent = daysUntil <= 3;
   const isExpired = daysUntil <= 0;
 
-  const typeLabel = isTest ? 'טסט' : 'ביטוח';
+  const typeLabel = isTest ? 'טסט' : isCompulsory ? 'ביטוח חובה' : 'ביטוח מקיף';
   const typeIcon = isTest ? '🔧' : '🛡️';
   const accentColor = isExpired ? '#dc2626' : isUrgent ? '#f59e0b' : '#2563eb';
   const headerGradient = isExpired
