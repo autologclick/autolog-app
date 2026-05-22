@@ -412,12 +412,153 @@ const MODEL_MAP: Record<string, Record<string, string>> = {
     'SEAL': 'Seal',
     'HAN': 'Han',
     'TANG': 'Tang',
+    'SEALION': 'Sealion 7',
+    'SONG': 'Song Plus',
   },
   'טסלה': {
     'MODEL3': 'Model 3',
     'MODELY': 'Model Y',
     'MODELS': 'Model S',
     'MODELX': 'Model X',
+  },
+  'מיצובישי': {
+    // Space Star / Mirage — small hatchback (very common in Israel)
+    'A03': 'ספייס סטאר', 'XTA03': 'ספייס סטאר', 'A05': 'ספייס סטאר',
+    'XTA05': 'ספייס סטאר', 'A04': 'ספייס סטאר',
+    // Attrage — sedan version of Space Star
+    'A13': 'אטראז\'', 'XTA13': 'אטראז\'', 'A14': 'אטראז\'', 'A15': 'אטראז\'',
+    // ASX — compact SUV
+    'GA': 'ASX', 'XB': 'ASX', 'XBW': 'ASX', 'XCJW': 'ASX',
+    // Outlander — midsize SUV
+    'GG': 'אאוטלנדר', 'GF': 'אאוטלנדר', 'CW': 'אאוטלנדר',
+    'ZJ': 'אאוטלנדר', 'ZK': 'אאוטלנדר', 'GN': 'אאוטלנדר',
+    // Eclipse Cross
+    'GK': 'אקליפס קרוס', 'YA': 'אקליפס קרוס',
+    // Lancer
+    'CY': 'לנסר', 'CZ': 'לנסר', 'CX': 'לנסר', 'CT': 'לנסר',
+    // L200 / Triton — pickup
+    'KK': 'L200', 'KL': 'L200', 'KR': 'L200', 'KS': 'L200',
+    // Pajero / Shogun — full-size SUV
+    'V60': 'פאג\'רו', 'V70': 'פאג\'רו', 'V80': 'פאג\'רו',
+    'V90': 'פאג\'רו', 'V100': 'פאג\'רו',
+    // Colt
+    'Z2': 'קולט', 'Z3': 'קולט',
+    // i-MiEV — small EV
+    'HA': 'i-MiEV',
+    // Galant
+    'EA': 'גלאנט', 'DJ': 'גלאנט',
+  },
+  'פורד': {
+    // Fiesta
+    'JA8': 'פייסטה', 'WS6': 'פייסטה', 'JH8': 'פייסטה',
+    // Focus
+    'DYB': 'פוקוס', 'CB8': 'פוקוס', 'DA': 'פוקוס',
+    // Kuga / Escape
+    'C520': 'קוגה', 'CBV': 'קוגה', 'CBS': 'קוגה',
+    // Edge
+    'CDX': 'אדג\'', 'CD': 'אדג\'',
+    // Mondeo
+    'CD345': 'מונדאו', 'BA7': 'מונדאו',
+    // Mustang
+    'S550': 'מוסטנג', 'S197': 'מוסטנג',
+    // Explorer
+    'U625': 'אקספלורר', 'U502': 'אקספלורר',
+    // Transit
+    'V363': 'טרנזיט', 'V362': 'טרנזיט',
+    // Puma
+    'J1U': 'פומה',
+    // Ranger
+    'P703': 'ריינג\'ר', 'P558': 'ריינג\'ר',
+  },
+  "ג'יפ": {
+    // Grand Cherokee
+    'WL': 'גרנד צ\'ירוקי', 'WK': 'גרנד צ\'ירוקי', 'WK2': 'גרנד צ\'ירוקי',
+    // Cherokee
+    'KL': 'צ\'ירוקי', 'KK': 'צ\'ירוקי',
+    // Wrangler
+    'JL': 'רנגלר', 'JK': 'רנגלר',
+    // Compass
+    'MP': 'קומפאס', 'M6': 'קומפאס',
+    // Renegade
+    'BU': 'רנגייד',
+    // Avenger
+    'CUV': 'אוונג\'ר',
+    // Gladiator
+    'JT': 'גלדיאטור',
+  },
+  'אופל': {
+    // Corsa
+    'F': 'קורסה', 'E': 'קורסה', 'D': 'קורסה',
+    // Astra
+    'K': 'אסטרה', 'J': 'אסטרה',
+    // Mokka
+    'B': 'מוקה',
+    // Crossland
+    'P17': 'קרוסלנד',
+    // Grandland
+    'A18': 'גרנדלנד',
+    // Insignia
+    'Z18': 'אינסיגניה',
+    // Combo
+    'X19': 'קומבו', 'D2': 'קומבו',
+  },
+  'אאודי': {
+    // A1
+    'GB': 'A1', '8X': 'A1',
+    // A3
+    '8Y': 'A3', '8V': 'A3', '8P': 'A3',
+    // A4
+    'B9': 'A4', 'B8': 'A4',
+    // A5
+    'F5': 'A5',
+    // A6
+    'C8': 'A6', 'C7': 'A6',
+    // A7
+    'C8 F2': 'A7',
+    // A8
+    'D5': 'A8',
+    // Q2
+    'GA': 'Q2',
+    // Q3
+    'F3': 'Q3', '8U': 'Q3',
+    // Q4 e-tron
+    'F4': 'Q4 e-tron',
+    // Q5
+    'FY': 'Q5', '8R': 'Q5',
+    // Q7
+    '4M': 'Q7',
+    // Q8
+    '4MN': 'Q8',
+    // e-tron / e-tron GT
+    'GE': 'e-tron GT',
+  },
+  "דאצ'יה": {
+    // Sandero
+    'B8': 'סנדרו', 'SD': 'סנדרו',
+    // Duster
+    'HM': 'דאסטר', 'HS': 'דאסטר', 'SR': 'דאסטר',
+    // Logan
+    'L52': 'לוגאן', 'LSR': 'לוגאן',
+    // Spring (EV)
+    'HV': 'ספרינג',
+    // Jogger
+    'JJ': 'ג\'וגר',
+  },
+  'שברולט': {
+    'KL1': 'ספארק', // Spark
+    'J400': 'קרוז',  // Cruze
+    'D2': 'קפטיבה',  // Captiva
+    'P0': 'אוורנדה', // Aveo
+    'D1': 'מאליבו',  // Malibu
+  },
+  'MG': {
+    'AS23': 'MG3',
+    'ZS': 'ZS',
+    'HS': 'HS',
+    'EHS': 'EHS',
+    'MARVELR': 'Marvel R',
+    'MG4': 'MG4',
+    'MG5': 'MG5',
   },
 };
 

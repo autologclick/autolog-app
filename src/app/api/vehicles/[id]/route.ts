@@ -12,6 +12,7 @@ import {
 } from '@/lib/api-helpers';
 import { NOT_FOUND } from '@/lib/messages';
 import { getExpiryStatus } from '@/lib/utils';
+import { normalizeManufacturer, normalizeModel } from '@/lib/vehicle-names';
 
 const updateVehicleSchema = z.object({
   nickname: z.string().min(1).optional(),
@@ -94,7 +95,17 @@ export async function GET(
 
     requireOwnership(payload.userId, vehicle.userId);
 
-    return jsonResponse({ vehicle });
+    // Translate MOT codes to commercial names ("XTA03" → "ספייס סטאר",
+    // "מיצובישי תאילנד" → "מיצובישי") — see /api/vehicles for full rationale.
+    const friendly = {
+      ...vehicle,
+      manufacturer: vehicle.manufacturer ? normalizeManufacturer(vehicle.manufacturer) : vehicle.manufacturer,
+      model: vehicle.model && vehicle.manufacturer
+        ? normalizeModel(vehicle.model, vehicle.manufacturer)
+        : vehicle.model,
+    };
+
+    return jsonResponse({ vehicle: friendly });
   } catch (error) {
     return handleApiError(error);
   }

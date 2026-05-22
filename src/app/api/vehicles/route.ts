@@ -5,6 +5,20 @@ import { requireAuth, jsonResponse, errorResponse, handleApiError, getPagination
 } from '@/lib/api-helpers';
 import { vehicleSchema } from '@/lib/validations';
 import { parseFlexDate, getExpiryStatus } from '@/lib/utils';
+import { normalizeManufacturer, normalizeModel } from '@/lib/vehicle-names';
+
+/**
+ * Convert raw MOT codes ("מיצובישי תאילנד" + "XTA03") to the friendly
+ * commercial names users actually recognize ("מיצובישי" + "ספייס סטאר").
+ * Applied on every response so existing rows in the DB are presented
+ * cleanly without a schema migration.
+ */
+function withFriendlyNames<T extends { manufacturer?: string | null; model?: string | null }>(v: T): T {
+  if (!v) return v;
+  const mfr = v.manufacturer ? normalizeManufacturer(v.manufacturer) : v.manufacturer;
+  const model = v.model && v.manufacturer ? normalizeModel(v.model, v.manufacturer) : v.model;
+  return { ...v, manufacturer: mfr, model };
+}
 
 // GET /api/vehicles - List user's vehicles (owned + shared)
 export async function GET(req: NextRequest) {
@@ -67,7 +81,7 @@ export async function GET(req: NextRequest) {
       ownerName: sr.owner.fullName,
     }));
 
-    const vehicles = [...ownedWithMeta, ...sharedWithMeta];
+    const vehicles = [...ownedWithMeta, ...sharedWithMeta].map(withFriendlyNames);
     const total = ownedTotal + sharedRecords.length;
 
     return jsonResponse({ vehicles, ...paginationMeta(total, page, limit) });
