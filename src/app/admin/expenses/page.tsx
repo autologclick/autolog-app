@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { Card, CardTitle, StatCard } from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import ShekelSign from '@/components/ui/ShekelSign';
 import {
   Receipt,
   Search,
   Filter,
-  DollarSign,
   Car,
   User,
   Calendar,
@@ -125,7 +125,7 @@ export default function AdminExpensesPage() {
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <StatCard label="סך הוצאות" value={`₪${stats.totalExpenses.toLocaleString('he-IL')}`} icon={<DollarSign size={20} />} color="teal" />
+          <StatCard label="סך הוצאות" value={`₪${stats.totalExpenses.toLocaleString('he-IL')}`} icon={<ShekelSign size={20} />} color="teal" />
           <StatCard label="הוצאות החודש" value={`₪${stats.thisMonthTotal.toLocaleString('he-IL')}`} icon={<Calendar size={20} />} color="green" />
           <StatCard label="ממוצע לרכב" value={`₪${stats.averagePerVehicle.toLocaleString('he-IL')}`} icon={<Car size={20} />} color="orange" />
           <StatCard label="מספר רשומות" value={stats.totalEntries.toString()} icon={<TrendingUp size={20} />} color="navy" />

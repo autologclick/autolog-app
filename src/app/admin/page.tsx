@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { Card, CardTitle, StatCard } from '@/components/ui/Card';
 import Badge, { StatusBadge } from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import ShekelSign from '@/components/ui/ShekelSign';
 import {
   Users, Car, Wrench, Shield, AlertCircle, TrendingUp,
-  BarChart3, Calendar, Bell, FileText, DollarSign, Star,
+  BarChart3, Calendar, Bell, FileText, Star,
   Activity, ArrowUpRight, ArrowDownRight, CheckCircle, Clock,
   Brain, Zap, AlertTriangle, Target
 } from 'lucide-react';
@@ -297,7 +298,7 @@ export default function AdminDashboard() {
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between mb-2">
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <DollarSign size={20} className="text-green-600" />
+                <ShekelSign size={20} className="text-green-600" />
               </div>
               {data && data.stats.revenueTrend !== 0 && (
                 <div className={`flex items-center gap-1 text-sm font-medium ${data.stats.revenueTrend > 0 ? 'text-green-600' : 'text-red-500'}`}>

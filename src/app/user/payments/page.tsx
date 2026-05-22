@@ -6,8 +6,9 @@ import PageSkeleton from '@/components/ui/PageSkeleton';
 import { Card, CardTitle } from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import ShekelSign from '@/components/ui/ShekelSign';
 import {
-  CreditCard, DollarSign, TrendingUp, TrendingDown, Filter, ChevronDown,
+  CreditCard, TrendingUp, TrendingDown, Filter, ChevronDown,
   Calendar, MapPin, Wrench, Loader2, AlertCircle, Download, Receipt,
   CheckCircle2, Clock, AlertTriangle, PieChart, ArrowUpDown, Brain, Target
 } from 'lucide-react';
@@ -171,7 +172,7 @@ export default function PaymentsPage() {
             {/* Insight 1: Payment Summary */}
             <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
-                <DollarSign size={14} className="text-teal-600" />
+                <ShekelSign size={14} className="text-teal-600" />
                 <span className="text-xs font-bold text-gray-700">סיכום תשלומים</span>
               </div>
               <p className="text-xs text-gray-600">

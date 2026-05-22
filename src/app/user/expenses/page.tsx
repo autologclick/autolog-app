@@ -11,12 +11,13 @@ import PageSkeleton from '@/components/ui/PageSkeleton';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import {
   Plus, Edit, Trash2, Car, TrendingUp, Fuel, Wrench, Shield,
-  AlertTriangle, MapPin, DollarSign, Calendar, Download,
+  AlertTriangle, MapPin, Calendar, Download,
   Loader2, BarChart3, Zap, TrendingDown, Brain, Lightbulb, Activity,
   BatteryCharging
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Pagination from '@/components/ui/Pagination';
+import ShekelSign from '@/components/ui/ShekelSign';
 
 const ExpenseChart = dynamic(() => import('@/components/charts/ExpenseChart'), {
   loading: () => <div className="h-[220px] bg-gray-100 rounded-xl animate-pulse" />,
@@ -50,7 +51,7 @@ const CATEGORIES = {
   test: { label: 'אבחון', color: 'cyan', icon: Zap, emoji: '📄' },
   parking: { label: 'חניה', color: 'amber', icon: MapPin, emoji: '🅿️' },
   fines: { label: 'קנסות', color: 'red', icon: AlertTriangle, emoji: '📝' },
-  other: { label: 'אחר', color: 'slate', icon: DollarSign, emoji: '📋' },
+  other: { label: 'אחר', color: 'slate', icon: ShekelSign, emoji: '📋' },
 };
 
 const CATEGORY_KEYS = Object.keys(CATEGORIES) as Array<keyof typeof CATEGORIES>;

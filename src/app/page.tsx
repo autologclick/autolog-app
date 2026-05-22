@@ -8,9 +8,10 @@ import {
   Smartphone, Car, CalendarCheck, BarChart3, Lock,
   Mail, CheckCircle2, ArrowLeft, TrendingUp,
   ClipboardCheck, HeartPulse, Calendar, Sparkles,
-  Camera, Mic, DollarSign, ArrowLeftRight, Search, BookOpen
+  Camera, Mic, ArrowLeftRight, Search, BookOpen
 } from 'lucide-react';
 import Logo, { LogoIcon } from '@/components/ui/Logo';
+import ShekelSign from '@/components/ui/ShekelSign';
 
 // Intersection Observer hook for scroll animations
 function useInView(threshold = 0.05) {
@@ -453,7 +454,7 @@ export default function Home() {
               delay={400}
             />
             <FeatureCard
-              icon={DollarSign}
+              icon={ShekelSign}
               title="מעקב הוצאות"
               description="תעדו כל הוצאה על הרכב — דלק, ביטוח, תיקונים. תמיד תדעו כמה הרכב באמת עולה."
               delay={500}

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
   Wrench, Clock, CheckCircle, XCircle, AlertTriangle,
   ChevronDown, ChevronUp, Car, MapPin, User, Calendar,
-  FileText, DollarSign, Eye, Loader2, Plus, Camera, Upload, Scan, X
+  FileText, Eye, Loader2, Plus, Camera, Upload, Scan, X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';

@@ -5,10 +5,11 @@ import toast from 'react-hot-toast';
 import { useParams, useRouter } from 'next/navigation';
 import {
   FileText, Download, Share2, ArrowRight, Loader2,
-  Car, Wrench, Calendar, DollarSign, ClipboardCheck,
+  Car, Wrench, Calendar, ClipboardCheck,
   FileCheck, ChevronDown, ChevronUp, Mail, MessageCircle,
   Printer, AlertCircle, Shield, Gauge, Clock,
 } from 'lucide-react';
+import ShekelSign from '@/components/ui/ShekelSign';
 
 interface VehicleInfo {
   nickname: string;
@@ -424,7 +425,7 @@ export default function VehicleReportPage() {
             { label: 'טיפולים', value: summary.totalTreatments, icon: Wrench, color: 'text-blue-600 bg-blue-50' },
             { label: 'אבחונים', value: summary.totalInspections, icon: ClipboardCheck, color: 'text-emerald-600 bg-emerald-50' },
             { label: 'ק"מ אחרון', value: summary.lastMileage ? summary.lastMileage.toLocaleString() : '—', icon: Gauge, color: 'text-purple-600 bg-purple-50' },
-            { label: 'עלות כוללת', value: formatCurrency(summary.totalCost), icon: DollarSign, color: 'text-amber-600 bg-amber-50' },
+            { label: 'עלות כוללת', value: formatCurrency(summary.totalCost), icon: ShekelSign, color: 'text-amber-600 bg-amber-50' },
           ].map((stat) => (
             <div key={stat.label} className="bg-white rounded-xl border border-gray-100 p-3.5 text-center shadow-sm">
               <div className={`w-9 h-9 rounded-lg flex items-center justify-center mx-auto mb-2 ${stat.color}`}>
@@ -553,7 +554,7 @@ export default function VehicleReportPage() {
         {report.expenses.length > 0 && (
           <CollapsibleSection
             title="הוצאות"
-            icon={DollarSign}
+            icon={ShekelSign}
             count={report.expenses.length}
             expanded={expandedSections.expenses}
             onToggle={() => toggleSection('expenses')}

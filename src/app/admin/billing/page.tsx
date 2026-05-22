@@ -5,9 +5,10 @@ import { Card } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge, { StatusBadge } from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
+import ShekelSign from '@/components/ui/ShekelSign';
 import {
   Receipt, Search, Eye, Loader2, Building2, Car, Calendar, ChevronDown, ChevronUp, Filter,
-  Brain, TrendingUp, DollarSign, Wrench, Target, AlertTriangle, BarChart3
+  Brain, TrendingUp, Wrench, Target, AlertTriangle, BarChart3
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -188,7 +189,7 @@ export default function AdminBillingPage() {
           <Card className="border-t-4 border-t-[#0d9488]">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
-                <DollarSign size={18} className="text-[#0d9488]" />
+                <ShekelSign size={18} className="text-[#0d9488]" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-[#0d9488]">
@@ -252,7 +253,7 @@ export default function AdminBillingPage() {
               const avgCost = totalAll > 0 ? Math.round(totalCost / totalAll) : 0;
               return (
                 <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl border border-amber-200">
-                  <DollarSign size={18} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                  <ShekelSign size={18} className="text-amber-600 mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-sm font-bold text-amber-800">עלות ממוצעת לאבחון</p>
                     <p className="text-xs text-amber-600 mt-0.5">

@@ -9,8 +9,9 @@ import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
+import ShekelSign from '@/components/ui/ShekelSign';
 import {
-  Hammer, Car, Clock, DollarSign, Send, Eye, AlertCircle,
+  Hammer, Car, Clock, Send, Eye, AlertCircle,
   Star, MapPin, CheckCircle2,
   Calendar, ChevronLeft, Loader2, Image as ImageIcon
 } from 'lucide-react';
@@ -267,7 +268,7 @@ export default function GarageBodyworkPage() {
             placeholder="למשל: 2500"
             value={price}
             onChange={e => setPrice(e.target.value)}
-            icon={<DollarSign size={16} />}
+            icon={<ShekelSign size={16} />}
           />
           <Input
             label="זמן משוער (ימים)"

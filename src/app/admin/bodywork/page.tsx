@@ -6,8 +6,9 @@ import PageSkeleton from '@/components/ui/PageSkeleton';
 import { Card, CardTitle } from '@/components/ui/Card';
 import Modal from '@/components/ui/Modal';
 import Badge from '@/components/ui/Badge';
+import ShekelSign from '@/components/ui/ShekelSign';
 import {
-  Hammer, Car, Clock, DollarSign, User, Building2,
+  Hammer, Car, Clock, User, Building2,
   Star, Eye, ChevronLeft, Image as ImageIcon,
   CheckCircle2, XCircle, AlertCircle, Search,
   TrendingUp, BarChart3
@@ -108,7 +109,7 @@ export default function AdminBodyworkPage() {
           {[
             { label: 'סה"כ בקשות', value: totalRequests, icon: Hammer, color: 'text-[#1e3a5f]' },
             { label: 'ממתינות', value: openCount, icon: Clock, color: 'text-blue-600' },
-            { label: 'עם הצעות', value: quotedCount, icon: DollarSign, color: 'text-amber-600' },
+            { label: 'עם הצעות', value: quotedCount, icon: ShekelSign, color: 'text-amber-600' },
             { label: 'סגורות', value: acceptedCount, icon: CheckCircle2, color: 'text-green-600' },
           ].map(stat => (
             <div key={stat.label} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
@@ -260,7 +261,7 @@ export default function AdminBodyworkPage() {
             {/* Quotes */}
             <div>
               <h3 className="font-bold text-[#1e3a5f] mb-3 flex items-center gap-2">
-                <DollarSign size={16} />
+                <ShekelSign size={16} />
                 הצעות מחיר ({viewRequest.quotes.length})
               </h3>
 

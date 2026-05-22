@@ -9,9 +9,10 @@ import Modal from '@/components/ui/Modal';
 import VoiceInput from '@/components/ui/VoiceInput';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import Pagination from '@/components/ui/Pagination';
+import ShekelSign from '@/components/ui/ShekelSign';
 import {
   Wrench, Send, Loader2, AlertCircle, Clock,
-  CheckCircle, XCircle, Calendar, DollarSign, Car,
+  CheckCircle, XCircle, Calendar, Car,
   Search, Filter, Plus, FileText, ChevronDown, Settings,
   Droplet, CircleDot, Zap, Snowflake, Palette, ClipboardList,
   Brain, TrendingUp, Target
@@ -213,7 +214,7 @@ export default function GarageTreatmentsPage() {
         </div>
         <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <DollarSign size={16} className="text-teal-600" />
+            <ShekelSign size={16} className="text-teal-600" />
             <span className="text-xs text-gray-400">סה״כ עלויות</span>
           </div>
           <p className="text-2xl font-bold text-teal-600">₪{stats.totalCost.toLocaleString()}</p>
@@ -245,7 +246,7 @@ export default function GarageTreatmentsPage() {
             </div>
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
-                <DollarSign size={14} className="text-teal-600" />
+                <ShekelSign size={14} className="text-teal-600" />
                 <span className="text-xs font-bold text-gray-700">עלות ממוצעת</span>
               </div>
               <p className="text-xs text-gray-600">

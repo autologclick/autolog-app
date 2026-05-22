@@ -16,7 +16,7 @@ import {
   Camera, Upload, X, Car, Loader2, CheckCircle2,
   Clock, MapPin, ChevronLeft, Image as ImageIcon,
   Star, Phone, Send, AlertCircle, Hammer, Plus,
-  Eye, DollarSign, Calendar, Building2, Check
+  Eye, Calendar, Building2, Check
 } from 'lucide-react';
 
 interface Vehicle {

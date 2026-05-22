@@ -6,7 +6,7 @@ import Badge, { StatusBadge } from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import {
   Shield, Calendar, Star, Users, TrendingUp, Clock, FileText, Plus, Building2,
-  Loader2, BarChart3, Phone, ChevronLeft, DollarSign, AlertCircle, CheckCircle2,
+  Loader2, BarChart3, Phone, ChevronLeft, AlertCircle, CheckCircle2,
   Wrench, User, AlertTriangle, Brain, Zap, Target, Activity, PenLine, Search, X, Bell, Hammer
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
