@@ -139,6 +139,52 @@ export async function PUT(
       select: TEST_SELECT,
     });
 
+    // ─────────────────────────────────────────────────────────────────────
+    // Auto-sync to Expenses — same pattern as the insurance route.
+    // Without this the dashboard shows 0 even though the user just paid
+    // for a test. Idempotent: dedup by `[test:YYYY]` marker so re-saves
+    // for the same year update instead of duplicate.
+    // ─────────────────────────────────────────────────────────────────────
+    const parsedCost = typeof testCost === 'string' ? parseFloat(testCost) : testCost;
+    if (parsedCost && !isNaN(parsedCost) && parsedCost > 0) {
+      const expenseDate = testDate
+        ? new Date(testDate)
+        : new Date(); // fall back to today
+      if (!isNaN(expenseDate.getTime())) {
+        const policyYear = expenseDate.getFullYear();
+        const marker = `[test:${policyYear}]`;
+        const stationName = testStation || 'מכון רישוי';
+        const description = `טסט שנתי — ${stationName} ${marker}`;
+        try {
+          const existing = await prisma.expense.findFirst({
+            where: {
+              vehicleId: id,
+              category: 'test',
+              description: { contains: marker },
+            },
+          });
+          if (existing) {
+            await prisma.expense.update({
+              where: { id: existing.id },
+              data: { amount: parsedCost, description, date: expenseDate },
+            });
+          } else {
+            await prisma.expense.create({
+              data: {
+                vehicleId: id,
+                category: 'test',
+                amount: parsedCost,
+                description,
+                date: expenseDate,
+              },
+            });
+          }
+        } catch (e) {
+          console.warn('[test] expense sync failed', e);
+        }
+      }
+    }
+
     return jsonResponse({
       message: 'פרטי הטסט עודכנו בהצלחה',
       test: updated,

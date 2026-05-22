@@ -143,6 +143,66 @@ export async function PUT(
       },
     });
 
+    // ─────────────────────────────────────────────────────────────────────
+    // Auto-sync to Expenses — without this the dashboard shows 0 even though
+    // the user just paid for insurance. Idempotent: we use a description
+    // marker `[insurance:compulsory:2026]` to find an existing expense
+    // for the same policy year and update it instead of creating duplicates.
+    // ─────────────────────────────────────────────────────────────────────
+    const insuranceCost = body.insuranceCost;
+    const parsedCost = typeof insuranceCost === 'string' ? parseFloat(insuranceCost) : insuranceCost;
+
+    if (parsedCost && !isNaN(parsedCost) && parsedCost > 0) {
+      const expenseDate = body.insuranceStart
+        ? new Date(body.insuranceStart)
+        : new Date(); // fall back to "today" if no start date provided
+
+      if (!isNaN(expenseDate.getTime())) {
+        const policyYear = expenseDate.getFullYear();
+        const typeLabel = insuranceCategory === 'compulsory' ? 'ביטוח חובה' : "ביטוח מקיף / צד ג'";
+        const marker = `[insurance:${insuranceCategory}:${policyYear}]`;
+        const companyName = body.insuranceCompany || 'לא צוין';
+        const description = `${typeLabel} — ${companyName} ${marker}`;
+
+        try {
+          // Look for an existing expense for this policy year (same insurance
+          // category) so a "save again" doesn't double up.
+          const existing = await prisma.expense.findFirst({
+            where: {
+              vehicleId: id,
+              category: 'insurance',
+              description: { contains: marker },
+            },
+          });
+
+          if (existing) {
+            await prisma.expense.update({
+              where: { id: existing.id },
+              data: {
+                amount: parsedCost,
+                description,
+                date: expenseDate,
+              },
+            });
+          } else {
+            await prisma.expense.create({
+              data: {
+                vehicleId: id,
+                category: 'insurance',
+                amount: parsedCost,
+                description,
+                date: expenseDate,
+              },
+            });
+          }
+        } catch (e) {
+          // Non-fatal — log to server but don't fail the insurance save itself.
+          // The vehicle's insurance fields already saved successfully above.
+          console.warn('[insurance] expense sync failed', e);
+        }
+      }
+    }
+
     return jsonResponse({
       message: insuranceCategory === 'compulsory'
         ? 'פרטי ביטוח חובה עודכנו בהצלחה'
