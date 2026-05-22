@@ -4,7 +4,6 @@ import Sidebar from '@/components/shared/Sidebar';
 import NotificationBell from '@/components/shared/NotificationBell';
 import AuthInterceptor from '@/components/shared/AuthInterceptor';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
-import ReportBugButton from '@/components/shared/ReportBugButton';
 import { useState, useEffect } from 'react';
 
 export default function GarageLayout({ children }: { children: React.ReactNode }) {
@@ -48,7 +47,6 @@ export default function GarageLayout({ children }: { children: React.ReactNode }
           </ErrorBoundary>
         </div>
       </main>
-      <ReportBugButton />
     </div>
   );
 }

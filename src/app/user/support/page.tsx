@@ -96,18 +96,57 @@ export default function SupportPage() {
     if (!formData.topic || !formData.message) return;
     setSending(true);
     setSubmitError('');
+
+    // Special case: when the user picks "בעיה טכנית", we treat the submission
+    // as a structured bug report. /api/bug-report enriches it with browser,
+    // viewport, page URL, and user agent — exactly the context a developer
+    // needs to reproduce. Other topics go to /api/support as a regular ticket.
+    const isTechnicalIssue = formData.topic === 'בעיה טכנית';
+
     try {
-      const res = await fetch('/api/support', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setTicketNumber(data.ticketNumber || '');
-        setSubmitted(true);
+      if (isTechnicalIssue && typeof window !== 'undefined') {
+        // Fire BOTH endpoints in parallel: bug-report sends the rich email
+        // to ops; support creates a ticket so it shows up in the support
+        // dashboard with a ticket number the user can reference.
+        const [, supportRes] = await Promise.all([
+          fetch('/api/bug-report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              source: 'user-report',
+              userDescription: formData.message,
+              pageUrl: window.location.href,
+              userAgent: navigator.userAgent,
+              viewport: `${window.innerWidth}x${window.innerHeight}`,
+            }),
+          }).catch(() => null), // bug-report is best-effort
+          fetch('/api/support', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+          }),
+        ]);
+        const data = await supportRes.json();
+        if (supportRes.ok) {
+          setTicketNumber(data.ticketNumber || '');
+          setSubmitted(true);
+        } else {
+          setSubmitError(data.error || 'שגיאה בשליחת ההודעה. נסה שוב.');
+        }
       } else {
-        setSubmitError(data.error || 'שגיאה בשליחת ההודעה. נסה שוב.');
+        // Regular support flow — non-technical topics
+        const res = await fetch('/api/support', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setTicketNumber(data.ticketNumber || '');
+          setSubmitted(true);
+        } else {
+          setSubmitError(data.error || 'שגיאה בשליחת ההודעה. נסה שוב.');
+        }
       }
     } catch {
       setSubmitError('שגיאת חיבור. בדוק את האינטרנט ונסה שוב.');
