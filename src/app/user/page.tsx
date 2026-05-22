@@ -14,6 +14,7 @@ import PushPermissionBanner from '@/components/shared/PushPermissionBanner';
 import VehicleAssistant from '@/components/chat/VehicleAssistant';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import GlobalSearch from '@/components/ui/GlobalSearch';
+import InsuranceCompanyPicker from '@/components/ui/InsuranceCompanyPicker';
 import { ComingSoonBadge } from '@/components/shared/ComingSoonBanner';
 import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 // Tesseract loaded dynamically in handleScanReceipt to avoid SSR issues
@@ -1920,16 +1921,12 @@ export default function UserHomePage() {
 
               {/* Form Fields */}
               <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">חברת ביטוח</label>
-                  <input
-                    type="text"
-                    value={currentForm.insuranceCompany}
-                    onChange={e => setCurrentForm({ ...currentForm, insuranceCompany: e.target.value })}
-                    placeholder={insuranceTab === 'compulsory' ? 'לדוגמה: הפול, הראל, מגדל' : 'לדוגמה: הראל, מגדל, כלל'}
-                    className="w-full border-2 rounded-xl p-2.5 text-sm"
-                  />
-                </div>
+                <InsuranceCompanyPicker
+                  value={currentForm.insuranceCompany}
+                  onChange={(v) => setCurrentForm({ ...currentForm, insuranceCompany: v })}
+                  mode={insuranceTab === 'compulsory' ? 'compulsory' : 'comprehensive'}
+                />
+
 
                 {/* Type selector — only for comprehensive tab */}
                 {insuranceTab === 'comprehensive' && (

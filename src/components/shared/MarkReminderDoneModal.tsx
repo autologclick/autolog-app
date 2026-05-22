@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { CheckCircle2, X, Loader2, AlertCircle, Calendar } from 'lucide-react';
 import ShekelSign from '@/components/ui/ShekelSign';
+import InsuranceCompanyPicker from '@/components/ui/InsuranceCompanyPicker';
 
 export type ReminderType =
   | 'test'
@@ -249,12 +250,11 @@ export default function MarkReminderDoneModal({
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                   חברת ביטוח
                 </label>
-                <input
-                  type="text"
+                <InsuranceCompanyPicker
                   value={insuranceCompany}
-                  onChange={(e) => setInsuranceCompany(e.target.value)}
-                  placeholder="הראל / מגדל / כלל..."
-                  className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-sm"
+                  onChange={setInsuranceCompany}
+                  mode={reminderType === 'compulsory_insurance' ? 'compulsory' : 'comprehensive'}
+                  hideLabel
                 />
               </div>
               <div>
