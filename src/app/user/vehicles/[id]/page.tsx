@@ -742,7 +742,6 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
         <div className="space-y-4">
           <div className="flex items-center justify-between px-4">
             <h2 className="text-lg font-bold text-gray-800">תזכורות</h2>
-            <a href="#" className="text-xs text-blue-600 hover:text-blue-700">ℹ️ איך זה עובד?</a>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -777,7 +776,14 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
         <div className="space-y-4">
           <div className="flex items-center justify-between px-4">
             <h2 className="text-lg font-bold text-gray-800">הטיפולים</h2>
-            <a href="#" className="text-xs text-blue-600 hover:text-blue-700">ראה הכל ›</a>
+            {treatments.length > 0 && (
+              <button
+                onClick={() => router.push('/user/treatments')}
+                className="text-xs text-blue-600 hover:text-blue-700"
+              >
+                ראה הכל ›
+              </button>
+            )}
           </div>
 
           {treatments.length === 0 ? (
