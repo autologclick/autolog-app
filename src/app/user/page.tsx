@@ -514,6 +514,93 @@ export default function UserHomePage() {
     Boolean(form.insuranceCompany || form.insuranceExpiry || form.insuranceStart);
 
   /**
+   * Convert an ISO date string (or full Date string) to YYYY-MM-DD,
+   * which is what <input type="date"> expects. Returns '' for null/undefined.
+   */
+  const isoToDateInput = (iso: string | Date | null | undefined): string => {
+    if (!iso) return '';
+    try {
+      const d = typeof iso === 'string' ? new Date(iso) : iso;
+      if (isNaN(d.getTime())) return '';
+      return d.toISOString().split('T')[0];
+    } catch {
+      return '';
+    }
+  };
+
+  /**
+   * Open the insurance modal AND prefill both forms with whatever the
+   * user already saved. Without this the form is blank every time —
+   * the user thinks nothing was saved (the previous bug).
+   */
+  const openInsuranceModal = async () => {
+    if (!vehicle) return;
+    // Open immediately so the UI doesn't feel laggy. Show empty fields
+    // until the fetch resolves (typically <300ms).
+    setShowInsuranceModal(true);
+    setInsurancePreview(null);
+    setInsuranceError('');
+    setInsuranceSuccess('');
+
+    try {
+      const res = await fetch(`/api/vehicles/${vehicle.id}/insurance`);
+      if (!res.ok) return; // form stays empty — user fills in fresh
+      const data = await res.json();
+
+      const comp = data.compulsory || {};
+      setCompulsoryForm({
+        insuranceCompany: comp.insuranceCompany || '',
+        insuranceStart: isoToDateInput(comp.insuranceStart),
+        insuranceExpiry: isoToDateInput(comp.insuranceExpiry),
+        insuranceCost: comp.insuranceCost != null ? String(comp.insuranceCost) : '',
+        insurancePolicyNumber: comp.insurancePolicyNumber || '',
+      });
+
+      const compre = data.comprehensive || {};
+      setInsuranceForm({
+        insuranceCompany: compre.insuranceCompany || '',
+        insuranceType: compre.insuranceType || 'comprehensive',
+        insuranceStart: isoToDateInput(compre.insuranceStart),
+        insuranceExpiry: isoToDateInput(compre.insuranceExpiry),
+        insuranceCost: compre.insuranceCost != null ? String(compre.insuranceCost) : '',
+        insurancePolicyNumber: compre.insurancePolicyNumber || '',
+      });
+    } catch {
+      // Silent fallback — form will be empty, user can re-enter
+    }
+  };
+
+  /**
+   * Same idea for the test modal — prefill the form from the existing
+   * test data so the user sees what they already saved.
+   */
+  const openTestModal = async () => {
+    if (!vehicle) return;
+    setShowTestModal(true);
+    setTestPreview(null);
+    setTestError('');
+    setTestSuccess('');
+
+    try {
+      const res = await fetch(`/api/vehicles/${vehicle.id}/test`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setTestForm({
+        testExpiryDate: isoToDateInput(data.testExpiryDate),
+        testDate: isoToDateInput(data.testDate),
+        testCost: data.testCost != null ? String(data.testCost) : '',
+        testStation: data.testStation || '',
+        testMileageAtTest: data.testMileageAtTest != null ? String(data.testMileageAtTest) : '',
+        previousOwners: data.previousOwners != null ? String(data.previousOwners) : '',
+        manufacturer: vehicle.manufacturer || '',
+        model: vehicle.model || '',
+      });
+    } catch {
+      // Silent fallback
+    }
+  };
+
+  /**
    * Save one of the two insurance forms. Returns true on success, false on error.
    * The combined "save all" handler below calls this in parallel for each form
    * that the user actually filled.
@@ -1013,13 +1100,7 @@ export default function UserHomePage() {
 
         {/* Smart Reminders */}
         <div className="grid grid-cols-3 gap-2">
-          <div onClick={() => {
-            setTestForm({ testExpiryDate: '', testDate: '', testCost: '', testStation: '', testMileageAtTest: '', previousOwners: '', manufacturer: '', model: '' });
-            setTestPreview(null);
-            setTestError('');
-            setTestSuccess('');
-            setShowTestModal(true);
-          }} className="cursor-pointer active:scale-[0.97] transition-transform">
+          <div onClick={openTestModal} className="cursor-pointer active:scale-[0.97] transition-transform">
             <ReminderCard
               icon="🧪" title="טסט"
               value={testDays !== null ? (testDays < 0 ? 'פג תוקף!' : `${testDays} יום`) : 'העלה טסט'}
@@ -1027,13 +1108,7 @@ export default function UserHomePage() {
               status={testDays !== null ? (testDays < 0 ? 'danger' : testDays < 30 ? 'warning' : 'success') : 'warning'}
             />
           </div>
-          <div onClick={() => {
-            setInsuranceForm({ insuranceCompany: '', insuranceType: 'comprehensive', insuranceStart: '', insuranceExpiry: '', insuranceCost: '', insurancePolicyNumber: '' });
-            setInsurancePreview(null);
-            setInsuranceError('');
-            setInsuranceSuccess('');
-            setShowInsuranceModal(true);
-          }} className="cursor-pointer active:scale-[0.97] transition-transform">
+          <div onClick={openInsuranceModal} className="cursor-pointer active:scale-[0.97] transition-transform">
             <ReminderCard
               icon="🛡️" title="ביטוח"
               value={insuranceDays !== null ? (insuranceDays < 0 ? 'פג תוקף!' : `${insuranceDays} יום`) : 'העלה ביטוח'}
