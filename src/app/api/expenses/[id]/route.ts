@@ -7,10 +7,9 @@ import {
   errorResponse,
   validationErrorResponse,
   handleApiError,
-  AuthError,
-  requireOwnership,
   enforceRateLimit,
 } from '@/lib/api-helpers';
+import { assertVehicleRecordAccess } from '@/lib/vehicle-access';
 import { updateExpenseSchema } from '@/lib/validations';
 import { NOT_FOUND } from '@/lib/messages';
 
@@ -45,7 +44,7 @@ export async function GET(
       return errorResponse(NOT_FOUND.EXPENSE, 404);
     }
 
-    requireOwnership(payload.userId, expense.vehicle.userId);
+    await assertVehicleRecordAccess(payload.userId, expense.vehicle.id);
 
     return jsonResponse({ expense });
   } catch (error) {
@@ -84,32 +83,16 @@ export async function PUT(
       return errorResponse(NOT_FOUND.EXPENSE, 404);
     }
 
-    // Verify vehicle ownership
-    const vehicle = await prisma.vehicle.findUnique({
-      where: { id: expense.vehicleId },
-      select: { userId: true },
-    });
-
-    if (!vehicle) {
-      throw new AuthError(NOT_FOUND.VEHICLE, 404);
-    }
-    requireOwnership(payload.userId, vehicle.userId);
+    // Owner or approved-share user may edit this vehicle's records
+    await assertVehicleRecordAccess(payload.userId, expense.vehicleId);
 
     // Build update data
     const updateData: Prisma.ExpenseUpdateInput = {};
     const data = validation.data;
 
     if (data.vehicleId !== undefined) {
-      // If changing vehicle, verify new vehicle ownership
-      const newVehicle = await prisma.vehicle.findUnique({
-        where: { id: data.vehicleId },
-        select: { userId: true },
-      });
-
-      if (!newVehicle) {
-        throw new AuthError(NOT_FOUND.VEHICLE, 404);
-      }
-      requireOwnership(payload.userId, newVehicle.userId);
+      // Moving the expense to another vehicle requires access to that one too
+      await assertVehicleRecordAccess(payload.userId, data.vehicleId);
 
       updateData.vehicleId = data.vehicleId;
     }
@@ -190,16 +173,8 @@ export async function DELETE(
       return errorResponse(NOT_FOUND.EXPENSE, 404);
     }
 
-    // Verify vehicle ownership
-    const vehicle = await prisma.vehicle.findUnique({
-      where: { id: expense.vehicleId },
-      select: { userId: true },
-    });
-
-    if (!vehicle) {
-      throw new AuthError(NOT_FOUND.VEHICLE, 404);
-    }
-    requireOwnership(payload.userId, vehicle.userId);
+    // Owner or approved-share user may delete this vehicle's records
+    await assertVehicleRecordAccess(payload.userId, expense.vehicleId);
 
     // Delete expense
     await prisma.expense.delete({
