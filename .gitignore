@@ -15,3 +15,24 @@ out/
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# ── Local env backups — NEVER commit (contain live production secrets) ──
+.env.bak*
+.env.save
+.env.*.bak
+
+# Ad-hoc file backups created by ops scripts / sessions
+*.bak
+*.bak-*
+*.bak.*
+
+# Previous build directory kept by the zero-downtime deploy swap (~1.3GB)
+.next-prev/
+
+# Local caches for the one-off import scripts
+scripts/.carwash-geocache.json
+scripts/.gplaces-geocache.json
+
+# Diagnostic artifacts produced by the diag cron
+public/diag-*.html
+public/robots-diag.txt
