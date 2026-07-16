@@ -84,6 +84,27 @@ function todayISO(): string {
   return new Date().toISOString().split('T')[0];
 }
 
+/**
+ * חישוב התוקף הבא לתצוגה מקדימה:
+ * טסט — מעוגן לתאריך התפוגה הקיים + שנה (בישראל התוקף לא זז לפי מועד הביצוע).
+ * ביטוחים — שנה מתאריך הביצוע (הפוליסה מתחילה מהחידוש).
+ */
+function computeNextExpiry(
+  reminderType: ReminderType,
+  currentExpiry: string | null,
+  completedDate: string,
+): string {
+  const useAnchor = reminderType === 'test' && currentExpiry;
+  const base = new Date(useAnchor ? (currentExpiry as string) : completedDate);
+  if (isNaN(base.getTime())) return '';
+  base.setFullYear(base.getFullYear() + 1);
+  if (useAnchor) {
+    const completed = new Date(completedDate);
+    while (base <= completed) base.setFullYear(base.getFullYear() + 1);
+  }
+  return base.toISOString().split('T')[0];
+}
+
 export default function MarkReminderDoneModal({
   isOpen,
   vehicleId,
@@ -105,6 +126,11 @@ export default function MarkReminderDoneModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
+  // Next-expiry preview (date-based reminders): computed, editable by the user
+  const [currentExpiry, setCurrentExpiry] = useState<string | null>(null);
+  const [nextExpiry, setNextExpiry] = useState('');
+  const [nextExpiryEdited, setNextExpiryEdited] = useState(false);
+
   // Reset form when reopened
   useEffect(() => {
     if (isOpen) {
@@ -116,8 +142,34 @@ export default function MarkReminderDoneModal({
       setPolicyNumber('');
       setNotes('');
       setError('');
+      setCurrentExpiry(null);
+      setNextExpiry('');
+      setNextExpiryEdited(false);
     }
   }, [isOpen, defaultMileage]);
+
+  // Fetch the vehicle's current expiry so the preview anchors correctly
+  useEffect(() => {
+    if (!isOpen || !cfg.dateBased) return;
+    fetch('/api/vehicles')
+      .then(r => r.json())
+      .then(data => {
+        const v = (data.vehicles || []).find((x: { id: string }) => x.id === vehicleId);
+        if (!v) return;
+        const expiry =
+          reminderType === 'test' ? v.testExpiryDate :
+          reminderType === 'compulsory_insurance' ? v.compulsoryInsuranceExpiry :
+          v.insuranceExpiry;
+        setCurrentExpiry(expiry ? String(expiry).split('T')[0] : null);
+      })
+      .catch(() => {});
+  }, [isOpen, cfg.dateBased, reminderType, vehicleId]);
+
+  // Recompute the preview when inputs change — unless the user edited it manually
+  useEffect(() => {
+    if (!isOpen || !cfg.dateBased || nextExpiryEdited) return;
+    setNextExpiry(computeNextExpiry(reminderType, currentExpiry, completedDate));
+  }, [isOpen, cfg.dateBased, reminderType, currentExpiry, completedDate, nextExpiryEdited]);
 
   const handleSubmit = async () => {
     setError('');
@@ -139,6 +191,7 @@ export default function MarkReminderDoneModal({
           insuranceCompany: insuranceCompany || undefined,
           policyNumber: policyNumber || undefined,
           notes: notes || undefined,
+          overrideExpiryDate: cfg.dateBased && nextExpiry ? nextExpiry : undefined,
         }),
       });
       const data = await res.json();
@@ -209,6 +262,28 @@ export default function MarkReminderDoneModal({
               dir="ltr"
             />
           </div>
+
+          {/* Next-expiry preview — computed automatically, editable */}
+          {cfg.dateBased && nextExpiry && (
+            <div className="bg-green-50 border border-green-200 rounded-xl p-3">
+              <label className="block text-sm font-bold text-green-800 mb-1.5">
+                <CheckCircle2 size={14} className="inline ms-1" />
+                התוקף הבא יעודכן ל:
+              </label>
+              <input
+                type="date"
+                value={nextExpiry}
+                onChange={(e) => { setNextExpiry(e.target.value); setNextExpiryEdited(true); }}
+                className="w-full px-3 py-2.5 rounded-xl border border-green-300 bg-white focus:border-green-600 focus:ring-2 focus:ring-green-100 outline-none text-sm font-bold text-green-800"
+                dir="ltr"
+              />
+              <p className="text-[11px] text-green-700 mt-1.5">
+                {reminderType === 'test'
+                  ? 'מחושב אוטומטית לפי תאריך התוקף הקיים + שנה — אפשר לערוך אם צריך'
+                  : 'מחושב אוטומטית — שנה מתאריך הביצוע. אפשר לערוך אם צריך'}
+              </p>
+            </div>
+          )}
 
           {/* Mileage — important for vehicle tracking */}
           <div>

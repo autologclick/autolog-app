@@ -7,3 +7,7 @@
  */
 
 export const GARAGES_ENABLED = false;
+
+// SOS / roadside emergency — kept live independently of garage onboarding.
+// Flip to false only if you want SOS to show the בקרוב (coming soon) state too.
+export const SOS_ENABLED = true;

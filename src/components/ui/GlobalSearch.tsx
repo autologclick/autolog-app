@@ -117,7 +117,7 @@ export default function GlobalSearch() {
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="חפש רכב, טיפול, מוסך..."
-            className="flex-1 text-sm outline-none text-[#1e3a5f] placeholder:text-gray-300 font-medium"
+            className="flex-1 text-sm outline-none text-[#1B4E8A] placeholder:text-gray-300 font-medium"
           />
           <button onClick={() => setOpen(false)} className="p-1 hover:bg-gray-100 rounded-lg">
             <X size={18} className="text-gray-400" />
@@ -139,7 +139,7 @@ export default function GlobalSearch() {
                   {r.icon}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-[#1e3a5f] truncate">{r.title}</div>
+                  <div className="text-sm font-semibold text-[#1B4E8A] truncate">{r.title}</div>
                   <div className="text-xs text-gray-400 truncate">{r.subtitle}</div>
                 </div>
               </button>

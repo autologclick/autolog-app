@@ -167,7 +167,7 @@ export default function NotificationBell() {
                         handleMarkAsRead(notif.id);
                       }
                     }}
-                    className={`w-full p-4 text-right transition hover:bg-[#fef7ed]/50 flex gap-3 ${
+                    className={`w-full p-4 text-right transition hover:bg-[#F3F6FA]/50 flex gap-3 ${
                       !notif.isRead ? 'bg-blue-50' : ''
                     }`}
                   >

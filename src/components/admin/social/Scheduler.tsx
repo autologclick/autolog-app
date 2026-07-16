@@ -10,6 +10,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import Badge from '@/components/ui/Badge';
 import {
   Calendar, Loader2, Send, Edit2, Trash2, RefreshCw,
@@ -41,6 +42,7 @@ const STATUS_META: Record<string, { label: string; icon: React.ReactNode; varian
 export default function Scheduler() {
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [removeId, setRemoveId] = useState<string | null>(null);
   const [actingId, setActingId] = useState<string | null>(null);
 
   const load = async () => {
@@ -79,7 +81,6 @@ export default function Scheduler() {
   };
 
   const remove = async (id: string) => {
-    if (!confirm('למחוק את הפוסט?')) return;
     setActingId(id);
     try {
       const res = await fetch(`/api/admin/social/posts/${id}`, { method: 'DELETE' });
@@ -179,7 +180,7 @@ export default function Scheduler() {
                     <Button
                       size="sm"
                       variant="secondary"
-                      onClick={() => remove(p.id)}
+                      onClick={() => setRemoveId(p.id)}
                       disabled={actingId === p.id}
                     >
                       <Trash2 size={14} />
@@ -200,6 +201,15 @@ export default function Scheduler() {
           </div>
         </Card>
       )}
+      <ConfirmDialog
+        isOpen={removeId !== null}
+        title="מחיקת פוסט"
+        message="למחוק את הפוסט?"
+        confirmLabel="מחק"
+        danger
+        onConfirm={() => { const id = removeId; setRemoveId(null); if (id) remove(id); }}
+        onCancel={() => setRemoveId(null)}
+      />
     </div>
   );
 }

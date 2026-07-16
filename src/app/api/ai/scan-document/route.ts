@@ -55,6 +55,10 @@ export interface ScanResult {
 
   // Raw text summary for reference
   summary: string;
+
+  // MULTI_DOC_PATCH_V1: extra documents detected in the same file (e.g. 2 policies in one PDF).
+  // Primary doc populates top-level fields; additional ones go here. null if only one doc.
+  additionalDocuments?: ScanResult[] | null;
 }
 
 export async function POST(req: NextRequest) {
@@ -115,7 +119,9 @@ export async function POST(req: NextRequest) {
     }
 
     if (result) {
-      return NextResponse.json({ success: true, data: result });
+      // documents: primary first, then any additional ones found in the same file
+      const documents = [result, ...(result.additionalDocuments || [])];
+      return NextResponse.json({ success: true, data: result, documents });
     }
 
     return NextResponse.json(
@@ -151,6 +157,10 @@ IMPORTANT EXTRACTION RULES:
 8. For רישיון רכב (vehicle registration): "בתוקף עד" = expiryDate, "כינוי מסחרי" = vehicleInfo (model name like CX-5, NOT the manufacturer), "תוצר" = manufacturer (WITHOUT country name)
 9. For פוליסת ביטוח מקיף (comprehensive insurance policy) ONLY: look for the roadside assistance section ("שירותי דרך", "גרירה", "שירות דרך"). Common providers: שגריר (Shagrir), דרכים (Drachim), ממסי (Memsi/איגוד הנהיגה), ש.א.ת (SAT), פז שירות, תחבורה, ביטוח ישיר דרך. If found, set roadServiceProvider to the provider name and roadServicePhone to the contact number (often shown as *8888, *3500, etc). If the policy doesn't mention roadside service, leave BOTH as null — do NOT guess and do NOT fail.
 
+10. MULTI-PAGE PDFs: A PDF may have many pages (cover sheets, payment schedules, terms & conditions, the actual document, etc). FIND the page(s) with the actual structured data and extract from those. Ignore boilerplate / generic T&C / legalese pages. If the same document spans multiple pages, treat them as ONE document — do NOT split it.
+
+11. MULTIPLE DISTINCT DOCUMENTS IN ONE FILE: If you detect TWO OR MORE genuinely different documents in the same file (e.g. a comprehensive insurance policy AND a separate mandatory insurance policy, OR an insurance certificate AND a receipt, OR two policies for two different vehicles), populate "additionalDocuments" with the OTHER documents (put the most important / most recent / most complete one in the top-level fields, the rest in the array). If there is only ONE document — even if it spans multiple pages — leave additionalDocuments as null. Do NOT fabricate a second document just because the file has more pages.
+
 Return a JSON object with these exact fields (use null for fields you can't find):`;
 
 function buildPrompt(context?: string): string {
@@ -181,7 +191,8 @@ Return ONLY valid JSON with this structure — no markdown, no explanation:
   "suggestedCategory": "insurance" | "test" | "registration" | "receipt" | "other",
   "roadServiceProvider": "string (provider name in Hebrew, e.g. שגריר) or null — ONLY for ביטוח מקיף policies",
   "roadServicePhone": "string (phone or shortcode like *8888) or null — ONLY for ביטוח מקיף policies",
-  "summary": "string — 1-2 sentence Hebrew summary of the document"
+  "summary": "string — 1-2 sentence Hebrew summary of the document",
+  "additionalDocuments": null OR an array of objects with the SAME schema as above (omit additionalDocuments inside them). Use ONLY when 2+ truly distinct documents are found. Otherwise null.
 }`;
 }
 
@@ -242,7 +253,7 @@ async function scanWithAnthropic(apiKey: string, imageDataUrl: string, context?:
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         messages: [
           {
@@ -294,7 +305,7 @@ async function scanPdfWithAnthropic(apiKey: string, pdfDataUrl: string, context?
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         messages: [
           {
@@ -331,11 +342,28 @@ async function scanPdfWithAnthropic(apiKey: string, pdfDataUrl: string, context?
 /**
  * Parse AI response and validate/sanitize the extracted data.
  */
+function extractJsonObject(raw: string): string {
+  const start = raw.indexOf('{');
+  if (start === -1) return raw.trim();
+  let depth = 0, inStr = false, esc = false;
+  for (let i = start; i < raw.length; i++) {
+    const c = raw.charCodeAt(i);
+    if (inStr) {
+      if (esc) esc = false;
+      else if (c === 92) esc = true;
+      else if (c === 34) inStr = false;
+    } else {
+      if (c === 34) inStr = true;
+      else if (c === 123) depth++;
+      else if (c === 125) { depth--; if (depth === 0) return raw.slice(start, i + 1); }
+    }
+  }
+  return raw.slice(start).trim();
+}
+
 function parseAndValidate(rawJson: string): ScanResult | null {
   try {
-    // Strip markdown code fences if present
-    const cleaned = rawJson.replace(/^```json?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
-    const parsed = JSON.parse(cleaned);
+    const parsed = JSON.parse(extractJsonObject(rawJson));
 
     // Validate and sanitize fields
     const result: ScanResult = {
@@ -368,6 +396,11 @@ function parseAndValidate(rawJson: string): ScanResult | null {
         ? parsed.roadServicePhone.trim()
         : null,
       summary: typeof parsed.summary === 'string' ? parsed.summary.trim() : 'מסמך שזוהה',
+      additionalDocuments: Array.isArray(parsed.additionalDocuments) && parsed.additionalDocuments.length > 0
+        ? parsed.additionalDocuments
+            .map((doc: unknown) => parseAndValidateSingle(doc as Record<string, unknown>))
+            .filter((d: ScanResult | null): d is ScanResult => d !== null)
+        : null,
     };
 
     return result;
@@ -375,6 +408,40 @@ function parseAndValidate(rawJson: string): ScanResult | null {
     console.error('Failed to parse scan result:', error, rawJson);
     return null;
   }
+}
+
+function parseAndValidateSingle(parsed: Record<string, unknown>): ScanResult | null {
+  if (!parsed || typeof parsed !== 'object') return null;
+  try {
+    return {
+      documentType: validateEnum(parsed.documentType, ['receipt', 'invoice', 'insurance', 'registration', 'test_certificate', 'maintenance_record', 'other'], 'other'),
+      documentTypeHebrew: typeof parsed.documentTypeHebrew === 'string' ? parsed.documentTypeHebrew : 'מסמך',
+      confidence: validateEnum(parsed.confidence, ['high', 'medium', 'low'], 'medium'),
+      date: validateDate(parsed.date),
+      expiryDate: validateDate(parsed.expiryDate),
+      totalAmount: typeof parsed.totalAmount === 'number' && parsed.totalAmount >= 0 ? Math.round(parsed.totalAmount * 100) / 100 : null,
+      currency: (parsed.currency as string | null) || null,
+      invoiceNumber: typeof parsed.invoiceNumber === 'string' ? parsed.invoiceNumber.trim() : null,
+      mileage: typeof parsed.mileage === 'number' && parsed.mileage > 0 ? Math.round(parsed.mileage) : null,
+      licensePlate: validatePlate(parsed.licensePlate),
+      vehicleInfo: typeof parsed.vehicleInfo === 'string' ? parsed.vehicleInfo.trim() : null,
+      businessName: typeof parsed.businessName === 'string' ? parsed.businessName.trim() : null,
+      businessPhone: typeof parsed.businessPhone === 'string' ? parsed.businessPhone.trim() : null,
+      businessAddress: typeof parsed.businessAddress === 'string' ? parsed.businessAddress.trim() : null,
+      description: typeof parsed.description === 'string' ? parsed.description.trim() : null,
+      lineItems: Array.isArray(parsed.lineItems) ? (parsed.lineItems as Array<{description?: string; amount?: number}>).filter(
+        (item) => item && typeof item.description === 'string'
+      ).map((item) => ({
+        description: item.description as string,
+        amount: typeof item.amount === 'number' ? Math.round(item.amount * 100) / 100 : null,
+      })) : null,
+      suggestedCategory: validateEnum(parsed.suggestedCategory, ['insurance', 'test', 'registration', 'receipt', 'other'], 'other'),
+      roadServiceProvider: typeof parsed.roadServiceProvider === 'string' && parsed.roadServiceProvider.trim() ? parsed.roadServiceProvider.trim() : null,
+      roadServicePhone: typeof parsed.roadServicePhone === 'string' && parsed.roadServicePhone.trim() ? parsed.roadServicePhone.trim() : null,
+      summary: typeof parsed.summary === 'string' ? parsed.summary.trim() : 'מסמך שזוהה',
+      additionalDocuments: null,
+    };
+  } catch { return null; }
 }
 
 function validateEnum<T extends string>(value: unknown, allowed: T[], fallback: T): T {

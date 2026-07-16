@@ -1,5 +1,6 @@
 'use client';
 
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -54,6 +55,7 @@ export default function AcceptTransferPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [code, setCode] = useState(codeParam);
+  const [showRejectConfirm, setShowRejectConfirm] = useState(false);
   const [step, setStep] = useState<'find' | 'confirm' | 'done'>('find');
 
   useEffect(() => {
@@ -84,13 +86,21 @@ export default function AcceptTransferPage() {
         return;
       }
 
-      // Find the matching pending transfer
-      const found = (data.transfers || []).find(
-        (t: Transfer) => t.status === 'pending' && !t.isExpired
-      );
+      // Find the matching pending transfer (include expired so user gets clearer error)
+      const all = (data.transfers || []) as Transfer[];
+      const found = all.find(t => t.status === 'pending' && !t.isExpired)
+        || all.find(t => t.status === 'pending')
+        || null;
 
       if (!found) {
-        setError('לא נמצאה בקשת העברה פעילה. ייתכן שהבקשה פגה או בוטלה.');
+        setError('לא נמצאה בקשת העברה עבור הכתובת המייל שלך. ודא שהמוכר הזין את כתובת המייל הנכונה.');
+        setLoading(false);
+        return;
+      }
+      if (found.isExpired) {
+        setError('בקשת ההעברה פגה. יש לפנות למוכר ליצירת בקשה חדשה.');
+        setTransfer(found);
+        setStep('confirm');
         setLoading(false);
         return;
       }
@@ -141,8 +151,6 @@ export default function AcceptTransferPage() {
 
   const handleReject = async () => {
     if (!transfer) return;
-    if (!confirm('האם אתה בטוח שברצונך לדחות את ההעברה?')) return;
-
     setBusy(true);
     setError('');
 
@@ -288,7 +296,7 @@ export default function AcceptTransferPage() {
           {/* Action buttons */}
           <div className="flex gap-2">
             <button
-              onClick={handleReject}
+              onClick={() => setShowRejectConfirm(true)}
               disabled={busy}
               className="flex-1 border-2 border-red-300 text-red-700 rounded-xl py-3 font-semibold disabled:opacity-50 flex items-center justify-center gap-1"
             >
@@ -325,6 +333,15 @@ export default function AcceptTransferPage() {
           </button>
         </div>
       )}
+      <ConfirmDialog
+        isOpen={showRejectConfirm}
+        title="דחיית העברה"
+        message="האם אתה בטוח שברצונך לדחות את ההעברה?"
+        confirmLabel="דחה העברה"
+        danger
+        onConfirm={() => { setShowRejectConfirm(false); handleReject(); }}
+        onCancel={() => setShowRejectConfirm(false)}
+      />
     </div>
   );
 }

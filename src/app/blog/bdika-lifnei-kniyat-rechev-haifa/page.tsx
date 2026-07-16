@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
 
 const post = getPostBySlug('bdika-lifnei-kniyat-rechev-haifa')!;
 
@@ -19,15 +20,16 @@ export const metadata: Metadata = {
     publishedTime: post.publishedAt,
     authors: [post.author],
     locale: 'he_IL',
-    siteName: 'AutoLog',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
   },
   twitter: { card: 'summary_large_image', title: post.title, description: post.description },
 };
 
 export default function BlogPostPage() {
   return (
-    <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
-      <header className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white">
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
           <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1">
@@ -38,7 +40,7 @@ export default function BlogPostPage() {
 
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] leading-tight mb-4">{post.title}</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] leading-tight mb-4">{post.title}</h1>
 
         <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
           <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
@@ -52,16 +54,16 @@ export default function BlogPostPage() {
             במאמר תמצאו את כל מכוני הבדיקה המומלצים בחיפה והסביבה, השוואת מחירים, ומה לבדוק לפני שמשלמים.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">למה בדיקה במכון בחיפה חשובה במיוחד?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">למה בדיקה במכון בחיפה חשובה במיוחד?</h2>
           <p>
             רכב שנהג בחיפה והקריות חווה תנאים ייחודיים: <strong>אוויר ים מלוח</strong> שמאיץ קורוזיה,
             <strong> דרכים תלולות</strong> ששוחקות בלמים וגיר, ו<strong>פקקים יומיומיים</strong> ב&quot;כביש 22&quot; ו&quot;כביש 4&quot;
             שמעמיסים על המנוע. בדיקה מקצועית תזהה בעיות שמצטברות בגלל התנאים האלה.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מכוני בדיקה מומלצים בחיפה והסביבה</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">מכוני בדיקה מומלצים בחיפה והסביבה</h2>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">1. קומפיוטסט חיפה</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">1. קומפיוטסט חיפה</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>מיקום:</strong> אזור התעשייה חיפה</li>
             <li><strong>דירוג Google:</strong> 4.0+</li>
@@ -70,27 +72,27 @@ export default function BlogPostPage() {
             <li><strong>התמחות:</strong> רכבים פרטיים, יוקרה, היברידיים</li>
           </ul>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">2. טכנו טסט חיפה</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">2. טכנו טסט חיפה</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>מחיר:</strong> 680-870 ש&quot;ח</li>
             <li><strong>התמחות:</strong> רכבים חשמליים — בדיקת סוללה</li>
             <li><strong>חניה זמינה</strong></li>
           </ul>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">3. דינמומטר חיפה</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">3. דינמומטר חיפה</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>ותק:</strong> מעל 50 שנה</li>
             <li><strong>מחיר:</strong> 620-820 ש&quot;ח</li>
             <li><strong>התמחות:</strong> בדיקות מקיפות, שמאות</li>
           </ul>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">4. מבדק קריות (לתושבי הקריות)</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">4. מבדק קריות (לתושבי הקריות)</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>מיקום:</strong> קרית אתא / קרית מוצקין</li>
             <li><strong>מחיר:</strong> 580-750 ש&quot;ח (זול יחסית)</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה בדיקת רכב לפני קנייה בחיפה?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">כמה עולה בדיקת רכב לפני קנייה בחיפה?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li><strong>רכב פרטי:</strong> 620-830 ש&quot;ח</li>
             <li><strong>4x4 / SUV:</strong> 780-1,050 ש&quot;ח</li>
@@ -100,7 +102,7 @@ export default function BlogPostPage() {
           </ul>
           <p>חיפה בדרך כלל זולה ב-5-10% מתל אביב.</p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">דברים מיוחדים לבדוק ברכב מחיפה</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">דברים מיוחדים לבדוק ברכב מחיפה</h2>
           <ol className="list-decimal list-inside space-y-2 mr-4">
             <li><strong>קורוזיה ותחתית</strong> — בגלל אוויר הים, רכבים מהקריות נוטים לחלודה מהירה</li>
             <li><strong>בלמים</strong> — דרכים תלולות שוחקות מהר את הדיסקיות</li>
@@ -109,7 +111,7 @@ export default function BlogPostPage() {
             <li><strong>צמיגים</strong> — שחיקה לא אחידה מהדרכים ההרריות</li>
           </ol>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">איך לבחור מכון נכון</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">איך לבחור מכון נכון</h2>
           <p>
             <strong>לפי קריטריון:</strong>
           </p>
@@ -120,28 +122,28 @@ export default function BlogPostPage() {
             <li><strong>קרוב למרכז:</strong> קומפיוטסט חיפה</li>
           </ul>
 
-          <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
+          <div className="bg-[#1B4E8A] text-white rounded-2xl p-8 my-8 text-center">
             <h3 className="text-xl font-bold mb-3">תיעוד דיגיטלי לרכב החדש</h3>
             <p className="text-white/80 mb-5 text-sm">
               עם AutoLog תוכלו לתעד את דוח הבדיקה, פוליסות הביטוח וההיסטוריה — חינם וללא הורדה.
             </p>
-            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg">
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-cream-500 text-white font-bold rounded-xl hover:bg-cream-600 transition shadow-lg">
               הרשמה בחינם<ArrowLeft size={16} />
             </Link>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">שאלות נפוצות</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">שאלות נפוצות</h2>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">האם יש מכוני בדיקה הפתוחים בשבת?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">האם יש מכוני בדיקה הפתוחים בשבת?</h3>
           <p>לא. מרבית המכונים סגורים בשבת. הרבה פתוחים ביום שישי בבוקר עד 12:30.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">איפה הכי זול בחיפה?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">איפה הכי זול בחיפה?</h3>
           <p>מבדק קריות בקרית אתא הוא לרוב הזול ביותר באזור — סביב 580-680 ש&quot;ח.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">כמה זמן לוקחת בדיקה?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">כמה זמן לוקחת בדיקה?</h3>
           <p>60-90 דקות לבדיקה סטנדרטית. עם נסיעת מבחן — עד שעתיים.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">מה עם רכבים שנמצאים בנהריה או בעכו?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">מה עם רכבים שנמצאים בנהריה או בעכו?</h3>
           <p>שווה להגיע לחיפה — המבחר רחב יותר. נהריה ועכו עיקר המכונים נמצאים בחיפה ובקרית אתא.</p>
         </div>
 
@@ -183,7 +185,7 @@ export default function BlogPostPage() {
         </div>
       </article>
 
-      <footer className="bg-[#1e3a5f] text-white/60 py-6 text-center text-sm">
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm">
         <p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p>
       </footer>
     </div>

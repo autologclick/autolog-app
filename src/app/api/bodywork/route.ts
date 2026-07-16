@@ -9,6 +9,7 @@ import {
 import { sendPushToGarageOwner } from '@/lib/push-sender';
 import { createNotification } from '@/lib/services/notification-service';
 import { sendEmail } from '@/lib/email';
+import { notifyTelegram } from '@/lib/telegram';
 
 /**
  * POST /api/bodywork — Create a new bodywork (פחחות) quote request
@@ -52,6 +53,10 @@ export async function POST(req: NextRequest) {
     // ── Notify bodywork garages (async, non-blocking) ──
     const vehicleName = `${request.vehicle.manufacturer} ${request.vehicle.model}`;
     notifyBodyworkGarages(request.id, vehicleName, description, request.city).catch(() => {});
+    notifyTelegram(
+      '🚗 בקשת פחחות חדשה',
+      `רכב: ${vehicleName}${request.city ? ' · עיר: ' + request.city : ''}\nתיאור: ${description.slice(0, 120)}`,
+    );
 
     return jsonResponse(request, 201);
   } catch (err) {
@@ -113,7 +118,7 @@ async function notifyBodyworkGarages(requestId: string, vehicleName: string, des
           subject: `בקשת פחחות חדשה — ${vehicleName}`,
           html: `
             <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 500px;">
-              <h2 style="color: #1e3a5f;">בקשת פחחות חדשה ב-AutoLog</h2>
+              <h2 style="color: #1B4E8A;">בקשת פחחות חדשה ב-AutoLog</h2>
               <p><strong>רכב:</strong> ${vehicleName}</p>
               <p><strong>תיאור:</strong> ${description}</p>
               <br/>

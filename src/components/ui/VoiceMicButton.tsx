@@ -38,6 +38,7 @@ export default function VoiceMicButton({
   const [permState, setPermState] = useState<'unknown' | 'granted' | 'denied' | 'requesting'>('unknown');
   const [showConsent, setShowConsent] = useState(false);
   const [showDenied, setShowDenied] = useState(false);
+  const [manualText, setManualText] = useState('');
   const recognitionRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const valueRef = useRef(value);
@@ -218,7 +219,7 @@ export default function VoiceMicButton({
               <Mic size={28} className="text-teal-600" />
             </div>
 
-            <h3 className="font-bold text-lg text-[#1e3a5f] mb-2">הפעלת מיקרופון</h3>
+            <h3 className="font-bold text-lg text-[#1B4E8A] mb-2">הפעלת מיקרופון</h3>
             <p className="text-sm text-gray-500 leading-relaxed mb-6">
               AutoLog משתמש/ת במיקרופון כדי להמיר דיבור לטקסט — במקום להקליד, פשוט מדברים.
               <br />
@@ -262,7 +263,7 @@ export default function VoiceMicButton({
               <MicOff size={28} className="text-red-500" />
             </div>
 
-            <h3 className="font-bold text-lg text-[#1e3a5f] mb-2">המיקרופון חסום</h3>
+            <h3 className="font-bold text-lg text-[#1B4E8A] mb-2">המיקרופון חסום</h3>
             <p className="text-sm text-gray-500 leading-relaxed mb-4">
               הדפדפן חסם את הגישה למיקרופון. כדי להפעיל מחדש:
             </p>
@@ -272,12 +273,37 @@ export default function VoiceMicButton({
               <p><strong>במחשב:</strong> לחיצה על 🔒 בשורת הכתובת → הרשאות אתר → מיקרופון → אפשר</p>
             </div>
 
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-3 text-right">
+              <p className="text-xs text-blue-800 mb-2 font-medium">או לחלופין — הקלד ידנית:</p>
+              <textarea
+                value={manualText}
+                onChange={e => setManualText(e.target.value)}
+                placeholder="הקלד כאן..."
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm text-right resize-none focus:outline-none focus:border-blue-500"
+                rows={2}
+                dir="rtl"
+              />
+              <button
+                onClick={() => {
+                  if (manualText.trim()) {
+                    const sep = valueRef.current && !valueRef.current.endsWith(' ') ? ' ' : '';
+                    onResultRef.current(valueRef.current + sep + manualText.trim());
+                    setManualText('');
+                    setShowDenied(false);
+                  }
+                }}
+                disabled={!manualText.trim()}
+                className="w-full mt-2 py-2 rounded-lg bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                הוסף טקסט
+              </button>
+            </div>
             <button
               onClick={() => {
                 setShowDenied(false);
                 setPermState('unknown');
               }}
-              className="w-full py-3 rounded-xl bg-[#1e3a5f] text-white font-bold text-sm hover:bg-[#2a5a8f] transition-colors"
+              className="w-full py-3 rounded-xl bg-[#1B4E8A] text-white font-bold text-sm hover:bg-[#1D5FAF] transition-colors"
             >
               הבנתי, אנסה שוב
             </button>

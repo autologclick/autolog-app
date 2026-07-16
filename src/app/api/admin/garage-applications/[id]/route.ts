@@ -158,7 +158,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 <p style="font-size:16px;color:#1e293b;margin:0 0 18px;line-height:1.6">לצערנו, הבקשה של <strong>${application.garageName}</strong> להצטרפות ל-AutoLog לא אושרה כרגע.</p>
 ${reasonHtml}
 <p style="font-size:15px;color:#475569;margin:0 0 18px;line-height:1.6">אתם מוזמנים לפנות אלינו במייל לקבלת הבהרות, או להגיש בקשה מחודשת לאחר השלמת הפרטים החסרים.</p>
-<div style="text-align:center;margin:24px 0"><a href="${baseUrl}/garage-apply" style="display:inline-block;background:#0d9488;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:700">הגש/י בקשה חדשה</a></div>
+<div style="text-align:center;margin:24px 0"><a href="${baseUrl}/garage-apply" style="display:inline-block;background:#2E77D0;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:700">הגש/י בקשה חדשה</a></div>
 <p style="font-size:13px;color:#94a3b8;margin:24px 0 0;line-height:1.4">תודה על ההתעניינות ב-AutoLog · צוות AutoLog</p>
 </td></tr></table></td></tr></table></body></html>`;
       await sendEmail({

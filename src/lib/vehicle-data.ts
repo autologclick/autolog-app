@@ -45,6 +45,12 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'לנד קרוזר', fuelCategory: 'diesel' },
       { name: 'לנד קרוזר פראדו', fuelCategory: 'diesel' },
       { name: 'פריוס', fuelCategory: 'hybrid' },
+      { name: 'יאריס הייבריד', fuelCategory: 'hybrid' },
+      { name: 'קורולה הייבריד', fuelCategory: 'hybrid' },
+      { name: 'וורסו', fuelCategory: 'petrol' },
+      { name: 'ספייס וורסו', fuelCategory: 'petrol' },
+      { name: 'אייגו', fuelCategory: 'petrol' },
+      { name: 'היאס', fuelCategory: 'diesel' },
       { name: 'היילקס', fuelCategory: 'diesel' },
       { name: 'bZ4X', fuelCategory: 'electric' },
       { name: 'פרואייס', fuelCategory: 'diesel' },
@@ -67,6 +73,9 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'CX-90', fuelCategory: 'hybrid' },
       { name: 'MX-5', fuelCategory: 'petrol' },
       { name: 'MX-30', fuelCategory: 'electric' },
+      { name: '5', fuelCategory: 'petrol' },
+      { name: '323', fuelCategory: 'petrol' },
+      { name: 'BT-50', fuelCategory: 'diesel' },
     ],
   },
   {
@@ -97,6 +106,8 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'אריה', fuelCategory: 'electric' },
       { name: 'נוט', fuelCategory: 'petrol' },
       { name: 'סנטרה', fuelCategory: 'petrol' },
+      { name: 'טידה', fuelCategory: 'petrol' },
+      { name: 'אלמרה', fuelCategory: 'petrol' },
       { name: 'נוורה', fuelCategory: 'diesel' },
       { name: 'פטרול', fuelCategory: 'petrol' },
     ],
@@ -114,6 +125,10 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: "ג'ימני", fuelCategory: 'petrol' },
       { name: 'SX4', fuelCategory: 'petrol' },
       { name: 'פרונקס', fuelCategory: 'petrol' },
+      { name: 'אלטו', fuelCategory: 'petrol' },
+      { name: 'סלריו', fuelCategory: 'petrol' },
+      { name: 'ספלאש', fuelCategory: 'petrol' },
+      { name: 'ליאנה', fuelCategory: 'petrol' },
     ],
   },
   {
@@ -140,6 +155,8 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'אאוטלנדר PHEV', fuelCategory: 'hybrid' },
       { name: 'L200', fuelCategory: 'diesel' },
       { name: 'פאג\'רו', fuelCategory: 'diesel' },
+      { name: 'לנסר', fuelCategory: 'petrol' },
+      { name: 'גרנדיס', fuelCategory: 'petrol' },
     ],
   },
   {
@@ -156,6 +173,8 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'IS', fuelCategory: 'petrol' },
       { name: 'LS', fuelCategory: 'hybrid' },
       { name: 'LBX', fuelCategory: 'hybrid' },
+      { name: 'CT200h', fuelCategory: 'hybrid' },
+      { name: 'GS', fuelCategory: 'petrol' },
     ],
   },
   {
@@ -189,7 +208,16 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'קרטה', fuelCategory: 'petrol' },
       { name: 'איוניק 5', fuelCategory: 'electric' },
       { name: 'איוניק 6', fuelCategory: 'electric' },
+      { name: 'איוניק', fuelCategory: 'hybrid' },
       { name: 'סטריה', fuelCategory: 'petrol' },
+      { name: 'אקסנט', fuelCategory: 'petrol' },
+      { name: 'גץ', fuelCategory: 'petrol' },
+      { name: 'סונטה', fuelCategory: 'petrol' },
+      { name: 'סונטה הייבריד', fuelCategory: 'hybrid' },
+      { name: 'ונו', fuelCategory: 'petrol' },
+      { name: 'פליסייד', fuelCategory: 'petrol' },
+      { name: 'ix35', fuelCategory: 'petrol' },
+      { name: 'i35', fuelCategory: 'petrol' },
     ],
   },
   {
@@ -212,6 +240,12 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'EV9', fuelCategory: 'electric' },
       { name: 'קרניבל', fuelCategory: 'petrol' },
       { name: 'XCeed', fuelCategory: 'petrol' },
+      { name: 'סרטו', fuelCategory: 'petrol' },
+      { name: 'אופטימה', fuelCategory: 'petrol' },
+      { name: 'K5', fuelCategory: 'petrol' },
+      { name: 'סול', fuelCategory: 'petrol' },
+      { name: 'סטינגר', fuelCategory: 'petrol' },
+      { name: 'EV3', fuelCategory: 'electric' },
     ],
   },
   {
@@ -247,8 +281,12 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'ID.5', fuelCategory: 'electric' },
       { name: 'ID.7', fuelCategory: 'electric' },
       { name: 'Up', fuelCategory: 'petrol' },
+      { name: "ג'טה", fuelCategory: 'petrol' },
+      { name: 'ביטל', fuelCategory: 'petrol' },
+      { name: 'אמארוק', fuelCategory: 'diesel' },
       { name: 'קאדי', fuelCategory: 'diesel' },
       { name: 'טרנספורטר', fuelCategory: 'diesel' },
+      { name: 'מולטיוואן', fuelCategory: 'diesel' },
     ],
   },
   {
@@ -383,6 +421,10 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'ארקנה', fuelCategory: 'hybrid' },
       { name: 'זואי', fuelCategory: 'electric' },
       { name: 'סניק', fuelCategory: 'electric' },
+      { name: 'פלואנס', fuelCategory: 'petrol' },
+      { name: 'קנגו', fuelCategory: 'diesel' },
+      { name: 'טרפיק', fuelCategory: 'diesel' },
+      { name: 'מאסטר', fuelCategory: 'diesel' },
     ],
   },
   {
@@ -400,7 +442,13 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: '5008', fuelCategory: 'petrol' },
       { name: '5008 PHEV', fuelCategory: 'hybrid' },
       { name: 'פרטנר', fuelCategory: 'diesel' },
-      { name: 'רי פטר', fuelCategory: 'diesel' },
+      { name: 'ריפטר', fuelCategory: 'diesel' },
+      { name: '108', fuelCategory: 'petrol' },
+      { name: '301', fuelCategory: 'petrol' },
+      { name: '408', fuelCategory: 'petrol' },
+      { name: '508', fuelCategory: 'petrol' },
+      { name: 'אקספרט', fuelCategory: 'diesel' },
+      { name: 'בוקסר', fuelCategory: 'diesel' },
     ],
   },
   {
@@ -415,6 +463,12 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'C5 Aircross PHEV', fuelCategory: 'hybrid' },
       { name: 'ברלינגו', fuelCategory: 'diesel' },
       { name: 'ë-Berlingo', fuelCategory: 'electric' },
+      { name: 'C1', fuelCategory: 'petrol' },
+      { name: 'סי-אליזה', fuelCategory: 'petrol' },
+      { name: 'C4 פיקאסו', fuelCategory: 'petrol' },
+      { name: 'גרנד C4 פיקאסו', fuelCategory: 'petrol' },
+      { name: "ג'אמפי", fuelCategory: 'diesel' },
+      { name: "ג'אמפר", fuelCategory: 'diesel' },
     ],
   },
   {
@@ -438,6 +492,10 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'פנדה', fuelCategory: 'petrol' },
       { name: 'טיפו', fuelCategory: 'petrol' },
       { name: '600e', fuelCategory: 'electric' },
+      { name: 'פונטו', fuelCategory: 'petrol' },
+      { name: 'דובלו', fuelCategory: 'diesel' },
+      { name: 'דוקאטו', fuelCategory: 'diesel' },
+      { name: 'קובו', fuelCategory: 'diesel' },
     ],
   },
   {
@@ -458,6 +516,11 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'ספארק', fuelCategory: 'petrol' },
       { name: 'קרוז', fuelCategory: 'petrol' },
       { name: 'טראקס', fuelCategory: 'petrol' },
+      { name: 'אוואו', fuelCategory: 'petrol' },
+      { name: 'סוניק', fuelCategory: 'petrol' },
+      { name: 'מאליבו', fuelCategory: 'petrol' },
+      { name: 'קפטיבה', fuelCategory: 'petrol' },
+      { name: 'אורלנדו', fuelCategory: 'petrol' },
       { name: 'אקווינוקס', fuelCategory: 'petrol' },
       { name: 'אקווינוקס EV', fuelCategory: 'electric' },
       { name: 'טראוורס', fuelCategory: 'petrol' },
@@ -475,6 +538,10 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'טורנאו', fuelCategory: 'diesel' },
       { name: 'טרנזיט', fuelCategory: 'diesel' },
       { name: 'ריינג\'ר', fuelCategory: 'diesel' },
+      { name: 'מונדאו', fuelCategory: 'petrol' },
+      { name: 'אדג\'', fuelCategory: 'petrol' },
+      { name: 'S-MAX', fuelCategory: 'petrol' },
+      { name: 'גלקסי', fuelCategory: 'petrol' },
     ],
   },
   {
@@ -506,6 +573,8 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
     models: [
       { name: 'פסיפיקה', fuelCategory: 'petrol' },
       { name: 'פסיפיקה PHEV', fuelCategory: 'hybrid' },
+      { name: 'גרנד וויאג\'ר', fuelCategory: 'petrol' },
+      { name: '300C', fuelCategory: 'petrol' },
     ],
   },
 
@@ -526,6 +595,7 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'S60', fuelCategory: 'petrol' },
       { name: 'S90', fuelCategory: 'petrol' },
       { name: 'V60', fuelCategory: 'petrol' },
+      { name: 'V40', fuelCategory: 'petrol' },
     ],
   },
 
@@ -539,6 +609,8 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'לאון e-Hybrid', fuelCategory: 'hybrid' },
       { name: 'אטקה', fuelCategory: 'petrol' },
       { name: 'טרקו', fuelCategory: 'petrol' },
+      { name: 'טולדו', fuelCategory: 'petrol' },
+      { name: 'אלהמברה', fuelCategory: 'petrol' },
     ],
   },
   {
@@ -563,6 +635,10 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'קודיאק', fuelCategory: 'petrol' },
       { name: 'אניאק', fuelCategory: 'electric' },
       { name: 'אניאק קופה', fuelCategory: 'electric' },
+      { name: 'אלרוק', fuelCategory: 'electric' },
+      { name: 'ראפיד', fuelCategory: 'petrol' },
+      { name: 'יטי', fuelCategory: 'petrol' },
+      { name: 'רומסטר', fuelCategory: 'petrol' },
     ],
   },
 
@@ -702,6 +778,222 @@ export const VEHICLE_DATABASE: ManufacturerData[] = [
       { name: 'E-PACE', fuelCategory: 'petrol' },
       { name: 'F-PACE', fuelCategory: 'petrol' },
       { name: 'I-PACE', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'סאנגיונג',
+    models: [
+      { name: 'טיבולי', fuelCategory: 'petrol' },
+      { name: 'קורנדו', fuelCategory: 'petrol' },
+      { name: 'טורס', fuelCategory: 'petrol' },
+      { name: 'טורס EVX', fuelCategory: 'electric' },
+      { name: 'רקסטון', fuelCategory: 'diesel' },
+      { name: 'מוסו', fuelCategory: 'diesel' },
+      { name: 'אקטיון', fuelCategory: 'petrol' },
+      { name: 'קיירון', fuelCategory: 'diesel' },
+      { name: 'רודיוס', fuelCategory: 'diesel' },
+    ],
+  },
+  {
+    name: 'איסוזו',
+    models: [
+      { name: 'D-Max', fuelCategory: 'diesel' },
+      { name: 'MU-X', fuelCategory: 'diesel' },
+    ],
+  },
+  {
+    name: 'דייהטסו',
+    models: [
+      { name: 'סיריון', fuelCategory: 'petrol' },
+      { name: 'טריוס', fuelCategory: 'petrol' },
+      { name: 'מטריה', fuelCategory: 'petrol' },
+      { name: 'גרנד מוב', fuelCategory: 'petrol' },
+    ],
+  },
+  {
+    name: 'סמארט',
+    models: [
+      { name: 'פורטו', fuelCategory: 'petrol' },
+      { name: 'פורפור', fuelCategory: 'petrol' },
+      { name: '#1', fuelCategory: 'electric' },
+      { name: '#3', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: "אברת'",
+    models: [
+      { name: '595', fuelCategory: 'petrol' },
+      { name: '695', fuelCategory: 'petrol' },
+      { name: '500e', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'DS',
+    models: [
+      { name: 'DS3 קרוסבק', fuelCategory: 'petrol' },
+      { name: 'DS4', fuelCategory: 'petrol' },
+      { name: 'DS7 קרוסבק', fuelCategory: 'petrol' },
+      { name: 'DS7 E-Tense', fuelCategory: 'hybrid' },
+    ],
+  },
+  {
+    name: 'מזראטי',
+    models: [
+      { name: 'גיבלי', fuelCategory: 'petrol' },
+      { name: 'לבנטה', fuelCategory: 'petrol' },
+      { name: 'גרקאלה', fuelCategory: 'petrol' },
+      { name: 'קוואטרופורטה', fuelCategory: 'petrol' },
+    ],
+  },
+  {
+    name: 'דודג\'',
+    models: [
+      { name: "צ'ארג'ר", fuelCategory: 'petrol' },
+      { name: "צ'לנג'ר", fuelCategory: 'petrol' },
+      { name: 'דוראנגו', fuelCategory: 'petrol' },
+    ],
+  },
+  {
+    name: 'RAM',
+    models: [
+      { name: '1500', fuelCategory: 'petrol' },
+      { name: '2500', fuelCategory: 'diesel' },
+      { name: '700', fuelCategory: 'petrol' },
+    ],
+  },
+  {
+    name: 'קדילק',
+    models: [
+      { name: 'XT4', fuelCategory: 'petrol' },
+      { name: 'XT5', fuelCategory: 'petrol' },
+      { name: 'אסקלייד', fuelCategory: 'petrol' },
+      { name: 'LYRIQ', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'GMC',
+    models: [
+      { name: 'סיירה', fuelCategory: 'petrol' },
+      { name: 'יוקון', fuelCategory: 'petrol' },
+    ],
+  },
+  {
+    name: 'ליפמוטור',
+    models: [
+      { name: 'T03', fuelCategory: 'electric' },
+      { name: 'C10', fuelCategory: 'electric' },
+      { name: 'B10', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'דיפאל',
+    models: [
+      { name: 'S05', fuelCategory: 'electric' },
+      { name: 'S07', fuelCategory: 'electric' },
+      { name: 'L07', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: "ג'איקו",
+    models: [
+      { name: '7', fuelCategory: 'petrol' },
+      { name: '7 PHEV', fuelCategory: 'hybrid' },
+    ],
+  },
+  {
+    name: 'אומודה',
+    models: [
+      { name: '5', fuelCategory: 'petrol' },
+      { name: 'E5', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'אורה',
+    models: [
+      { name: 'פאנקי קט', fuelCategory: 'electric' },
+      { name: '07', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'סרס',
+    models: [
+      { name: '3', fuelCategory: 'electric' },
+      { name: '5', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'סקייוול',
+    models: [
+      { name: 'ET5', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'איווייז',
+    models: [
+      { name: 'U5', fuelCategory: 'electric' },
+      { name: 'U6', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'וויה',
+    models: [
+      { name: 'FREE', fuelCategory: 'electric' },
+      { name: 'דרים', fuelCategory: 'electric' },
+      { name: 'קוראג\'', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'הונגצ\'י',
+    models: [
+      { name: 'E-HS9', fuelCategory: 'electric' },
+      { name: 'EH7', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'מקסוס',
+    models: [
+      { name: 'יוניק 5', fuelCategory: 'electric' },
+      { name: 'יוניק 6', fuelCategory: 'electric' },
+      { name: 'eDeliver 3', fuelCategory: 'electric' },
+      { name: 'eDeliver 9', fuelCategory: 'electric' },
+      { name: 'T90 EV', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'פורתינג',
+    models: [
+      { name: 'T5 EVO', fuelCategory: 'petrol' },
+      { name: 'פריידיי', fuelCategory: 'electric' },
+    ],
+  },
+  {
+    name: 'לוטוס',
+    models: [
+      { name: 'אלטרה', fuelCategory: 'electric' },
+      { name: 'אמירה', fuelCategory: 'petrol' },
+    ],
+  },
+  {
+    name: 'פרארי',
+    models: [
+      { name: 'רומא', fuelCategory: 'petrol' },
+      { name: '296', fuelCategory: 'hybrid' },
+      { name: 'פורטופינו', fuelCategory: 'petrol' },
+    ],
+  },
+  {
+    name: 'למבורגיני',
+    models: [
+      { name: 'אורוס', fuelCategory: 'petrol' },
+      { name: 'הוראקאן', fuelCategory: 'petrol' },
+    ],
+  },
+  {
+    name: 'בנטלי',
+    models: [
+      { name: 'בנטייגה', fuelCategory: 'petrol' },
+      { name: 'קונטיננטל GT', fuelCategory: 'petrol' },
+      { name: 'פליינג ספר', fuelCategory: 'petrol' },
     ],
   },
 ];

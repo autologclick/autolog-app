@@ -35,7 +35,7 @@ interface GroupedNotifications {
 const notificationTypeConfig: Record<string, { icon: React.ReactNode; color: string; bgColor: string; label: string }> = {
   appointment_update: {
     icon: <Calendar size={20} />,
-    color: '#0d9488',
+    color: '#2E77D0',
     bgColor: 'bg-teal-100',
     label: 'עדכון תור',
   },
@@ -265,7 +265,7 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="bg-[#fef7ed] min-h-screen pb-24" dir="rtl">
+    <div className="bg-[#F3F6FA] min-h-screen pb-24" dir="rtl">
       <PageHeader
         title="התראות"
         subtitle={unreadCount + " התראות חדשות"}

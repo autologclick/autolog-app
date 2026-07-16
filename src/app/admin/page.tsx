@@ -89,9 +89,9 @@ function getRelativeDate(date: Date | string): string {
 function getActivityIcon(type: string) {
   switch (type) {
     case 'user':
-      return <Users size={16} className="text-[#1e3a5f]" />;
+      return <Users size={16} className="text-[#1B4E8A]" />;
     case 'inspection':
-      return <Shield size={16} className="text-[#0d9488]" />;
+      return <Shield size={16} className="text-[#2E77D0]" />;
     case 'appointment':
       return <Calendar size={16} className="text-blue-600" />;
     case 'sos':
@@ -104,9 +104,9 @@ function getActivityIcon(type: string) {
 function getActivityColor(type: string) {
   switch (type) {
     case 'user':
-      return 'bg-[#1e3a5f] bg-opacity-10';
+      return 'bg-[#1B4E8A] bg-opacity-10';
     case 'inspection':
-      return 'bg-[#0d9488] bg-opacity-10';
+      return 'bg-[#2E77D0] bg-opacity-10';
     case 'appointment':
       return 'bg-blue-100';
     case 'sos':
@@ -176,16 +176,16 @@ export default function AdminDashboard() {
           <BarChart3 size={40} className="mx-auto mb-3 text-gray-300" />
           <p className="text-gray-500 mb-2">לא ניתן לטעון את הדשבורד</p>
           <p className="text-gray-400 text-sm mb-4">אירעה שגיאה בטעינת הנתונים</p>
-          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#1e3a5f] text-white rounded-lg text-sm hover:bg-opacity-90 transition">נסה שוב</button>
+          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#1B4E8A] text-white rounded-lg text-sm hover:bg-opacity-90 transition">נסה שוב</button>
         </div>
       )}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] rounded-lg flex items-center justify-center border-2 border-[#1e3a5f]">
-            <BarChart3 size={22} className="text-[#1e3a5f]" />
+          <div className="w-10 h-10 bg-[#F3F6FA] rounded-lg flex items-center justify-center border-2 border-[#1B4E8A]">
+            <BarChart3 size={22} className="text-[#1B4E8A]" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">מרכז בקרה</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1B4E8A]">מרכז בקרה</h1>
             <p className="text-sm text-gray-500">דשבורד ניהול מערכת</p>
           </div>
         </div>
@@ -203,11 +203,11 @@ export default function AdminDashboard() {
       {/* Live Statistics Cards - 6 Main Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4">
         {/* 1. Total Users */}
-        <Card className="border-t-4 border-t-[#1e3a5f] bg-gradient-to-br from-[#fef7ed] to-white">
+        <Card className="border-t-4 border-t-[#1B4E8A] bg-gradient-to-br from-[#F3F6FA] to-white">
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between mb-2">
-              <div className="w-10 h-10 bg-[#1e3a5f] bg-opacity-10 rounded-lg flex items-center justify-center">
-                <Users size={20} className="text-[#1e3a5f]" />
+              <div className="w-10 h-10 bg-[#1B4E8A] bg-opacity-10 rounded-lg flex items-center justify-center">
+                <Users size={20} className="text-[#1B4E8A]" />
               </div>
               {data && data.stats.totalUsers > 0 && (
                 <div className="flex items-center gap-1 text-sm font-medium text-green-600">
@@ -215,17 +215,17 @@ export default function AdminDashboard() {
                 </div>
               )}
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">{data?.stats.totalUsers.toLocaleString('he-IL') ?? '0'}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-[#1B4E8A]">{data?.stats.totalUsers.toLocaleString('he-IL') ?? '0'}</div>
             <div className="text-xs sm:text-sm text-gray-600 mt-1">סה״כ משתמשים</div>
           </div>
         </Card>
 
         {/* 2. Active Garages */}
-        <Card className="border-t-4 border-t-[#0d9488] bg-gradient-to-br from-[#fef7ed] to-white">
+        <Card className="border-t-4 border-t-[#2E77D0] bg-gradient-to-br from-[#F3F6FA] to-white">
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between mb-2">
-              <div className="w-10 h-10 bg-[#0d9488] bg-opacity-10 rounded-lg flex items-center justify-center">
-                <Wrench size={20} className="text-[#0d9488]" />
+              <div className="w-10 h-10 bg-[#2E77D0] bg-opacity-10 rounded-lg flex items-center justify-center">
+                <Wrench size={20} className="text-[#2E77D0]" />
               </div>
               {data && data.stats.activeGarages > 0 && (
                 <div className="flex items-center gap-1 text-sm font-medium text-green-600">
@@ -233,13 +233,13 @@ export default function AdminDashboard() {
                 </div>
               )}
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-[#0d9488]">{data?.stats.activeGarages.toLocaleString('he-IL') ?? '0'}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-[#2E77D0]">{data?.stats.activeGarages.toLocaleString('he-IL') ?? '0'}</div>
             <div className="text-xs sm:text-sm text-gray-600 mt-1">מוסכים פעילים</div>
           </div>
         </Card>
 
         {/* 3. Monthly Inspections */}
-        <Card className="border-t-4 border-t-blue-600 bg-gradient-to-br from-[#fef7ed] to-white">
+        <Card className="border-t-4 border-t-blue-600 bg-gradient-to-br from-[#F3F6FA] to-white">
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between mb-2">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -258,7 +258,7 @@ export default function AdminDashboard() {
         </Card>
 
         {/* 4. Today's Appointments */}
-        <Card className="border-t-4 border-t-amber-500 bg-gradient-to-br from-[#fef7ed] to-white">
+        <Card className="border-t-4 border-t-amber-500 bg-gradient-to-br from-[#F3F6FA] to-white">
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between mb-2">
               <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
@@ -276,7 +276,7 @@ export default function AdminDashboard() {
         </Card>
 
         {/* 5. Open SOS Events - RED if > 0 */}
-        <Card className={`border-t-4 border-t-red-600 bg-gradient-to-br ${data?.stats.openSos ? 'from-red-50 to-white' : 'from-[#fef7ed] to-white'}`}>
+        <Card className={`border-t-4 border-t-red-600 bg-gradient-to-br ${data?.stats.openSos ? 'from-red-50 to-white' : 'from-[#F3F6FA] to-white'}`}>
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between mb-2">
               <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
@@ -294,7 +294,7 @@ export default function AdminDashboard() {
         </Card>
 
         {/* 6. Monthly Revenue */}
-        <Card className="border-t-4 border-t-green-600 bg-gradient-to-br from-[#fef7ed] to-white">
+        <Card className="border-t-4 border-t-green-600 bg-gradient-to-br from-[#F3F6FA] to-white">
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between mb-2">
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
@@ -315,7 +315,7 @@ export default function AdminDashboard() {
 
 
       {/* Quick Action Buttons */}
-      <Card className="bg-gradient-to-r from-[#1e3a5f] to-[#0d9488] text-white">
+      <Card className="bg-gradient-to-r from-[#1B4E8A] to-[#2E77D0] text-white">
         <div className="flex items-center gap-2 mb-4">
           <div className="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
             <Activity size={18} />
@@ -356,12 +356,12 @@ export default function AdminDashboard() {
 
       {/* AI System Insights */}
       {data && (
-        <Card className="bg-gradient-to-r from-[#fef7ed] to-white border-r-4 border-r-[#0d9488]">
+        <Card className="bg-gradient-to-r from-[#F3F6FA] to-white border-r-4 border-r-[#2E77D0]">
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-[#0d9488] bg-opacity-10 rounded-lg flex items-center justify-center">
-              <Brain size={18} className="text-[#0d9488]" />
+            <div className="w-8 h-8 bg-[#2E77D0] bg-opacity-10 rounded-lg flex items-center justify-center">
+              <Brain size={18} className="text-[#2E77D0]" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI למערכת</h2>
+            <h2 className="text-lg font-bold text-[#1B4E8A]">תובנות AI למערכת</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {data.stats.openSos > 0 && (
@@ -429,7 +429,7 @@ export default function AdminDashboard() {
 
       {/* Recent Activity Feed - Unified */}
       <Card>
-        <CardTitle icon={<Activity className="text-[#0d9488]" />}>פעילות אחרונה (עדכון בזמן אמת)</CardTitle>
+        <CardTitle icon={<Activity className="text-[#2E77D0]" />}>פעילות אחרונה (עדכון בזמן אמת)</CardTitle>
         <div className="space-y-0 mt-4">
           {loading ? (
             <div className="text-gray-500 text-sm py-8 text-center">טוען נתונים...</div>
@@ -437,14 +437,14 @@ export default function AdminDashboard() {
             data.recentActivity.map((activity, idx) => (
               <div
                 key={activity.id}
-                className={`flex items-start gap-3 p-3 ${idx !== data.recentActivity.length - 1 ? 'border-b border-gray-100' : ''} hover:bg-[#fef7ed] transition`}
+                className={`flex items-start gap-3 p-3 ${idx !== data.recentActivity.length - 1 ? 'border-b border-gray-100' : ''} hover:bg-[#F3F6FA] transition`}
               >
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${getActivityColor(activity.type)}`}>
                   {getActivityIcon(activity.type)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-sm font-medium text-[#1e3a5f]">{activity.title}</span>
+                    <span className="text-sm font-medium text-[#1B4E8A]">{activity.title}</span>
                     <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded">
                       {activity.description}
                     </span>
@@ -468,12 +468,12 @@ export default function AdminDashboard() {
       {/* Garages Overview */}
       <Card>
         <div className="flex items-center justify-between mb-4">
-          <CardTitle icon={<Wrench className="text-[#0d9488]" />}>מוסכים מובילים</CardTitle>
+          <CardTitle icon={<Wrench className="text-[#2E77D0]" />}>מוסכים מובילים</CardTitle>
           <Button
             variant="outline"
             size="sm"
             onClick={() => router.push('/admin/garages')}
-            className="text-[#0d9488] border-[#0d9488] hover:bg-[#0d9488] hover:bg-opacity-5"
+            className="text-[#2E77D0] border-[#2E77D0] hover:bg-[#2E77D0] hover:bg-opacity-5"
           >
             צפה בהכל
           </Button>
@@ -496,17 +496,17 @@ export default function AdminDashboard() {
                 </tr>
               ) : data?.topGarages && data.topGarages.length > 0 ? (
                 data.topGarages.map((g, idx) => (
-                  <tr key={g.id} className={`border-b border-gray-100 hover:bg-[#fef7ed] transition ${idx === data.topGarages.length - 1 ? 'border-b-0' : ''}`}>
-                    <td className="py-3 px-3 font-medium text-[#1e3a5f]">{g.name}</td>
+                  <tr key={g.id} className={`border-b border-gray-100 hover:bg-[#F3F6FA] transition ${idx === data.topGarages.length - 1 ? 'border-b-0' : ''}`}>
+                    <td className="py-3 px-3 font-medium text-[#1B4E8A]">{g.name}</td>
                     <td className="py-3 px-3 text-gray-600 hidden sm:table-cell">{g.city}</td>
                     <td className="py-3 px-3 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <Star size={16} className="text-amber-500 fill-amber-500" />
-                        <span className="font-semibold text-[#1e3a5f]">{g.avgRating.toFixed(1)}</span>
+                        <span className="font-semibold text-[#1B4E8A]">{g.avgRating.toFixed(1)}</span>
                       </div>
                     </td>
                     <td className="py-3 px-3 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 bg-[#0d9488] bg-opacity-10 text-[#0d9488] rounded-full text-xs font-bold">
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-[#2E77D0] bg-opacity-10 text-[#2E77D0] rounded-full text-xs font-bold">
                         {g.inspectionCount}
                       </span>
                     </td>

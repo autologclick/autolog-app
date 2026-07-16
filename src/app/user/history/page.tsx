@@ -218,7 +218,7 @@ export default function HistoryPage() {
   const selectedVehicle = vehicles.find(v => v.id === selectedVehicleId);
 
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24 pt-12 lg:pt-0" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24 pt-12 lg:pt-0" dir="rtl">
       <div className="space-y-6">
         <PageHeader title="היסטוריה" backUrl="/user" />
 
@@ -248,7 +248,7 @@ export default function HistoryPage() {
             <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden">
               <button
                 onClick={() => handleVehicleChange('all')}
-                className={`w-full p-3 text-right text-sm hover:bg-[#fef7ed]/50 transition ${
+                className={`w-full p-3 text-right text-sm hover:bg-[#F3F6FA]/50 transition ${
                   selectedVehicleId === 'all' ? 'bg-teal-50 font-medium text-teal-700' : 'text-gray-700'
                 }`}
               >
@@ -258,7 +258,7 @@ export default function HistoryPage() {
                 <button
                   key={v.id}
                   onClick={() => handleVehicleChange(v.id)}
-                  className={`w-full p-3 text-right text-sm hover:bg-[#fef7ed]/50 transition border-t border-gray-100 ${
+                  className={`w-full p-3 text-right text-sm hover:bg-[#F3F6FA]/50 transition border-t border-gray-100 ${
                     selectedVehicleId === v.id ? 'bg-teal-50 font-medium text-teal-700' : 'text-gray-700'
                   }`}
                 >
@@ -295,7 +295,7 @@ export default function HistoryPage() {
                 <button
                   key={option.value}
                   onClick={() => handleTypeChange(option.value)}
-                  className={`w-full p-3 text-right text-sm hover:bg-[#fef7ed]/50 transition flex items-center justify-between ${
+                  className={`w-full p-3 text-right text-sm hover:bg-[#F3F6FA]/50 transition flex items-center justify-between ${
                     option.value !== 'all' ? 'border-t border-gray-100' : ''
                   } ${selectedEventType === option.value ? 'bg-teal-50 font-medium text-teal-700' : 'text-gray-700'}`}
                 >

@@ -30,7 +30,7 @@ const SUGGESTIONS = [
 
 // ── Bot avatar ─────────────────────────────────────
 const BotAvatar = () => (
-  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#1e3a5f] to-[#2a5a8f] flex items-center justify-center flex-shrink-0 shadow-sm">
+  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#1B4E8A] to-[#1D5FAF] flex items-center justify-center flex-shrink-0 shadow-sm">
     <Sparkles size={13} className="text-white" />
   </div>
 );
@@ -229,7 +229,7 @@ export default function VehicleAssistant({
             <ChevronLeft size={20} className="text-gray-500" />
           </button>
           <div className="flex-1 min-w-0 text-center">
-            <h3 className="font-bold text-sm text-[#1e3a5f] leading-tight">AutoLog AI</h3>
+            <h3 className="font-bold text-sm text-[#1B4E8A] leading-tight">AutoLog AI</h3>
             <p className="text-[11px] text-gray-400 truncate">{vehicleName}</p>
           </div>
           {messages.length > 0 ? (
@@ -252,11 +252,11 @@ export default function VehicleAssistant({
           {showWelcome && (
             <div className="flex flex-col items-center h-full justify-center -mt-4">
               {/* Logo mark */}
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#1e3a5f] to-[#2a5a8f] flex items-center justify-center mb-4 shadow-lg">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#1B4E8A] to-[#1D5FAF] flex items-center justify-center mb-4 shadow-lg">
                 <Sparkles size={24} className="text-white" />
               </div>
 
-              <h4 className="font-bold text-[#1e3a5f] text-lg mb-1">
+              <h4 className="font-bold text-[#1B4E8A] text-lg mb-1">
                 {userFirstName ? `שלום ${userFirstName}, איך אפשר לעזור?` : 'איך אפשר לעזור?'}
               </h4>
               <p className="text-[13px] text-gray-400 text-center mb-8 max-w-[260px] leading-relaxed">
@@ -272,7 +272,7 @@ export default function VehicleAssistant({
                     className="w-full flex items-center gap-3 bg-white rounded-xl px-4 py-3 text-right hover:shadow-md transition-all active:scale-[0.98] border border-gray-100 group"
                   >
                     <span className="text-base flex-shrink-0">{s.icon}</span>
-                    <span className="flex-1 text-sm text-gray-700 group-hover:text-[#1e3a5f] font-medium">{s.label}</span>
+                    <span className="flex-1 text-sm text-gray-700 group-hover:text-[#1B4E8A] font-medium">{s.label}</span>
                     <ChevronLeft size={14} className="text-gray-300 group-hover:text-teal-500 transition-colors flex-shrink-0" />
                   </button>
                 ))}
@@ -294,7 +294,7 @@ export default function VehicleAssistant({
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-[1.7] ${
                       msg.role === 'user'
-                        ? 'bg-[#1e3a5f] text-white rounded-tl-md'
+                        ? 'bg-[#1B4E8A] text-white rounded-tl-md'
                         : 'bg-white text-gray-700 shadow-sm border border-gray-100 rounded-tr-md'
                     }`}
                   >
@@ -339,7 +339,7 @@ export default function VehicleAssistant({
                 placeholder="כתוב או דבר..."
                 rows={1}
                 disabled={isStreaming}
-                className="w-full resize-none bg-[#f0f2f5] rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:bg-white focus:border focus:border-gray-200 disabled:opacity-50 max-h-[100px] leading-relaxed transition-all placeholder:text-gray-400"
+                className="w-full resize-none bg-[#f0f2f5] rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4E8A]/20 focus:bg-white focus:border focus:border-gray-200 disabled:opacity-50 max-h-[100px] leading-relaxed transition-all placeholder:text-gray-400"
                 style={{ minHeight: '42px' }}
                 onInput={(e) => {
                   const target = e.target as HTMLTextAreaElement;
@@ -351,7 +351,7 @@ export default function VehicleAssistant({
             <button
               onClick={() => sendMessage()}
               disabled={!input.trim() || isStreaming}
-              className="w-10 h-10 bg-[#1e3a5f] text-white rounded-full flex items-center justify-center flex-shrink-0 disabled:opacity-30 active:scale-95 transition-all hover:bg-[#2a5a8f] shadow-sm"
+              className="w-10 h-10 bg-[#1B4E8A] text-white rounded-full flex items-center justify-center flex-shrink-0 disabled:opacity-30 active:scale-95 transition-all hover:bg-[#1D5FAF] shadow-sm"
             >
               {isStreaming ? (
                 <Loader2 size={16} className="animate-spin" />

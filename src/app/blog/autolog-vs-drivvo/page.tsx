@@ -1,0 +1,294 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import Logo from '@/components/ui/Logo';
+import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
+
+const post = getPostBySlug('autolog-vs-drivvo')!;
+
+export const metadata: Metadata = {
+  title: post.title,
+  description: post.description,
+  keywords: post.keywords,
+  alternates: { canonical: `/blog/${post.slug}` },
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    url: `https://autolog.click/blog/${post.slug}`,
+    type: 'article',
+    publishedTime: post.publishedAt,
+    authors: [post.author],
+    locale: 'he_IL',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: post.title,
+    description: post.description,
+    images: [`https://autolog.click/blog/${post.slug}/cover.png`],
+  },
+};
+
+export default function BlogPostPage() {
+  return (
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
+          <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1"><ChevronRight size={14} />חזרה לבלוג</Link>
+        </div>
+      </header>
+
+      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+        <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] leading-tight mb-4">{post.title}</h1>
+
+        <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
+          <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          <span className="flex items-center gap-1"><Clock size={14} />{post.readingTime}</span>
+          <span>מאת {post.author}</span>
+        </div>
+
+        <div className="prose-rtl space-y-6 text-gray-700 leading-relaxed text-[15px]">
+
+          <p>אם אתם מחפשים אפליקציה לניהול רכב בעברית, יש סיכוי שנתקלתם בשתי האפשרויות המובילות: <strong>אוטולוג</strong> (autolog.click) ו-<strong>Drivvo</strong> (הזרה הוותיקה מברזיל). שתיהן מציעות ניהול הוצאות, תזכורות, ומעקב טיפולים — אבל הן שונות מאוד באופי, במחיר, ובמידת ההתאמה לישראל.</p>
+
+          <p>במאמר הזה נשווה את שתי האפליקציות בכל הקריטריונים החשובים — ונראה למה אוטולוג מנצחת ברוב הקטגוריות לבעלי רכב ישראלים.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">אוטולוג בקצרה</h2>
+
+          <p><strong>אוטולוג</strong> היא פלטפורמת ווב ישראלית לניהול רכב חכם. היא נבנתה ב-2026 לקהל הישראלי, בעברית מלאה, חינמית לחלוטין, וללא צורך בהורדת אפליקציה. אוטולוג כוללת תזכורות לטסט וביטוח, סריקת מסמכים עם AI, מעקב הוצאות, עוזר AI אישי, היסטוריית טיפולים, ועוד.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">Drivvo בקצרה</h2>
+
+          <p>Drivvo היא אפליקציה ברזילאית שיצאה ב-2010, ועם הזמן זכתה לפופולריות בינלאומית — כולל בישראל. היא מציעה מעקב צריכת דלק, מעקב הוצאות, וניהול טיפולים. Drivvo מציעה גרסה חינמית עם הגבלות וגרסת "Drivvo Premium" בתשלום שמתחילה ב-£29.99 לשנה.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">השוואה לפי קטגוריות</h2>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">1. שפה ותרגום</h3>
+
+          <p><strong>אוטולוג:</strong> עברית מלאה, נכתבה מההתחלה לעברית. כל מילה, כל תפריט, כל הודעת שגיאה — בעברית מקצועית.</p>
+
+          <p><strong>Drivvo:</strong> עברית בתרגום אוטומטי. ברוב המקומות התרגום סביר, אבל יש מקומות שבהם הטקסט מסורבל או לא ברור (בעיקר בהגדרות, בהודעות שגיאה ובכפתורים). הממשק לא מותאם לעברית RTL בצורה מושלמת.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג — בלי תחרות.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">2. מחיר</h3>
+
+          <p><strong>אוטולוג:</strong> חינם לחלוטין. לתמיד. אין דמי הרשמה, אין דמי חודשיים, אין trial שמסתיים, אין "Premium" שצריך לקנות. אוטולוג חינמית למשתמשים פרטיים, ומבוססת על שותפויות עם מוסכים וספקי שירות.</p>
+
+          <p><strong>Drivvo:</strong> מודל freemium. הגרסה החינמית מאפשרת רכב אחד בלבד עם פיצ'רים מוגבלים. הגרסה Drivvo Premium עולה כ-£29.99 לשנה (כ-140 ש"ח), ומסירה את ההגבלות. בלי Premium אי אפשר לייצא נתונים, יש פרסומות, וכמה פיצ'רים נעולים.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג. אין מה להשוות — חינם מול 140 ש"ח לשנה.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">3. ההתאמה לישראל</h3>
+
+          <p><strong>אוטולוג:</strong> נבנתה במיוחד לישראל. תומכת בטסט שנתי, ביטוח חובה, ביטוח מקיף, רישיון רכב, אגרת רישוי, רשות הרישוי. שולפת אוטומטית פרטי רכב לפי מספר רישוי ישראלי. תאריכים בפורמט dd/mm/yyyy. מטבע ב-ש"ח.</p>
+
+          <p><strong>Drivvo:</strong> אפליקציה גלובלית. תומכת בכל מטבע ובכל פורמט תאריך, אבל אין שום מודל שמותאם ספציפית לבירוקרטיה הישראלית. אין שאיבת פרטי רכב לפי מספר רישוי. צריך להזין הכל ידנית.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג — באופן דרמטי.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">4. סריקת מסמכים עם AI</h3>
+
+          <p><strong>אוטולוג:</strong> כלי AI מובנה שסורק פוליסות ביטוח (כלל, מנורה, איילון, הראל וכל חברה ישראלית), אישורי טסט, וקבלות ממוסכים — ושולף אוטומטית את כל הפרטים. חוסך עשרות דקות בכל פעם.</p>
+
+          <p><strong>Drivvo:</strong> אין סריקת מסמכים. אין AI. כל הזנה נעשית ידנית.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">5. עוזר AI אישי</h3>
+
+          <p><strong>אוטולוג:</strong> עוזר בינה מלאכותית מובנה שיודע על הרכב הספציפי שלכם וההיסטוריה שלו. שואלים אותו כל שאלה ("יש לי רעש מוזר", "כמה צריך לעלות החלפת מצמד") ומקבלים תשובה בעברית תוך שניות.</p>
+
+          <p><strong>Drivvo:</strong> אין AI. אין עוזר. רק טפסים.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">6. הורדה והתקנה</h3>
+
+          <p><strong>אוטולוג:</strong> ללא הורדה. נכנסים מהדפדפן ל-autolog.click ומתחילים מיד. אפשר להוסיף ל-Home Screen כ-PWA (חוויה דמוית אפליקציה ללא Play Store / App Store).</p>
+
+          <p><strong>Drivvo:</strong> דורש הורדה מ-Play Store או App Store. תופס כ-50MB מקום בנייד. דורש אישורי הרשאות (מצלמה, אחסון, ועוד).</p>
+
+          <p><strong>המנצח:</strong> אוטולוג, במיוחד עבור אנשים שלא רוצים לקלקל לעצמם את הנייד עם עוד אפליקציה.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">7. תזכורות חכמות</h3>
+
+          <p><strong>אוטולוג:</strong> תזכורות אוטומטיות באימייל, ב-Push Notifications לדפדפן, ובאופציה גם ב-SMS. תזכורות 30/14/7/1 ימים לפני התאריך. עובד גם בלי שתפתחו את אוטולוג.</p>
+
+          <p><strong>Drivvo:</strong> תזכורות מובנות באפליקציה (Notifications). דורש שהאפליקציה תהיה מותקנת ולא הוסרה. בעיתי במכשירי iPhone שמכבים Background Activity לאפליקציות.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג — אמינות גבוהה יותר, כי אימייל עובד תמיד.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">8. סנכרון בין מכשירים</h3>
+
+          <p><strong>אוטולוג:</strong> סנכרון מלא וחינמי בין כל המכשירים — נייד, מחשב, טאבלט. נכנסים מאיפה שצריך וכל המידע שם.</p>
+
+          <p><strong>Drivvo:</strong> סנכרון בין מכשירים זמין רק בגרסת Premium. בגרסה החינמית המידע נשאר מקומי על המכשיר. אם הנייד נשבר — אובדן מוחלט של המידע.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">9. מעקב הוצאות</h3>
+
+          <p><strong>אוטולוג:</strong> מעקב מלא — דלק, ביטוח, טסט, טיפולים, חניות, אגרות, קנסות, צמיגים. דוחות חודשיים, שנתיים, השוואות בין רכבים. ייצוא לאקסל בכל רגע.</p>
+
+          <p><strong>Drivvo:</strong> מעקב הוצאות הוא נקודת החוזק העיקרית של Drivvo. דוחות יפים, גרפים, ניתוח צריכת דלק לפי K"מ. אבל ייצוא לאקסל נעול בגרסת Premium.</p>
+
+          <p><strong>המנצח:</strong> תיקו לכאורה — Drivvo קצת חזקה בגרפים, אוטולוג חזקה יותר בייצוא חופשי.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">10. ניהול מספר רכבים</h3>
+
+          <p><strong>אוטולוג:</strong> ניהול בלתי מוגבל של מספר רכבים בחשבון אחד — חינם.</p>
+
+          <p><strong>Drivvo:</strong> בגרסה החינמית — רכב אחד בלבד. ליותר מרכב אחד צריך Premium.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">11. אבטחה ופרטיות</h3>
+
+          <p><strong>אוטולוג:</strong> הצפנת AES-256-GCM, HTTPS, JWT עם רוטציית טוקנים, אופציה ל-MFA, GDPR compliance עם ייצוא ומחיקה מלאים. שרתים באירופה.</p>
+
+          <p><strong>Drivvo:</strong> אבטחה סטנדרטית של אפליקציות סלולר. שרתים בברזיל ובארה"ב. מדיניות הפרטיות מספקת אבל לא ברורה אם המידע משותף עם צדדים שלישיים.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">12. תמיכת לקוחות</h3>
+
+          <p><strong>אוטולוג:</strong> תמיכה במייל בעברית, בתוך 24 שעות בימי עסקים. צוות ישראלי.</p>
+
+          <p><strong>Drivvo:</strong> תמיכה רק באנגלית או פורטוגזית. ענייני זמן ושפה לישראלים.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">טבלת סיכום</h2>
+
+          <div className="overflow-x-auto my-6">
+<table className="w-full border-collapse border border-gray-300">
+<thead><tr><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">קריטריון</th><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">אוטולוג</th><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">Drivvo</th></tr></thead>
+<tbody>
+<tr><td className="border border-gray-300 px-4 py-2">שפה</td><td className="border border-gray-300 px-4 py-2">עברית מלאה ✓</td><td className="border border-gray-300 px-4 py-2">תרגום אוטומטי</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">מחיר</td><td className="border border-gray-300 px-4 py-2">חינם לתמיד ✓</td><td className="border border-gray-300 px-4 py-2">£29.99 לשנה ל-Premium</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">התאמה לישראל</td><td className="border border-gray-300 px-4 py-2">מלאה ✓</td><td className="border border-gray-300 px-4 py-2">אפסית</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">סריקת מסמכים AI</td><td className="border border-gray-300 px-4 py-2">✓</td><td className="border border-gray-300 px-4 py-2">✗</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">עוזר AI</td><td className="border border-gray-300 px-4 py-2">✓</td><td className="border border-gray-300 px-4 py-2">✗</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">הורדה</td><td className="border border-gray-300 px-4 py-2">לא נדרשת ✓</td><td className="border border-gray-300 px-4 py-2">נדרשת</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">תזכורות</td><td className="border border-gray-300 px-4 py-2">אימייל + Push + SMS ✓</td><td className="border border-gray-300 px-4 py-2">Push בלבד</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">סנכרון</td><td className="border border-gray-300 px-4 py-2">חינם ✓</td><td className="border border-gray-300 px-4 py-2">רק ב-Premium</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">מספר רכבים</td><td className="border border-gray-300 px-4 py-2">בלתי מוגבל ✓</td><td className="border border-gray-300 px-4 py-2">1 בחינם</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">מעקב הוצאות</td><td className="border border-gray-300 px-4 py-2">מצוין</td><td className="border border-gray-300 px-4 py-2">מצוין</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">ייצוא נתונים</td><td className="border border-gray-300 px-4 py-2">חינם ✓</td><td className="border border-gray-300 px-4 py-2">רק ב-Premium</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">אבטחה</td><td className="border border-gray-300 px-4 py-2">גבוהה ✓</td><td className="border border-gray-300 px-4 py-2">סטנדרטית</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">תמיכה</td><td className="border border-gray-300 px-4 py-2">עברית ✓</td><td className="border border-gray-300 px-4 py-2">אנגלית בלבד</td></tr>
+</tbody>
+</table>
+</div>
+
+          <p><strong>ניקוד סופי: אוטולוג — 11, תיקו — 1, Drivvo — 0.</strong></p>
+
+          <p>(הקטגוריה היחידה שבה Drivvo עומדת לצד אוטולוג — אך לא מעליה.)</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">מתי בכל זאת לבחור Drivvo?</h2>
+
+          <p>האמת היא שיש מצב יחיד שבו Drivvo עשויה להיות בחירה טובה: אם אתם לא ישראלים ועוברים בין מדינות. Drivvo גלובלית, תומכת בעשרות מטבעות, ויש לה קהילת משתמשים גדולה בעולם. אם אתם נוהגים בכמה מדינות (ארה"ב, אירופה, אסיה), Drivvo יכולה להיות מתאימה.</p>
+
+          <p>לכל מי שגר בישראל ונוהג בישראל — אוטולוג היא הבחירה הברורה.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">למה אוטולוג מנצחת — בקצרה</h2>
+
+          <ol className="list-decimal list-inside space-y-2 mr-4">
+  <li><strong>בעברית אמיתית</strong>, לא תרגום.</li>
+  <li><strong>חינמית לחלוטין</strong>, ללא הגבלות.</li>
+  <li><strong>מותאמת לישראל</strong> — טסט, ביטוח, רישוי.</li>
+  <li><strong>AI אמיתי</strong> — סריקת מסמכים ועוזר אישי.</li>
+  <li><strong>ללא הורדת אפליקציה</strong> — פשוט מהדפדפן.</li>
+  <li><strong>תמיכה ישראלית</strong> — בעברית, בזמן ישראל.</li>
+</ol>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">איך עוברים מ-Drivvo לאוטולוג?</h2>
+
+          <p>אם אתם משתמשי Drivvo קיימים — המעבר לאוטולוג קל. הנה הצעדים:</p>
+
+          <ol className="list-decimal list-inside space-y-2 mr-4">
+  <li><strong>ייצאו את המידע מ-Drivvo</strong> — דרך תפריט ההגדרות (זמין רק ב-Premium, מצער).</li>
+  <li><strong>נרשמו לאוטולוג בחינם</strong> — ב-<Link href="https://autolog.click/auth/signup" className="text-teal-600 hover:text-teal-700 underline">autolog.click/auth/signup</Link>.</li>
+  <li><strong>הוסיפו את הרכב</strong> — אוטולוג שולפת את הפרטים אוטומטית לפי מספר רישוי.</li>
+  <li><strong>טענו את ההיסטוריה</strong> — או דרך ה-CSV שייצאתם מ-Drivvo, או פשוט מתחילים מהיום.</li>
+  <li><strong>בטלו Drivvo Premium</strong> — אין סיבה להמשיך לשלם.</li>
+</ol>
+
+          <p>חיסכון מיידי: 140 ש"ח לשנה.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">שאלות נפוצות</h2>
+
+          <p><strong>ש: האם אוטולוג באמת חינמית, גם אם אני משתמש כבד?</strong> ת: כן. גם אם אתם מוסיפים 20 רכבים ועושים 1,000 רישומים בחודש — חינם. אוטולוג מבוססת על שותפויות עם מוסכים, לא על תשלום מהמשתמשים.</p>
+
+          <p><strong>ש: האם אני יכול לייבא את המידע שלי מ-Drivvo לאוטולוג?</strong> ת: כן, דרך ייצוא CSV. כרגע ייבוא ידני, ובקרוב נשחרר כלי ייבוא אוטומטי לקובץ Drivvo.</p>
+
+          <p><strong>ש: אני רגיל למעקב צריכת דלק ב-Drivvo. האם אוטולוג עושה את זה?</strong> ת: כן, אוטולוג מציעה מעקב צריכת דלק מלא, כולל חישוב K"מ לליטר וגרפים של ביצועי הרכב לאורך זמן.</p>
+
+          <p><strong>ש: האם אוטולוג עובדת באייפון?</strong> ת: כן. אוטולוג עובדת בכל דפדפן — Chrome, Safari, Firefox, Edge — בכל מכשיר. iPhone, Android, Mac, Windows.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">סיכום</h2>
+
+          <p>אם אתם בעל רכב בישראל ושוקלים אפליקציה לניהול רכב — הבחירה היא ברורה. <strong>אוטולוג</strong> עדיפה על Drivvo כמעט בכל קריטריון: עברית טובה יותר, חינמית, מותאמת לישראל, עם AI מתקדם, ללא הורדה.</p>
+
+          <p><Link href="https://autolog.click/auth/signup" className="text-teal-600 hover:text-teal-700 underline">התחילו עם אוטולוג בחינם — 30 שניות</Link> ותגלו את ההבדל בעצמכם.</p>
+
+          {/* CTA */}
+          <div className="bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-2xl p-8 my-10 text-center not-prose">
+            <h3 className="text-2xl font-bold mb-3">מתחילים עם אוטולוג עכשיו</h3>
+            <p className="text-white/90 mb-6 text-base leading-relaxed">
+              אוטולוג מאחדת את כל הניהול של הרכב — תזכורות אוטומטיות, סריקת מסמכים עם AI, מעקב הוצאות, היסטוריית טיפולים ועוזר AI אישי. בעברית. בחינם. ללא הורדה.
+            </p>
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-10 py-4 bg-cream-500 text-white font-bold text-lg rounded-xl hover:bg-cream-600 transition shadow-lg">
+              הרשמה לאוטולוג חינם<ArrowLeft size={18} />
+            </Link>
+          </div>
+        </div>
+
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'BlogPosting',
+              headline: post.title,
+              description: post.description,
+              datePublished: post.publishedAt,
+              dateModified: post.updatedAt || post.publishedAt,
+              image: [`https://autolog.click/blog/${post.slug}/cover.png`],
+              author: { '@type': 'Organization', name: 'אוטולוג', url: 'https://autolog.click' },
+              publisher: {
+                '@type': 'Organization',
+                name: 'אוטולוג',
+                logo: { '@type': 'ImageObject', url: 'https://autolog.click/logo.png', width: 512, height: 512 },
+              },
+              mainEntityOfPage: { '@type': 'WebPage', '@id': `https://autolog.click/blog/${post.slug}` },
+              inLanguage: 'he-IL',
+              articleSection: post.category,
+              keywords: post.keywords.join(', '),
+              isPartOf: { '@type': 'Blog', name: 'בלוג אוטולוג', url: 'https://autolog.click/blog' },
+            },
+            {
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'אוטולוג', item: 'https://autolog.click' },
+                { '@type': 'ListItem', position: 2, name: 'בלוג', item: 'https://autolog.click/blog' },
+                { '@type': 'ListItem', position: 3, name: post.title, item: `https://autolog.click/blog/${post.slug}` },
+              ],
+            },
+          ],
+        }) }} />
+
+        <div className="mt-12 pt-8 border-t border-gray-200 flex items-center justify-between">
+          <Link href="/blog" className="flex items-center gap-1 text-sm text-teal-600 font-semibold hover:text-teal-700 transition"><ChevronRight size={14} />כל המאמרים</Link>
+          <Link href="/" className="flex items-center gap-1 text-sm text-teal-600 font-semibold hover:text-teal-700 transition">חזרה לעמוד הבית<ChevronLeft size={14} /></Link>
+        </div>
+      </article>
+
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm"><p>&copy; {new Date().getFullYear()} אוטולוג (AutoLog). כל הזכויות שמורות.</p></footer>
+    </div>
+  );
+}

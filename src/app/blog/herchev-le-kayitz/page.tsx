@@ -1,0 +1,404 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import Logo from '@/components/ui/Logo';
+import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
+
+const post = getPostBySlug('herchev-le-kayitz')!;
+
+export const metadata: Metadata = {
+  title: post.title,
+  description: post.description,
+  keywords: post.keywords,
+  alternates: { canonical: `/blog/${post.slug}` },
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    url: `https://autolog.click/blog/${post.slug}`,
+    type: 'article',
+    publishedTime: post.publishedAt,
+    authors: [post.author],
+    locale: 'he_IL',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: post.title,
+    description: post.description,
+    images: [`https://autolog.click/blog/${post.slug}/cover.png`],
+  },
+};
+
+export default function BlogPostPage() {
+  return (
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
+          <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1"><ChevronRight size={14} />חזרה לבלוג</Link>
+        </div>
+      </header>
+
+      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+        <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] leading-tight mb-4">{post.title}</h1>
+
+        <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
+          <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          <span className="flex items-center gap-1"><Clock size={14} />{post.readingTime}</span>
+          <span>מאת {post.author}</span>
+        </div>
+
+        <div className="prose-rtl space-y-6 text-gray-700 leading-relaxed text-[15px]">
+
+          <p>הקיץ הישראלי לא רחום לרכבים. טמפרטורות של 40+ מעלות, אספלט ב-60+ מעלות, ושעות ארוכות תחת השמש — כל זה גורם לרכב להזיע. כדי שהרכב שלכם יעבור את הקיץ בלי תקלות מיותרות, <strong>הכנה נכונה לקיץ היא חובה</strong>.</p>
+
+          <p>במאמר הזה תקבלו צ'קליסט מלא של מה לבדוק ולתחזק לפני הקיץ — וגם איך <strong>אוטולוג</strong> עוזרת לכם לזכור הכל ולנהל את הטיפולים העונתיים אוטומטית.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">למה הקיץ קשה לרכב?</h2>
+
+          <p>הקיץ בישראל גורם לכמה בעיות נפוצות ברכבים:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li><strong>התחממות יתר של המנוע</strong> — מערכת קירור עובדת קשה יותר.</li>
+  <li><strong>מצברים נחלשים וקורסים</strong> — מצבר חלש יחזיק מעמד בחורף, אבל יקרוס בקיץ.</li>
+  <li><strong>מיזוג שמפסיק לעבוד</strong> — בדיוק כשצריך אותו הכי הרבה.</li>
+  <li><strong>לחץ צמיגים משתנה</strong> — בחום הלחץ עולה, שחיקת צמיגים מואצת.</li>
+  <li><strong>התבלות מהירה של חלקי גומי</strong> — צינורות, אטמים, רצועות.</li>
+  <li><strong>דליפות נוזלים</strong> — אטמים שמתבלים יותר מהר בחום.</li>
+</ul>
+
+          <p>הכנה נכונה לקיץ מונעת את רוב הבעיות האלה — בעלויות נמוכות בהרבה ממה שייעלה תיקון תקלה בלב הקיץ.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">צ'קליסט הכנת רכב לקיץ — 12 בדיקות חיוניות</h2>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">1. מערכת מיזוג אוויר</h3>
+
+          <p>זה הדבר הראשון לבדוק. בשעת אמת אם המיזוג לא עובד — מי רוצה להיתקע בפקק ב-38 מעלות?</p>
+
+          <p><strong>מה לבדוק:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>האם המיזוג מקרר טוב — תוך 30 שניות מההפעלה האוויר צריך להיות קר.</li>
+  <li>האם יש ריח רע מהמיזוג — סימן לעובש במערכת.</li>
+  <li>האם יש רעשים — קומפרסור או מאוורר מעידים על תקלה.</li>
+</ul>
+
+          <p><strong>עלות תחזוקה:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>מילוי גז קירור: 200-400 ש"ח.</li>
+  <li>ניקוי המאדה (Evaporator): 250-500 ש"ח.</li>
+  <li>החלפת קומפרסור (אם נשבר): 1,500-3,500 ש"ח (סיוט).</li>
+</ul>
+
+          <p><strong>עצה:</strong> הקדימו לעשות זאת בחודש מאי. בחודש יוני המוסכים עמוסים והמחירים עולים.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">2. מערכת קירור (Radiator)</h3>
+
+          <p>המנוע מתחמם בקיץ, ומערכת הקירור עובדת קשה. בדיקה חיונית.</p>
+
+          <p><strong>מה לבדוק:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>רמת נוזל הקירור.</li>
+  <li>מצב הצינורות — סדקים, נפיחויות.</li>
+  <li>מצב המכסה (Cap) — אטם שמתבלה גורם להתפוצצות.</li>
+  <li>מצב המאוורר.</li>
+</ul>
+
+          <p><strong>עלות:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>מילוי נוזל קירור: 100-200 ש"ח.</li>
+  <li>החלפת נוזל קירור מלאה (כל 3-5 שנים): 200-400 ש"ח.</li>
+</ul>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">3. מצבר</h3>
+
+          <p>מצבר הוא הרכיב שהכי נפגע בקיץ. החום מאיץ אידוי הנוזל הפנימי וקיצור החיים.</p>
+
+          <p><strong>מה לבדוק:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>מתח המצבר (12.4-12.8V במצב מנוחה).</li>
+  <li>האם הרכב מתקשה להניע בבוקר.</li>
+  <li>מצב הדקי המצבר (Terminals) — אבק לבן/ירוק.</li>
+  <li>גיל המצבר (כתוב עליו).</li>
+</ul>
+
+          <p><strong>עלות:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>בדיקה: חינם ברוב המוסכים.</li>
+  <li>ניקוי הדקי מצבר: 50-100 ש"ח.</li>
+  <li>מצבר חדש: 350-800 ש"ח.</li>
+</ul>
+
+          <p><strong>טיפ:</strong> מצבר ברכב פרטי קורס לרוב בקיץ בגלל החום. אם המצבר שלכם בן 4+ שנים — שווה להחליף ביוזמתכם.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">4. צמיגים</h3>
+
+          <p>הצמיגים נכבדים בקיץ. עומס חום + אספלט חם = שחיקה מואצת ובסיכון מוגבר לפיצוץ.</p>
+
+          <p><strong>מה לבדוק:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>לחץ צמיגים (יותר חשוב בקיץ — לחץ הופך תוך כמה דקות).</li>
+  <li>עומק חריצים (חוקית — מינימום 1.6 מ"מ; מומלץ 3+ מ"מ).</li>
+  <li>מצב דפנות — סדקים, נפיחויות.</li>
+  <li>שחיקה לא אחידה.</li>
+</ul>
+
+          <p><strong>עלות:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>בדיקה: חינם.</li>
+  <li>מילוי לחץ: חינם בתחנות דלק רוב המקרים.</li>
+  <li>ארבעה צמיגים חדשים: 1,200-2,400 ש"ח.</li>
+</ul>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">5. שמן מנוע</h3>
+
+          <p>בקיץ השמן מתחמם יותר, וכושר ההגנה שלו יורד.</p>
+
+          <p><strong>מה לבדוק:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>רמת השמן.</li>
+  <li>צבע השמן — שחור מאוד = חייב להחליף.</li>
+  <li>האם עברתם את ה-10,000 ק"מ מהחלפה האחרונה.</li>
+</ul>
+
+          <p><strong>עלות:</strong> 250-400 ש"ח להחלפה מלאה.</p>
+
+          <p><strong>טיפ:</strong> בקיץ מומלץ שמן בעל צמיגות גבוהה יותר (5W-30 או 5W-40), בעיקר ברכבים ישנים.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">6. נוזל בלמים</h3>
+
+          <p>בקיץ הבלמים מתחממים יותר. נוזל בלמים שספג מים יכול לרתוח ולהפוך לא יעיל.</p>
+
+          <p><strong>מה לבדוק:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>רמת הנוזל.</li>
+  <li>צבע — צהוב בהיר = טוב; חום כהה = להחליף.</li>
+  <li>תאריך החלפה אחרונה (כל 2 שנים חובה).</li>
+</ul>
+
+          <p><strong>עלות החלפה:</strong> 150-250 ש"ח.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">7. רפידות בלמים</h3>
+
+          <p>לרוב לא תקלה עונתית, אבל בקיץ הלחץ על הבלמים גבוה (מזגן עובד, רכב כבד יותר עם מטענים לחופש). שווה לבדוק.</p>
+
+          <p><strong>מה לבדוק:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>עובי רפידות (מינימום 3 מ"מ).</li>
+  <li>רעש בלימה — חריקה = להחליף.</li>
+</ul>
+
+          <p><strong>עלות:</strong> 400-700 ש"ח לסט קדמי כולל עבודה.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">8. גומיות חלון</h3>
+
+          <p>במהלך החורף השתמשתם בהן הרבה. עכשיו, לפני הקיץ, שווה לבדוק שהן לא יתבלו לגמרי.</p>
+
+          <p><strong>מה לבדוק:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>האם הן מנקות יבש או משאירות פסים.</li>
+  <li>האם הגומי סדוק.</li>
+  <li>האם המוט שיש מתחתיו מתעקם.</li>
+</ul>
+
+          <p><strong>עלות:</strong> 60-150 ש"ח לסט.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">9. נוזל שטיפת שמשות</h3>
+
+          <p>בקיץ אבק וחרקים על השמשה הם בעיה. תמלאו נוזל איכותי.</p>
+
+          <p><strong>עלות:</strong> 30-60 ש"ח לבקבוק.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">10. מערכת חשמל</h3>
+
+          <p>בקיץ עומס החשמל גבוה — מיזוג, אורות, מטענים לטלפון. שווה לבדוק שהמערכת חזקה.</p>
+
+          <p><strong>מה לבדוק:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>הדינמו (Alternator) טוען נכון.</li>
+  <li>הנורות פועלות.</li>
+  <li>לא יש נורות חכמות במצב התראה.</li>
+</ul>
+
+          <p><strong>עלות בדיקה:</strong> 100-200 ש"ח.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">11. נוזל הגה כוח (אם רלוונטי)</h3>
+
+          <p>ברכבים עם הגה כוח הידראולי (רוב הדגמים עד 2015):</p>
+
+          <p><strong>מה לבדוק:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>רמת נוזל.</li>
+  <li>צבע (אדום נקי = טוב).</li>
+  <li>האם יש דליפה תחת הרכב.</li>
+</ul>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">12. ערכת חירום</h3>
+
+          <p>לקיץ שמוסיפים לערכת החירום ברכב:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>בקבוקי מים נוספים.</li>
+  <li>כובע נגד שמש.</li>
+  <li>קרם הגנה (כן, ברכב!).</li>
+  <li>מצבר חיצוני לטלפון.</li>
+</ul>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">דברים שכדאי לעשות מיד לפני יציאות ארוכות</h2>
+
+          <p>הקיץ בישראל = חופשות, נסיעות לעיר אחות, יציאות לטיולים. לפני כל יציאה ארוכה:</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">בדיקת 10 הדקות</h3>
+
+          <ol className="list-decimal list-inside space-y-2 mr-4">
+  <li>לחץ צמיגים — כולל הרזרבי.</li>
+  <li>רמות נוזלים (שמן, קירור, בלמים, שטיפת שמשות).</li>
+  <li>אורות — קדמיים, אחוריים, ערפל.</li>
+  <li>בלמים — תרגישו אם משהו לא בסדר.</li>
+  <li>מיזוג — שיעבוד כמו שצריך.</li>
+</ol>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">אם הנסיעה ארוכה במיוחד</h3>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>שקלו לעשות טיפול שגרתי לפני הנסיעה (אם עברתם 8,000+ ק"מ מההחלפה האחרונה).</li>
+  <li>ודאו שהרזרב במצב טוב — לא יותר מ-5 שנים, לחץ תקין.</li>
+  <li>קחו צ'קליסט חירום: גלגל רזרבי, מפתח גלגלים, גרירה.</li>
+</ul>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">עלויות צפויות להכנת רכב לקיץ</h2>
+
+          <p>עלות ממוצעת לבעל רכב פרטי שעושה הכנה מלאה לקיץ:</p>
+
+          <div className="overflow-x-auto my-6">
+<table className="w-full border-collapse border border-gray-300">
+<thead><tr><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">פריט</th><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">עלות</th></tr></thead>
+<tbody>
+<tr><td className="border border-gray-300 px-4 py-2">בדיקת מיזוג + מילוי גז</td><td className="border border-gray-300 px-4 py-2">250-400 ש"ח</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">בדיקת מצבר + ניקוי</td><td className="border border-gray-300 px-4 py-2">50-150 ש"ח (חלק חינם)</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">בדיקת צמיגים + מילוי לחץ</td><td className="border border-gray-300 px-4 py-2">חינם</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">מילוי נוזל קירור</td><td className="border border-gray-300 px-4 py-2">100-200 ש"ח</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">גומיות חלון חדשות</td><td className="border border-gray-300 px-4 py-2">80-150 ש"ח</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">נוזל שטיפה</td><td className="border border-gray-300 px-4 py-2">30-60 ש"ח</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2"><strong>סך הכל</strong></td><td className="border border-gray-300 px-4 py-2"><strong>510-960 ש"ח</strong></td></tr>
+</tbody>
+</table>
+</div>
+
+          <p>זה לפני החלפות יזומות (שמן, צמיגים, רפידות) — שלעיתים ממילא הזמן להן.</p>
+
+          <p><strong>טיפ אוטולוג:</strong> עדיף להוציא 1,000 ש"ח על הכנה מקדימה מאשר 3,000-5,000 על תקלה באמצע הקיץ.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">איך אוטולוג עוזרת בהכנת הרכב לקיץ?</h2>
+
+          <p>זה אחד מהמקומות שבהם <strong>אוטולוג</strong> באמת חוסכת לכם זמן וכסף:</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">1. תזכורות עונתיות אוטומטיות</h3>
+
+          <p>אוטולוג שולחת תזכורת בכל מאי: "זמן לבדוק את המיזוג של הרכב שלך לפני הקיץ". יודעת שאתם בישראל, יודעת שזה שיא העונה.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">2. תזכורות תחזוקה אישיות</h3>
+
+          <p>אוטולוג זוכרת מתי החלפתם נוזל בלמים בפעם האחרונה. אם זה היה לפני שנה וחצי — אוטולוג מציעה להחליף לפני הקיץ.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">3. תיעוד טיפולים</h3>
+
+          <p>עשיתם טיפול מיזוג בחודש מאי? אוטולוג מתעדת. בעוד שנה, אוטולוג שואלת אם רוצים תזכורת חזרה.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">4. עוזר AI לשאלות תחזוקה</h3>
+
+          <p>"השמן שלי משחור מהר, זה רע?" שאלו את העוזר AI של אוטולוג, וקבלו תשובה מקצועית בעברית.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">5. השוואת מחירים</h3>
+
+          <p>אוטולוג יודעת את העלויות הממוצעות. אחרי כל טיפול, אוטולוג יכולה להגיד אם שילמתם מחיר הוגן.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">שאלות נפוצות על הכנת רכב לקיץ</h2>
+
+          <p><strong>ש: מתי הזמן הכי טוב לעשות הכנת קיץ?</strong> ת: סוף אפריל - תחילת מאי. לא לחכות לחודש יוני, אז המוסכים עמוסים.</p>
+
+          <p><strong>ש: האם אני יכול לעשות את ההכנה לבד?</strong> ת: חלק — כן (לחץ צמיגים, מילוי נוזלים). חלק — לא (מיזוג, מצבר). שווה ללכת למוסך לפחות פעם בשנה.</p>
+
+          <p><strong>ש: כמה עולה הכנה מלאה לקיץ?</strong> ת: 500-1,000 ש"ח לרכב במצב טוב. יותר אם צריך החלפות.</p>
+
+          <p><strong>ש: האם רכב חדש (פחות מ-3 שנים) צריך הכנת קיץ?</strong> ת: פחות, אבל כן. לחץ צמיגים, רמות נוזלים, מיזוג — צריך לבדוק.</p>
+
+          <p><strong>ש: איך אוטולוג עוזרת בהכנת הרכב לקיץ?</strong> ת: תזכורות אוטומטיות, תיעוד טיפולים, עוזר AI לשאלות, ומעקב הוצאות — הכל חינם.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">סיכום</h2>
+
+          <p>הקיץ הישראלי קשה לרכבים, אבל <strong>עם הכנה נכונה תעברו אותו ללא תקלות</strong>. השקעה של 500-1,000 ש"ח עכשיו חוסכת לכם פוטנציאל של אלפי שקלים בתקלות באמצע הקיץ.</p>
+
+          <p><Link href="https://autolog.click/auth/signup" className="text-teal-600 hover:text-teal-700 underline">הירשמו לאוטולוג בחינם</Link> ותקבלו תזכורות אוטומטיות לכל טיפול עונתי — אין יותר "אופ, שכחתי לבדוק את המיזוג".</p>
+
+          {/* CTA */}
+          <div className="bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-2xl p-8 my-10 text-center not-prose">
+            <h3 className="text-2xl font-bold mb-3">מתחילים עם אוטולוג עכשיו</h3>
+            <p className="text-white/90 mb-6 text-base leading-relaxed">
+              אוטולוג מאחדת את כל הניהול של הרכב — תזכורות אוטומטיות, סריקת מסמכים עם AI, מעקב הוצאות, היסטוריית טיפולים ועוזר AI אישי. בעברית. בחינם. ללא הורדה.
+            </p>
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-10 py-4 bg-cream-500 text-white font-bold text-lg rounded-xl hover:bg-cream-600 transition shadow-lg">
+              הרשמה לאוטולוג חינם<ArrowLeft size={18} />
+            </Link>
+          </div>
+        </div>
+
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'BlogPosting',
+              headline: post.title,
+              description: post.description,
+              datePublished: post.publishedAt,
+              dateModified: post.updatedAt || post.publishedAt,
+              image: [`https://autolog.click/blog/${post.slug}/cover.png`],
+              author: { '@type': 'Organization', name: 'אוטולוג', url: 'https://autolog.click' },
+              publisher: {
+                '@type': 'Organization',
+                name: 'אוטולוג',
+                logo: { '@type': 'ImageObject', url: 'https://autolog.click/logo.png', width: 512, height: 512 },
+              },
+              mainEntityOfPage: { '@type': 'WebPage', '@id': `https://autolog.click/blog/${post.slug}` },
+              inLanguage: 'he-IL',
+              articleSection: post.category,
+              keywords: post.keywords.join(', '),
+              isPartOf: { '@type': 'Blog', name: 'בלוג אוטולוג', url: 'https://autolog.click/blog' },
+            },
+            {
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'אוטולוג', item: 'https://autolog.click' },
+                { '@type': 'ListItem', position: 2, name: 'בלוג', item: 'https://autolog.click/blog' },
+                { '@type': 'ListItem', position: 3, name: post.title, item: `https://autolog.click/blog/${post.slug}` },
+              ],
+            },
+          ],
+        }) }} />
+
+        <div className="mt-12 pt-8 border-t border-gray-200 flex items-center justify-between">
+          <Link href="/blog" className="flex items-center gap-1 text-sm text-teal-600 font-semibold hover:text-teal-700 transition"><ChevronRight size={14} />כל המאמרים</Link>
+          <Link href="/" className="flex items-center gap-1 text-sm text-teal-600 font-semibold hover:text-teal-700 transition">חזרה לעמוד הבית<ChevronLeft size={14} /></Link>
+        </div>
+      </article>
+
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm"><p>&copy; {new Date().getFullYear()} אוטולוג (AutoLog). כל הזכויות שמורות.</p></footer>
+    </div>
+  );
+}

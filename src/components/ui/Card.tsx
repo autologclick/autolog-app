@@ -35,7 +35,7 @@ export function CardHeader({ children, className }: { children: React.ReactNode;
 
 export function CardTitle({ children, icon, className }: { children: React.ReactNode; icon?: React.ReactNode; className?: string }) {
   return (
-    <h3 className={cn('text-lg font-bold text-[#1e3a5f] flex items-center gap-2', className)}>
+    <h3 className={cn('text-lg font-bold text-[#1B4E8A] flex items-center gap-2', className)}>
       {icon}
       {children}
     </h3>
@@ -51,7 +51,7 @@ export function StatCard({ label, value, icon, color = 'teal', trend }: {
 }) {
   const colors = {
     teal: 'bg-teal-50 text-teal-600 border-teal-200',
-    navy: 'bg-[#fef7ed] text-[#1e3a5f] border-[#1e3a5f]/20',
+    navy: 'bg-[#F3F6FA] text-[#1B4E8A] border-[#1B4E8A]/20',
     red: 'bg-red-50 text-red-600 border-red-200',
     orange: 'bg-orange-50 text-orange-600 border-orange-200',
     green: 'bg-green-50 text-green-600 border-green-200',

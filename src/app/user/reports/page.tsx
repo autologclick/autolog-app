@@ -56,7 +56,7 @@ const INSPECTION_TYPE_CONFIG: Record<string, {
     colorClass: 'text-teal-600',
     bgClass: 'bg-teal-50',
     borderClass: 'border-r-teal-500',
-    scoreBgClass: '#0d9488',
+    scoreBgClass: '#2E77D0',
     badgeBg: 'bg-teal-100',
     badgeText: 'text-teal-700',
   },
@@ -141,7 +141,7 @@ function getConfig(type: string) {
 // ============ SCORE CIRCLE ============
 function ScoreCircle({ score }: { score: number }) {
   const getGradientColor = (score: number) => {
-    if (score >= 80) return '#10b981'; // green
+    if (score >= 80) return '#2E77D0'; // green
     if (score >= 60) return '#f59e0b'; // amber
     return '#ef4444'; // red
   };
@@ -210,7 +210,7 @@ export default function ReportsPage() {
 
   if (loading) {
     return (
-      <div className="bg-[#fef7ed] pb-24" dir="rtl">
+      <div className="bg-[#F3F6FA] pb-24" dir="rtl">
         <PageHeader title="דוחות אבחון" variant="purple" backUrl="/user/profile" />
         <div className="container mx-auto px-4 pt-12">
           <PageSkeleton />
@@ -220,7 +220,7 @@ export default function ReportsPage() {
   }
 
   return (
-    <div className="bg-[#fef7ed] pb-24 min-h-screen" dir="rtl">
+    <div className="bg-[#F3F6FA] pb-24 min-h-screen" dir="rtl">
       <PageHeader title="דוחות אבחון" variant="purple" backUrl="/user/profile" />
 
       <div className="container mx-auto px-4 space-y-6 pt-6">
@@ -271,7 +271,7 @@ export default function ReportsPage() {
             <div className="w-6 h-6 bg-purple-500/10 rounded-lg flex items-center justify-center">
               <Brain size={16} className="text-purple-600" />
             </div>
-            <h2 className="text-sm font-bold text-[#1e3a5f]">תובנות AI</h2>
+            <h2 className="text-sm font-bold text-[#1B4E8A]">תובנות AI</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Average Score */}

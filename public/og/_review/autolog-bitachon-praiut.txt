@@ -1,0 +1,341 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import Logo from '@/components/ui/Logo';
+import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
+
+const post = getPostBySlug('autolog-bitachon-praiut')!;
+
+export const metadata: Metadata = {
+  title: post.title,
+  description: post.description,
+  keywords: post.keywords,
+  alternates: { canonical: `/blog/${post.slug}` },
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    url: `https://autolog.click/blog/${post.slug}`,
+    type: 'article',
+    publishedTime: post.publishedAt,
+    authors: [post.author],
+    locale: 'he_IL',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: post.title,
+    description: post.description,
+    images: [`https://autolog.click/blog/${post.slug}/cover.png`],
+  },
+};
+
+export default function BlogPostPage() {
+  return (
+    <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
+          <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1"><ChevronRight size={14} />חזרה לבלוג</Link>
+        </div>
+      </header>
+
+      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+        <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] leading-tight mb-4">{post.title}</h1>
+
+        <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
+          <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          <span className="flex items-center gap-1"><Clock size={14} />{post.readingTime}</span>
+          <span>מאת {post.author}</span>
+        </div>
+
+        <div className="prose-rtl space-y-6 text-gray-700 leading-relaxed text-[15px]">
+
+          <p>לפני שאתם נרשמים לאוטולוג ומעלים לפלטפורמה פוליסת ביטוח, מספר רישוי, וחתימה של פוליסה — מגיע לכם לדעת בדיוק איך אוטולוג שומרת על המידע הזה. במאמר הזה נציג בצורה שקופה את כל אמצעי האבטחה והפרטיות שאוטולוג מיישמת — ללא חמקנות שיווקית.</p>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">למה אבטחת המידע באוטולוג חשובה?</h2>
+
+          <p>כל פעם שאתם מוסיפים רכב לאוטולוג, מעלים מסמך, או מתעדים הוצאה — אתם משתפים מידע אישי רגיש: מספרי רישוי, חתימות, מספרי תעודות זהות (לפעמים), פרטי ביטוח, וכמובן את כל ההיסטוריה הפיננסית של הרכב.</p>
+
+          <p>אם אוטולוג לא הייתה מטפלת באבטחה ברצינות, המידע הזה היה יכול לדלוף, להיגנב, או להישלח לצדדים שלישיים שלא ביקשתם. <strong>באוטולוג, אבטחת המידע היא לא תוספת — היא חלק בלתי נפרד מהארכיטקטורה.</strong></p>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">רמת ההצפנה באוטולוג</h2>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] pt-4 mt-2">הצפנת מידע במנוחה (Encryption at Rest)</h3>
+
+          <p>כל מידע אישי רגיש שאתם מאחסנים באוטולוג מוצפן בסטנדרט <strong>AES-256-GCM</strong> — אותו תקן שמשמש בנקים, סוכנויות ממשלתיות, וצבא ארה"ב.</p>
+
+          <p>איך זה עובד באוטולוג בפועל:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>שדות רגישים כמו תעודת זהות, מספר פוליסה, ופרטי תקשורת — מוצפנים לפני שהם נכתבים למסד הנתונים.</li>
+  <li>מפתח ההצפנה נשמר נפרד מהמסד עצמו, במשתנה סביבה מאובטח (<code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">ENCRYPTION_KEY</code>).</li>
+  <li>מי שירצה לקרוא את המידע — גם מי שיש לו גישה למסד הנתונים — יראה רק בייטים מוצפנים.</li>
+</ul>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] pt-4 mt-2">הצפנת תעבורה (Encryption in Transit)</h3>
+
+          <p>כל תקשורת בין הדפדפן שלכם לבין אוטולוג מתבצעת ב-<strong>HTTPS עם TLS 1.3</strong>, בעזרת תעודת SSL מ-Let's Encrypt. זה אומר:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>אף אחד באמצע (בעל ה-WiFi בבית הקפה, ספק האינטרנט, רשת ציבורית) לא יכול לראות מה אתם שולחים לאוטולוג.</li>
+  <li>אף אחד לא יכול לשנות את התקשורת בדרך (מתקפת man-in-the-middle).</li>
+  <li>הדפדפן שלכם מוודא שאתם באמת מדברים עם אוטולוג ולא עם זייפן.</li>
+</ul>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">ניהול גישה לחשבון באוטולוג</h2>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] pt-4 mt-2">JWT עם רוטציית טוקנים</h3>
+
+          <p>אוטולוג משתמשת במערכת אימות מבוססת JSON Web Tokens (JWT) עם רוטציה אוטומטית:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li><strong>טוקן Access</strong> — תוקף של 15 דקות בלבד. אם טוקן נגנב — תוך רבע שעה הוא חסר משמעות.</li>
+  <li><strong>טוקן Refresh</strong> — תוקף של 7 ימים. משמש לרענון אוטומטי של טוקן ה-Access.</li>
+  <li><strong>רוטציה</strong> — בכל רענון, אוטולוג מוציאה טוקן Refresh חדש ומבטלת את הישן (מנגנון Token Rotation).</li>
+  <li><strong>רשימה שחורה (Blacklist)</strong> — טוקנים שבוטלו נשמרים ברשימה שחורה למניעת שימוש חוזר.</li>
+</ul>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] pt-4 mt-2">נעילת חשבון אוטומטית</h3>
+
+          <p>אוטולוג מגנה על החשבון שלכם מפני התקפות brute-force:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>אחרי 5 ניסיונות כניסה כושלים, אוטולוג נועלת את החשבון אוטומטית ל-15 דקות.</li>
+  <li>אחרי 10 ניסיונות, נעילה ל-24 שעות + מייל התראה אליכם.</li>
+  <li>אחרי 20 ניסיונות, נעילה מלאה — צריך לפנות לתמיכה.</li>
+</ul>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] pt-4 mt-2">זיהוי דו-שלבי (MFA / TOTP)</h3>
+
+          <p>אוטולוג תומכת בזיהוי דו-שלבי באמצעות אפליקציות TOTP (Google Authenticator, Authy, 1Password). זה אופציונלי, אבל <strong>מומלץ בחום</strong>:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>מפעילים מההגדרות → "אבטחה" → "הפעלת MFA".</li>
+  <li>סורקים QR Code עם אפליקציית האימות.</li>
+  <li>מהרגע הזה, גם אם מישהו יודע את הסיסמה — הוא לא יוכל להיכנס בלי הטלפון שלכם.</li>
+</ul>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">הגנה מפני התקפות נפוצות</h2>
+
+          <p>אוטולוג מיישמת שכבת <strong><code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">pen-test-guard</code></strong> — מערכת לזיהוי תבניות התקפה. היא מזהה ומחסומת:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li><strong>SQL Injection</strong> — ניסיונות להחדיר קוד SQL זדוני.</li>
+  <li><strong>XSS (Cross-Site Scripting)</strong> — ניסיונות להחדיר JavaScript זדוני.</li>
+  <li><strong>Path Traversal</strong> — ניסיונות לגשת לקבצים מחוץ למסלולים מותרים.</li>
+  <li><strong>SSRF (Server-Side Request Forgery)</strong> — ניסיונות לגרום לאוטולוג לבצע בקשות זדוניות.</li>
+  <li><strong>Command Injection</strong> — ניסיונות להריץ פקודות מערכת.</li>
+  <li><strong>18+ סורקי פגיעויות אוטומטיים</strong> — מזוהים וחסומים מיד.</li>
+</ul>
+
+          <p>בנוסף, אוטולוג מיישמת:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li><strong>Rate Limiting</strong> ברמת Nginx — מוגבל ל-30 בקשות לדקה לכל API, 5 בקשות לדקה לבעיות התחברות.</li>
+  <li><strong>CSRF Protection</strong> — בקשות לפעולות רגישות דורשות אסימון CSRF.</li>
+  <li><strong>RBAC (Role-Based Access Control)</strong> — הרשאות גישה לפי תפקיד (משתמש, מנהל מוסך, אדמין).</li>
+  <li><strong>Validation מלא</strong> עם Zod — כל קלט מהמשתמש נבדק לפני שהוא מתקבל.</li>
+  <li><strong>Prisma ORM</strong> — פונה למסד הנתונים בשאילתות parameterized, ללא חשש מ-SQL injection.</li>
+</ul>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">כותרות אבטחה (Security Headers)</h2>
+
+          <p>אוטולוג מגדירה את כל כותרות האבטחה המקובלות:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li><strong>HSTS (Strict-Transport-Security)</strong> — מכריח את הדפדפן להשתמש ב-HTTPS תמיד.</li>
+  <li><strong>CSP (Content Security Policy)</strong> — מגביל מאיפה אפשר לטעון משאבים, מונע XSS.</li>
+  <li><strong>X-Frame-Options</strong> — מונע מאתרים אחרים להטמיע את אוטולוג ב-iframe (clickjacking).</li>
+  <li><strong>X-Content-Type-Options</strong> — מונע MIME-type sniffing.</li>
+  <li><strong>Referrer-Policy</strong> — שולט במידע שמשתף עם אתרים חיצוניים.</li>
+  <li><strong>Permissions-Policy</strong> — מגביל גישה ל-API רגישים (מצלמה, מיקרופון, מיקום).</li>
+</ul>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">אימות העלאות קבצים</h2>
+
+          <p>כשאתם מעלים מסמך לאוטולוג (פוליסה, אישור טסט, קבלה), אוטולוג בודקת:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li><strong>Magic byte validation</strong> — לא רק שם הקובץ, אלא תכולת הקובץ הראשונה (התחלה ייחודית של כל סוג).</li>
+  <li><strong>גודל מקסימלי</strong> — 10MB לקובץ.</li>
+  <li><strong>סוגי קבצים מותרים</strong> — JPG, PNG, PDF בלבד.</li>
+  <li><strong>סריקת תוכן</strong> — בדיקה שאין סקריפטים זדוניים מוטמעים.</li>
+</ul>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">רישום ביקורת (Audit Logging)</h2>
+
+          <p>אוטולוג מתעדת כל פעולה רגישה ברישום ביקורת מאובטח:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>מי התחבר ומתי</li>
+  <li>מי שינה מה</li>
+  <li>מאיפה (IP)</li>
+  <li>באיזה דפדפן</li>
+</ul>
+
+          <p>הלוגים נשמרים מוצפנים, ניתנים לצפייה רק לאדמינים, ומכוסים על ידי policy של GDPR.</p>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">פרטיות במידע שלכם — מה אוטולוג עושה ומה לא</h2>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] pt-4 mt-2">מה אוטולוג עושה:</h3>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>שומרת את המידע שאתם מספקים — רכב, מסמכים, הוצאות.</li>
+  <li>שולחת לכם תזכורות לפי הגדרות שלכם.</li>
+  <li>משתמשת ב-AI לסריקת מסמכים שלכם (בעיבוד מקומי או דרך OpenAI API עם מדיניות פרטיות מחמירה).</li>
+  <li>מציעה התאמה אישית של תוכן והמלצות.</li>
+</ul>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] pt-4 mt-2">מה אוטולוג <strong>לא</strong> עושה:</h3>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li><strong>לא</strong> מוכרת את המידע שלכם לאף אחד.</li>
+  <li><strong>לא</strong> משתפת את המידע עם חברות שיווק.</li>
+  <li><strong>לא</strong> עושה שימוש בפרטים האישיים שלכם לפרסום ממוקד.</li>
+  <li><strong>לא</strong> מציגה פרסומות מבוססות-מידע אישי.</li>
+  <li><strong>לא</strong> מעבירה את המידע למעטפת חיצונית ללא הסכמתכם.</li>
+</ul>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">GDPR — זכויותיכם באוטולוג</h2>
+
+          <p>אוטולוג עומדת בתקני <strong>GDPR (General Data Protection Regulation)</strong> — תקנת הפרטיות האירופית, שגם רלוונטית לחוק הגנת הפרטיות הישראלי החדש (2024). מה זה אומר עבורכם בפועל:</p>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] pt-4 mt-2">זכות הגישה</h3>
+
+          <p>בכל רגע אתם יכולים להוריד את <strong>כל המידע</strong> שאוטולוג שמרה עליכם — בקובץ ZIP מובנה. אוטולוג מספקת את זה דרך: <strong>הגדרות → פרטיות → ייצוא נתונים אישיים (GDPR Export)</strong>.</p>
+
+          <p>הקובץ כולל: פרטי משתמש, פרטי רכבים, היסטוריית הוצאות, מסמכים שהעלת, התראות, הגדרות, ולוגים שלך.</p>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] pt-4 mt-2">זכות התיקון</h3>
+
+          <p>אתם יכולים לערוך כל מידע על עצמכם בכל רגע. אוטולוג לא מקבעת מידע — הכל ניתן לשינוי.</p>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] pt-4 mt-2">זכות המחיקה (Right to be Forgotten)</h3>
+
+          <p>אם החלטתם להפסיק להשתמש באוטולוג — בלחיצה אחת אתם מוחקים את החשבון לחלוטין. כל המידע נמחק תוך 30 יום (כולל גיבויים).</p>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] pt-4 mt-2">זכות הניידות</h3>
+
+          <p>אוטולוג מספקת את המידע שלכם בפורמט JSON סטנדרטי, שאפשר לייבא לפלטפורמות אחרות.</p>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] pt-4 mt-2">זכות ההסתייגות</h3>
+
+          <p>אתם יכולים להסתייג מקבלת תזכורות, מקבלת המלצות מבוססות-AI, או משימוש בנתונים שלכם לכל מטרה.</p>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">ספקים חיצוניים שאוטולוג עובדת איתם</h2>
+
+          <p>שקיפות חשובה. אוטולוג משתמשת בכלים הבאים, וכל אחד מהם מטופל בקפדנות:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li><strong>PostgreSQL</strong> — מסד הנתונים של אוטולוג, רץ על שרת DigitalOcean באירופה (Frankfurt).</li>
+  <li><strong>Redis</strong> — מטמון לטוקנים ולסשנים, אותו שרת.</li>
+  <li><strong>OpenAI API</strong> — לעיבוד AI של מסמכים ועוזר אישי. הנתונים נשלחים בהצפנה, ולפי מדיניות OpenAI הם <strong>לא</strong> משמשים לאימון המודלים.</li>
+  <li><strong>Twilio</strong> — לשליחת SMS (אופציונלי, רק למי שמפעיל).</li>
+  <li><strong>Resend</strong> — לשליחת מיילים. הודעות בלבד, ללא שיתוף תוכן.</li>
+  <li><strong>Sentry</strong> — לזיהוי שגיאות. שולח מטא-נתונים בלבד, לא מידע אישי.</li>
+</ul>
+
+          <p>ספקים אלה נמצאים במדינות עם תקנות פרטיות מחמירות (EU או ארה"ב), וכולם חתומים על Data Processing Agreement עם אוטולוג.</p>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">תשתית האחסון של אוטולוג</h2>
+
+          <p>המידע שלכם באוטולוג נשמר על שרתים פיזיים בפרנקפורט, גרמניה — באזור שמכוסה ע"י GDPR. הספק: <strong>DigitalOcean</strong> (חברה אמריקאית, אבל השרת באירופה).</p>
+
+          <p><strong>שכבות אבטחה פיזיות:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>Firewall ברמת Cloud (UFW + DigitalOcean Firewall).</li>
+  <li>Fail2ban — חוסם אוטומטית IPs שמנסים brute-force.</li>
+  <li>גיבויים יומיים אוטומטיים, מוצפנים.</li>
+  <li>מערכת ניטור 24/7.</li>
+</ul>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">מה לעשות אם אתם חושדים שמשהו לא בסדר?</h2>
+
+          <p>אם אתם חושדים שמישהו ניסה להיכנס לחשבון שלכם באוטולוג, או רואים פעילות חשודה:</p>
+
+          <ol className="list-decimal list-inside space-y-2 mr-4">
+  <li><strong>שנו את הסיסמה מיד</strong> — מההגדרות → אבטחה → שינוי סיסמה.</li>
+  <li><strong>התנתקו מכל המכשירים</strong> — מההגדרות → אבטחה → "נתק מכל המכשירים".</li>
+  <li><strong>הפעילו MFA</strong> — אם עוד לא הפעלתם.</li>
+  <li><strong>שלחו לנו מייל</strong> — security@autolog.click — ואנחנו נחקור.</li>
+</ol>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">שאלות נפוצות</h2>
+
+          <p><strong>ש: האם אוטולוג מקשיבה למיקרופון של הנייד?</strong> ת: לא. אוטולוג משתמשת במיקרופון רק כשאתם מפעילים את ההקלטה הקולית במפורש (לחיצה על כפתור). אחרי שסיימת — המיקרופון נסגר.</p>
+
+          <p><strong>ש: האם אוטולוג מציגה פרסומות?</strong> ת: לא. אוטולוג חינמית למשתמשים פרטיים, אבל לא מציגה פרסומות. המודל העסקי שלנו מבוסס על שותפויות עם מוסכים.</p>
+
+          <p><strong>ש: האם המידע שלי נשמר בישראל?</strong> ת: לא. השרתים של אוטולוג נמצאים בפרנקפורט, גרמניה — באיחוד האירופי, באזור עם תקנות פרטיות מחמירות (GDPR).</p>
+
+          <p><strong>ש: האם אני יכול לבקש שלא תשמרו שום מידע על השימוש שלי?</strong> ת: כן. בהגדרות → פרטיות → "Opt-out מאנליטיקס".</p>
+
+          <p><strong>ש: האם אוטולוג עוברת בדיקות אבטחה?</strong> ת: כן. ביצענו audit פנימי מקיף ב-2026, ואנחנו מתכננים penetration test חיצוני ב-Q3.</p>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-8 mt-2">סיכום</h2>
+
+          <p>אבטחה ופרטיות הם לא תוספת באוטולוג — הם החלק היסודי של איך אוטולוג בנויה. הצפנת AES-256, JWT עם רוטציה, MFA, GDPR compliance, ספקים בעלי תקני הגנת פרטיות חזקים — הכל מכוון לדבר אחד: <strong>שאתם תהיו בטוחים שהמידע שלכם בידיים טובות.</strong></p>
+
+          <p>יש לכם שאלות נוספות על אבטחה באוטולוג? שלחו מייל ל-security@autolog.click ונענה תוך 24 שעות.</p>
+
+          <p><Link href="https://autolog.click/auth/signup" className="text-teal-600 hover:text-teal-700 underline">נרשמים לאוטולוג בחינם</Link> — בסטנדרטים גבוהים של אבטחה ופרטיות.</p>
+
+          {/* CTA */}
+          <div className="bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-2xl p-8 my-10 text-center not-prose">
+            <h3 className="text-2xl font-bold mb-3">מתחילים עם אוטולוג עכשיו</h3>
+            <p className="text-white/90 mb-6 text-base leading-relaxed">
+              אוטולוג מאחדת את כל הניהול של הרכב — תזכורות אוטומטיות, סריקת מסמכים עם AI, מעקב הוצאות, היסטוריית טיפולים ועוזר AI אישי. בעברית. בחינם. ללא הורדה.
+            </p>
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-10 py-4 bg-white text-teal-700 font-bold text-lg rounded-xl hover:bg-gray-50 transition shadow-lg">
+              הרשמה לאוטולוג חינם<ArrowLeft size={18} />
+            </Link>
+          </div>
+        </div>
+
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'BlogPosting',
+              headline: post.title,
+              description: post.description,
+              datePublished: post.publishedAt,
+              dateModified: post.updatedAt || post.publishedAt,
+              image: [`https://autolog.click/blog/${post.slug}/cover.png`],
+              author: { '@type': 'Organization', name: 'אוטולוג', url: 'https://autolog.click' },
+              publisher: {
+                '@type': 'Organization',
+                name: 'אוטולוג',
+                logo: { '@type': 'ImageObject', url: 'https://autolog.click/logo.png', width: 512, height: 512 },
+              },
+              mainEntityOfPage: { '@type': 'WebPage', '@id': `https://autolog.click/blog/${post.slug}` },
+              inLanguage: 'he-IL',
+              articleSection: post.category,
+              keywords: post.keywords.join(', '),
+              isPartOf: { '@type': 'Blog', name: 'בלוג אוטולוג', url: 'https://autolog.click/blog' },
+            },
+            {
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'אוטולוג', item: 'https://autolog.click' },
+                { '@type': 'ListItem', position: 2, name: 'בלוג', item: 'https://autolog.click/blog' },
+                { '@type': 'ListItem', position: 3, name: post.title, item: `https://autolog.click/blog/${post.slug}` },
+              ],
+            },
+          ],
+        }) }} />
+
+        <div className="mt-12 pt-8 border-t border-gray-200 flex items-center justify-between">
+          <Link href="/blog" className="flex items-center gap-1 text-sm text-teal-600 font-semibold hover:text-teal-700 transition"><ChevronRight size={14} />כל המאמרים</Link>
+          <Link href="/" className="flex items-center gap-1 text-sm text-teal-600 font-semibold hover:text-teal-700 transition">חזרה לעמוד הבית<ChevronLeft size={14} /></Link>
+        </div>
+      </article>
+
+      <footer className="bg-[#1e3a5f] text-white/60 py-6 text-center text-sm"><p>&copy; {new Date().getFullYear()} אוטולוג (AutoLog). כל הזכויות שמורות.</p></footer>
+    </div>
+  );
+}

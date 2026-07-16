@@ -8,6 +8,7 @@
 
 import { useEffect, useState } from 'react';
 import Button from '@/components/ui/Button';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import Badge from '@/components/ui/Badge';
 import {
   Facebook, Instagram, MessageCircle, Plus, Trash2, Loader2,
@@ -35,6 +36,7 @@ const PLATFORM_ICON: Record<string, React.ReactNode> = {
 export default function ConnectionsPanel() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
+  const [disconnectId, setDisconnectId] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -69,7 +71,6 @@ export default function ConnectionsPanel() {
   };
 
   const disconnect = async (id: string) => {
-    if (!confirm('לנתק את החיבור?')) return;
     try {
       const res = await fetch(`/api/admin/social/accounts?id=${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('ניתוק נכשל');
@@ -104,7 +105,7 @@ export default function ConnectionsPanel() {
                   <span className="font-medium">{a.accountName}</span>
                   <CheckCircle2 size={12} className="text-green-600" />
                   <button
-                    onClick={() => disconnect(a.id)}
+                    onClick={() => setDisconnectId(a.id)}
                     className="text-gray-400 hover:text-red-600"
                     title="נתק"
                   >
@@ -119,6 +120,15 @@ export default function ConnectionsPanel() {
           <Plus size={14} className="ms-1" /> חבר Facebook + Instagram
         </Button>
       </div>
+      <ConfirmDialog
+        isOpen={disconnectId !== null}
+        title="ניתוק חיבור"
+        message="לנתק את החיבור?"
+        confirmLabel="נתק"
+        danger
+        onConfirm={() => { const id = disconnectId; setDisconnectId(null); if (id) disconnect(id); }}
+        onCancel={() => setDisconnectId(null)}
+      />
     </div>
   );
 }

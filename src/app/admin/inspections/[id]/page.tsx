@@ -72,10 +72,10 @@ export default function AdminInspectionDetailPage({ params }: { params: { id: st
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" icon={<ArrowRight size={16} />} onClick={() => router.back()} />
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] rounded-lg flex items-center justify-center border-2 border-[#1e3a5f]">
-            <Shield size={22} className="text-[#1e3a5f]" />
+          <div className="w-10 h-10 bg-[#F3F6FA] rounded-lg flex items-center justify-center border-2 border-[#1B4E8A]">
+            <Shield size={22} className="text-[#1B4E8A]" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">פרטי אבחון</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1B4E8A]">פרטי אבחון</h1>
         </div>
       </div>
 

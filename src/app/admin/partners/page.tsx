@@ -181,9 +181,9 @@ export default function AdminPartnersPage() {
     <div className="p-6 max-w-7xl mx-auto" dir="rtl">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
-          <Handshake className="text-[#0d9488]" size={28} />
+          <Handshake className="text-[#2E77D0]" size={28} />
           <div>
-            <h1 className="text-2xl font-bold text-[#1e3a5f]">שותפים — תוכנית האפיליאט</h1>
+            <h1 className="text-2xl font-bold text-[#1B4E8A]">שותפים — תוכנית האפיליאט</h1>
             <p className="text-sm text-gray-500">ניהול שותפים, מעקב הרשמות, ותשלום עמלות</p>
           </div>
         </div>
@@ -200,7 +200,7 @@ export default function AdminPartnersPage() {
               <Users className="text-teal-600" size={22} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[#1e3a5f]">{stats.signups}</div>
+              <div className="text-2xl font-bold text-[#1B4E8A]">{stats.signups}</div>
               <div className="text-sm text-gray-500">סך הרשמות מאפיליאט</div>
             </div>
           </div>
@@ -211,7 +211,7 @@ export default function AdminPartnersPage() {
               <TrendingUp className="text-emerald-600" size={22} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[#1e3a5f]">{formatILS(stats.earned)}</div>
+              <div className="text-2xl font-bold text-[#1B4E8A]">{formatILS(stats.earned)}</div>
               <div className="text-sm text-gray-500">סך עמלות שצברו השותפים</div>
             </div>
           </div>
@@ -222,7 +222,7 @@ export default function AdminPartnersPage() {
               <Wallet className="text-amber-600" size={22} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[#1e3a5f]">{formatILS(stats.unpaid)}</div>
+              <div className="text-2xl font-bold text-[#1B4E8A]">{formatILS(stats.unpaid)}</div>
               <div className="text-sm text-gray-500">סך יתרה לתשלום</div>
             </div>
           </div>
@@ -266,7 +266,7 @@ export default function AdminPartnersPage() {
                   {/* Identity */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-lg text-[#1e3a5f] truncate">{p.name}</h3>
+                      <h3 className="font-bold text-lg text-[#1B4E8A] truncate">{p.name}</h3>
                       {p.status === 'active' && <Badge variant="success">פעיל</Badge>}
                       {p.status === 'paused' && <Badge variant="warning">מושהה</Badge>}
                       {p.status === 'archived' && <Badge variant="default">בארכיון</Badge>}
@@ -289,11 +289,11 @@ export default function AdminPartnersPage() {
                   <div className="grid grid-cols-4 gap-4 text-center lg:text-right">
                     <div>
                       <div className="text-xs text-gray-500">הרשמות</div>
-                      <div className="font-bold text-lg text-[#1e3a5f]">{p.totalSignups}</div>
+                      <div className="font-bold text-lg text-[#1B4E8A]">{p.totalSignups}</div>
                     </div>
                     <div>
                       <div className="text-xs text-gray-500">צבר</div>
-                      <div className="font-bold text-lg text-[#1e3a5f]">{formatILS(p.totalEarned)}</div>
+                      <div className="font-bold text-lg text-[#1B4E8A]">{formatILS(p.totalEarned)}</div>
                     </div>
                     <div>
                       <div className="text-xs text-gray-500">שולם</div>

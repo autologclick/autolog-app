@@ -131,7 +131,7 @@ export default function PaymentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
       <PageHeader title="תשלומים" backUrl="/user/profile" />
 
       <div className="space-y-6 pt-6 px-4 md:px-8 max-w-7xl mx-auto" dir="rtl">
@@ -141,13 +141,13 @@ export default function PaymentsPage() {
             {/* This Month */}
             <div className="bg-white rounded-xl p-3 text-center shadow-sm border border-gray-100">
               <p className="text-xs text-gray-500 mb-1">החודש</p>
-              <p className="text-2xl font-bold text-[#1e3a5f]">{formatCurrency(data.totalThisMonth)}</p>
+              <p className="text-2xl font-bold text-[#1B4E8A]">{formatCurrency(data.totalThisMonth)}</p>
               <p className="text-xs text-gray-400 mt-2">תשלומים מכל הסוגים</p>
             </div>
             {/* This Year */}
             <div className="bg-white rounded-xl p-3 text-center shadow-sm border border-gray-100">
               <p className="text-xs text-gray-500 mb-1">השנה</p>
-              <p className="text-2xl font-bold text-[#1e3a5f]">{formatCurrency(data.totalThisYear)}</p>
+              <p className="text-2xl font-bold text-[#1B4E8A]">{formatCurrency(data.totalThisYear)}</p>
               <p className="text-xs text-gray-400 mt-2">סה״כ הוצאות בשנה</p>
             </div>
             {/* Pending */}
@@ -166,7 +166,7 @@ export default function PaymentsPage() {
             <div className="w-8 h-8 bg-teal-500/10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-teal-600" />
             </div>
-            <h2 className="text-sm font-bold text-[#1e3a5f]">תובנות AI</h2>
+            <h2 className="text-sm font-bold text-[#1B4E8A]">תובנות AI</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Insight 1: Payment Summary */}
@@ -218,7 +218,7 @@ export default function PaymentsPage() {
             onClick={() => setSelectedStatus(tab.key)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
               selectedStatus === tab.key
-                ? 'bg-[#1e3a5f] text-white shadow-md'
+                ? 'bg-[#1B4E8A] text-white shadow-md'
                 : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
             }`}
           >
@@ -320,7 +320,7 @@ export default function PaymentsPage() {
                     {/* Details */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <p className="font-bold text-sm text-[#1e3a5f] truncate">{payment.garageName}</p>
+                        <p className="font-bold text-sm text-[#1B4E8A] truncate">{payment.garageName}</p>
                       </div>
                       <div className="flex items-center gap-3 text-xs text-gray-500">
                         <span>{SERVICE_TYPE_LABELS[payment.serviceType] || payment.serviceType}</span>
@@ -331,7 +331,7 @@ export default function PaymentsPage() {
 
                     {/* Amount + Arrow */}
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      <p className="font-bold text-lg text-[#1e3a5f]">{formatCurrency(payment.amount)}</p>
+                      <p className="font-bold text-lg text-[#1B4E8A]">{formatCurrency(payment.amount)}</p>
                       <ChevronDown
                         size={16}
                         className={`text-gray-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
@@ -386,7 +386,7 @@ export default function PaymentsPage() {
             <PieChart size={16} className="text-teal-600" />
             <span>סה״כ {filteredPayments.length} תשלומים</span>
           </div>
-          <p className="text-lg font-bold text-[#1e3a5f]">
+          <p className="text-lg font-bold text-[#1B4E8A]">
             {formatCurrency(filteredPayments.reduce((s, p) => s + p.amount, 0))}
           </p>
         </div>

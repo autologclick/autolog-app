@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import LicenseScanButton, { type ScanResult } from '@/components/ui/LicenseScanButton';
 import { getManufacturerNames, getModelNames } from '@/lib/vehicle-data';
+import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 
 interface OnboardingWizardProps {
   isOpen: boolean;
@@ -211,7 +212,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
           <div className="p-8 space-y-6 text-center">
             <div className="space-y-4">
               <div className="text-6xl">🚗</div>
-              <h1 className="text-3xl font-bold text-[#1e3a5f]">
+              <h1 className="text-3xl font-bold text-[#1B4E8A]">
                 {userFirstName ? `ברוכים הבאים, ${userFirstName}!` : 'ברוכים הבאים ל-AutoLog!'}
               </h1>
               <p className="text-gray-600 text-base leading-relaxed">
@@ -225,8 +226,8 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                   <CheckCircle2 size={16} className="text-teal-600" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800">הזמן תורים בקלות</p>
-                  <p className="text-sm text-gray-500">מצא מוסכים ובחר שעה בקליק</p>
+                  <p className="font-semibold text-gray-800">ניהול רכבים במקום אחד</p>
+                  <p className="text-sm text-gray-500">כל הרכבים, המסמכים והתחזוקה מסודרים</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -234,8 +235,8 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                   <CheckCircle2 size={16} className="text-teal-600" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800">ניהול רכבים</p>
-                  <p className="text-sm text-gray-500">עקוב אחרי כל הרכבים שלך ותחזוקתם</p>
+                  <p className="font-semibold text-gray-800">תזכורות אוטומטיות</p>
+                  <p className="text-sm text-gray-500">טסט וביטוח, לא תפספס תאריך חשוב</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -243,14 +244,14 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
                   <CheckCircle2 size={16} className="text-teal-600" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800">אבחון רכב לפני קנייה</p>
-                  <p className="text-sm text-gray-500">הזמן אבחון מקצועי לרכב שאתה שוקל לרכוש</p>
+                  <p className="font-semibold text-gray-800">מעקב הוצאות ותיעוד</p>
+                  <p className="text-sm text-gray-500">קבלות, פוליסות והיסטוריית טיפולים</p>
                 </div>
               </div>
             </div>
 
             <Button
-              onClick={() => setStep(2)}
+              onClick={() => setStep(GARAGES_ENABLED ? 2 : 3)}
               className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
             >
               בוא נתחיל
@@ -263,7 +264,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
         {step === 2 && (
           <div className="p-8 space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-[#1e3a5f]">מה תרצה לעשות?</h2>
+              <h2 className="text-2xl font-bold text-[#1B4E8A]">מה תרצה לעשות?</h2>
               <p className="text-sm text-gray-500">בחר את האפשרות שמתאימה לך</p>
             </div>
 
@@ -313,7 +314,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
           <div className="p-6 space-y-4">
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-[#1e3a5f]">הוסף את הרכב שלך</h2>
+                <h2 className="text-xl font-bold text-[#1B4E8A]">הוסף את הרכב שלך</h2>
                 <div className="text-2xl">🚗</div>
               </div>
               <p className="text-sm text-gray-500">צלם רישיון רכב או הזן פרטים ידנית</p>
@@ -510,7 +511,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: OnboardingWizar
             {shareState === 'idle' && (
             <div className="flex gap-3 pt-2">
               <Button
-                onClick={() => setStep(2)}
+                onClick={() => setStep(GARAGES_ENABLED ? 2 : 1)}
                 disabled={loading}
                 className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-xl"
               >

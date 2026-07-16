@@ -267,36 +267,40 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
     e.target.value = '';
   };
 
-  /** Manual entry input UI */
-  const ManualEntryUI = () => (
-    <div className="mt-2 flex gap-2 items-center" dir="ltr">
+  /** Manual entry input UI — plain JSX (not a nested component) so the input
+      keeps focus across re-renders; input on its own row so nothing overflows */
+  const manualEntryUI = (
+    <div className="mt-2 space-y-2">
       <input
         type="text"
+        dir="ltr"
         inputMode="numeric"
         pattern="[0-9]*"
         value={manualPlate}
         onChange={(e) => setManualPlate(e.target.value.replace(/[^\d-]/g, ''))}
         placeholder="12345678"
         maxLength={10}
-        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-center font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-lg text-sm text-center font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-blue-400"
         onKeyDown={(e) => { if (e.key === 'Enter') handleManualSubmit(); }}
       />
-      <button
-        type="button"
-        onClick={handleManualSubmit}
-        disabled={manualLoading || manualPlate.replace(/[-\s]/g, '').length < 7}
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition disabled:opacity-50 flex items-center gap-1"
-      >
-        {manualLoading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
-        חפש
-      </button>
-      <button
-        type="button"
-        onClick={() => { setScanStatus('idle'); setStatusMessage(''); setManualPlate(''); }}
-        className="px-3 py-2 text-gray-500 hover:text-gray-700 text-sm"
-      >
-        ביטול
-      </button>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={handleManualSubmit}
+          disabled={manualLoading || manualPlate.replace(/[-\s]/g, '').length < 7}
+          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition disabled:opacity-50 flex items-center justify-center gap-1.5"
+        >
+          {manualLoading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
+          חפש
+        </button>
+        <button
+          type="button"
+          onClick={() => { setScanStatus('idle'); setStatusMessage(''); setManualPlate(''); }}
+          className="px-4 py-2 text-gray-500 hover:text-gray-700 text-sm border border-gray-200 rounded-lg"
+        >
+          ביטול
+        </button>
+      </div>
     </div>
   );
 
@@ -341,7 +345,7 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
             </div>
           )}
 
-          {scanStatus === 'manual' && <ManualEntryUI />}
+          {scanStatus === 'manual' && manualEntryUI}
 
           {scanStatus !== 'loading' && scanStatus !== 'manual' && (
             <div className="flex gap-2">
@@ -428,7 +432,7 @@ export default function LicenseScanButton({ onScanResult, compact = false }: Lic
         )}
 
         {/* Manual entry UI */}
-        {scanStatus === 'manual' && <ManualEntryUI />}
+        {scanStatus === 'manual' && manualEntryUI}
 
         {/* Action buttons */}
         {scanStatus !== 'loading' && scanStatus !== 'manual' && (

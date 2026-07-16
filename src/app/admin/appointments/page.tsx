@@ -241,7 +241,7 @@ export default function AdminAppointmentsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#1e3a5f] flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-[#1B4E8A] flex items-center gap-2">
             <Calendar size={28} />
             ניהול תורים
           </h1>
@@ -614,7 +614,7 @@ function MobileAppointmentCard({
       <button onClick={onToggle} className="w-full text-right p-4">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <div className="font-bold text-[#1e3a5f]">{appointment.user.fullName}</div>
+            <div className="font-bold text-[#1B4E8A]">{appointment.user.fullName}</div>
             <div className="text-sm text-gray-500">
               {appointment.garage.name} • {formatDate(appointment.date)} {appointment.time}
             </div>
@@ -675,7 +675,7 @@ function GaragePerformancePanel({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-[#1e3a5f]">ביצועי מוסכים - סיכום כללי</h2>
+        <h2 className="text-lg font-bold text-[#1B4E8A]">ביצועי מוסכים - סיכום כללי</h2>
         <button
           onClick={onExport}
           className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold border border-gray-300 text-gray-600 hover:bg-gray-50 transition"

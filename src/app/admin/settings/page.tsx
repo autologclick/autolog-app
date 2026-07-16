@@ -160,11 +160,11 @@ export default function AdminSettingsPage() {
     <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-[#fef7ed] border-2 border-[#1e3a5f] rounded-lg flex items-center justify-center">
-          <Settings size={22} className="text-[#1e3a5f]" />
+        <div className="w-10 h-10 bg-[#F3F6FA] border-2 border-[#1B4E8A] rounded-lg flex items-center justify-center">
+          <Settings size={22} className="text-[#1B4E8A]" />
         </div>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">הגדרות מערכת</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1B4E8A]">הגדרות מערכת</h1>
           <p className="text-sm text-gray-500">ניהול המערכת וחשבון מנהל</p>
         </div>
       </div>
@@ -210,7 +210,7 @@ export default function AdminSettingsPage() {
               value={adminProfile.phone}
               onChange={e => setAdminProfile({ ...adminProfile, phone: e.target.value })}
             />
-            <Input label="טלפון תמיכה" defaultValue="054-316-1610" disabled />
+            <Input label="טלפון תמיכה" defaultValue="053-526-6741" disabled />
           </div>
 
           {saveMessage && (

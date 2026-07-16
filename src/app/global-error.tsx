@@ -62,7 +62,7 @@ export default function GlobalError({
 
   return (
     <html lang="he" dir="rtl">
-      <body style={{ margin: 0, fontFamily: 'Arial, sans-serif', background: '#fef7ed' }}>
+      <body style={{ margin: 0, fontFamily: 'Arial, sans-serif', background: '#F3F6FA' }}>
         <div
           style={{
             minHeight: '100vh',
@@ -84,7 +84,7 @@ export default function GlobalError({
             }}
           >
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
-            <h1 style={{ color: '#1e3a5f', margin: '0 0 12px', fontSize: '22px' }}>
+            <h1 style={{ color: '#1B4E8A', margin: '0 0 12px', fontSize: '22px' }}>
               אופס, משהו השתבש
             </h1>
             <p style={{ color: '#64748b', margin: '0 0 24px', lineHeight: 1.6 }}>
@@ -96,7 +96,7 @@ export default function GlobalError({
                 href="/"
                 style={{
                   display: 'inline-block',
-                  background: '#1e3a5f',
+                  background: '#1B4E8A',
                   color: '#fff',
                   textDecoration: 'none',
                   padding: '12px 28px',
@@ -111,7 +111,7 @@ export default function GlobalError({
                   onClick={openReportDialog}
                   style={{
                     background: '#f0fdfa',
-                    color: '#0d9488',
+                    color: '#2E77D0',
                     border: '1px solid #99f6e4',
                     padding: '12px 24px',
                     borderRadius: '10px',

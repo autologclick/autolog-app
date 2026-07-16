@@ -150,11 +150,11 @@ export default function CustomersPage() {
     <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-[#fef7ed] rounded-lg border-2 border-[#1e3a5f] flex items-center justify-center shadow-sm">
-          <Users size={20} className="text-[#1e3a5f]" />
+        <div className="w-10 h-10 bg-[#F3F6FA] rounded-lg border-2 border-[#1B4E8A] flex items-center justify-center shadow-sm">
+          <Users size={20} className="text-[#1B4E8A]" />
         </div>
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">לקוחות</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#1B4E8A]">לקוחות</h1>
           <p className="text-sm text-gray-500">ניהול לקוחות והרכבים שלהם</p>
         </div>
       </div>
@@ -185,12 +185,12 @@ export default function CustomersPage() {
 
       {/* AI Insights */}
       {customers.length > 0 && (
-        <div className="bg-gradient-to-r from-[#fef7ed] to-white border border-emerald-200 rounded-xl p-5 shadow-sm">
+        <div className="bg-gradient-to-r from-[#F3F6FA] to-white border border-emerald-200 rounded-xl p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-emerald-600" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI ללקוחות</h2>
+            <h2 className="text-lg font-bold text-[#1B4E8A]">תובנות AI ללקוחות</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="bg-white rounded-lg p-3 border border-gray-100">
@@ -302,7 +302,7 @@ export default function CustomersPage() {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <h3 className="font-bold text-[#1e3a5f] truncate">{customer.fullName}</h3>
+                      <h3 className="font-bold text-[#1B4E8A] truncate">{customer.fullName}</h3>
                       {visitScore === 'gold' && (
                         <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium flex-shrink-0 flex items-center gap-1">
                           <Star size={12} />
@@ -404,14 +404,14 @@ export default function CustomersPage() {
                             <div key={vehicle.id} className="border border-gray-200 rounded-xl overflow-hidden">
                               <button
                                 onClick={() => toggleVehicle(vehicle.id)}
-                                className="w-full p-3 flex items-center justify-between hover:bg-[#fef7ed]/50 transition"
+                                className="w-full p-3 flex items-center justify-between hover:bg-[#F3F6FA]/50 transition"
                               >
                                 <div className="flex items-center gap-3 text-right">
                                   <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
                                     <Car size={18} className="text-blue-600" />
                                   </div>
                                   <div>
-                                    <p className="font-bold text-sm text-[#1e3a5f]">{vehicle.nickname}</p>
+                                    <p className="font-bold text-sm text-[#1B4E8A]">{vehicle.nickname}</p>
                                     <p className="text-xs text-gray-500">
                                       {vehicle.manufacturer} {vehicle.model} • {vehicle.year} • {vehicle.licensePlate}
                                     </p>

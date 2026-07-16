@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'he_IL',
     siteName: 'AutoLog',
+    images: [{ url: '/og/privacy.png', width: 1200, height: 630, alt: 'מדיניות הפרטיות של אוטולוג' }],
   },
 };
 

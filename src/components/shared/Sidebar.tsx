@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { LogoIcon } from '@/components/ui/Logo';
-import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
+import { GARAGES_ENABLED, SOS_ENABLED } from '@/lib/constants/feature-flags';
 
 interface NavItem {
   label: string;
@@ -28,7 +28,7 @@ const userNav: NavItem[] = [
   { label: 'מסמכים', href: '/user/documents', icon: <FolderOpen size={20} /> },
   { label: 'הוצאות', href: '/user/expenses', icon: <Receipt size={20} /> },
   { label: 'הזמנת מוסך', href: '/user/book-garage', icon: <MapPin size={20} />, comingSoon: !GARAGES_ENABLED },
-  { label: 'SOS חירום', href: '/user/sos', icon: <AlertTriangle size={20} />, comingSoon: !GARAGES_ENABLED },
+  { label: 'SOS חירום', href: '/user/sos', icon: <AlertTriangle size={20} />, comingSoon: !SOS_ENABLED },
   { label: 'מדריך משתמש', href: '/help', icon: <HelpCircle size={20} /> },
   { label: 'פרופיל', href: '/user/profile', icon: <User size={20} /> },
 ];
@@ -36,8 +36,10 @@ const userNav: NavItem[] = [
 // Mobile bottom nav items — new simplified 3-tab navigation
 const userMobileNav: NavItem[] = [
   { label: 'דף הבית', href: '/user', icon: <Home size={20} /> },
-  { label: 'שירות', href: '/user/service', icon: <Wrench size={20} /> },
-  { label: 'פרופיל', href: '/user/profile', icon: <User size={20} /> },
+  { label: 'רכבים', href: '/user/vehicles', icon: <Car size={20} /> },
+  { label: 'מסמכים', href: '/user/documents', icon: <FolderOpen size={20} /> },
+  { label: 'הוצאות', href: '/user/expenses', icon: <Receipt size={20} /> },
+  { label: 'עוד', href: '/user/more', icon: <Menu size={20} /> },
 ];
 
 const adminNav: NavItem[] = [
@@ -134,11 +136,16 @@ export default function Sidebar({ portal, userName = 'משתמש', userRole }: S
   }, [mobileOpen]);
 
   const navItems = portal === 'admin' ? adminNav : portal === 'garage' ? garageNav : userNav;
-  const mobileNavItems = portal === 'admin' ? adminMobileNav : portal === 'garage' ? garageMobileNav : userMobileNav;
+  const baseMobileNav = portal === 'admin' ? adminMobileNav : portal === 'garage' ? garageMobileNav : userMobileNav;
+  const mobileNavItems = portal === 'garage'
+    ? [...baseMobileNav, { label: 'רכב שלי', href: '/user', icon: <Car size={20} /> }]
+    : (portal === 'user' && canSeeGarage)
+      ? [...baseMobileNav, { label: 'מוסך', href: '/garage', icon: <Wrench size={20} /> }]
+      : baseMobileNav;
 
   const portalColors = {
     user: {
-      bg: 'bg-gradient-to-b from-[#1e3a5f] to-[#2a4a6f]',
+      bg: 'bg-gradient-to-b from-[#1B4E8A] to-[#12345C]',
       accent: 'teal-600',
       accentLight: 'teal-100',
     },
@@ -168,6 +175,13 @@ export default function Sidebar({ portal, userName = 'משתמש', userRole }: S
 
   const isActive = (href: string) => {
     if (href === `/${portal}`) return pathname === href;
+    // For user portal: more tab highlights for everything reached from the More page
+    if (portal === 'user' && href === '/user/more') {
+      return ['/user/more', '/user/service', '/user/book-garage', '/user/appointments', '/user/sos',
+        '/user/treatments', '/user/history', '/user/reports', '/user/bodywork', '/user/benefits',
+        '/user/payments', '/user/notifications', '/user/security', '/user/settings', '/user/profile',
+        '/user/support'].some(p => pathname.startsWith(p));
+    }
     // For user portal: service tab should highlight for book-garage, appointments, sos
     if (portal === 'user' && href === '/user/service') {
       return ['/user/service', '/user/book-garage', '/user/appointments', '/user/sos'].some(p => pathname.startsWith(p));
@@ -309,7 +323,7 @@ export default function Sidebar({ portal, userName = 'משתמש', userRole }: S
       {/* Mobile Hamburger Button — hidden for user portal */}
       {!hideHamburger && (
         <button
-          className="lg:hidden fixed top-4 right-4 z-50 bg-white text-[#1e3a5f] p-2 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+          className="lg:hidden fixed top-4 right-4 z-50 bg-white text-[#1B4E8A] p-2 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label={mobileOpen ? 'סגור תפריט' : 'פתח תפריט'}
         >
@@ -338,7 +352,7 @@ export default function Sidebar({ portal, userName = 'משתמש', userRole }: S
           onClick={() => setCollapsed(!collapsed)}
           aria-label={collapsed ? 'הרחב תפריט' : 'כווץ תפריט'}
         >
-          <ChevronRight className={cn('h-4 w-4 text-[#1e3a5f] transition-transform duration-300', !collapsed && 'rotate-180')} />
+          <ChevronRight className={cn('h-4 w-4 text-[#1B4E8A] transition-transform duration-300', !collapsed && 'rotate-180')} />
         </button>
       </aside>
 

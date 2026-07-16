@@ -12,9 +12,13 @@ import {
 import { SERVICE_TYPE_HEB, APPOINTMENT_STATUS_HEB } from '@/lib/constants/translations';
 import { sendEmail, buildCustomerStatusEmailHtml } from '@/lib/email';
 import { sendPushToUser } from '@/lib/push-sender';
+import { notifyTelegram } from '@/lib/telegram';
+import { createGarageTreatment } from '@/lib/treatments-db';
 
 const updateSchema = z.object({
   status: z.enum(['confirmed', 'rejected', 'in_progress', 'completed', 'cancelled']),
+  cost: z.number().min(0).optional(),
+  mileage: z.number().int().min(0).optional(),
   completionNotes: z.string().optional(),
   rejectionReason: z.string().max(300).optional(),
 });
@@ -34,7 +38,7 @@ export async function PUT(
       return validationErrorResponse(validation.error);
     }
 
-    const { status, completionNotes, rejectionReason } = validation.data;
+    const { status, completionNotes, rejectionReason, cost, mileage } = validation.data;
 
     // Get appointment and verify garage ownership
     const appointment = await prisma.appointment.findUnique({
@@ -112,20 +116,56 @@ export async function PUT(
       },
     });
 
-    // If completed, create a notification for the customer
+    // If completed: update odometer, create a pending treatment (with cost) so
+    // it lands in the customer's vehicle history + expenses, then notify them.
     if (status === 'completed') {
       const serviceLabel = SERVICE_TYPE_HEB[appointment.serviceType] || appointment.serviceType;
       const vehicleLabel = appointment.vehicle.nickname || `${appointment.vehicle.manufacturer} ${appointment.vehicle.model}`;
 
+      const apptIds = await prisma.appointment.findUnique({
+        where: { id },
+        select: { vehicleId: true, userId: true, garageId: true, serviceType: true },
+      });
+
+      const SERVICE_TO_TREATMENT: Record<string, string> = {
+        inspection: 'inspection',
+        maintenance: 'maintenance',
+        repair: 'repair',
+        test_prep: 'maintenance',
+      };
+
+      let treatmentCreated = false;
+      if (apptIds) {
+        try {
+          await createGarageTreatment({
+            vehicleId: apptIds.vehicleId,
+            userId: apptIds.userId,
+            garageId: apptIds.garageId,
+            garageName: appointment.garage.name,
+            type: (SERVICE_TO_TREATMENT[apptIds.serviceType] || 'other') as any,
+            title: serviceLabel,
+            description: completionNotes || undefined,
+            mileage: typeof mileage === 'number' ? mileage : undefined,
+            cost: typeof cost === 'number' ? cost : undefined,
+            date: new Date().toISOString().slice(0, 10),
+          });
+          treatmentCreated = true;
+        } catch (e) {
+          console.error('[appointments] treatment creation on completion failed', e);
+        }
+      }
+
       await prisma.notification.create({
         data: {
           userId: appointment.user.id,
-          type: 'appointment',
-          title: 'הטיפול הושלם בהצלחה!',
-          message: completionNotes
-            ? `${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}) הושלם ב${appointment.garage.name}. סיכום: ${completionNotes}`
-            : `${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}) הושלם בהצלחה ב${appointment.garage.name}.`,
-          link: '/user/appointments',
+          type: treatmentCreated ? 'system' : 'appointment',
+          title: treatmentCreated ? 'טיפול חדש ממתין לאישורך' : 'הטיפול הושלם בהצלחה!',
+          message: treatmentCreated
+            ? `${appointment.garage.name} סיים/ה ${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}). לחיצה כאן לאישור ולתיעוד הטיפול ברכב שלך.`
+            : completionNotes
+              ? `${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}) הושלם ב${appointment.garage.name}. סיכום: ${completionNotes}`
+              : `${serviceLabel} ברכב ${vehicleLabel} (${appointment.vehicle.licensePlate}) הושלם בהצלחה ב${appointment.garage.name}.`,
+          link: treatmentCreated ? '/user/treatments' : '/user/appointments',
         },
       });
     }
@@ -250,6 +290,11 @@ export async function PUT(
         data: { link: '/user/appointments', type: 'appointment_status' },
       }).catch(() => {});
     }
+
+    notifyTelegram(
+      '✅ עדכון סטטוס תור',
+      `${updated.garage.name} → ${APPOINTMENT_STATUS_HEB[status] || status}\nלקוח: ${updated.user.fullName}\nרכב: ${updated.vehicle.nickname || updated.vehicle.licensePlate}`,
+    );
 
     return jsonResponse({
       appointment: updated,

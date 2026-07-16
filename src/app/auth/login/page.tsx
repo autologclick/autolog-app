@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/ui/Logo';
 import { getStoredReferralCode } from '@/components/shared/ReferralCapture';
 
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -264,7 +265,7 @@ export default function LoginPage() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white shadow-lg"
+                  className="w-full bg-[#2E77D0] hover:bg-[#1D4F8F] text-white shadow-lg"
                   size="lg"
                   loading={loading}
                   disabled={emailOtp.length !== 6 || (requiresTotp && totpCode.length < 6)}
@@ -298,6 +299,16 @@ export default function LoginPage() {
               </form>
             ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Google Sign-in / Sign-up */}
+              <div className="space-y-4">
+                <GoogleSignInButton variant={isRegister ? 'signup' : 'signin'} next="/user" />
+                <div className="flex items-center gap-3 text-xs text-gray-400">
+                  <span className="h-px flex-1 bg-gray-200" />
+                  <span>או</span>
+                  <span className="h-px flex-1 bg-gray-200" />
+                </div>
+              </div>
+
               {/* Register Fields */}
               {isRegister && (
                 <>
@@ -368,10 +379,30 @@ export default function LoginPage() {
                 </div>
               )}
 
+              {/* Terms & Privacy consent — required for registration */}
+              {isRegister && (
+                <div className="animate-fade-in flex items-start gap-2.5 text-sm" style={{ animationDelay: '0.5s' }}>
+                  <input
+                    id="acceptedTerms"
+                    name="acceptedTerms"
+                    type="checkbox"
+                    required
+                    className="mt-1 h-4 w-4 shrink-0 rounded border-slate-300 text-[#2E77D0] focus:ring-2 focus:ring-teal-400 cursor-pointer"
+                  />
+                  <label htmlFor="acceptedTerms" className="text-gray-600 leading-relaxed cursor-pointer">
+                    קראתי ואני מסכים/ה ל
+                    <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-[#2E77D0] font-medium hover:underline">תנאי השימוש</a>
+                    {' '}ול
+                    <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-[#2E77D0] font-medium hover:underline">מדיניות הפרטיות</a>
+                    , לרבות איסוף המידע ותיעוד תאונות.
+                  </label>
+                </div>
+              )}
+
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl"
+                className="w-full bg-[#2E77D0] hover:bg-[#1D4F8F] text-white shadow-lg hover:shadow-xl"
                 size="lg"
                 loading={loading}
                 icon={isRegister ? <UserPlus size={18} /> : <LogIn size={18} />}

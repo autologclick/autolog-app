@@ -117,11 +117,11 @@ export default function AdminSosPage() {
     <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] border-2 border-[#1e3a5f] rounded-lg flex items-center justify-center">
-            <AlertCircle size={20} className="text-[#1e3a5f]" />
+          <div className="w-10 h-10 bg-[#F3F6FA] border-2 border-[#1B4E8A] rounded-lg flex items-center justify-center">
+            <AlertCircle size={20} className="text-[#1B4E8A]" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">אירועי SOS</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1B4E8A]">אירועי SOS</h1>
             <p className="text-sm text-gray-500">ניהול ומעקב אירועי חירום</p>
           </div>
         </div>
@@ -141,7 +141,7 @@ export default function AdminSosPage() {
               key={tab.key}
               onClick={() => setFilter(tab.key)}
               className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition flex items-center gap-2 ${
-                filter === tab.key ? 'bg-[#1e3a5f] text-white shadow-md' : 'bg-white text-gray-600 border-2 border-gray-300 hover:border-[#1e3a5f]'
+                filter === tab.key ? 'bg-[#1B4E8A] text-white shadow-md' : 'bg-white text-gray-600 border-2 border-gray-300 hover:border-[#1B4E8A]'
               }`}
             >
               <IconComponent size={14} />
@@ -216,7 +216,7 @@ export default function AdminSosPage() {
                 {/* Status Update Section */}
                 <button
                   onClick={() => setExpandedId(expandedId === event.id ? null : event.id)}
-                  className="w-full flex items-center justify-between p-2 hover:bg-[#fef7ed]/50 rounded-lg transition text-xs text-gray-600"
+                  className="w-full flex items-center justify-between p-2 hover:bg-[#F3F6FA]/50 rounded-lg transition text-xs text-gray-600"
                 >
                   <span>עדכן סטטוס</span>
                   <ChevronDown size={16} className={`transition-transform ${expandedId === event.id ? 'rotate-180' : ''}`} />

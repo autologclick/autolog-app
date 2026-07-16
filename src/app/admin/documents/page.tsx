@@ -123,11 +123,11 @@ export default function AdminDocumentsPage() {
       <div>
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-[#fef7ed] border-2 border-[#1e3a5f] rounded-lg flex items-center justify-center">
-            <FolderOpen className="w-5 h-5 text-[#1e3a5f]" />
+          <div className="w-10 h-10 bg-[#F3F6FA] border-2 border-[#1B4E8A] rounded-lg flex items-center justify-center">
+            <FolderOpen className="w-5 h-5 text-[#1B4E8A]" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">ניהול מסמכים</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1B4E8A]">ניהול מסמכים</h1>
             <p className="text-sm text-gray-500">ניהול וצפייה בכל המסמכים של המשתמשים</p>
           </div>
         </div>
@@ -139,7 +139,7 @@ export default function AdminDocumentsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-600 text-sm">סה"כ מסמכים</p>
-                  <p className="text-2xl font-bold text-[#1e3a5f]">{stats.total}</p>
+                  <p className="text-2xl font-bold text-[#1B4E8A]">{stats.total}</p>
                 </div>
                 <FileText className="w-8 h-8 text-gray-400" />
               </div>
@@ -224,12 +224,12 @@ export default function AdminDocumentsPage() {
 
         {/* AI Document Insights */}
         {!loading && documents.length > 0 && (
-          <div className="bg-gradient-to-r from-[#fef7ed] to-white border border-teal-200 rounded-xl p-5 shadow-sm mb-6">
+          <div className="bg-gradient-to-r from-[#F3F6FA] to-white border border-teal-200 rounded-xl p-5 shadow-sm mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-[#0d9488] bg-opacity-10 rounded-lg flex items-center justify-center">
-                <Brain size={18} className="text-[#0d9488]" />
+              <div className="w-8 h-8 bg-[#2E77D0] bg-opacity-10 rounded-lg flex items-center justify-center">
+                <Brain size={18} className="text-[#2E77D0]" />
               </div>
-              <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI למסמכים</h2>
+              <h2 className="text-lg font-bold text-[#1B4E8A]">תובנות AI למסמכים</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {stats.expired > 0 && (
@@ -323,12 +323,12 @@ export default function AdminDocumentsPage() {
                 </thead>
                 <tbody>
                   {documents.map((doc) => (
-                    <tr key={doc.id} className="border-b border-gray-200 hover:bg-[#fef7ed]/50">
+                    <tr key={doc.id} className="border-b border-gray-200 hover:bg-[#F3F6FA]/50">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <FileText className="w-5 h-5 text-gray-400 flex-shrink-0" />
                           <div>
-                            <p className="font-medium text-[#1e3a5f]">{doc.title}</p>
+                            <p className="font-medium text-[#1B4E8A]">{doc.title}</p>
                             <Badge variant={getTypeBadgeColor(doc.type)} className="text-xs mt-1">
                               {typeLabels[doc.type] || doc.type}
                             </Badge>
@@ -339,7 +339,7 @@ export default function AdminDocumentsPage() {
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <Car className="w-4 h-4" />
                           <div>
-                            <p className="font-medium text-[#1e3a5f]">{doc.vehicleNickname}</p>
+                            <p className="font-medium text-[#1B4E8A]">{doc.vehicleNickname}</p>
                             <p className="text-xs text-gray-500">{doc.licensePlate}</p>
                           </div>
                         </div>
@@ -347,7 +347,7 @@ export default function AdminDocumentsPage() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 text-sm">
                           <User className="w-4 h-4 text-gray-400" />
-                          <span className="text-[#1e3a5f]">{doc.ownerName}</span>
+                          <span className="text-[#1B4E8A]">{doc.ownerName}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -384,7 +384,7 @@ export default function AdminDocumentsPage() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <FileText className="w-5 h-5 text-gray-400" />
-                          <p className="font-medium text-[#1e3a5f]">{doc.title}</p>
+                          <p className="font-medium text-[#1B4E8A]">{doc.title}</p>
                         </div>
                         <Badge variant={getTypeBadgeColor(doc.type)} className="text-xs">
                           {typeLabels[doc.type] || doc.type}
@@ -396,13 +396,13 @@ export default function AdminDocumentsPage() {
                       <div className="flex items-center gap-2 text-gray-600">
                         <Car className="w-4 h-4" />
                         <div>
-                          <p className="font-medium text-[#1e3a5f]">{doc.vehicleNickname}</p>
+                          <p className="font-medium text-[#1B4E8A]">{doc.vehicleNickname}</p>
                           <p className="text-xs text-gray-500">{doc.licensePlate}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
                         <User className="w-4 h-4" />
-                        <span className="text-[#1e3a5f]">{doc.ownerName}</span>
+                        <span className="text-[#1B4E8A]">{doc.ownerName}</span>
                       </div>
                     </div>
 

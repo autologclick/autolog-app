@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
 
 const post = getPostBySlug('7-applikatziot-lenihul-rechev-2026')!;
 
@@ -19,15 +20,16 @@ export const metadata: Metadata = {
     publishedTime: post.publishedAt,
     authors: [post.author],
     locale: 'he_IL',
-    siteName: 'AutoLog',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
   },
   twitter: { card: 'summary_large_image', title: post.title, description: post.description },
 };
 
 export default function BlogPostPage() {
   return (
-    <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
-      <header className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white">
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
           <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1">
@@ -38,7 +40,7 @@ export default function BlogPostPage() {
 
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] leading-tight mb-4">{post.title}</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] leading-tight mb-4">{post.title}</h1>
 
         <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
           <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
@@ -53,7 +55,7 @@ export default function BlogPostPage() {
             והנה הבדיקה האובייקטיבית: מה כל אחת מציעה, מה החסרונות, ולמי כל אחת מתאימה.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">הקריטריונים שלפיהם דירגתי</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">הקריטריונים שלפיהם דירגתי</h2>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li>תמיכה בעברית מלאה (לא רק תרגום פושר)</li>
             <li>אינטגרציה עם משרד הרישוי הישראלי</li>
@@ -64,7 +66,7 @@ export default function BlogPostPage() {
             <li>ממשק משתמש ברמה ישראלית</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">1. AutoLog — הישראלית | ציון: 9.5/10</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">1. AutoLog — הישראלית | ציון: 9.5/10</h2>
           <p>
             AutoLog היא הפלטפורמה הישראלית המובילה לניהול רכב פרטי, בנויה במיוחד עבור בעלי רכב בישראל.
           </p>
@@ -83,7 +85,7 @@ export default function BlogPostPage() {
           <p><strong>חסרונות:</strong> יחסית חדשה (אבל בצמיחה מהירה), פחות מוכרת בחו&quot;ל.</p>
           <p><strong>מתאים ל:</strong> כל בעל רכב פרטי בישראל.</p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">2. Drivvo — הבינלאומית | ציון: 7.5/10</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">2. Drivvo — הבינלאומית | ציון: 7.5/10</h2>
           <p>אפליקציה ברזילאית עם נוכחות גלובלית, 100,000+ הורדות בישראל.</p>
           <p><strong>יתרונות:</strong> ותיקה ויציבה, ממשק לעברית (לא מצוין), קהילה גדולה, דוחות יפים.</p>
           <p>
@@ -91,37 +93,37 @@ export default function BlogPostPage() {
             עברית פושרת, פיצ&apos;רים מתקדמים בתשלום, אין סריקת מסמכים אוטומטית.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">3. Fuelio — מומחית הדלק | ציון: 6.5/10</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">3. Fuelio — מומחית הדלק | ציון: 6.5/10</h2>
           <p>אפליקציה ספציפית למעקב צריכת דלק.</p>
           <p><strong>יתרונות:</strong> הכי טובה למעקב דלק, דוחות צריכה מפורטים, חינמית.</p>
           <p><strong>חסרונות:</strong> רק דלק — לא ניהול מלא, אין תמיכה בעברית, אין תזכורות, ממשק מיושן.</p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">4. Car Care — היסטוריית תחזוקה | ציון: 6/10</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">4. Car Care — היסטוריית תחזוקה | ציון: 6/10</h2>
           <p>
             אפליקציה אמריקאית למעקב תחזוקה. <strong>יתרונות:</strong> תזכורות לטיפולים, ניהול מסמכים בסיסי.
             <strong> חסרונות:</strong> באנגלית בלבד, ללא אינטגרציה ישראלית, פיצ&apos;רים מוגבלים בגרסה החינמית.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">5. iPointer — לבעלי GPS Pointer | ציון: 5.5/10</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">5. iPointer — לבעלי GPS Pointer | ציון: 5.5/10</h2>
           <p>
             אפליקציית הלוויין הישראלית. <strong>יתרונות:</strong> ישראלית, מעקב GPS מלא.
             <strong> חסרונות:</strong> דורש רכישת מכשיר (1,000+ ש&quot;ח), דמי מנוי חודשיים, פוקוס על מיגון לא ניהול.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">6. Movcar — לחברות וצי | ציון: 4/10 לבעל רכב פרטי</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">6. Movcar — לחברות וצי | ציון: 4/10 לבעל רכב פרטי</h2>
           <p>
             אפליקציה ישראלית לחברות עם צי קטן. <strong>חסרונות:</strong> B2B — מורכבת מדי לבעל רכב פרטי,
             דורש הגדרה מורכבת, פיצ&apos;רים יקרים בתשלום.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">7. אפליקציות יצרני הרכב | ציון: 5/10</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">7. אפליקציות יצרני הרכב | ציון: 5/10</h2>
           <p>
             לכל יצרן יש אפליקציה משלו (Toyota, Hyundai, Mazda).
             <strong> חסרונות:</strong> עובדת רק עם הרכב של אותו יצרן — אם יש כמה רכבים, צריך כמה אפליקציות.
             פיצ&apos;רים מצומצמים מאוד, אין מעקב הוצאות.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">טבלת השוואה מסכמת</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">טבלת השוואה מסכמת</h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead>
@@ -143,7 +145,7 @@ export default function BlogPostPage() {
             </table>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">המלצתי</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">המלצתי</h2>
           <p>
             עבור <strong>בעל רכב פרטי בישראל</strong>, אין שאלה — AutoLog היא ההמלצה. היא בנויה במיוחד עבור השוק הישראלי,
             מקיפה את כל הצרכים, וחינמית לחלוטין.
@@ -153,31 +155,31 @@ export default function BlogPostPage() {
             עבור <strong>מי שמחפש רק מעקב דלק</strong> — Fuelio.
           </p>
 
-          <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
+          <div className="bg-[#1B4E8A] text-white rounded-2xl p-8 my-8 text-center">
             <h3 className="text-xl font-bold mb-3">נסו את AutoLog בחינם</h3>
             <p className="text-white/80 mb-5 text-sm">
               ללא הורדה, ללא כרטיס אשראי, ללא הגבלת זמן — פשוט הירשמו ותתחילו לנהל את הרכב חכם.
             </p>
-            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg">
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-cream-500 text-white font-bold rounded-xl hover:bg-cream-600 transition shadow-lg">
               הרשמה בחינם<ArrowLeft size={16} />
             </Link>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">שאלות נפוצות</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">שאלות נפוצות</h2>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">האם אפשר להשתמש בכמה אפליקציות במקביל?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">האם אפשר להשתמש בכמה אפליקציות במקביל?</h3>
           <p>כן, אבל זה לא מומלץ. תקבלו תזכורות כפולות וקשה לעקוב. עדיף לבחור אחת ולהיצמד אליה.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">מה ההבדל בין אפליקציה ישראלית לבינלאומית?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">מה ההבדל בין אפליקציה ישראלית לבינלאומית?</h3>
           <p>אינטגרציה עם משרד הרישוי, תזכורות לפי החוק הישראלי, תמיכה בעברית, ושירות לקוחות בשעות ישראל.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">האם AutoLog באמת חינמית?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">האם AutoLog באמת חינמית?</h3>
           <p>כן, חינמית לחלוטין. אין דמי מנוי, אין תשלום על פיצ&apos;רים פרימיום, אין כרטיס אשראי.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">האם המידע שלי בטוח באפליקציות אלה?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">האם המידע שלי בטוח באפליקציות אלה?</h3>
           <p>תלוי באפליקציה. AutoLog עומדת בתקנות הגנת הפרטיות הישראליות ומצפינה את כל הנתונים.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">מה לעשות אם האפליקציה נסגרת?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">מה לעשות אם האפליקציה נסגרת?</h3>
           <p>תמיד יצאו את הנתונים שלכם לקובץ Excel/PDF מדי פעם. אפליקציה איכותית מציעה אופציית ייצוא.</p>
         </div>
 
@@ -220,7 +222,7 @@ export default function BlogPostPage() {
         </div>
       </article>
 
-      <footer className="bg-[#1e3a5f] text-white/60 py-6 text-center text-sm">
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm">
         <p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p>
       </footer>
     </div>

@@ -200,7 +200,7 @@ export default function GarageApplyPage() {
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="w-10 h-10 text-green-600" />
             </div>
-            <h1 className="text-2xl font-bold text-[#1e3a5f] mb-3">הבקשה נשלחה בהצלחה!</h1>
+            <h1 className="text-2xl font-bold text-[#1B4E8A] mb-3">הבקשה נשלחה בהצלחה!</h1>
             <p className="text-gray-500 mb-6 leading-relaxed">
               תודה על ההתעניינות! צוות AutoLog יבדוק את הבקשה ויחזור אליכם תוך 1-3 ימי עסקים.
             </p>
@@ -242,7 +242,7 @@ export default function GarageApplyPage() {
           <Link href="/">
             <Logo size="md" />
           </Link>
-          <Link href="/auth/login" className="text-sm text-gray-500 hover:text-[#1e3a5f] transition">
+          <Link href="/auth/login" className="text-sm text-gray-500 hover:text-[#1B4E8A] transition">
             כניסה למערכת
           </Link>
         </div>
@@ -255,7 +255,7 @@ export default function GarageApplyPage() {
             <Building2 size={14} />
             <span>בקשת הצטרפות למוסכים</span>
           </div>
-          <h1 className="text-3xl font-extrabold text-[#1e3a5f] mb-3">הצטרפו כמוסך שותף</h1>
+          <h1 className="text-3xl font-extrabold text-[#1B4E8A] mb-3">הצטרפו כמוסך שותף</h1>
           <p className="text-gray-500 max-w-md mx-auto">
             מלאו את הפרטים ונחזור אליכם בהקדם. ההצטרפות כמוסך שותף היא בחינם.
           </p>
@@ -291,7 +291,7 @@ export default function GarageApplyPage() {
           {/* Step 1: Basic Info */}
           {step === 1 && (
             <div className="p-6 space-y-5">
-              <h2 className="text-lg font-bold text-[#1e3a5f]">פרטי המוסך ובעל העסק</h2>
+              <h2 className="text-lg font-bold text-[#1B4E8A]">פרטי המוסך ובעל העסק</h2>
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
@@ -396,7 +396,7 @@ export default function GarageApplyPage() {
           {/* Step 2: Additional Info */}
           {step === 2 && (
             <div className="p-6 space-y-5">
-              <h2 className="text-lg font-bold text-[#1e3a5f]">מידע נוסף על המוסך</h2>
+              <h2 className="text-lg font-bold text-[#1B4E8A]">מידע נוסף על המוסך</h2>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -581,13 +581,13 @@ export default function GarageApplyPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href="https://wa.me/972299999999"
-              className="px-6 py-2.5 bg-[#0d9488] text-white font-bold rounded-lg hover:bg-[#0b7e74] transition"
+              className="px-6 py-2.5 bg-[#2E77D0] text-white font-bold rounded-lg hover:bg-[#2563B0] transition"
             >
               צור קשר דרך WhatsApp
             </a>
             <a
               href="mailto:info@autolog.click"
-              className="px-6 py-2.5 bg-white text-[#0d9488] font-bold rounded-lg hover:bg-gray-50 transition border border-teal-200"
+              className="px-6 py-2.5 bg-white text-[#2E77D0] font-bold rounded-lg hover:bg-gray-50 transition border border-teal-200"
             >
               שלח מייל
             </a>

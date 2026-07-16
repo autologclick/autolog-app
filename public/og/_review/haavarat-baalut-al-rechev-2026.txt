@@ -1,0 +1,246 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import Logo from '@/components/ui/Logo';
+import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
+
+const post = getPostBySlug('haavarat-baalut-al-rechev-2026')!;
+
+export const metadata: Metadata = {
+  title: post.title,
+  description: post.description,
+  keywords: post.keywords,
+  alternates: { canonical: `/blog/${post.slug}` },
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    url: `https://autolog.click/blog/${post.slug}`,
+    type: 'article',
+    publishedTime: post.publishedAt,
+    authors: [post.author],
+    locale: 'he_IL',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
+  },
+  twitter: { card: 'summary_large_image', title: post.title, description: post.description },
+};
+
+export default function BlogPostPage() {
+  return (
+    <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
+          <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1">
+            <ChevronRight size={14} />חזרה לבלוג
+          </Link>
+        </div>
+      </header>
+
+      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+        <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] leading-tight mb-4">{post.title}</h1>
+
+        <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
+          <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          <span className="flex items-center gap-1"><Clock size={14} />{post.readingTime}</span>
+          <span>מאת {post.author}</span>
+        </div>
+
+        <div className="prose-rtl space-y-6 text-gray-700 leading-relaxed text-[15px]">
+          <p className="text-lg text-gray-600 font-medium">
+            מכרתם רכב? קניתם רכב יד שנייה? כעת צריך להעביר את הבעלות במשרד הרישוי. ב-2026 רוב התהליך דיגיטלי
+            וניתן להשלים אותו תוך 15 דקות מהבית. במאמר תמצא מדריך מלא — מה לעשות, אילו מסמכים צריך, כמה זה עולה,
+            ומה הסיכונים אם לא תעביר בזמן.
+          </p>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">למה חייבים להעביר בעלות?</h2>
+          <p>לפי החוק בישראל, יש 10 ימים מיום מכירת הרכב להעברת הבעלות. אם לא תעבירו בזמן:</p>
+          <ul className="list-disc list-inside space-y-2 mr-4">
+            <li><strong>הקונה</strong> ישלם קנס של 250 ש&quot;ח לכל יום איחור (עד מקסימום)</li>
+            <li><strong>המוכר</strong> אחראי לכל קנס תנועה, אגרה, או תאונה שמתבצעים ברכב — גם אם הוא לא מחזיק בו</li>
+            <li>במקרה של תאונה — חברת הביטוח עלולה לסרב לכסות בגלל אי-בהירות בעלות</li>
+          </ul>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">המסמכים הדרושים</h2>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f]">למוכר</h3>
+          <ul className="list-disc list-inside space-y-1 mr-4">
+            <li>תעודת זהות</li>
+            <li>רישיון רכב מקורי (לא העתק)</li>
+            <li>אישור על תשלום אגרת רישוי בתוקף</li>
+            <li>אישור על ביטוח חובה בתוקף</li>
+            <li>אישור על אין שעבודים (בדיקה אונליין באתר משרד התחבורה)</li>
+            <li>במקרה של רכב חברה — אישור חתום מהחברה</li>
+          </ul>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f]">לקונה</h3>
+          <ul className="list-disc list-inside space-y-1 mr-4">
+            <li>תעודת זהות</li>
+            <li>אם רוכשים בלוואה — אישור הבנק עם פרטי השעבוד</li>
+            <li>תושב חוץ / חברה — מסמכי הוכחת זכאות</li>
+          </ul>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">העברת בעלות אונליין — שלב אחר שלב</h2>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f]">שלב 1: כניסה לאתר משרד התחבורה</h3>
+          <p>
+            היכנסו ל-<strong>gov.il</strong> וחפשו &quot;העברת בעלות על רכב&quot;. תידרשו להזדהות עם תעודת זהות
+            וכרטיס אשראי / אפליקציית הזדהות.
+          </p>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f]">שלב 2: מילוי הטופס</h3>
+          <ul className="list-disc list-inside space-y-1 mr-4">
+            <li>פרטי הרכב (מספר רישוי, יצרן, דגם, שנה)</li>
+            <li>פרטי המוכר ותעודת זהות</li>
+            <li>פרטי הקונה ותעודת זהות</li>
+            <li>תאריך העסקה ומחיר</li>
+            <li>אישור שהרכב נמכר &quot;כמו שהוא&quot; או עם אחריות</li>
+          </ul>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f]">שלב 3: תשלום אגרת ההעברה</h3>
+          <p>
+            האגרה ב-2026 היא <strong>סביבות 240 ש&quot;ח</strong>. ניתן לשלם בכרטיס אשראי, ביט, או PayBox.
+            התשלום מאשר את ההעברה מיד.
+          </p>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f]">שלב 4: קבלת אישור</h3>
+          <p>
+            אישור ההעברה נשלח במייל לשני הצדדים תוך כמה דקות. הקונה יקבל גם רישיון רכב חדש על שמו תוך 7-14 ימי עבודה.
+            עד אז — האישור הדיגיטלי משמש ככיסוי חוקי.
+          </p>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">העברת בעלות פיזית במשרד הרישוי</h2>
+          <p>
+            אם אתם לא יכולים אונליין (מוכר ללא תעודת זהות דיגיטלית, רכב מסחרי, רכב מוטס) — תצטרכו להגיע פיזית.
+            <strong> טיפ:</strong> הזמינו תור מראש דרך אתר משרד התחבורה. ללא תור — המתנה של 2-4 שעות.
+          </p>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">דברים שצריך להיזהר מהם</h2>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f]">1. שעבודים</h3>
+          <p>
+            לפני העברה — בדקו אם הרכב משועבד לבנק או לחברה. אם יש שעבוד שלא הוסר, ההעברה תיכשל.
+            בדיקה אונליין באתר &quot;רשם המשכונות&quot; או באתר משרד התחבורה.
+          </p>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f]">2. עיקולים</h3>
+          <p>אם המוכר מצוי בהליך הוצאה לפועל — עלול להיות עיקול על הרכב. לוודא שאין.</p>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f]">3. ביטוח חובה</h3>
+          <p>
+            ברגע שמעבירים בעלות — הביטוח של המוכר לא תקף יותר לקונה. הקונה חייב להפיק ביטוח חדש לפני שיוצא לכביש.
+            <Link href="/blog/tizkoret-bituach-rechev" className="text-teal-600 hover:text-teal-700 underline mr-1">
+              מדריך לביטוח רכב
+            </Link>.
+          </p>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f]">4. תזכורות</h3>
+          <p>
+            עדכנו את כתובת המגורים במשרד התחבורה אחרי ההעברה — אחרת תזכורות הטסט והרישיון לא יגיעו אליכם.
+          </p>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">החלפת בעלות בין בני משפחה</h2>
+          <p>
+            ההליך זהה — אבל יש <strong>פטור מתשלום מס</strong> בהעברה לבן משפחה מדרגה ראשונה (הורה, ילד, בן/בת זוג, אח/אחות).
+            צריך להוכיח קרבה משפחתית בתעודת זהות וספר משפחה.
+          </p>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה לעשות אחרי ההעברה</h2>
+          <ol className="list-decimal list-inside space-y-2 mr-4">
+            <li><strong>הפיקו ביטוח חובה ומקיף</strong> — לפני שיוצאים לכביש</li>
+            <li><strong>עדכנו את חברת הליסינג / החברה</strong> אם רלוונטי</li>
+            <li><strong>תעדו את כל מסמכי הרכב</strong> ב-AutoLog — חוסך זמן בעתיד</li>
+            <li><strong>בדקו תאריכי הטסט והאגרה</strong> — אל תניחו שזה תקין</li>
+          </ol>
+
+          <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
+            <h3 className="text-xl font-bold mb-3">העברת רכב חדש? תיעוד מתחיל מעכשיו</h3>
+            <p className="text-white/80 mb-5 text-sm">
+              ב-AutoLog תיעדו את אישור ההעברה, פוליסת ביטוח חדשה, ותיאור מצב הרכב — תהיו מוכנים לכל מקרה.
+            </p>
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg">
+              הרשמה בחינם<ArrowLeft size={16} />
+            </Link>
+          </div>
+
+          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">שאלות נפוצות</h2>
+
+          <h3 className="text-lg font-bold text-[#1e3a5f]">כמה זמן לוקחת העברת בעלות אונליין?</h3>
+          <p>15-20 דקות אם כל המסמכים מוכנים. האישור מגיע מיד בסיום התשלום.</p>
+
+          <h3 className="text-lg font-bold text-[#1e3a5f]">מה עולה העברת בעלות 2026?</h3>
+          <p>אגרת ההעברה היא סביבות 240 ש&quot;ח. בנוסף יכולים להיות מסים אחרים בעסקאות גדולות.</p>
+
+          <h3 className="text-lg font-bold text-[#1e3a5f]">מה לעשות אם המוכר נעלם ולא העביר בעלות?</h3>
+          <p>
+            אפשר לפנות למשרד התחבורה עם הסכם המכירה החתום ולבקש העברה חד-צדדית. תהליך מורכב יותר אבל אפשרי.
+          </p>
+
+          <h3 className="text-lg font-bold text-[#1e3a5f]">האם אפשר להעביר בעלות לקטין?</h3>
+          <p>לא. רק מי שמלאו לו 18 יכול להיות בעל רכב רשום בישראל.</p>
+
+          <h3 className="text-lg font-bold text-[#1e3a5f]">מה עושים אם הרכב נקנה בליסינג?</h3>
+          <p>
+            עד שהליסינג לא הסתיים, הבעלות הרשומה היא של חברת הליסינג — לא תוכלו למכור עצמאית.
+            תצטרכו לשלם את יתרת ההסכם או למכור דרך החברה.
+          </p>
+        </div>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@graph': [
+                {
+                  '@type': 'Article',
+                  headline: post.title,
+                  description: post.description,
+                  datePublished: post.publishedAt,
+                  dateModified: post.updatedAt || post.publishedAt,
+                  author: { '@type': 'Organization', name: 'AutoLog', url: 'https://autolog.click' },
+                  publisher: { '@type': 'Organization', name: 'AutoLog', url: 'https://autolog.click' },
+                  mainEntityOfPage: { '@type': 'WebPage', '@id': `https://autolog.click/blog/${post.slug}` },
+                },
+                {
+                  '@type': 'HowTo',
+                  name: 'איך להעביר בעלות על רכב בישראל 2026',
+                  description: 'מדריך שלב אחר שלב להעברת בעלות על רכב באופן דיגיטלי',
+                  step: [
+                    { '@type': 'HowToStep', name: 'כניסה לאתר משרד התחבורה', text: 'היכנסו ל-gov.il עם הזדהות תעודת זהות' },
+                    { '@type': 'HowToStep', name: 'מילוי הטופס', text: 'הזינו פרטי רכב, מוכר וקונה' },
+                    { '@type': 'HowToStep', name: 'תשלום אגרה', text: 'שלמו 240 ש"ח בכרטיס אשראי' },
+                    { '@type': 'HowToStep', name: 'קבלת אישור', text: 'האישור נשלח במייל מיד' },
+                  ],
+                },
+                {
+                  '@type': 'FAQPage',
+                  mainEntity: [
+                    { '@type': 'Question', name: 'כמה זמן לוקחת העברת בעלות אונליין?', acceptedAnswer: { '@type': 'Answer', text: '15-20 דקות אם כל המסמכים מוכנים. האישור מגיע מיד.' } },
+                    { '@type': 'Question', name: 'מה עולה העברת בעלות 2026?', acceptedAnswer: { '@type': 'Answer', text: 'אגרת ההעברה היא סביבות 240 ש"ח.' } },
+                    { '@type': 'Question', name: 'האם אפשר להעביר בעלות לקטין?', acceptedAnswer: { '@type': 'Answer', text: 'לא. רק מי שמלאו לו 18 יכול להיות בעל רכב רשום בישראל.' } },
+                  ],
+                },
+              ],
+            }),
+          }}
+        />
+
+        <div className="mt-12 pt-8 border-t border-gray-200 flex items-center justify-between">
+          <Link href="/blog" className="flex items-center gap-1 text-sm text-teal-600 font-semibold hover:text-teal-700 transition">
+            <ChevronRight size={14} />כל המאמרים
+          </Link>
+          <Link href="/blog/ma-livdok-lifnei-kniyat-rechev-yad-shniya" className="flex items-center gap-1 text-sm text-teal-600 font-semibold hover:text-teal-700 transition">
+            צ&apos;קליסט קניית רכב יד שנייה<ChevronLeft size={14} />
+          </Link>
+        </div>
+      </article>
+
+      <footer className="bg-[#1e3a5f] text-white/60 py-6 text-center text-sm">
+        <p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p>
+      </footer>
+    </div>
+  );
+}

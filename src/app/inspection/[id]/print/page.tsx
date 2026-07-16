@@ -104,7 +104,7 @@ export default function PrintInspectionPage() {
       {/* Print button (hidden when printing) */}
       <div className="no-print" style={{ padding: '12px 20px', background: '#f0fdf4', borderBottom: '1px solid #d1fae5', display: 'flex', justifyContent: 'center', gap: 12 }}>
         <button onClick={() => window.print()} style={{
-          background: '#0d9488', color: 'white', border: 'none', borderRadius: 8,
+          background: '#2E77D0', color: 'white', border: 'none', borderRadius: 8,
           padding: '10px 24px', fontSize: 15, fontWeight: 600, cursor: 'pointer'
         }}>
           שמור כ-PDF / הדפס
@@ -120,16 +120,16 @@ export default function PrintInspectionPage() {
       <div style={{ maxWidth: 780, margin: '0 auto', padding: '20px 24px' }}>
 
         {/* ===== HEADER ===== */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, paddingBottom: 16, borderBottom: '3px solid #0d9488' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, paddingBottom: 16, borderBottom: '3px solid #2E77D0' }}>
           <div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: '#1e3a5f' }}>
-              Auto<span style={{ color: '#0d9488' }}>Log</span>
+            <div style={{ fontSize: 28, fontWeight: 800, color: '#1B4E8A' }}>
+              Auto<span style={{ color: '#2E77D0' }}>Log</span>
             </div>
             <div style={{ fontSize: 11, color: '#6b7280' }}>דוח אבחון רכב מקצועי</div>
           </div>
           <div style={{ textAlign: 'left' }}>
             <div style={{ fontSize: 12, color: '#6b7280' }}>מס׳ דוח</div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#1e3a5f', fontFamily: 'monospace' }}>{i.id.slice(-8).toUpperCase()}</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#1B4E8A', fontFamily: 'monospace' }}>{i.id.slice(-8).toUpperCase()}</div>
             <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>{date}</div>
           </div>
         </div>
@@ -138,8 +138,8 @@ export default function PrintInspectionPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', borderRadius: 12, padding: '16px 20px', marginBottom: 20, border: '1px solid #e2e8f0' }}>
           <div>
             <div style={{ fontSize: 13, color: '#64748b', marginBottom: 4 }}>סוג אבחון</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#1e3a5f' }}>{typeLabels[i.inspectionType] || i.inspectionType}</div>
-            {i.mechanicName && <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>מכניק: {i.mechanicName}</div>}
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#1B4E8A' }}>{typeLabels[i.inspectionType] || i.inspectionType}</div>
+            {i.mechanicName && <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>מכונאי: {i.mechanicName}</div>}
           </div>
           {score > 0 && (
             <div style={{ textAlign: 'center' }}>
@@ -186,7 +186,7 @@ export default function PrintInspectionPage() {
         {/* ===== INSPECTION ITEMS BY CATEGORY ===== */}
         {Object.entries(grouped).map(([cat, items]) => (
           <div key={cat} style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a5f', marginBottom: 6, paddingBottom: 4, borderBottom: '2px solid #e2e8f0' }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1B4E8A', marginBottom: 6, paddingBottom: 4, borderBottom: '2px solid #e2e8f0' }}>
               {categoryLabels[cat] || cat}
             </div>
             <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
@@ -221,7 +221,7 @@ export default function PrintInspectionPage() {
         {/* ===== BRAKING SYSTEM ===== */}
         {i.brakingSystem && (i.brakingSystem.frontDiscs || i.brakingSystem.rearDiscs) && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a5f', marginBottom: 6, paddingBottom: 4, borderBottom: '2px solid #e2e8f0' }}>מערכת בלימה</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1B4E8A', marginBottom: 6, paddingBottom: 4, borderBottom: '2px solid #e2e8f0' }}>מערכת בלימה</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 10, fontSize: 12 }}>
               {i.brakingSystem.frontDiscs != null && <MeasureBox label="דיסקים קדמיים" value={`${i.brakingSystem.frontDiscs} מ״מ`} />}
               {i.brakingSystem.rearDiscs != null && <MeasureBox label="דיסקים אחוריים" value={`${i.brakingSystem.rearDiscs} מ״מ`} />}
@@ -234,7 +234,7 @@ export default function PrintInspectionPage() {
         {/* ===== RECOMMENDATIONS ===== */}
         {i.recommendations && i.recommendations.length > 0 && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a5f', marginBottom: 6, paddingBottom: 4, borderBottom: '2px solid #e2e8f0' }}>המלצות</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1B4E8A', marginBottom: 6, paddingBottom: 4, borderBottom: '2px solid #e2e8f0' }}>המלצות</div>
             {i.recommendations.map((rec, idx) => (
               <div key={idx} style={{ padding: '8px 12px', marginBottom: 6, background: '#fffbeb', borderRadius: 8, border: '1px solid #fde68a', fontSize: 12 }}>
                 <div style={{ fontWeight: 600, color: '#92400e' }}>{rec.text}</div>
@@ -248,7 +248,7 @@ export default function PrintInspectionPage() {
         {/* ===== SUMMARY ===== */}
         {i.summary && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a5f', marginBottom: 6, paddingBottom: 4, borderBottom: '2px solid #e2e8f0' }}>סיכום</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1B4E8A', marginBottom: 6, paddingBottom: 4, borderBottom: '2px solid #e2e8f0' }}>סיכום</div>
             <div style={{ fontSize: 12, color: '#475569', lineHeight: 1.7, background: '#f8fafc', padding: 12, borderRadius: 8 }}>
               {i.summary}
             </div>
@@ -258,7 +258,7 @@ export default function PrintInspectionPage() {
         {/* ===== WORK PERFORMED ===== */}
         {i.workPerformed && i.workPerformed.length > 0 && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a5f', marginBottom: 6, paddingBottom: 4, borderBottom: '2px solid #e2e8f0' }}>עבודות שבוצעו</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1B4E8A', marginBottom: 6, paddingBottom: 4, borderBottom: '2px solid #e2e8f0' }}>עבודות שבוצעו</div>
             <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc' }}>
@@ -280,7 +280,7 @@ export default function PrintInspectionPage() {
               </tbody>
             </table>
             {i.cost && (
-              <div style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 700, fontSize: 14, color: '#1e3a5f' }}>
+              <div style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 700, fontSize: 14, color: '#1B4E8A' }}>
                 סה״כ: ₪{i.cost.toLocaleString()}
               </div>
             )}
@@ -291,7 +291,7 @@ export default function PrintInspectionPage() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, marginTop: 30, paddingTop: 20, borderTop: '2px solid #e2e8f0' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ borderBottom: '1px solid #94a3b8', height: 40, marginBottom: 6 }}></div>
-            <div style={{ fontSize: 12, color: '#64748b' }}>חתימת מכניק</div>
+            <div style={{ fontSize: 12, color: '#64748b' }}>חתימת מכונאי</div>
           </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ borderBottom: '1px solid #94a3b8', height: 40, marginBottom: 6 }}></div>
@@ -313,7 +313,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <tr>
       <td style={{ padding: '3px 0', color: '#64748b', width: 60 }}>{label}:</td>
-      <td style={{ padding: '3px 0', color: '#1e3a5f', fontWeight: 600 }}>{value}</td>
+      <td style={{ padding: '3px 0', color: '#1B4E8A', fontWeight: 600 }}>{value}</td>
     </tr>
   );
 }
@@ -322,7 +322,7 @@ function MeasureBox({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ textAlign: 'center', background: '#f8fafc', borderRadius: 8, padding: '8px 4px', border: '1px solid #e2e8f0' }}>
       <div style={{ color: '#64748b', marginBottom: 2, fontSize: 11 }}>{label}</div>
-      <div style={{ fontWeight: 700, color: '#1e3a5f', fontSize: 14 }}>{value}</div>
+      <div style={{ fontWeight: 700, color: '#1B4E8A', fontSize: 14 }}>{value}</div>
     </div>
   );
 }

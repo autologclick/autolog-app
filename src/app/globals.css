@@ -309,7 +309,7 @@ body {
 }
 
 .card-interactive:hover {
-  border-color: #0d9488;
+  border-color: #2E77D0;
   box-shadow: 0 4px 16px rgba(13, 148, 136, 0.12);
 }
 
@@ -320,14 +320,14 @@ button {
 
 /* ===== TEXT STYLES ===== */
 .text-gradient {
-  background: linear-gradient(135deg, #0d9488 0%, #1e3a5f 100%);
+  background: linear-gradient(135deg, #2E77D0 0%, #1B4E8A 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-warm {
-  background: linear-gradient(135deg, #f8b12d 0%, #f9c157 100%);
+  background: linear-gradient(135deg, #F97316 0%, #f9c157 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -335,7 +335,7 @@ button {
 
 /* ===== FOCUS STYLES (Accessibility) ===== */
 *:focus-visible {
-  outline: 2px solid #0d9488;
+  outline: 2px solid #2E77D0;
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -565,7 +565,7 @@ body {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #0d9488;
+  background: #2E77D0;
 }
 
 /* ===== SWIPE HINT ===== */

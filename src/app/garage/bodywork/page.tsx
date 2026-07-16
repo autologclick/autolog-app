@@ -142,11 +142,11 @@ export default function GarageBodyworkPage() {
             <div className="w-20 h-20 mx-auto mb-4 bg-amber-50 rounded-full flex items-center justify-center">
               <AlertCircle size={36} className="text-amber-400" />
             </div>
-            <h3 className="text-lg font-bold text-[#1e3a5f] mb-2">המוסך לא מוגדר לפחחות</h3>
+            <h3 className="text-lg font-bold text-[#1B4E8A] mb-2">המוסך לא מוגדר לפחחות</h3>
             <p className="text-sm text-gray-500 max-w-xs mx-auto mb-4">כדי לקבל בקשות פחחות מלקוחות, הוסף את שירות "פחחות" בהגדרות המוסך</p>
             <button
               onClick={() => window.location.href = '/garage/settings'}
-              className="px-6 py-2.5 bg-[#1e3a5f] text-white rounded-xl font-bold text-sm hover:bg-[#2a5a8f] transition"
+              className="px-6 py-2.5 bg-[#1B4E8A] text-white rounded-xl font-bold text-sm hover:bg-[#1D5FAF] transition"
             >
               עבור להגדרות
             </button>
@@ -175,7 +175,7 @@ export default function GarageBodyworkPage() {
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold text-[#1e3a5f] text-sm">
+                      <span className="font-bold text-[#1B4E8A] text-sm">
                         {req.vehicle.manufacturer} {req.vehicle.model} {req.vehicle.year}
                       </span>
                       {quoted ? (
@@ -209,7 +209,7 @@ export default function GarageBodyworkPage() {
                 {viewRequest.user.fullName[0]}
               </div>
               <div className="flex-1">
-                <p className="text-sm font-bold text-[#1e3a5f]">{viewRequest.user.fullName}</p>
+                <p className="text-sm font-bold text-[#1B4E8A]">{viewRequest.user.fullName}</p>
                 <p className="text-xs text-gray-500">
                   {viewRequest.vehicle.manufacturer} {viewRequest.vehicle.model} {viewRequest.vehicle.year} • {viewRequest.vehicle.color || ''} • {viewRequest.vehicle.licensePlate}
                 </p>

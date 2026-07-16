@@ -9,6 +9,7 @@ import {
 import { createNotification } from '@/lib/services/notification-service';
 import { sendPushToGarageOwner } from '@/lib/push-sender';
 import { sendEmail, buildBodyworkAcceptedGarageEmailHtml, buildBodyworkAcceptedAdminEmailHtml } from '@/lib/email';
+import { notifyTelegram } from '@/lib/telegram';
 
 /**
  * PUT /api/bodywork/[id]/accept — User accepts a quote
@@ -175,6 +176,11 @@ async function notifyAdmin(params: {
   estimatedDays: number | null;
   requestId: string;
 }) {
+  notifyTelegram(
+    '✅ הצעת פחחות אושרה',
+    `לקוח: ${params.customerName}\nמוסך: ${params.garageName}\nרכב: ${params.vehicleLabel} (${params.licensePlate})\nמחיר: ₪${params.price.toLocaleString('he-IL')}`,
+  );
+
   // Find admin users
   const admins = await prisma.user.findMany({
     where: { role: 'admin' },

@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Car, ChevronDown, ChevronLeft, Loader2, Plus, Flag,
+  Car, ChevronDown, ChevronLeft, ChevronRight, Loader2, Plus, Flag,
   Wrench, FileText, Receipt, Calendar, Shield, Clock,
-  Camera, Image as ImageIcon, AlertTriangle, CheckCircle, ClipboardCheck,
+  Camera, Image as ImageIcon, AlertTriangle, CheckCircle, ClipboardCheck, Bell,
   Gauge, Fuel, X, MapPin, Upload, Trash2, MessageCircle, ArrowLeftRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -20,7 +20,7 @@ import ConflictResolutionModal from '@/components/shared/ConflictResolutionModal
 import ScanConflictBanner from '@/components/shared/ScanConflictBanner';
 import { detectAllConflicts, type CriticalConflict, type SoftConflict } from '@/lib/scan-conflict';
 import { ComingSoonBadge } from '@/components/shared/ComingSoonBanner';
-import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
+import { GARAGES_ENABLED, SOS_ENABLED } from '@/lib/constants/feature-flags';
 // Tesseract loaded dynamically in handleScanReceipt to avoid SSR issues
 
 // ── Types ──────────────────────────────────────────
@@ -190,12 +190,15 @@ const ReminderCard = ({ title, icon, value, subtitle, status }: {
   title: string; icon: string; value: string; subtitle?: string;
   status: 'danger' | 'warning' | 'success';
 }) => {
-  const borderColor = status === 'danger' ? 'border-r-red-500' : status === 'warning' ? 'border-r-amber-400' : 'border-r-green-500';
-  const valueColor = status === 'danger' ? 'text-red-600' : status === 'warning' ? 'text-amber-600' : 'text-green-600';
+  const chipBg = status === 'danger' ? 'bg-red-50' : status === 'warning' ? 'bg-orange-50' : 'bg-green-50';
+  const valueColor = status === 'danger' ? 'text-red-600' : status === 'warning' ? 'text-orange-600' : 'text-green-600';
+  const dot = status === 'danger' ? 'bg-red-500' : status === 'warning' ? 'bg-orange-400' : 'bg-green-500';
   return (
-    <div className={`bg-white rounded-lg px-2 py-1.5 shadow-sm border-r-[3px] ${borderColor}`}>
-      <div className="text-[10px] text-gray-500 leading-none mb-0.5">{icon} {title}</div>
-      <div className={`text-sm font-bold leading-tight truncate ${valueColor}`}>{value}</div>
+    <div className="bg-white rounded-2xl px-2.5 py-2.5 shadow-sm border border-gray-100 relative overflow-hidden h-full">
+      <span className={`absolute top-2 left-2 w-1.5 h-1.5 rounded-full ${dot}`} />
+      <div className={`w-7 h-7 ${chipBg} rounded-lg flex items-center justify-center text-sm mb-1`}>{icon}</div>
+      <div className="text-[10px] text-gray-500 leading-none mb-0.5">{title}</div>
+      <div className={`text-base font-extrabold leading-tight truncate ${valueColor}`}>{value}</div>
       {subtitle && <div className="text-[9px] text-gray-400 mt-0.5 truncate">{subtitle}</div>}
     </div>
   );
@@ -214,12 +217,26 @@ export default function UserHomePage() {
     setSelectedIdxRaw(idx);
   };
   const [showVehicleList, setShowVehicleList] = useState(false);
+  // Onboarding checklist (new users) — dismissed flag lives in localStorage
+  const [onboardingDismissed, setOnboardingDismissed] = useState(true);
+  const [notifPermission, setNotifPermission] = useState<string>('default');
+  useEffect(() => {
+    try {
+      setOnboardingDismissed(localStorage.getItem('autolog_onboarding_dismissed') === '1');
+      if (typeof Notification !== 'undefined') setNotifPermission(Notification.permission);
+    } catch { /* private mode etc. */ }
+  }, []);
+  const dismissOnboarding = () => {
+    setOnboardingDismissed(true);
+    try { localStorage.setItem('autolog_onboarding_dismissed', '1'); } catch { /* ignore */ }
+  };
   const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showGeoPrompt, setShowGeoPrompt] = useState(false);
   const [showInspectBanner, setShowInspectBanner] = useState(false);
   const [userFirstName, setUserFirstName] = useState<string>('');
 
@@ -358,40 +375,84 @@ export default function UserHomePage() {
     }
   }, [vehicle?.id]);
 
-  // ── Data Fetching ──
+  // ── One-time location-permission prompt (for SOS emergency locating) ──
   useEffect(() => {
-    // Fetch user info for personalized greeting
-    fetch('/api/auth/me')
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data?.user?.fullName) {
-          setUserFirstName(data.user.fullName.split(' ')[0]);
-        }
-      })
-      .catch(() => {});
+    try {
+      if (localStorage.getItem('autolog_geo_prompt')) return;
+    } catch { return; }
+    if (typeof navigator === 'undefined' || !('geolocation' in navigator)) return;
+    if (navigator.permissions?.query) {
+      navigator.permissions.query({ name: 'geolocation' as PermissionName })
+        .then(res => {
+          if (res.state === 'prompt') {
+            setShowGeoPrompt(true);
+          } else {
+            // already granted or denied — remember and never ask again
+            try { localStorage.setItem('autolog_geo_prompt', res.state); } catch {}
+          }
+        })
+        .catch(() => setShowGeoPrompt(true));
+    } else {
+      setShowGeoPrompt(true);
+    }
+  }, []);
 
-    fetch('/api/vehicles').then(r => {
+  const handleEnableGeo = () => {
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        try { localStorage.setItem('autolog_geo_prompt', 'granted'); } catch {}
+        setShowGeoPrompt(false);
+        toast.success('מעולה! במקרה חירום נאתר אותך מיד');
+      },
+      () => {
+        try { localStorage.setItem('autolog_geo_prompt', 'denied'); } catch {}
+        setShowGeoPrompt(false);
+        toast('אפשר להפעיל זיהוי מיקום דרך הגדרות הדפדפן בכל שלב', { icon: 'ℹ️' });
+      },
+      { timeout: 15000 }
+    );
+  };
+
+  const dismissGeoPrompt = () => {
+    try { localStorage.setItem('autolog_geo_prompt', 'dismissed'); } catch {}
+    setShowGeoPrompt(false);
+  };
+
+  // ── Data Fetching ──
+  // Stage 6: a single /api/dashboard round-trip replaces the 8+ separate fetches.
+  const loadedVehicleIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    let savedId: string | null = null;
+    try { savedId = localStorage.getItem('autolog_selected_vehicle'); } catch {}
+
+    fetch(`/api/dashboard${savedId ? `?vehicleId=${encodeURIComponent(savedId)}` : ''}`)
+      .then(r => {
         if (r.status === 401) { window.location.href = '/auth/login'; return null; }
         return r.json();
       })
       .then(data => {
         if (!data) return;
+
+        // User greeting
+        if (data.user?.fullName) {
+          setUserFirstName(data.user.fullName.split(' ')[0]);
+        }
+
+        // Pending transfers for dashboard alerts
+        const active = (data.transfers || []).filter(
+          (t: { status: string; isExpired: boolean }) =>
+            ['pending', 'accepted'].includes(t.status) && !t.isExpired
+        );
+        setPendingTransfers(active);
+
+        // Vehicles + restore selection (server already resolved saved/primary)
         if (data.vehicles?.length > 0) {
           setVehicles(data.vehicles);
-          // Restore last selected vehicle, fall back to primary
-          let restoredIdx = -1;
-          try {
-            const savedId = localStorage.getItem('autolog_selected_vehicle');
-            if (savedId) {
-              restoredIdx = data.vehicles.findIndex((v: Vehicle) => v.id === savedId);
-            }
-          } catch {}
-          if (restoredIdx >= 0) {
-            setSelectedIdxRaw(restoredIdx);
-          } else {
-            const primaryIdx = data.vehicles.findIndex((v: Vehicle) => v.isPrimary);
-            if (primaryIdx >= 0) setSelectedIdxRaw(primaryIdx);
-          }
+          const loadedId: string | null = data.vehicleData?.vehicleId ?? null;
+          let idx = loadedId ? data.vehicles.findIndex((v: Vehicle) => v.id === loadedId) : -1;
+          if (idx < 0) idx = data.vehicles.findIndex((v: Vehicle) => v.isPrimary);
+          if (idx >= 0) setSelectedIdxRaw(idx);
         } else {
           // Check if user chose "inspect" path in onboarding
           try {
@@ -405,47 +466,56 @@ export default function UserHomePage() {
             setShowOnboarding(true);
           }
         }
+
+        // Vehicle-specific data arrived in the same payload
+        if (data.vehicleData) {
+          loadedVehicleIdRef.current = data.vehicleData.vehicleId;
+          setTreatments(data.vehicleData.treatments || []);
+          setDocuments(data.vehicleData.documents || []);
+          setExpenses(data.vehicleData.expenses || []);
+          setAppointments(data.vehicleData.appointments || []);
+          if (data.vehicleData.maintenanceSchedule) {
+            setMaintenanceSchedule(data.vehicleData.maintenanceSchedule);
+          } else {
+            setMaintenanceError(true);
+          }
+        }
       })
       .catch(() => setShowOnboarding(true))
       .finally(() => setLoading(false));
-
-    // Fetch pending transfers for dashboard alerts
-    fetch('/api/vehicles/transfer?type=all')
-      .then(r => r.ok ? r.json() : { transfers: [] })
-      .then(data => {
-        const active = (data.transfers || []).filter(
-          (t: { status: string; isExpired: boolean }) =>
-            ['pending', 'accepted'].includes(t.status) && !t.isExpired
-        );
-        setPendingTransfers(active);
-      })
-      .catch(() => {});
   }, []);
 
   // Fetch vehicle-specific data when selected vehicle changes
   useEffect(() => {
     if (!vehicle) return;
     const id = vehicle.id;
-    const safeFetch = (url: string, fallback: Record<string, unknown[]>) =>
-      fetch(url).then(r => {
-        if (r.status === 401) { window.location.href = '/auth/login'; return fallback; }
+    // Initial vehicle data already arrived with the dashboard payload — skip once
+    if (loadedVehicleIdRef.current === id) {
+      loadedVehicleIdRef.current = null;
+      return;
+    }
+    setMaintenanceLoading(true);
+    setMaintenanceError(false);
+    fetch(`/api/dashboard?scope=vehicle&vehicleId=${encodeURIComponent(id)}`)
+      .then(r => {
+        if (r.status === 401) { window.location.href = '/auth/login'; return null; }
         return r.json();
-      }).catch(() => fallback);
-
-    Promise.all([
-      safeFetch(`/api/treatments?vehicleId=${id}`, { treatments: [] }),
-      safeFetch(`/api/documents?vehicleId=${id}`, { documents: [] }),
-      safeFetch(`/api/expenses?vehicleId=${id}&limit=10`, { expenses: [] }),
-      safeFetch(`/api/appointments?vehicleId=${id}`, { appointments: [] }),
-    ]).then(([tData, dData, eData, aData]) => {
-      setTreatments(tData.treatments || []);
-      setDocuments(dData.documents || []);
-      setExpenses(eData.expenses || []);
-      setAppointments(aData.appointments || []);
-    });
-    // Fetch maintenance schedule automatically
-    // Always try - the API will fallback to treatment mileage if vehicle.mileage is null
-    fetchMaintenanceSchedule(id);
+      })
+      .then(data => {
+        const vd = data?.vehicleData;
+        if (!vd) { setMaintenanceError(true); return; }
+        setTreatments(vd.treatments || []);
+        setDocuments(vd.documents || []);
+        setExpenses(vd.expenses || []);
+        setAppointments(vd.appointments || []);
+        if (vd.maintenanceSchedule) {
+          setMaintenanceSchedule(vd.maintenanceSchedule);
+        } else {
+          setMaintenanceError(true);
+        }
+      })
+      .catch(() => setMaintenanceError(true))
+      .finally(() => setMaintenanceLoading(false));
   }, [vehicle?.id]);
 
   // ── Computed values ──
@@ -1044,10 +1114,10 @@ export default function UserHomePage() {
         }
       } else {
         const err = await res.json().catch(() => ({}));
-        alert('שמירה נכשלה: ' + (err.error || 'שגיאה לא ידועה'));
+        toast.error('שמירה נכשלה: ' + (err.error || 'שגיאה לא ידועה'));
       }
     } catch (e) {
-      alert('שמירה נכשלה: ' + (e instanceof Error ? e.message : 'שגיאת רשת'));
+      toast.error('שמירה נכשלה: ' + (e instanceof Error ? e.message : 'שגיאת רשת'));
     }
     setSubmittingTreatment(false);
   };
@@ -1055,7 +1125,7 @@ export default function UserHomePage() {
   // ── Loading & Onboarding ──
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fef7ed] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F3F6FA] flex items-center justify-center">
         <div className="text-center">
           <Loader2 size={36} className="animate-spin text-teal-600 mx-auto mb-3" />
           <p className="text-sm text-gray-500">טוען את הרכב שלך...</p>
@@ -1070,7 +1140,7 @@ export default function UserHomePage() {
 
   if (showInspectBanner) {
     return (
-      <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
+      <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
         {/* Header */}
         <div className="bg-gradient-to-bl from-teal-600 to-teal-700 text-white px-4 pt-12 pb-8 rounded-b-3xl">
           <h1 className="text-xl font-bold mb-1">שלום{userFirstName ? `, ${userFirstName}` : ''}! 👋</h1>
@@ -1118,7 +1188,7 @@ export default function UserHomePage() {
 
   if (!vehicle) {
     return (
-      <div className="min-h-screen bg-[#fef7ed] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#F3F6FA] flex items-center justify-center px-4">
         <div className="text-center">
           <Car size={48} className="mx-auto text-gray-300 mb-3" />
           <p className="text-gray-500 mb-4">לא נמצאו רכבים</p>
@@ -1137,10 +1207,10 @@ export default function UserHomePage() {
   const treatmentTypes = ['maintenance', 'repair', 'tires', 'bodywork', 'other'];
 
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24">
 
       {/* ═══ Header ═══ */}
-      <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white px-4 pt-5 pb-6 rounded-b-3xl">
+      <div className="bg-gradient-to-l from-[#1B4E8A] to-[#2a5a8f] text-white px-4 pt-5 pb-6 rounded-b-3xl">
         {/* Search & Delete */}
         <div className="flex items-center justify-between mb-2">
           <button
@@ -1191,6 +1261,26 @@ export default function UserHomePage() {
           )}
         </div>
 
+        {/* Vehicle Photo */}
+        {vehicle.imageUrl ? (
+          <div className="flex justify-center mb-3">
+            <img
+              src={vehicle.imageUrl}
+              alt={vehicle.nickname || `${vehicle.manufacturer} ${vehicle.model}`}
+              className="w-full max-w-xs h-40 object-cover rounded-2xl ring-2 ring-white/20 shadow-lg"
+            />
+          </div>
+        ) : (
+          <div className="flex justify-center mb-2">
+            <button
+              onClick={() => router.push('/user/vehicles')}
+              className="flex items-center gap-1.5 text-xs text-white/60 hover:text-white/90 transition-colors"
+            >
+              <Camera size={14} /> הוספת תמונת רכב
+            </button>
+          </div>
+        )}
+
         {/* License Plate */}
         <div className="flex justify-center mb-3">
           <LicensePlate plate={vehicle.licensePlate} />
@@ -1208,10 +1298,109 @@ export default function UserHomePage() {
             </>
           )}
         </div>
+
+        {/* Vehicle carousel dots + arrows (visual switcher, same setSelectedIdx) */}
+        {vehicles.length > 1 && (
+          <div className="flex items-center justify-center gap-3 mt-3">
+            <button
+              onClick={() => setSelectedIdx((selectedIdx + 1) % vehicles.length)}
+              className="p-1.5 bg-white/10 rounded-full hover:bg-white/20 active:scale-95 transition"
+              aria-label="הרכב הבא"
+            >
+              <ChevronRight size={16} className="text-white" />
+            </button>
+            <div className="flex gap-1.5">
+              {vehicles.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSelectedIdx(i)}
+                  className={`h-1.5 rounded-full transition-all ${i === selectedIdx ? 'w-5 bg-orange-400' : 'w-1.5 bg-white/40'}`}
+                  aria-label={`רכב ${i + 1}`}
+                />
+              ))}
+            </div>
+            <button
+              onClick={() => setSelectedIdx((selectedIdx - 1 + vehicles.length) % vehicles.length)}
+              className="p-1.5 bg-white/10 rounded-full hover:bg-white/20 active:scale-95 transition"
+              aria-label="הרכב הקודם"
+            >
+              <ChevronLeft size={16} className="text-white" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ═══ Content ═══ */}
       <div className="px-4 -mt-3 space-y-4">
+
+        {/* Onboarding checklist — first steps for new users */}
+        {(() => {
+          if (onboardingDismissed) return null;
+          const steps = [
+            {
+              done: vehicles.length > 0,
+              label: 'הוספת רכב ראשון',
+              icon: <Car size={16} />,
+              action: () => router.push('/user/vehicles'),
+            },
+            {
+              done: vehicles.some(v => !!v.imageUrl),
+              label: 'העלאת תמונת רכב',
+              icon: <Camera size={16} />,
+              action: () => router.push('/user/vehicles'),
+            },
+            {
+              done: notifPermission === 'granted',
+              label: 'הפעלת התראות',
+              icon: <Bell size={16} />,
+              action: async () => {
+                try {
+                  if (typeof Notification !== 'undefined') {
+                    const p = await Notification.requestPermission();
+                    setNotifPermission(p);
+                  }
+                } catch { /* unsupported */ }
+              },
+            },
+          ];
+          const doneCount = steps.filter(s => s.done).length;
+          if (doneCount === steps.length) return null;
+          return (
+            <div className="bg-white rounded-2xl shadow-sm p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-[#1B4E8A]">צעדים ראשונים ({doneCount}/{steps.length})</h3>
+                <button onClick={dismissOnboarding} className="p-1 text-gray-300 hover:text-gray-500" aria-label="סגור">
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="h-1.5 bg-gray-100 rounded-full mb-3 overflow-hidden">
+                <div className="h-full bg-[#2E77D0] rounded-full transition-all" style={{ width: `${(doneCount / steps.length) * 100}%` }} />
+              </div>
+              <div className="space-y-2">
+                {steps.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={s.done ? undefined : s.action}
+                    disabled={s.done}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-right transition ${
+                      s.done ? 'bg-green-50' : 'bg-[#F3F6FA] hover:bg-[#EAF2FC] active:scale-[0.99]'
+                    }`}
+                  >
+                    <span className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                      s.done ? 'bg-green-100 text-green-600' : 'bg-white text-[#2E77D0]'
+                    }`}>
+                      {s.done ? <CheckCircle size={16} /> : s.icon}
+                    </span>
+                    <span className={`flex-1 text-sm font-semibold ${s.done ? 'text-green-700 line-through' : 'text-gray-700'}`}>
+                      {s.label}
+                    </span>
+                    {!s.done && <ChevronLeft size={14} className="text-gray-400" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Smart Reminders */}
         <div className="grid grid-cols-3 gap-2">
@@ -1272,127 +1461,36 @@ export default function UserHomePage() {
           </div>
         </div>
 
-        {/* AI Vehicle Assistant CTA */}
-        {vehicle && (
-          <button
-            onClick={() => setShowChat(true)}
-            className="w-full relative overflow-hidden rounded-2xl py-5 px-6 shadow-lg active:scale-[0.98] transition-all duration-200"
-            style={{
-              background: 'linear-gradient(135deg, #1e3a5f 0%, #2a5a8f 50%, #1e3a5f 100%)',
-            }}
-          >
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute -top-8 -left-8 w-32 h-32 bg-white rounded-full" />
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white rounded-full" />
-            </div>
-            <div className="relative flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                  <MessageCircle size={24} className="text-white" />
-                </div>
-                <div className="text-right">
-                  <h3 className="text-white font-bold text-base">שאל את AutoLog AI</h3>
-                  <p className="text-blue-100 text-xs mt-0.5 leading-relaxed">
-                    בוט מומחה שמכיר את הרכב שלך — שאל על תחזוקה, תקלות, עלויות או כל שאלה אחרת
-                  </p>
-                </div>
+        {/* ═══ One-time location permission prompt (SOS) ═══ */}
+        {showGeoPrompt && (
+          <div className="bg-white rounded-2xl border border-teal-100 shadow-sm p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                <MapPin size={20} className="text-teal-600" />
               </div>
-              <ChevronLeft size={22} className="text-white/70 flex-shrink-0" />
-            </div>
-          </button>
-        )}
-
-        {/* Quick Actions */}
-        <div className="flex gap-3">
-          <button
-            onClick={() => setShowTreatmentsMenu(true)}
-            className="flex-1 bg-teal-600 text-white rounded-xl py-3 flex flex-col items-center gap-1 shadow-md active:scale-[0.97] transition-transform"
-          >
-            <Wrench size={20} />
-            <span className="text-xs font-semibold">טיפולים</span>
-          </button>
-          <button
-            onClick={() => router.push('/user/documents')}
-            className="flex-1 bg-teal-600 text-white rounded-xl py-3 flex flex-col items-center gap-1 shadow-md active:scale-[0.97] transition-transform"
-          >
-            <FileText size={20} />
-            <span className="text-xs font-semibold">מסמכים</span>
-          </button>
-          <button
-            onClick={() => router.push('/user/vehicles')}
-            className="flex-1 bg-teal-600 text-white rounded-xl py-3 flex flex-col items-center gap-1 shadow-md active:scale-[0.97] transition-transform"
-          >
-            <Car size={20} />
-            <span className="text-xs font-semibold">הרכבים שלי</span>
-          </button>
-          <button
-            onClick={() => router.push('/user/sos')}
-            className="flex-1 bg-red-500 text-white rounded-xl py-3 flex flex-col items-center gap-1 shadow-md active:scale-[0.97] transition-transform relative"
-          >
-            {!GARAGES_ENABLED && <span className="absolute top-1 left-1"><ComingSoonBadge className="bg-white/30 text-white" /></span>}
-            <AlertTriangle size={20} />
-            <span className="text-xs font-semibold">SOS</span>
-          </button>
-        </div>
-
-        {/* ═══ Push Permission Banner ═══ */}
-        <PushPermissionBanner />
-
-        {/* ═══ Vehicle Transfer Alerts ═══ */}
-        {pendingTransfers.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-blue-200">
-            <div className="flex items-center gap-2 px-4 pt-4 pb-2">
-              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                <ArrowLeftRight size={16} className="text-blue-600" />
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-[#1B4E8A] text-sm mb-0.5">זיהוי מיקום למקרה חירום</p>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  בתאונה או תקלה בדרך נאתר אותך מיד ונשלח עזרה למקום המדויק — בלי להקליד כתובת ברגע לחוץ. המיקום נבדק רק כשמדווחים על אירוע.
+                </p>
               </div>
-              <h3 className="text-sm font-bold text-[#1e3a5f]">העברות בעלות</h3>
-              <span className="mr-auto bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                {pendingTransfers.length}
-              </span>
+              <button onClick={dismissGeoPrompt} className="p-1.5 hover:bg-gray-100 rounded-lg flex-shrink-0" aria-label="סגור">
+                <X size={16} className="text-gray-400" />
+              </button>
             </div>
-            <div className="divide-y divide-gray-50">
-              {pendingTransfers.map((t) => {
-                const vehicleName = t.vehicle
-                  ? (t.vehicle.nickname || `${t.vehicle.manufacturer} ${t.vehicle.model}`)
-                  : 'רכב';
-                const isIncoming = !t.isSender;
-                const statusLabel =
-                  t.status === 'accepted' ? 'מאושר — ממתין להשלמה'
-                    : t.cancelRequestedBy ? 'בקשת ביטול — נדרש אישורך'
-                    : isIncoming ? 'ממתין לאישורך' : 'ממתין לאישור הקונה';
-                const bgColor = isIncoming && t.status === 'pending' ? 'bg-blue-50' : '';
-
-                return (
-                  <button
-                    key={t.id}
-                    onClick={() => router.push(
-                      isIncoming && t.status === 'pending'
-                        ? '/user/vehicles/transfer/accept'
-                        : '/user/vehicles/transfer'
-                    )}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-right hover:opacity-80 transition ${bgColor}`}
-                  >
-                    <span className="text-lg flex-shrink-0">{isIncoming ? '📥' : '📤'}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-[#1e3a5f]">
-                        {isIncoming ? `${t.fromUser?.fullName || 'מוכר'} רוצה להעביר לך` : `העברת ${vehicleName}`}
-                      </div>
-                      <div className="text-xs text-gray-500">{vehicleName}</div>
-                    </div>
-                    <div className={`px-2.5 py-1 rounded-lg flex-shrink-0 ${
-                      isIncoming && t.status === 'pending' ? 'bg-blue-100' :
-                      t.status === 'accepted' ? 'bg-green-100' : 'bg-amber-100'
-                    }`}>
-                      <span className={`text-xs font-bold ${
-                        isIncoming && t.status === 'pending' ? 'text-blue-700' :
-                        t.status === 'accepted' ? 'text-green-700' : 'text-amber-700'
-                      }`}>
-                        {statusLabel}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={handleEnableGeo}
+                className="flex-1 bg-teal-600 text-white font-bold text-sm py-2.5 px-4 rounded-xl hover:bg-teal-700 transition-all active:scale-[0.98]"
+              >
+                אפשר זיהוי מיקום
+              </button>
+              <button
+                onClick={dismissGeoPrompt}
+                className="px-4 py-2.5 text-sm font-semibold text-gray-500 hover:text-gray-700 rounded-xl hover:bg-gray-50"
+              >
+                לא עכשיו
+              </button>
             </div>
           </div>
         )}
@@ -1426,13 +1524,16 @@ export default function UserHomePage() {
           if (alerts.length === 0) return null;
 
           return (
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-red-100">
-              <div className="flex items-center gap-2 px-4 pt-4 pb-2">
-                <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
-                  <AlertTriangle size={16} className="text-red-500" />
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-orange-100">
+              <div
+                className="flex items-center gap-2 px-4 py-3"
+                style={{ background: 'linear-gradient(120deg, #F97316 0%, #FB923C 100%)' }}
+              >
+                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                  <AlertTriangle size={16} className="text-white" />
                 </div>
-                <h3 className="text-sm font-bold text-[#1e3a5f]">התראות תפוגה</h3>
-                <span className="mr-auto bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{alerts.length}</span>
+                <h3 className="text-sm font-bold text-white">התראות תפוגה</h3>
+                <span className="mr-auto bg-white/25 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{alerts.length}</span>
               </div>
               <div className="divide-y divide-gray-50">
                 {alerts.map((a, i) => {
@@ -1451,7 +1552,7 @@ export default function UserHomePage() {
                     >
                       <span className="text-lg flex-shrink-0">{a.icon}</span>
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-[#1e3a5f]">{a.label} — {a.vehicleName}</div>
+                        <div className="text-sm font-semibold text-[#1B4E8A]">{a.label} — {a.vehicleName}</div>
                         <div className="text-xs text-gray-400">{new Date(a.date).toLocaleDateString('he-IL')}</div>
                       </div>
                       <div className={`px-2.5 py-1 rounded-lg ${badgeBg} flex-shrink-0`}>
@@ -1467,11 +1568,114 @@ export default function UserHomePage() {
           );
         })()}
 
+        {/* AI Vehicle Assistant CTA */}
+        {vehicle && (
+          <button
+            onClick={() => setShowChat(true)}
+            className="w-full relative overflow-hidden rounded-2xl py-3 px-5 shadow-lg active:scale-[0.98] transition-all duration-200"
+            style={{
+              background: 'linear-gradient(135deg, #1B4E8A 0%, #2a5a8f 50%, #1B4E8A 100%)',
+            }}
+          >
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute -top-8 -left-8 w-32 h-32 bg-white rounded-full" />
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white rounded-full" />
+            </div>
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
+                  <MessageCircle size={18} className="text-white" />
+                </div>
+                <div className="text-right min-w-0">
+                  <h3 className="text-white font-bold text-sm">שאל את AutoLog AI</h3>
+                  <p className="text-blue-100 text-[11px] truncate">
+                    בוט מומחה שמכיר את הרכב שלך
+                  </p>
+                </div>
+              </div>
+              <ChevronLeft size={20} className="text-white/70 flex-shrink-0" />
+            </div>
+          </button>
+        )}
+
+        {/* SOS — full-width emergency button (docs/vehicles/treatments live in the bottom nav) */}
+        <button
+          onClick={() => router.push('/user/sos')}
+          className="w-full bg-gradient-to-l from-red-500 to-red-600 text-white rounded-2xl py-3.5 flex items-center justify-center gap-2.5 shadow-md active:scale-[0.98] transition-transform relative"
+        >
+          {!SOS_ENABLED && <span className="absolute top-1 left-1"><ComingSoonBadge className="bg-white/30 text-white" /></span>}
+          <AlertTriangle size={20} />
+          <span className="text-base font-bold tracking-wide">SOS — חירום בדרך</span>
+        </button>
+
+        {/* ═══ Push Permission Banner ═══ */}
+        <PushPermissionBanner />
+
+        {/* ═══ Vehicle Transfer Alerts ═══ */}
+        {pendingTransfers.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-blue-200">
+            <div className="flex items-center gap-2 px-4 pt-4 pb-2">
+              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                <ArrowLeftRight size={16} className="text-blue-600" />
+              </div>
+              <h3 className="text-sm font-bold text-[#1B4E8A]">העברות בעלות</h3>
+              <span className="mr-auto bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                {pendingTransfers.length}
+              </span>
+            </div>
+            <div className="divide-y divide-gray-50">
+              {pendingTransfers.map((t) => {
+                const vehicleName = t.vehicle
+                  ? (t.vehicle.nickname || `${t.vehicle.manufacturer} ${t.vehicle.model}`)
+                  : 'רכב';
+                const isIncoming = !t.isSender;
+                const statusLabel =
+                  t.status === 'accepted' ? 'מאושר — ממתין להשלמה'
+                    : t.cancelRequestedBy ? 'בקשת ביטול — נדרש אישורך'
+                    : isIncoming ? 'ממתין לאישורך' : 'ממתין לאישור הקונה';
+                const bgColor = isIncoming && t.status === 'pending' ? 'bg-blue-50' : '';
+
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => router.push(
+                      isIncoming && t.status === 'pending'
+                        ? '/user/vehicles/transfer/accept'
+                        : '/user/vehicles/transfer'
+                    )}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-right hover:opacity-80 transition ${bgColor}`}
+                  >
+                    <span className="text-lg flex-shrink-0">{isIncoming ? '📥' : '📤'}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-[#1B4E8A]">
+                        {isIncoming ? `${t.fromUser?.fullName || 'מוכר'} רוצה להעביר לך` : `העברת ${vehicleName}`}
+                      </div>
+                      <div className="text-xs text-gray-500">{vehicleName}</div>
+                    </div>
+                    <div className={`px-2.5 py-1 rounded-lg flex-shrink-0 ${
+                      isIncoming && t.status === 'pending' ? 'bg-blue-100' :
+                      t.status === 'accepted' ? 'bg-green-100' : 'bg-amber-100'
+                    }`}>
+                      <span className={`text-xs font-bold ${
+                        isIncoming && t.status === 'pending' ? 'text-blue-700' :
+                        t.status === 'accepted' ? 'text-green-700' : 'text-amber-700'
+                      }`}>
+                        {statusLabel}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+
         {/* Recent Treatments - hidden */}
         {false && (
         <div className="bg-white rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-base font-bold text-[#1e3a5f] flex items-center gap-2">
+            <h3 className="text-base font-bold text-[#1B4E8A] flex items-center gap-2">
               <Wrench size={16} className="text-teal-600" />
               טיפולים אחרונים
             </h3>
@@ -1495,14 +1699,14 @@ export default function UserHomePage() {
                     {treatmentIcon(t.type)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-[#1e3a5f] truncate">{t.title}</div>
+                    <div className="text-sm font-semibold text-[#1B4E8A] truncate">{t.title}</div>
                     <div className="text-xs text-gray-400">
                       {t.garageName && `${t.garageName} • `}
                       {new Date(t.date).toLocaleDateString('he-IL')}
                     </div>
                   </div>
                   {t.cost && (
-                    <div className="text-sm font-bold text-[#1e3a5f] flex-shrink-0">₪{t.cost.toLocaleString()}</div>
+                    <div className="text-sm font-bold text-[#1B4E8A] flex-shrink-0">₪{t.cost.toLocaleString()}</div>
                   )}
                 </div>
               ))}
@@ -1516,7 +1720,7 @@ export default function UserHomePage() {
         {false && (
         <div className="bg-white rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-base font-bold text-[#1e3a5f] flex items-center gap-2">
+            <h3 className="text-base font-bold text-[#1B4E8A] flex items-center gap-2">
               <FileText size={16} className="text-teal-600" />
               מסמכים
             </h3>
@@ -1545,7 +1749,7 @@ export default function UserHomePage() {
               <div key={docType} className="flex items-center gap-3 py-2.5 border-b border-gray-50 last:border-b-0">
                 <span className="text-xl">{docIcon(docType)}</span>
                 <div className="flex-1">
-                  <div className="text-sm font-semibold text-[#1e3a5f]">{docTypeLabel(docType)}</div>
+                  <div className="text-sm font-semibold text-[#1B4E8A]">{docTypeLabel(docType)}</div>
                   {doc ? (
                     <div className={`text-xs ${isExpired ? 'text-red-500' : isExpiring ? 'text-amber-500' : 'text-green-500'}`}>
                       {isExpired ? '⚠️ פג תוקף' : isExpiring ? `⏳ פוקע בעוד ${days} יום` : hasExpiry ? `✅ בתוקף עד ${new Date(doc.expiryDate!).toLocaleDateString('he-IL')}` : '✅ הועלה'}
@@ -1580,7 +1784,7 @@ export default function UserHomePage() {
           return (
             <div className="bg-white rounded-2xl p-4 shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-bold text-[#1e3a5f] flex items-center gap-2">
+                <h3 className="text-base font-bold text-[#1B4E8A] flex items-center gap-2">
                   <Calendar size={16} className="text-teal-600" />
                   תורים קרובים
                 </h3>
@@ -1596,7 +1800,7 @@ export default function UserHomePage() {
                   return (
                     <div key={a.id} className="flex items-center justify-between border border-gray-100 rounded-xl p-3">
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-[#1e3a5f] text-sm truncate">
+                        <div className="font-semibold text-[#1B4E8A] text-sm truncate">
                           {a.garage?.name || 'שירות'}
                           <span className="text-gray-500 font-normal"> · {{ inspection: 'אבחון', maintenance: 'טיפול', repair: 'תיקון', test_prep: 'הכנה לטסט' }[a.serviceType] || a.serviceType}</span>
                         </div>
@@ -1618,7 +1822,7 @@ export default function UserHomePage() {
         {/* Monthly Expenses Summary */}
         <div className="bg-white rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-base font-bold text-[#1e3a5f] flex items-center gap-2">
+            <h3 className="text-base font-bold text-[#1B4E8A] flex items-center gap-2">
               <Receipt size={16} className="text-teal-600" />
               הוצאות {new Date().toLocaleDateString('he-IL', { month: 'long' })}
             </h3>
@@ -1628,11 +1832,20 @@ export default function UserHomePage() {
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-3xl font-bold text-[#1e3a5f]">₪{thisMonthExpenses.toLocaleString()}</div>
+              <div className="text-3xl font-bold text-[#1B4E8A]">₪{thisMonthExpenses.toLocaleString()}</div>
               <div className="text-xs text-gray-400 mt-1">
-                {expenses.length > 0
+                {thisMonthExpenses > 0
                   ? `${expenses.filter(e => new Date(e.date).getMonth() === new Date().getMonth()).length} רשומות החודש`
-                  : 'אין הוצאות החודש'}
+                  : (() => {
+                      const now = new Date();
+                      const lm = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                      const prevMonthExpenseTotal = expenses
+                        .filter(e => { const d = new Date(e.date); return d.getMonth() === lm.getMonth() && d.getFullYear() === lm.getFullYear(); })
+                        .reduce((sum, e) => sum + (e.amount || 0), 0);
+                      return prevMonthExpenseTotal > 0
+                        ? `אין הוצאות החודש · ${lm.toLocaleDateString('he-IL', { month: 'long' })}: ₪${prevMonthExpenseTotal.toLocaleString()}`
+                        : 'אין הוצאות החודש';
+                    })()}
               </div>
             </div>
             <button
@@ -1653,7 +1866,7 @@ export default function UserHomePage() {
             <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
               <FileText size={18} className="text-purple-600" />
             </div>
-            <div className="text-sm font-semibold text-[#1e3a5f]">דוח מלא</div>
+            <div className="text-sm font-semibold text-[#1B4E8A]">דוח מלא</div>
           </button>
           <button
             onClick={() => router.push('/user/history')}
@@ -1662,7 +1875,7 @@ export default function UserHomePage() {
             <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
               <Clock size={18} className="text-blue-600" />
             </div>
-            <div className="text-sm font-semibold text-[#1e3a5f]">היסטוריה</div>
+            <div className="text-sm font-semibold text-[#1B4E8A]">היסטוריה</div>
           </button>
         </div>
       </div>
@@ -1672,7 +1885,7 @@ export default function UserHomePage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center" onClick={() => setShowTreatmentsMenu(false)}>
           <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="text-lg font-bold text-[#1e3a5f]">טיפולים</h3>
+              <h3 className="text-lg font-bold text-[#1B4E8A]">טיפולים</h3>
               <button onClick={() => setShowTreatmentsMenu(false)} className="p-2 hover:bg-gray-100 rounded-full">
                 <X size={20} />
               </button>
@@ -1686,7 +1899,7 @@ export default function UserHomePage() {
                   <Car size={20} />
                 </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-[#1e3a5f] flex items-center gap-2">
+                  <div className="font-semibold text-[#1B4E8A] flex items-center gap-2">
                     הזמן תור למוסך
                     {!GARAGES_ENABLED && <ComingSoonBadge />}
                   </div>
@@ -1702,7 +1915,7 @@ export default function UserHomePage() {
                   <Wrench size={20} />
                 </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-[#1e3a5f]">הוספת טיפול/תיקון חדש</div>
+                  <div className="font-semibold text-[#1B4E8A]">הוספת טיפול/תיקון חדש</div>
                   <div className="text-xs text-gray-500">רישום טיפול / תיקון שבוצע ברכב</div>
                 </div>
                 <ChevronLeft size={20} className="text-gray-400" />
@@ -1715,7 +1928,7 @@ export default function UserHomePage() {
                   <FileText size={20} />
                 </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-[#1e3a5f]">היסטוריית טיפולים</div>
+                  <div className="font-semibold text-[#1B4E8A]">היסטוריית טיפולים</div>
                   <div className="text-xs text-gray-500">כל הטיפולים שבוצעו ברכב</div>
                 </div>
                 <ChevronLeft size={20} className="text-gray-400" />
@@ -1728,7 +1941,7 @@ export default function UserHomePage() {
                   <Wrench size={20} />
                 </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-[#1e3a5f]">הטיפול הבא</div>
+                  <div className="font-semibold text-[#1B4E8A]">הטיפול הבא</div>
                   <div className="text-xs text-gray-500">מתי מומלץ הטיפול הבא לרכב</div>
                 </div>
                 <ChevronLeft size={20} className="text-gray-400" />
@@ -1744,7 +1957,7 @@ export default function UserHomePage() {
           <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-y-auto">
             {/* Modal header */}
             <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white rounded-t-3xl z-10">
-              <h3 className="text-lg font-bold text-[#1e3a5f]">הוספת טיפול</h3>
+              <h3 className="text-lg font-bold text-[#1B4E8A]">הוספת טיפול</h3>
               <button onClick={() => setShowAddTreatment(false)} className="p-2 hover:bg-gray-100 rounded-full">
                 <X size={20} />
               </button>
@@ -1911,6 +2124,13 @@ export default function UserHomePage() {
                   return remaining > 0 ? `נותרו ${remaining.toLocaleString()} ק"מ` : 'עבר מועד — מומלץ לטפל בהקדם';
                 })()}
               </div>
+              {/* Garage Finder entry — contextual CTA from the next-treatment card */}
+              <a
+                href="/user/find-garage?category=MECHANICS"
+                className="inline-flex items-center gap-1.5 mt-3 bg-[#2E77D0] hover:bg-[#1D5FAF] text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors"
+              >
+                🔧 מצא מוסך למכונאות
+              </a>
             </div>
 
             {/* What needs to be replaced at this service */}

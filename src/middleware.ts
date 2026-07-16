@@ -265,7 +265,7 @@ function applyRoleChecks(
   }
 
   // Garage owner routes - require garage_owner or admin role
-  if (pathname.startsWith('/garage') || pathname.startsWith('/api/garage')) {
+  if (pathname === '/garage' || pathname.startsWith('/garage/') || pathname.startsWith('/api/garage/')) {
     if (userRole !== 'garage_owner' && userRole !== 'admin') {
       logDenied(payload, pathname, req);
       if (pathname.startsWith('/api')) {
@@ -277,7 +277,7 @@ function applyRoleChecks(
 
   // User routes - require user role (or higher)
   if (pathname.startsWith('/user')) {
-    if (userRole !== 'user' && userRole !== 'admin') {
+    if (userRole !== 'user' && userRole !== 'admin' && userRole !== 'garage_owner') {
       logDenied(payload, pathname, req);
       if (pathname.startsWith('/api')) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

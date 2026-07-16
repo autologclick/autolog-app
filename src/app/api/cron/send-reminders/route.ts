@@ -1,9 +1,10 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { createNotification } from '@/lib/services/notification-service';
-import { sendEmail, buildExpiryReminderEmailHtml } from '@/lib/email';
+import { sendEmail, buildExpiryReminderEmailHtml, buildLicenseReminderEmailHtml } from '@/lib/email';
 import { sendPushToUser } from '@/lib/push-sender';
 import { createLogger } from '@/lib/logger';
+import { notifyTelegramCritical } from '@/lib/telegram';
 
 const logger = createLogger('cron-reminders');
 
@@ -360,6 +361,104 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // ─── Driver's license reminders (user-level, not vehicle-level) ───
+    let licenseReminders = 0;
+    const usersWithLicense = await prisma.user.findMany({
+      where: { licenseExpiry: { lte: maxDate, gte: now }, isActive: true },
+      select: {
+        id: true, fullName: true, email: true,
+        licenseExpiry: true, notificationPreferences: true,
+      },
+    });
+
+    for (const u of usersWithLicense) {
+      if (!u.licenseExpiry) continue;
+      const prefs = parsePrefs(u.notificationPreferences);
+      const d = daysUntil(u.licenseExpiry, now);
+      const threshold = thresholdFor(d);
+      if (threshold === null) continue;
+
+      // Dedup: same marker mechanism, keyed by user + license type + threshold
+      const marker = thresholdMarker(threshold);
+      const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+      const already = await prisma.notification.findFirst({
+        where: {
+          userId: u.id,
+          type: 'license_expiry',
+          title: { contains: marker },
+          createdAt: { gte: sixtyDaysAgo },
+        },
+      });
+      if (already) {
+        stats.remindersDeduped++;
+        continue;
+      }
+
+      const urgency = getUrgencyIcon(d);
+      const timeText = formatDaysHeb(d);
+
+      if (prefs.inApp !== false) {
+        try {
+          await createNotification({
+            userId: u.id,
+            type: 'license_expiry',
+            title: `${urgency} תזכורת רישיון נהיגה ${marker}`,
+            message: `רישיון הנהיגה שלך פג ${timeText}. מומלץ לחדש מראש.`,
+            link: '/user/profile',
+          });
+          stats.inAppCreated++;
+        } catch (e) {
+          logger.warn('Failed to create license reminder', {
+            userId: u.id, threshold,
+            error: e instanceof Error ? e.message : String(e),
+          });
+        }
+      }
+
+      if (u.email && prefs.email !== false) {
+        try {
+          const html = buildLicenseReminderEmailHtml({
+            fullName: u.fullName || 'נהג/ת יקר/ה',
+            expiryDate: u.licenseExpiry,
+            daysUntil: d,
+          });
+          const sent = await sendEmail({
+            to: u.email,
+            subject: `${urgency} תזכורת — רישיון הנהיגה שלך פג ${timeText}`,
+            html,
+          });
+          if (sent) stats.emailsSent++; else stats.emailsFailed++;
+        } catch (e) {
+          stats.emailsFailed++;
+          logger.error('Failed to send license reminder email', {
+            userId: u.id, threshold,
+            error: e instanceof Error ? e.message : String(e),
+          });
+        }
+      }
+
+      if (prefs.push !== false) {
+        try {
+          const sent = await sendPushToUser(u.id, {
+            title: `${urgency} תזכורת רישיון נהיגה`,
+            body: `רישיון הנהיגה שלך פג ${timeText}`,
+            tag: `reminder-license-${u.id}-${threshold}`,
+            requireInteraction: d <= 1,
+            data: { link: '/user/profile', type: 'license_expiry' },
+          });
+          if (sent > 0) stats.pushesSent++; else stats.pushesFailed++;
+        } catch (e) {
+          stats.pushesFailed++;
+          logger.warn('Failed to send license push reminder', {
+            userId: u.id, threshold,
+            error: e instanceof Error ? e.message : String(e),
+          });
+        }
+      }
+
+      licenseReminders++;
+    }
+
     // ─── Also catch vehicles that JUST expired (status fix-up) ───
     const expiredVehicles = await prisma.vehicle.findMany({
       where: {
@@ -388,6 +487,7 @@ export async function GET(req: NextRequest) {
         success: true,
         timestamp: now.toISOString(),
         stats,
+        licenseReminders,
         expiredStatusFixed: expiredVehicles.length,
       }, null, 2),
       { status: 200, headers: { 'Content-Type': 'application/json' } },
@@ -396,6 +496,10 @@ export async function GET(req: NextRequest) {
     logger.error('Cron reminders failed', {
       error: error instanceof Error ? error.message : String(error),
     });
+    notifyTelegramCritical(
+      'CRON נכשל — תזכורות לא נשלחו',
+      error instanceof Error ? error.message : String(error),
+    );
     return new Response(
       JSON.stringify({
         success: false,

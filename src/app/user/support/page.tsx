@@ -15,18 +15,18 @@ const contactMethods = [
   {
     icon: <Phone size={24} className="text-white" />,
     title: 'טלפון',
-    detail: '054-316-1610',
+    detail: '053-526-6741',
     sub: 'ימים א׳-ה׳ 08:00-18:00',
-    action: 'tel:0543161610',
+    action: 'tel:0535266741',
     actionLabel: 'חייג עכשיו',
     gradient: 'from-teal-500 to-teal-600',
   },
   {
     icon: <MessageCircle size={24} className="text-white" />,
     title: 'וואטסאפ',
-    detail: '054-316-1610',
+    detail: '053-526-6741',
     sub: 'מענה מהיר בצ׳אט',
-    action: 'https://wa.me/972543161610',
+    action: 'https://wa.me/972535266741',
     actionLabel: 'פתח צ׳אט',
     gradient: 'from-green-500 to-green-600',
   },
@@ -59,7 +59,7 @@ const faqItems = [
   },
   {
     q: 'מה לעשות במקרה חירום?',
-    a: 'לחיצה על כפתור SOS האדום בדף הבית. המערכת תאתר את המיקום ותשלח הודעה למוקד. לסיוע בדרכים חייגו ל-053-313-1310.',
+    a: 'לחיצה על כפתור SOS האדום בדף הבית. המערכת תאתר את המיקום ותשלח הודעה למוקד. לסיוע בדרכים חייגו לידידים (סיוע בדרכים): 053-313-1310.',
     icon: AlertTriangle,
   },
   {
@@ -155,7 +155,7 @@ export default function SupportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24 pt-12 lg:pt-0" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24 pt-12 lg:pt-0" dir="rtl">
       <div className="space-y-6">
         <PageHeader title="תמיכה" backUrl="/user/profile" />
 
@@ -224,7 +224,7 @@ export default function SupportPage() {
                       className={`p-3 rounded-xl border-2 text-sm font-medium transition-all text-right ${
                         formData.topic === t.label
                           ? 'border-teal-500 bg-teal-50 text-teal-700'
-                          : 'border-gray-200 text-gray-600 hover:border-teal-300 hover:bg-[#fef7ed]/50'
+                          : 'border-gray-200 text-gray-600 hover:border-teal-300 hover:bg-[#F3F6FA]/50'
                       }`}
                     >
                       <div className="flex justify-center mb-2">
@@ -310,7 +310,7 @@ export default function SupportPage() {
         </div>
         <div className="flex-1">
           <p className="font-bold text-sm">במקרה חירום?</p>
-          <p className="text-red-100 text-xs">לחיצה על כפתור SOS או חיוג לסיוע בדרכים: 053-313-1310</p>
+          <p className="text-red-100 text-xs">לחיצה על כפתור SOS או חיוג לידידים (סיוע בדרכים): 053-313-1310</p>
         </div>
         <a href="/user/sos" className="px-4 py-2 bg-white text-red-600 rounded-xl text-sm font-bold hover:bg-red-50 transition flex-shrink-0 shadow">
           SOS

@@ -33,9 +33,9 @@ export interface ShareToken {
  * Create a share token for a resource. Default TTL: 30 days.
  */
 export function createShareToken(
-  resourceType: 'vehicle-history' | 'inspection-pdf',
+  resourceType: 'vehicle-history' | 'inspection-pdf' | 'sos-incident',
   resourceId: string,
-  ttlSeconds: number = 60 * 60 * 24 * 30
+  ttlSeconds: number = 60 * 60 * 24 * 7
 ): ShareToken {
   const expiresAt = Math.floor(Date.now() / 1000) + ttlSeconds;
   const payload = `${resourceType}:${resourceId}:${expiresAt}`;
@@ -46,7 +46,7 @@ export function createShareToken(
  * Verify a share token. Returns true only if the signature matches and the token is not expired.
  */
 export function verifyShareToken(
-  resourceType: 'vehicle-history' | 'inspection-pdf',
+  resourceType: 'vehicle-history' | 'inspection-pdf' | 'sos-incident',
   resourceId: string,
   token: string,
   expiresAt: number

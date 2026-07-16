@@ -20,7 +20,7 @@ export const BRAND = {
     primary: '#1E40AF',     // AutoLog blue
     primaryDark: '#1E3A8A',
     accent: '#F59E0B',      // warm amber for CTAs
-    success: '#10B981',
+    success: '#16A34A',
     danger: '#EF4444',
     text: '#0F172A',
     muted: '#64748B',

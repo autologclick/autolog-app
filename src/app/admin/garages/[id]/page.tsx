@@ -47,10 +47,10 @@ export default function AdminGarageDetailPage({ params }: { params: { id: string
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" icon={<ArrowRight size={16} />} onClick={() => router.back()} />
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] rounded-lg flex items-center justify-center border-2 border-[#1e3a5f]">
-            <Building2 size={22} className="text-[#1e3a5f]" />
+          <div className="w-10 h-10 bg-[#F3F6FA] rounded-lg flex items-center justify-center border-2 border-[#1B4E8A]">
+            <Building2 size={22} className="text-[#1B4E8A]" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">{garage.name}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1B4E8A]">{garage.name}</h1>
         </div>
         <div className="flex gap-2 ms-auto">
           {garage.isPartner && <Badge variant="success">שותף</Badge>}
@@ -102,7 +102,7 @@ export default function AdminGarageDetailPage({ params }: { params: { id: string
         {garage.description && <p className="text-sm text-gray-600 mt-3 bg-gray-50 p-3 rounded-lg">{garage.description}</p>}
         {garage.owner && (
           <div className="mt-4 p-3 bg-teal-50 rounded-lg">
-            <h4 className="text-sm font-bold text-[#1e3a5f] mb-1">בעל המוסך</h4>
+            <h4 className="text-sm font-bold text-[#1B4E8A] mb-1">בעל המוסך</h4>
             <p className="text-sm">{garage.owner.fullName} • {garage.owner.email}</p>
           </div>
         )}

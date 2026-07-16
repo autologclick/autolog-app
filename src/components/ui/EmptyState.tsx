@@ -38,7 +38,7 @@ export default function EmptyState({ icon, title, description, action, className
       )}>
         {icon}
       </div>
-      <h3 className={cn('font-bold text-[#1e3a5f] mb-1', s.title)}>
+      <h3 className={cn('font-bold text-[#1B4E8A] mb-1', s.title)}>
         {title}
       </h3>
       {description && (

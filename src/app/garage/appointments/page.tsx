@@ -31,6 +31,9 @@ interface Appointment {
     nickname: string;
     licensePlate: string;
     model: string;
+    manufacturer?: string;
+    year?: number;
+    mileage?: number;
   };
 }
 
@@ -51,6 +54,8 @@ export default function AppointmentsPage() {
 
   // Completion modal
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [completionCost, setCompletionCost] = useState('');
+  const [completionMileage, setCompletionMileage] = useState('');
   const [completingAppointment, setCompletingAppointment] = useState<Appointment | null>(null);
   const [completionNotes, setCompletionNotes] = useState('');
 
@@ -195,7 +200,7 @@ export default function AppointmentsPage() {
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  const updateStatus = async (appointmentId: string, status: string, notes?: string, rejReason?: string) => {
+  const updateStatus = async (appointmentId: string, status: string, notes?: string, rejReason?: string, extra?: { cost?: number; mileage?: number }) => {
     setUpdating(appointmentId);
     setError('');
     setSuccess('');
@@ -204,6 +209,8 @@ export default function AppointmentsPage() {
       const body: any = { status };
       if (notes) body.completionNotes = notes;
       if (rejReason) body.rejectionReason = rejReason;
+      if (extra?.cost !== undefined) body.cost = extra.cost;
+      if (extra?.mileage !== undefined) body.mileage = extra.mileage;
 
       const res = await fetch(`/api/garage/appointments/${appointmentId}`, {
         method: 'PUT',
@@ -222,6 +229,9 @@ export default function AppointmentsPage() {
       setAppointments(prev =>
         prev.map(a => a.id === appointmentId ? { ...a, status, completionNotes: notes || a.completionNotes } : a)
       );
+
+      // Refresh route cache so the garage dashboard re-pulls the pending count on return
+      router.refresh();
 
       setSuccess(data.message || 'הסטטוס עודכן בהצלחה');
       setTimeout(() => setSuccess(''), 3000);
@@ -243,12 +253,17 @@ export default function AppointmentsPage() {
   const openCompleteModal = (appointment: Appointment) => {
     setCompletingAppointment(appointment);
     setCompletionNotes('');
+    setCompletionCost('');
+    setCompletionMileage('');
     setShowCompleteModal(true);
   };
 
   const handleComplete = () => {
     if (!completingAppointment) return;
-    updateStatus(completingAppointment.id, 'completed', completionNotes || undefined);
+    updateStatus(completingAppointment.id, 'completed', completionNotes || undefined, undefined, {
+      cost: completionCost ? parseFloat(completionCost) : undefined,
+      mileage: completionMileage ? parseInt(completionMileage, 10) : undefined,
+    });
     setShowCompleteModal(false);
     setCompletingAppointment(null);
   };
@@ -414,19 +429,7 @@ export default function AppointmentsPage() {
       );
     }
 
-    if (appointment.status === 'completed') {
-      buttons.push(
-        <button
-          key="inspection"
-          onClick={() => router.push(`/garage/new-inspection?appointmentId=${appointment.id}`)}
-          className="h-8 px-3 rounded-lg bg-teal-100 flex items-center justify-center gap-1 hover:bg-teal-200 transition text-xs font-medium text-teal-700"
-          title="צור דוח אבחון"
-        >
-          <Shield size={14} />
-          <span>צור אבחון</span>
-        </button>
-      );
-    }
+
 
     return buttons;
   };
@@ -435,10 +438,10 @@ export default function AppointmentsPage() {
     return (
       <div className="space-y-6 pt-12 lg:pt-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] rounded-lg border-2 border-[#1e3a5f] flex items-center justify-center">
-            <Calendar size={20} className="text-[#1e3a5f]" />
+          <div className="w-10 h-10 bg-[#F3F6FA] rounded-lg border-2 border-[#1B4E8A] flex items-center justify-center">
+            <Calendar size={20} className="text-[#1B4E8A]" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1e3a5f]">ניהול תורים</h1>
+          <h1 className="text-2xl font-bold text-[#1B4E8A]">ניהול תורים</h1>
         </div>
         <Card className="flex flex-col items-center justify-center py-20 gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
@@ -452,11 +455,11 @@ export default function AppointmentsPage() {
     <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-[#fef7ed] rounded-lg border-2 border-[#1e3a5f] flex items-center justify-center shadow-sm">
-          <Calendar size={20} className="text-[#1e3a5f]" />
+        <div className="w-10 h-10 bg-[#F3F6FA] rounded-lg border-2 border-[#1B4E8A] flex items-center justify-center shadow-sm">
+          <Calendar size={20} className="text-[#1B4E8A]" />
         </div>
         <div className="flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">ניהול תורים</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1B4E8A]">ניהול תורים</h1>
           <p className="text-sm text-gray-500">צפייה ועדכון תורים</p>
         </div>
         <button
@@ -519,12 +522,12 @@ export default function AppointmentsPage() {
 
       {/* AI Insights */}
       {appointments.length > 0 && (
-        <div className="bg-gradient-to-r from-[#fef7ed] to-white border border-emerald-200 rounded-xl p-5 shadow-sm">
+        <div className="bg-gradient-to-r from-[#F3F6FA] to-white border border-emerald-200 rounded-xl p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-emerald-600" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לתורים</h2>
+            <h2 className="text-lg font-bold text-[#1B4E8A]">תובנות AI לתורים</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="bg-white rounded-lg p-3 border border-gray-100">
@@ -659,6 +662,13 @@ export default function AppointmentsPage() {
                       <Car size={14} className="text-gray-400" />
                       <span>{a.vehicle.nickname} ({a.vehicle.licensePlate})</span>
                     </div>
+                    {(a.vehicle.manufacturer || (a.vehicle.year && a.vehicle.year > 0) || (a.vehicle.mileage && a.vehicle.mileage > 0)) && (
+                      <div className="text-xs text-gray-400 mr-5 mb-1 -mt-0.5">
+                        {a.vehicle.manufacturer && a.vehicle.model ? `${a.vehicle.manufacturer} ${a.vehicle.model}` : ''}
+                        {a.vehicle.year && a.vehicle.year > 0 ? ` • ${a.vehicle.year}` : ''}
+                        {a.vehicle.mileage && a.vehicle.mileage > 0 ? ` • ${a.vehicle.mileage.toLocaleString()} ק״מ` : ''}
+                      </div>
+                    )}
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
                       <FileText size={14} className="text-gray-400" />
                       <span>{serviceTypeHeb[a.serviceType] || a.serviceType}</span>
@@ -676,6 +686,16 @@ export default function AppointmentsPage() {
                   {/* Action Buttons */}
                   <div className="flex gap-1.5 items-center flex-wrap sm:flex-nowrap">
                     {getActionButtons(a)}
+                    {(a.status === 'confirmed' || a.status === 'in_progress') && (
+                      <button
+                        onClick={() => router.push(`/garage/new-inspection?appointmentId=${a.id}`)}
+                        title="צור דוח אבחון לרכב זה"
+                        className="h-8 px-3 rounded-lg bg-teal-100 flex items-center justify-center gap-1 hover:bg-teal-200 transition text-xs font-medium text-teal-700"
+                      >
+                        <Shield size={14} />
+                        אבחון
+                      </button>
+                    )}
                   </div>
                 </div>
               </Card>
@@ -730,6 +750,32 @@ export default function AppointmentsPage() {
               </p>
             </div>
 
+            {/* Mileage + cost captured at completion */}
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <div>
+                <label className="block text-xs text-gray-500 text-right mb-1">קילומטראז' נוכחי</label>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  value={completionMileage}
+                  onChange={e => setCompletionMileage(e.target.value)}
+                  placeholder="לדוגמה: 84000"
+                  className="w-full border border-gray-300 rounded-xl px-3 py-2 text-right focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 text-right mb-1">עלות הטיפול (₪)</label>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  value={completionCost}
+                  onChange={e => setCompletionCost(e.target.value)}
+                  placeholder="לדוגמה: 450"
+                  className="w-full border border-gray-300 rounded-xl px-3 py-2 text-right focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
             {/* Actions */}
             <div className="flex flex-col gap-2 pt-2">
               <div className="flex gap-2">
@@ -741,28 +787,21 @@ export default function AppointmentsPage() {
                   ביטול
                 </Button>
                 <button
-                  onClick={handleComplete}
+                  onClick={() => {
+                    handleComplete();
+                    router.push(`/garage/new-inspection?appointmentId=${completingAppointment.id}`);
+                  }}
                   disabled={updating === completingAppointment.id}
-                  className="flex-1 bg-emerald-600 text-white rounded-xl py-2.5 font-medium hover:bg-emerald-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 bg-teal-600 text-white rounded-xl py-2.5 font-medium hover:bg-teal-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {updating === completingAppointment.id ? (
                     <Loader2 size={16} className="animate-spin" />
                   ) : (
-                    <CheckCircle2 size={16} />
+                    <Shield size={16} />
                   )}
-                  סיים וידע את הלקוח
+                  סיים + צור דוח אבחון
                 </button>
               </div>
-              <button
-                onClick={() => {
-                  handleComplete();
-                  router.push(`/garage/new-inspection?appointmentId=${completingAppointment.id}`);
-                }}
-                className="w-full bg-teal-600 text-white rounded-xl py-2.5 font-medium hover:bg-teal-700 transition flex items-center justify-center gap-2 text-sm"
-              >
-                <Shield size={16} />
-                סיים + צור דוח אבחון
-              </button>
             </div>
           </div>
         )}

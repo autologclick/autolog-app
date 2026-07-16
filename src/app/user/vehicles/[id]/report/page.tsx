@@ -270,7 +270,7 @@ export default function VehicleReportPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-white">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-[#1e3a5f] mx-auto mb-3" />
+          <Loader2 className="w-10 h-10 animate-spin text-[#1B4E8A] mx-auto mb-3" />
           <p className="text-gray-500 text-sm">טוען דוח היסטוריית רכב...</p>
         </div>
       </div>
@@ -285,7 +285,7 @@ export default function VehicleReportPage() {
           <p className="text-gray-700 font-medium mb-2">{error || 'שגיאה בטעינת הדוח'}</p>
           <button
             onClick={() => router.back()}
-            className="mt-4 px-6 py-2 bg-[#1e3a5f] text-white rounded-lg text-sm hover:bg-[#2a4a6f] transition"
+            className="mt-4 px-6 py-2 bg-[#1B4E8A] text-white rounded-lg text-sm hover:bg-[#12345C] transition"
           >
             חזרה
           </button>
@@ -308,7 +308,7 @@ export default function VehicleReportPage() {
       `}</style>
 
       {/* Header */}
-      <div className="bg-[#1e3a5f] text-white no-print">
+      <div className="bg-[#1B4E8A] text-white no-print">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <button
@@ -371,7 +371,7 @@ export default function VehicleReportPage() {
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-5">
         {/* Vehicle Info Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5080] p-5 text-white">
+          <div className="bg-gradient-to-l from-[#1B4E8A] to-[#2a5080] p-5 text-white">
             <div className="flex items-start gap-4">
               <div className="w-14 h-14 bg-white/15 rounded-xl flex items-center justify-center flex-shrink-0">
                 <Car size={28} />

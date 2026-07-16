@@ -27,6 +27,9 @@ export async function GET(req: NextRequest) {
               nickname: true,
               licensePlate: true,
               model: true,
+              manufacturer: true,
+              year: true,
+              mileage: true,
             },
           },
           user: {

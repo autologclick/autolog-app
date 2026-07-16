@@ -9,12 +9,12 @@ export default function WarrantyPage() {
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-[#1e3a5f] hover:opacity-80 transition">
+          <Link href="/" className="flex items-center gap-2 text-[#1B4E8A] hover:opacity-80 transition">
             <ArrowRight size={20} />
             <span className="text-sm font-medium">חזרה לדף הבית</span>
           </Link>
-          <Link href="/" className="text-xl font-bold text-[#1e3a5f]">
-            Auto<span className="text-[#0d9488]">Log</span>
+          <Link href="/" className="text-xl font-bold text-[#1B4E8A]">
+            Auto<span className="text-[#2E77D0]">Log</span>
           </Link>
         </div>
       </header>
@@ -23,10 +23,10 @@ export default function WarrantyPage() {
       <main className="max-w-4xl mx-auto px-4 py-12">
         {/* Title */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#0d9488]/10 rounded-2xl mb-4">
-            <ShieldCheck className="w-8 h-8 text-[#0d9488]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#2E77D0]/10 rounded-2xl mb-4">
+            <ShieldCheck className="w-8 h-8 text-[#2E77D0]" />
           </div>
-          <h1 className="text-3xl font-bold text-[#1e3a5f] mb-2">אחריות בנושא בדיקות רכב</h1>
+          <h1 className="text-3xl font-bold text-[#1B4E8A] mb-2">אחריות בנושא בדיקות רכב</h1>
           <p className="text-gray-500 text-sm">עדכון אחרון: מרץ 2026</p>
         </div>
 
@@ -68,8 +68,8 @@ export default function WarrantyPage() {
           {/* Section 1 */}
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <ClipboardCheck className="w-5 h-5 text-[#0d9488]" />
-              <h2 className="text-xl font-bold text-[#1e3a5f]">1. מהות האבחון</h2>
+              <ClipboardCheck className="w-5 h-5 text-[#2E77D0]" />
+              <h2 className="text-xl font-bold text-[#1B4E8A]">1. מהות האבחון</h2>
             </div>
             <p className="mb-3">
               אבחוני הרכב המוצעים דרך פלטפורמת AutoLog מבוצעים על ידי מוסכים שותפים עצמאיים בעלי רישיון מוסך בתוקף מטעם משרד התחבורה. האבחון כולל סקירה ויזואלית ומכנית של מצב הרכב בהתאם לפרוטוקול האבחון המוגדר במערכת, ונועד לספק הערכה מקצועית על מצב הרכב במועד האבחון בלבד.
@@ -87,8 +87,8 @@ export default function WarrantyPage() {
           {/* Section 2 */}
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <Scale className="w-5 h-5 text-[#0d9488]" />
-              <h2 className="text-xl font-bold text-[#1e3a5f]">2. תפקיד AutoLog</h2>
+              <Scale className="w-5 h-5 text-[#2E77D0]" />
+              <h2 className="text-xl font-bold text-[#1B4E8A]">2. תפקיד AutoLog</h2>
             </div>
             <p className="mb-3">
               AutoLog משמשת כפלטפורמה מתווכת בלבד בין המשתמש למוסך השותף. תפקידה של AutoLog מוגבל ל:
@@ -109,8 +109,8 @@ export default function WarrantyPage() {
           {/* Section 3 */}
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <Wrench className="w-5 h-5 text-[#0d9488]" />
-              <h2 className="text-xl font-bold text-[#1e3a5f]">3. אחריות המוסך השותף</h2>
+              <Wrench className="w-5 h-5 text-[#2E77D0]" />
+              <h2 className="text-xl font-bold text-[#1B4E8A]">3. אחריות המוסך השותף</h2>
             </div>
             <p className="mb-3">המוסך השותף נושא באחריות המלאה לביצוע האבחון, לרבות:</p>
             <ul className="space-y-2 list-disc list-inside mb-3">
@@ -135,8 +135,8 @@ export default function WarrantyPage() {
           {/* Section 4 */}
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <Users className="w-5 h-5 text-[#0d9488]" />
-              <h2 className="text-xl font-bold text-[#1e3a5f]">4. אחריות המשתמש</h2>
+              <Users className="w-5 h-5 text-[#2E77D0]" />
+              <h2 className="text-xl font-bold text-[#1B4E8A]">4. אחריות המשתמש</h2>
             </div>
             <p className="mb-3">המשתמש מאשר ומסכים כי:</p>
             <ul className="space-y-2 list-disc list-inside">
@@ -152,8 +152,8 @@ export default function WarrantyPage() {
           {/* Section 5 */}
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <FileWarning className="w-5 h-5 text-[#0d9488]" />
-              <h2 className="text-xl font-bold text-[#1e3a5f]">5. מגבלות האבחון</h2>
+              <FileWarning className="w-5 h-5 text-[#2E77D0]" />
+              <h2 className="text-xl font-bold text-[#1B4E8A]">5. מגבלות האבחון</h2>
             </div>
             <p className="mb-3">חשוב להבין כי לאבחון הרכב ישנן מגבלות אובייקטיביות:</p>
             <ul className="space-y-2 list-disc list-inside mb-3">
@@ -168,8 +168,8 @@ export default function WarrantyPage() {
           {/* Section 6 */}
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <Scale className="w-5 h-5 text-[#0d9488]" />
-              <h2 className="text-xl font-bold text-[#1e3a5f]">6. הגבלת אחריות</h2>
+              <Scale className="w-5 h-5 text-[#2E77D0]" />
+              <h2 className="text-xl font-bold text-[#1B4E8A]">6. הגבלת אחריות</h2>
             </div>
             <div className="bg-red-50 border border-red-200 rounded-xl p-5 mb-4">
               <h3 className="font-bold text-red-800 mb-2">הצהרת הגבלת אחריות</h3>
@@ -188,8 +188,8 @@ export default function WarrantyPage() {
           {/* Section 7 */}
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <ShieldCheck className="w-5 h-5 text-[#0d9488]" />
-              <h2 className="text-xl font-bold text-[#1e3a5f]">7. אימות מוסכים שותפים</h2>
+              <ShieldCheck className="w-5 h-5 text-[#2E77D0]" />
+              <h2 className="text-xl font-bold text-[#1B4E8A]">7. אימות מוסכים שותפים</h2>
             </div>
             <p className="mb-3">
               AutoLog מבצעת תהליך אימות ראשוני למוסכים המצטרפים לרשת, הכולל בדיקת רישיונות והסמכות. עם זאת:
@@ -205,8 +205,8 @@ export default function WarrantyPage() {
           {/* Section 8 */}
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <ClipboardCheck className="w-5 h-5 text-[#0d9488]" />
-              <h2 className="text-xl font-bold text-[#1e3a5f]">8. דוח האבחון</h2>
+              <ClipboardCheck className="w-5 h-5 text-[#2E77D0]" />
+              <h2 className="text-xl font-bold text-[#1B4E8A]">8. דוח האבחון</h2>
             </div>
             <p className="mb-3">דוח האבחון מופק על סמך הנתונים שהזין המוסך השותף למערכת. בנוגע לדוח:</p>
             <ul className="space-y-2 list-disc list-inside">
@@ -221,8 +221,8 @@ export default function WarrantyPage() {
           {/* Section 9 */}
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <Scale className="w-5 h-5 text-[#0d9488]" />
-              <h2 className="text-xl font-bold text-[#1e3a5f]">9. תשלומים וביטולים</h2>
+              <Scale className="w-5 h-5 text-[#2E77D0]" />
+              <h2 className="text-xl font-bold text-[#1B4E8A]">9. תשלומים וביטולים</h2>
             </div>
             <p className="mb-3">בנוגע לתשלום עבור אבחונים:</p>
             <ul className="space-y-2 list-disc list-inside">
@@ -236,8 +236,8 @@ export default function WarrantyPage() {
           {/* Section 10 */}
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <Phone className="w-5 h-5 text-[#0d9488]" />
-              <h2 className="text-xl font-bold text-[#1e3a5f]">10. יצירת קשר ותלונות</h2>
+              <Phone className="w-5 h-5 text-[#2E77D0]" />
+              <h2 className="text-xl font-bold text-[#1B4E8A]">10. יצירת קשר ותלונות</h2>
             </div>
             <p className="mb-3">
               במקרה של בעיה הנוגעת לאבחון רכב, מומלץ לפעול בסדר הבא:
@@ -249,7 +249,7 @@ export default function WarrantyPage() {
             </ol>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <p className="text-sm font-medium text-gray-800 mb-2">פרטי יצירת קשר:</p>
-              <p className="text-sm text-gray-600">דוא&quot;ל: <a href="mailto:info@autolog.click" className="text-[#0d9488] hover:underline">info@autolog.click</a></p>
+              <p className="text-sm text-gray-600">דוא&quot;ל: <a href="mailto:info@autolog.click" className="text-[#2E77D0] hover:underline">info@autolog.click</a></p>
               <p className="text-sm text-gray-600">כתובת: משה בקר 29, ראשון לציון</p>
               <p className="text-sm text-gray-500 mt-2">נשתדל לטפל בפניות בתוך 7 ימי עסקים.</p>
             </div>
@@ -258,8 +258,8 @@ export default function WarrantyPage() {
           {/* Section 11 - Regulatory Framework */}
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <BookOpen className="w-5 h-5 text-[#0d9488]" />
-              <h2 className="text-xl font-bold text-[#1e3a5f]">11. מסגרת רגולטורית והפניה לבדיקה מורשית במכון רישוי</h2>
+              <BookOpen className="w-5 h-5 text-[#2E77D0]" />
+              <h2 className="text-xl font-bold text-[#1B4E8A]">11. מסגרת רגולטורית והפניה לבדיקה מורשית במכון רישוי</h2>
             </div>
             <p className="mb-3">
               האבחונים המבוצעים דרך AutoLog כפופים למסגרת הרגולטורית הישראלית, לרבות:
@@ -278,8 +278,8 @@ export default function WarrantyPage() {
               <li>מקנה ללקוח זכות לתבוע את המכון במקרה של רשלנות בבדיקה</li>
               <li>כוללת בדיקת פרטי זיהוי הרכב (מספר שלדה, מנוע) מול רישומי משרד הרישוי</li>
             </ul>
-            <div className="bg-[#0d9488]/5 border border-[#0d9488]/20 rounded-lg p-4">
-              <p className="text-[#1e3a5f] text-sm">
+            <div className="bg-[#2E77D0]/5 border border-[#2E77D0]/20 rounded-lg p-4">
+              <p className="text-[#1B4E8A] text-sm">
                 <strong>איתור מכוני רישוי מורשים:</strong> ניתן למצוא רשימת מכוני רישוי מורשים באתר משרד התחבורה והבטיחות בדרכים בכתובת gov.il, או לפנות למוקד הטלפוני *5678.
               </p>
             </div>
@@ -287,15 +287,15 @@ export default function WarrantyPage() {
 
           {/* Section 12 */}
           <section>
-            <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">12. דין חל וסמכות שיפוט</h2>
+            <h2 className="text-xl font-bold text-[#1B4E8A] mb-3">12. דין חל וסמכות שיפוט</h2>
             <p>
               מסמך זה יפורש ויחולו עליו דיני מדינת ישראל בלבד. סמכות השיפוט הבלעדית בכל עניין הנובע ממסמך זה או הקשור אליו תהיה לבתי המשפט המוסמכים במחוז תל אביב, ישראל.
             </p>
           </section>
 
           {/* User Declaration */}
-          <div className="bg-[#1e3a5f]/5 border border-[#1e3a5f]/10 rounded-xl p-5">
-            <h3 className="font-bold text-[#1e3a5f] mb-3">הצהרת המשתמש</h3>
+          <div className="bg-[#1B4E8A]/5 border border-[#1B4E8A]/10 rounded-xl p-5">
+            <h3 className="font-bold text-[#1B4E8A] mb-3">הצהרת המשתמש</h3>
             <p className="text-sm text-gray-700">
               בהזמנת אבחון רכב דרך פלטפורמת AutoLog, אני מצהיר ומאשר כי: קראתי והבנתי את מסמך האחריות במלואו; אני מודע לכך שאבחון רכב במוסך שותף אינו מהווה בדיקת מכון רישוי מורשה ואין לו תוקף משפטי מחייב; אני מודע למגבלות האבחון ולחלוקת האחריות המפורטת לעיל; אני מסכים שתוצאות האבחון הן הערכה מקצועית בלבד ואינן מחליפות את אחריותי האישית לתקינות הרכב ואת חובתי לבצע בדיקות נדרשות על פי חוק; אני מקבל את ההמלצה לבצע בדיקה נוספת במכון רישוי מורשה בפרט כאשר מדובר ברכישת רכב; ואני מקבל את הגבלת האחריות של AutoLog כמפורט במסמך זה.
             </p>
@@ -305,9 +305,9 @@ export default function WarrantyPage() {
           <div className="text-center pt-4 border-t border-gray-100">
             <p className="text-sm text-gray-500 mb-2">ראו גם:</p>
             <div className="flex justify-center gap-4">
-              <Link href="/terms" className="text-sm text-[#0d9488] hover:underline">תנאי שימוש</Link>
+              <Link href="/terms" className="text-sm text-[#2E77D0] hover:underline">תנאי שימוש</Link>
               <span className="text-gray-300">|</span>
-              <Link href="/privacy" className="text-sm text-[#0d9488] hover:underline">מדיניות פרטיות</Link>
+              <Link href="/privacy" className="text-sm text-[#2E77D0] hover:underline">מדיניות פרטיות</Link>
             </div>
           </div>
 

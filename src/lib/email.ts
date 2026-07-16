@@ -96,6 +96,7 @@ function emailWrapper(headerBg: string, headerContent: string, bodyHtml: string,
         <!-- Header -->
         <tr>
           <td class="email-header" style="background:${headerBg};padding:22px 28px;text-align:center">
+            <img src="https://autolog.click/logo.png" width="48" height="48" alt="אוטולוג" style="display:block;margin:0 auto 10px;border:0;border-radius:10px" />
             ${headerContent}
           </td>
         </tr>
@@ -108,7 +109,7 @@ function emailWrapper(headerBg: string, headerContent: string, bodyHtml: string,
         <!-- Footer -->
         <tr>
           <td class="email-footer" style="padding:14px 28px;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0">
-            ${footerExtra ? footerExtra + '<br>' : ''}AutoLog — ניהול רכבים חכם
+            ${footerExtra ? footerExtra + '<br>' : ''}אוטולוג — ניהול רכב חכם, במקום אחד · <a href="https://autolog.click" style="color:#2E77D0;text-decoration:none">autolog.click</a>
           </td>
         </tr>
       </table>
@@ -163,12 +164,12 @@ export function buildPasswordResetEmailHtml({
   const body = [
     p(`שלום ${fullName},`),
     p('קיבלנו בקשה לאיפוס הסיסמה ב-AutoLog. לחצו על הכפתור למטה כדי לבחור סיסמה חדשה:'),
-    `<div style="text-align:center;margin:24px 0">${btnHtml(resetUrl, 'איפוס סיסמה', '#10b981')}</div>`,
+    `<div style="text-align:center;margin:24px 0">${btnHtml(resetUrl, 'איפוס סיסמה', '#2E77D0')}</div>`,
     pSmall('הקישור תקף לשעה אחת בלבד.'),
     pSmall('אם לא ביקשת איפוס סיסמה, ניתן להתעלם מהודעה זו.'),
   ].join('');
 
-  return emailWrapper('linear-gradient(135deg,#1e3a5f,#2d5a8e)', header, body);
+  return emailWrapper('linear-gradient(135deg,#1B4E8A,#1D5FAF)', header, body);
 }
 
 /**
@@ -203,7 +204,7 @@ export function buildGarageWelcomeEmailHtml({
     `<div style="text-align:center;margin:20px 0">${btnHtml(loginUrl, 'כניסה למערכת', '#059669')}</div>`,
   ].join('');
 
-  return emailWrapper('linear-gradient(135deg,#059669,#10b981)', header, body);
+  return emailWrapper('linear-gradient(135deg,#059669,#2E77D0)', header, body);
 }
 
 /**
@@ -397,6 +398,7 @@ export function buildCustomerStatusEmailHtml({
     garageContactHtml = [
       `<p style="font-size:15px;color:#1e293b;font-weight:600;margin:16px 0 8px">📍 פרטי התקשרות עם המוסך:</p>`,
       `<table class="detail-table" role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0fdf4;border-radius:8px;margin-bottom:20px;border:1px solid #bbf7d0">${contactRows.join('')}</table>`,
+      addr ? `<div style="text-align:center;margin:0 0 20px">${btnHtml(`https://waze.com/ul?q=${encodeURIComponent(addr)}&navigate=yes`, '🧭 ניווט למוסך', '#059669')}</div>` : '',
     ].join('');
   }
 
@@ -459,7 +461,7 @@ export function buildTreatmentEmailHtml({
     sent: {
       emoji: '🔧',
       title: 'טיפול חדש ממתין לאישורך',
-      color: '#0d9488',
+      color: '#2E77D0',
       message: `<strong>${garageName}</strong> שלח/ה לך פירוט טיפול לרכב <strong>${vehicleLabel}</strong>. אנא בדוק/בדקי את הפרטים ואשר/י או דחה/דחי.`,
       cta: 'צפה/י באישור הטיפול',
       ctaUrl: `${baseUrl}/user/treatments`,
@@ -548,8 +550,8 @@ export function buildBugReportEmailHtml({
     'user-report': {
       emoji: '👤',
       title: 'דיווח באג ממשתמש',
-      color: '#0d9488',
-      bg: 'linear-gradient(135deg,#0d9488,#0f766e)',
+      color: '#2E77D0',
+      bg: 'linear-gradient(135deg,#2E77D0,#0f766e)',
     },
     'error-boundary': {
       emoji: '⚠️',
@@ -627,13 +629,13 @@ export function buildVehicleShareRequestEmailHtml(
     p(`שלום ${ownerName},`),
     p(`<strong>${requesterName}</strong> (<span style="word-break:break-all">${requesterEmail}</span>) מבקש/ת גישה לניהול הרכב שלך:`),
     `<div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:8px;padding:14px;margin:0 0 20px;text-align:center">`,
-    `<p style="margin:0;font-size:18px;font-weight:700;color:#0d9488">${vehicleLabel}</p></div>`,
+    `<p style="margin:0;font-size:18px;font-weight:700;color:#2E77D0">${vehicleLabel}</p></div>`,
     p('אישור הבקשה יאפשר למשתמש לצפות בפרטי הרכב, להוסיף טיפולים, הוצאות ומסמכים. אתה תישאר הבעלים הראשי של הרכב.', 'font-size:15px;color:#475569;'),
-    `<div style="text-align:center;margin:24px 0">${btnHtml(manageUrl, 'נהל בקשות שיתוף', '#0d9488')}</div>`,
+    `<div style="text-align:center;margin:24px 0">${btnHtml(manageUrl, 'נהל בקשות שיתוף', '#2E77D0')}</div>`,
     pSmall('ניתן לאשר או לדחות את הבקשה בכל עת מדף הרכבים שלך.'),
   ].join('');
 
-  return emailWrapper('linear-gradient(135deg,#0d9488,#0f766e)', header, body);
+  return emailWrapper('linear-gradient(135deg,#2E77D0,#0f766e)', header, body);
 }
 
 /**
@@ -774,7 +776,7 @@ export function buildExpiryReminderEmailHtml({
     ? 'linear-gradient(135deg,#dc2626,#b91c1c)'
     : isUrgent
     ? 'linear-gradient(135deg,#f59e0b,#d97706)'
-    : 'linear-gradient(135deg,#1e3a5f,#2d5a8e)';
+    : 'linear-gradient(135deg,#1B4E8A,#1D5FAF)';
 
   const dateStr = expiryDate.toLocaleDateString('he-IL', {
     day: 'numeric',
@@ -831,6 +833,80 @@ export function buildExpiryReminderEmailHtml({
     pSmall(tipText),
     `<div style="text-align:center;margin:24px 0">${btnHtml(ctaUrl, ctaLabel, accentColor)}</div>`,
     pSmall('כדי לעצור את התזכורות האלה לרכב מסוים, נהל את הרכב מהאפליקציה.', 'text-align:center;color:#94a3b8;font-size:12px;'),
+  ].join('');
+
+  return emailWrapper(headerGradient, header, body);
+}
+
+/**
+ * Driver's License Expiry Reminder Email
+ * Sent to the user when their driving license approaches expiry.
+ */
+export function buildLicenseReminderEmailHtml({
+  fullName,
+  expiryDate,
+  daysUntil,
+}: {
+  fullName: string;
+  expiryDate: Date;
+  daysUntil: number;
+}): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+  const isUrgent = daysUntil <= 3;
+  const isExpired = daysUntil <= 0;
+  const accentColor = isExpired ? '#dc2626' : isUrgent ? '#f59e0b' : '#2563eb';
+  const headerGradient = isExpired
+    ? 'linear-gradient(135deg,#dc2626,#b91c1c)'
+    : isUrgent
+    ? 'linear-gradient(135deg,#f59e0b,#d97706)'
+    : 'linear-gradient(135deg,#1B4E8A,#1D5FAF)';
+
+  const dateStr = expiryDate.toLocaleDateString('he-IL', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
+  let timeText: string;
+  let titleText: string;
+  if (isExpired) {
+    timeText = 'פג!';
+    titleText = 'רישיון הנהיגה פג — נדרש חידוש דחוף';
+  } else if (daysUntil === 1) {
+    timeText = 'מחר';
+    titleText = 'רישיון הנהיגה פג מחר!';
+  } else if (daysUntil <= 7) {
+    timeText = `תוך ${daysUntil} ימים`;
+    titleText = 'רישיון הנהיגה פג בקרוב';
+  } else if (daysUntil <= 14) {
+    timeText = 'תוך שבועיים';
+    titleText = 'תזכורת — רישיון הנהיגה פג עוד שבועיים';
+  } else {
+    timeText = `תוך ${daysUntil} יום`;
+    titleText = 'תזכורת — רישיון הנהיגה פג בקרוב';
+  }
+
+  const header = `<h1 style="color:#ffffff;margin:0;font-size:20px">🪪 ${titleText}</h1>`;
+
+  const rows = [
+    detailRow('תאריך פקיעה', dateStr),
+    detailRow('זמן נותר', `<strong style="color:${accentColor}">${timeText}</strong>`, true),
+  ].join('');
+
+  const urgentBanner = isExpired
+    ? `<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:14px;margin:0 0 20px;text-align:center"><p style="font-size:15px;color:#991b1b;margin:0;font-weight:700">⚠️ נהיגה ללא רישיון בתוקף אסורה על פי חוק!</p></div>`
+    : isUrgent
+    ? `<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:14px;margin:0 0 20px"><p style="font-size:14px;color:#92400e;margin:0;font-weight:600">⏰ נותרו ${daysUntil <= 1 ? 'פחות מ-' : ''}${daysUntil} ימים. מומלץ לחדש עכשיו.</p></div>`
+    : '';
+
+  const body = [
+    p(`שלום ${fullName},`),
+    p('זוהי תזכורת ידידותית — רישיון הנהיגה שלך מתקרב למועד הפקיעה.'),
+    detailTable(rows),
+    urgentBanner,
+    pSmall('ניתן לחדש את רישיון הנהיגה באתר משרד התחבורה או בעמדות צילום מוסמכות. חידוש מוקדם חוסך עוגמת נפש.'),
+    `<div style="text-align:center;margin:24px 0">${btnHtml(`${baseUrl}/user/profile`, 'עדכן בפרופיל שלי', accentColor)}</div>`,
+    pSmall('כדי לעצור תזכורות אלה, הסר את תאריך הרישיון בפרופיל.', 'text-align:center;color:#94a3b8;font-size:12px;'),
   ].join('');
 
   return emailWrapper(headerGradient, header, body);

@@ -150,8 +150,8 @@ export default function PartnerDetailPage() {
       <div className="flex items-start justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <Handshake className="text-[#0d9488]" size={28} />
-            <h1 className="text-2xl font-bold text-[#1e3a5f]">{partner.name}</h1>
+            <Handshake className="text-[#2E77D0]" size={28} />
+            <h1 className="text-2xl font-bold text-[#1B4E8A]">{partner.name}</h1>
             {partner.status === 'active' && <Badge variant="success">פעיל</Badge>}
             {partner.status === 'paused' && <Badge variant="warning">מושהה</Badge>}
             {partner.status === 'archived' && <Badge variant="default">בארכיון</Badge>}
@@ -172,11 +172,11 @@ export default function PartnerDetailPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Card className="p-5">
           <div className="text-xs text-gray-500 mb-1">הרשמות</div>
-          <div className="text-2xl font-bold text-[#1e3a5f]">{partner.totalSignups}</div>
+          <div className="text-2xl font-bold text-[#1B4E8A]">{partner.totalSignups}</div>
         </Card>
         <Card className="p-5">
           <div className="text-xs text-gray-500 mb-1">צבר</div>
-          <div className="text-2xl font-bold text-[#1e3a5f]">{formatILS(partner.totalEarned)}</div>
+          <div className="text-2xl font-bold text-[#1B4E8A]">{formatILS(partner.totalEarned)}</div>
         </Card>
         <Card className="p-5">
           <div className="text-xs text-gray-500 mb-1">שולם</div>
@@ -272,7 +272,7 @@ export default function PartnerDetailPage() {
                 {partner.referrals.map((u) => (
                   <div key={u.id} className="py-3 flex items-center justify-between">
                     <div>
-                      <div className="font-medium text-[#1e3a5f]">{u.fullName}</div>
+                      <div className="font-medium text-[#1B4E8A]">{u.fullName}</div>
                       <div className="text-sm text-gray-500">{u.email}</div>
                     </div>
                     <div className="text-sm text-gray-500 text-left">

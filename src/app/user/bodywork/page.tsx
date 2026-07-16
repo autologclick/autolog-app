@@ -292,7 +292,7 @@ export default function BodyworkPage() {
         {/* ── Existing Requests ── */}
         {requests.length > 0 && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-[#1e3a5f]">הבקשות שלי</h2>
+            <h2 className="text-lg font-bold text-[#1B4E8A]">הבקשות שלי</h2>
             {requests.map(req => {
               const statusInfo = STATUS_MAP[req.status] || STATUS_MAP.open;
               const parsedImages = JSON.parse(req.images || '[]');
@@ -311,7 +311,7 @@ export default function BodyworkPage() {
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-[#1e3a5f] text-sm">{req.vehicle.nickname || `${req.vehicle.manufacturer} ${req.vehicle.model}`}</span>
+                        <span className="font-bold text-[#1B4E8A] text-sm">{req.vehicle.nickname || `${req.vehicle.manufacturer} ${req.vehicle.model}`}</span>
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusInfo.color}`}>
                           {statusInfo.label}
                         </span>
@@ -341,7 +341,7 @@ export default function BodyworkPage() {
             <div className="w-20 h-20 mx-auto mb-4 bg-orange-50 rounded-full flex items-center justify-center">
               <Hammer size={36} className="text-orange-400" />
             </div>
-            <h3 className="text-lg font-bold text-[#1e3a5f] mb-2">עדיין אין בקשות פחחות</h3>
+            <h3 className="text-lg font-bold text-[#1B4E8A] mb-2">עדיין אין בקשות פחחות</h3>
             <p className="text-sm text-gray-400 max-w-xs mx-auto">צלם את הנזק, תאר מה קרה, ומוסכי הפחחות שלנו ישלחו לך הצעות מחיר</p>
           </div>
         )}
@@ -470,7 +470,7 @@ export default function BodyworkPage() {
             {/* Details */}
             <div className="bg-gray-50 rounded-xl p-4 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-[#1e3a5f]">
+                <span className="text-sm font-bold text-[#1B4E8A]">
                   {viewRequest.vehicle.nickname || `${viewRequest.vehicle.manufacturer} ${viewRequest.vehicle.model}`}
                 </span>
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_MAP[viewRequest.status]?.color || ''}`}>
@@ -485,7 +485,7 @@ export default function BodyworkPage() {
 
             {/* Quotes */}
             <div>
-              <h3 className="font-bold text-[#1e3a5f] mb-3">
+              <h3 className="font-bold text-[#1B4E8A] mb-3">
                 {viewRequest.quotes.length > 0
                   ? `הצעות מחיר (${viewRequest.quotes.length})`
                   : 'ממתין להצעות מחיר...'
@@ -520,7 +520,7 @@ export default function BodyworkPage() {
                             <Building2 size={18} className="text-gray-500" />
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-[#1e3a5f]">{quote.garage.name}</p>
+                            <p className="text-sm font-bold text-[#1B4E8A]">{quote.garage.name}</p>
                             <div className="flex items-center gap-2 text-xs text-gray-400">
                               <span>{quote.garage.city}</span>
                               <span className="flex items-center gap-0.5">
@@ -531,7 +531,7 @@ export default function BodyworkPage() {
                           </div>
                         </div>
                         <div className="text-left">
-                          <p className="text-lg font-extrabold text-[#1e3a5f]">₪{quote.price.toLocaleString()}</p>
+                          <p className="text-lg font-extrabold text-[#1B4E8A]">₪{quote.price.toLocaleString()}</p>
                           {quote.estimatedDays && (
                             <p className="text-xs text-gray-400">{quote.estimatedDays} ימים</p>
                           )}

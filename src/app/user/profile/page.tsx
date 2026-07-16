@@ -13,6 +13,7 @@ interface UserProfile {
   email: string;
   phone?: string;
   role: string;
+  licenseExpiry?: string | null;
 }
 
 interface MenuItem {
@@ -30,6 +31,9 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
   const [vehicleCount, setVehicleCount] = useState(0);
+  const [licenseDate, setLicenseDate] = useState('');
+  const [licenseSaving, setLicenseSaving] = useState(false);
+  const [licenseSaved, setLicenseSaved] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -37,7 +41,12 @@ export default function ProfilePage() {
       fetch('/api/notifications?limit=50').then(r => r.json()).catch(() => ({ notifications: [] })),
       fetch('/api/vehicles').then(r => r.json()).catch(() => ({ vehicles: [] })),
     ]).then(([uData, nData, vData]) => {
-      if (uData.user) setUser(uData.user);
+      if (uData.user) {
+        setUser(uData.user);
+        if (uData.user.licenseExpiry) {
+          setLicenseDate(String(uData.user.licenseExpiry).slice(0, 10));
+        }
+      }
       if (nData.notifications) {
         setUnreadCount(nData.notifications.filter((n: { isRead: boolean }) => !n.isRead).length);
       }
@@ -48,6 +57,27 @@ export default function ProfilePage() {
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').slice(0, 2);
   };
+
+  const saveLicenseDate = async () => {
+    setLicenseSaving(true);
+    setLicenseSaved(false);
+    try {
+      const res = await fetch('/api/auth/me', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ licenseExpiry: licenseDate || null }),
+      });
+      if (res.ok) {
+        setLicenseSaved(true);
+        setTimeout(() => setLicenseSaved(false), 3000);
+      }
+    } catch { /* silent */ }
+    setLicenseSaving(false);
+  };
+
+  const licenseDaysLeft = licenseDate
+    ? Math.ceil((new Date(licenseDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : null;
 
   const menuItems: MenuItem[] = [
     {
@@ -62,7 +92,7 @@ export default function ProfilePage() {
       label: 'הטבות ומועדון',
       href: '/user/benefits',
       icon: <Star size={20} />,
-      iconBg: 'bg-green-50 text-green-600',
+      iconBg: 'bg-[#EAF2FC] text-[#2E77D0]',
       description: 'הנחות והטבות בלעדיות',
     },
     {
@@ -76,7 +106,7 @@ export default function ProfilePage() {
       label: 'דוחות ואבחונים',
       href: '/user/reports',
       icon: <FileCheck size={20} />,
-      iconBg: 'bg-purple-50 text-purple-600',
+      iconBg: 'bg-[#EAF2FC] text-[#2E77D0]',
       description: 'צפה בתוצאות אבחוני הרכב',
     },
     {
@@ -104,26 +134,26 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fef7ed] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F3F6FA] flex items-center justify-center">
         <Loader2 size={32} className="animate-spin text-teal-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white px-4 pt-6 pb-10 rounded-b-3xl">
+      <div className="bg-gradient-to-l from-[#1B4E8A] to-[#2a5a8f] text-white px-4 pt-6 pb-10 rounded-b-3xl">
         <h1 className="text-2xl font-bold mb-1">פרופיל</h1>
       </div>
 
       <div className="px-4 -mt-6 space-y-4">
         {/* User Card */}
         <div className="bg-white rounded-2xl p-5 shadow-md text-center">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#1e3a5f] to-teal-500 text-white flex items-center justify-center mx-auto mb-3">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#1B4E8A] to-teal-500 text-white flex items-center justify-center mx-auto mb-3">
             <span className="text-2xl font-bold">{user ? getInitials(user.fullName) : '?'}</span>
           </div>
-          <h2 className="text-xl font-bold text-[#1e3a5f]">{user?.fullName || 'משתמש'}</h2>
+          <h2 className="text-xl font-bold text-[#1B4E8A]">{user?.fullName || 'משתמש'}</h2>
           <p className="text-sm text-gray-400 mt-1">{user?.email}</p>
           {user?.phone && (
             <p className="text-sm text-gray-400">{user.phone}</p>
@@ -131,6 +161,50 @@ export default function ProfilePage() {
           <div className="mt-3 inline-flex items-center gap-2 bg-teal-50 text-teal-700 px-4 py-1.5 rounded-full text-sm font-medium">
             <User size={14} />
             {vehicleCount} רכבים רשומים
+          </div>
+        </div>
+
+        {/* Driver's License */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#EAF2FC] text-[#2E77D0] flex-shrink-0">
+              <CreditCard size={20} />
+            </div>
+            <div className="flex-1">
+              <div className="text-sm font-bold text-[#1B4E8A]">רישיון נהיגה</div>
+              <div className="text-xs text-gray-400">
+                {licenseDaysLeft === null
+                  ? 'הזן תוקף ונזכיר לך לחדש בזמן'
+                  : licenseDaysLeft < 0
+                  ? 'פג תוקף!'
+                  : `בתוקף — נותרו ${licenseDaysLeft} ימים`}
+              </div>
+            </div>
+            {licenseDaysLeft !== null && (
+              <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                licenseDaysLeft < 0 ? 'bg-red-50 text-red-600' :
+                licenseDaysLeft <= 30 ? 'bg-amber-50 text-amber-600' :
+                'bg-green-50 text-green-600'
+              }`}>
+                {licenseDaysLeft < 0 ? 'פג' : `${licenseDaysLeft} יום`}
+              </span>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="date"
+              value={licenseDate}
+              onChange={(e) => setLicenseDate(e.target.value)}
+              className="flex-1 min-w-0 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            />
+            <button
+              onClick={saveLicenseDate}
+              disabled={licenseSaving}
+              className="px-4 py-2 bg-[#2E77D0] text-white rounded-lg text-sm font-semibold hover:bg-[#1D5FAF] transition disabled:opacity-50 flex items-center gap-1.5"
+            >
+              {licenseSaving ? <Loader2 size={14} className="animate-spin" /> : null}
+              {licenseSaved ? 'נשמר ✓' : 'שמור'}
+            </button>
           </div>
         </div>
 
@@ -146,7 +220,7 @@ export default function ProfilePage() {
                 {item.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-bold text-[#1e3a5f]">{item.label}</div>
+                <div className="text-sm font-bold text-[#1B4E8A]">{item.label}</div>
                 {item.description && (
                   <div className="text-xs text-gray-400 truncate">{item.description}</div>
                 )}

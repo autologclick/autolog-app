@@ -176,11 +176,11 @@ export default function GarageTreatmentsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] rounded-lg border-2 border-[#1e3a5f] flex items-center justify-center shadow-sm">
-            <Wrench size={20} className="text-[#1e3a5f]" />
+          <div className="w-10 h-10 bg-[#F3F6FA] rounded-lg border-2 border-[#1B4E8A] flex items-center justify-center shadow-sm">
+            <Wrench size={20} className="text-[#1B4E8A]" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">ניהול טיפולים</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1B4E8A]">ניהול טיפולים</h1>
             <p className="text-sm text-gray-500">שלח ועקוב אחר טיפולים ללקוחות</p>
           </div>
         </div>
@@ -223,12 +223,12 @@ export default function GarageTreatmentsPage() {
 
       {/* AI Insights */}
       {treatments.length > 0 && (
-        <div className="bg-gradient-to-r from-[#fef7ed] to-white border border-emerald-200 rounded-xl p-5 shadow-sm">
+        <div className="bg-gradient-to-r from-[#F3F6FA] to-white border border-emerald-200 rounded-xl p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center">
               <Brain size={18} className="text-emerald-600" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לטיפולים</h2>
+            <h2 className="text-lg font-bold text-[#1B4E8A]">תובנות AI לטיפולים</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="bg-white rounded-lg p-3 border border-gray-100">
@@ -359,7 +359,7 @@ export default function GarageTreatmentsPage() {
               <Card key={t.id} className="overflow-hidden hover:shadow-md transition-all !p-0">
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : t.id)}
-                  className="w-full px-4 py-4 text-right hover:bg-[#fef7ed]/50 transition"
+                  className="w-full px-4 py-4 text-right hover:bg-[#F3F6FA]/50 transition"
                 >
                   <div className="flex items-center gap-3">
                     {/* Type icon */}

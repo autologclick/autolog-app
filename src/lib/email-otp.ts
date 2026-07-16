@@ -40,13 +40,14 @@ export async function issueEmailOtp(email: string, fullName?: string | null): Pr
     subject: 'AutoLog — קוד אימות כניסה',
     html: `
       <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-        <div style="background: linear-gradient(135deg,#2563eb,#1e40af); color:#fff; padding:20px; border-radius:12px 12px 0 0;">
-          <h1 style="margin:0; font-size:22px;">AutoLog</h1>
+        <div style="background: linear-gradient(135deg,#1B4E8A,#1D5FAF); color:#fff; padding:20px; border-radius:12px 12px 0 0; text-align:center;">
+          <img src="https://autolog.click/logo.png" width="44" height="44" alt="אוטולוג" style="display:block;margin:0 auto 8px;border:0;border-radius:10px" />
+          <h1 style="margin:0; font-size:22px;">אוטולוג</h1>
         </div>
         <div style="background:#fff; border:1px solid #e5e7eb; border-top:0; padding:24px; border-radius:0 0 12px 12px;">
           <p style="font-size:16px; margin-top:0;">שלום ${fullName || ''},</p>
           <p style="font-size:16px;">קוד האימות לכניסה לחשבון שלך הוא:</p>
-          <div style="font-family: 'Courier New', monospace; font-size:36px; letter-spacing:8px; text-align:center; background:#f3f4f6; padding:20px; border-radius:12px; margin:20px 0; font-weight:bold; color:#1e40af;">
+          <div style="font-family: 'Courier New', monospace; font-size:36px; letter-spacing:8px; text-align:center; background:#EAF2FC; padding:20px; border-radius:12px; margin:20px 0; font-weight:bold; color:#1B4E8A;">
             ${code}
           </div>
           <p style="font-size:14px; color:#6b7280;">הקוד תקף ל-10 דקות ונועד לשימוש חד-פעמי.</p>
