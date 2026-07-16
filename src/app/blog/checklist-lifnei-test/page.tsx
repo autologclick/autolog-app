@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Calendar, Clock, ChevronRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
 
 const post = getPostBySlug('checklist-lifnei-test')!;
 
@@ -17,7 +18,10 @@ export const metadata: Metadata = {
     url: `https://autolog.click/blog/${post.slug}`,
     type: 'article',
     publishedTime: post.publishedAt,
+    authors: [post.author],
     locale: 'he_IL',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
   },
 };
 
@@ -75,8 +79,8 @@ const checklistItems = [
 
 export default function BlogPostPage() {
   return (
-    <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
-      <header className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white">
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
           <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1">
@@ -87,7 +91,7 @@ export default function BlogPostPage() {
 
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] leading-tight mb-4">{post.title}</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] leading-tight mb-4">{post.title}</h1>
         <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
           <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
           <span className="flex items-center gap-1"><Clock size={14} />{post.readingTime}</span>
@@ -107,7 +111,7 @@ export default function BlogPostPage() {
 
           {checklistItems.map((section, i) => (
             <div key={section.title}>
-              <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4 flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4 flex items-center gap-2">
                 <span className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center text-teal-700 font-bold text-sm">{i + 1}</span>
                 {section.title}
               </h2>
@@ -130,16 +134,16 @@ export default function BlogPostPage() {
             </p>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה AutoLog עושה בשבילכם?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">מה AutoLog עושה בשבילכם?</h2>
           <p>
             ב-AutoLog, המערכת שולחת תזכורת 30 יום לפני הטסט — מספיק זמן לבדוק את הרכב, לתקן מה שצריך, ולקבוע תור למכון רישוי.
             ככה מגיעים לטסט מוכנים, בלי לחץ, ועוברים בפעם הראשונה.
           </p>
 
-          <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
+          <div className="bg-[#1B4E8A] text-white rounded-2xl p-8 my-8 text-center">
             <h3 className="text-xl font-bold mb-3">אל תפספסו את הטסט הבא</h3>
             <p className="text-white/80 mb-5 text-sm">הצטרפו ל-AutoLog וקבלו תזכורת חודש לפני — עם מספיק זמן להתכונן.</p>
-            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg">
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-cream-500 text-white font-bold rounded-xl hover:bg-cream-600 transition shadow-lg">
               הרשמה בחינם
               <ArrowLeft size={16} />
             </Link>
@@ -165,7 +169,7 @@ export default function BlogPostPage() {
         </div>
       </article>
 
-      <footer className="bg-[#1e3a5f] text-white/60 py-6 text-center text-sm">
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm">
         <p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p>
       </footer>
     </div>

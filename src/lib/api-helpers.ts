@@ -4,6 +4,7 @@ import { createLogger } from './logger';
 import { ZodError } from 'zod';
 import { AUTH_ERRORS, VALIDATION_ERRORS, RATE_LIMIT_ERRORS } from './messages';
 import { checkApiRateLimit } from './rate-limit';
+import { notifyTelegramCritical } from '@/lib/telegram';
 
 const apiLogger = createLogger('api');
 
@@ -176,6 +177,12 @@ export function handleApiError(error: unknown) {
     error: error instanceof Error ? error.message : 'Unknown error',
     stack: error instanceof Error ? error.stack : undefined,
   });
+  notifyTelegramCritical(
+    'שגיאת שרת (500)',
+    error instanceof Error
+      ? error.message + '\n' + (error.stack || '').split('\n').slice(0, 4).join('\n')
+      : 'Unknown error',
+  );
   return errorResponse('שגיאת שרת פנימית', 500);
 }
 

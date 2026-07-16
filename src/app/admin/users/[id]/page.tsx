@@ -218,11 +218,11 @@ export default function UserDetailPage() {
       <Card>
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start gap-4">
-            <div className="w-16 h-16 bg-[#fef7ed] rounded-full flex items-center justify-center border-2 border-[#1e3a5f]">
-              <span className="text-2xl font-bold text-[#1e3a5f]">{user.fullName.charAt(0)}</span>
+            <div className="w-16 h-16 bg-[#F3F6FA] rounded-full flex items-center justify-center border-2 border-[#1B4E8A]">
+              <span className="text-2xl font-bold text-[#1B4E8A]">{user.fullName.charAt(0)}</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-[#1e3a5f]">{user.fullName}</h1>
+              <h1 className="text-2xl font-bold text-[#1B4E8A]">{user.fullName}</h1>
               <p className="text-gray-600">{user.email}</p>
               <div className="flex items-center gap-2 mt-2">
                 <Badge variant={user.isActive ? 'success' : 'danger'}>
@@ -261,7 +261,7 @@ export default function UserDetailPage() {
 
       {/* Vehicles Section */}
       <div>
-        <h2 className="text-xl font-bold text-[#1e3a5f] mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-[#1B4E8A] mb-4 flex items-center gap-2">
           <Car size={20} className="text-teal-600" />
           רכבים ({user.vehicles.length})
         </h2>
@@ -302,7 +302,7 @@ export default function UserDetailPage() {
 
       {/* Appointments Section */}
       <div>
-        <h2 className="text-xl font-bold text-[#1e3a5f] mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-[#1B4E8A] mb-4 flex items-center gap-2">
           <Calendar size={20} className="text-teal-600" />
           הערכות אחרונות ({user.appointments.length})
         </h2>
@@ -340,7 +340,7 @@ export default function UserDetailPage() {
 
       {/* SOS Events Section */}
       <div>
-        <h2 className="text-xl font-bold text-[#1e3a5f] mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-[#1B4E8A] mb-4 flex items-center gap-2">
           <AlertTriangle size={20} className="text-red-600" />
           אירועי SOS אחרונים ({user.sosEvents.length})
         </h2>

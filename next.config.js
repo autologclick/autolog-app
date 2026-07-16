@@ -4,6 +4,12 @@ const nextConfig = {
   // This creates a minimal production build without node_modules
   output: 'standalone',
 
+  // Zero-downtime deploys: `NEXT_DIST_DIR=.next-staging npm run build` builds
+  // into a side directory while the live server keeps serving from `.next`.
+  // The deploy script then swaps the directories atomically and restarts pm2.
+  // At runtime (pm2 `next start`) the env var is unset, so `.next` is used.
+  distDir: process.env.NEXT_DIST_DIR || '.next',
+
   typescript: {
     // Temporarily ignore build errors - pre-existing type issues uncovered by cache invalidation
     ignoreBuildErrors: true,
@@ -19,6 +25,9 @@ const nextConfig = {
     // client bundle. Without this, Next may include the entire library for
     // some barrel-import patterns.
     optimizePackageImports: ['lucide-react'],
+    // geoip-lite loads its .dat data files via __dirname; keep it external so Next
+    // doesn't bundle it (which relocates __dirname and breaks the data lookup).
+    serverComponentsExternalPackages: ['geoip-lite'],
   },
   // Compress responses with gzip / brotli for smaller transfer sizes.
   compress: true,
@@ -45,12 +54,35 @@ const nextConfig = {
     // Cache optimized images for 30 days on the edge
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
+  redirects: async () => {
+    return [
+      { source: '/login', destination: '/auth/login', permanent: true },
+      { source: '/register', destination: '/auth/signup', permanent: true },
+      { source: '/signup', destination: '/auth/signup', permanent: true },
+    ];
+  },
   headers: async () => {
     return [
       // Security headers for all routes
       {
         source: '/:path*',
         headers: [
+          {
+            // Report-only: never blocks, only reports. Tighten to a real CSP
+            // once the console shows no legitimate violations.
+            key: 'Content-Security-Policy-Report-Only',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https:",
+              "font-src 'self' data:",
+              "connect-src 'self' https:",
+              "frame-ancestors 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join('; '),
+          },
           // Prevent MIME type sniffing
           {
             key: 'X-Content-Type-Options',

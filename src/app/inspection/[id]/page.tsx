@@ -169,7 +169,7 @@ function Section({ title, icon, children, defaultOpen = true, badge }: {
           {badge}
         </div>
         <div className="flex items-center gap-2">
-          <span className="font-bold text-sm sm:text-base text-[#1e3a5f]">{title}</span>
+          <span className="font-bold text-sm sm:text-base text-[#1B4E8A]">{title}</span>
           <div className="w-7 h-7 sm:w-8 sm:h-8 bg-teal-50 rounded-lg flex items-center justify-center">{icon}</div>
         </div>
       </button>
@@ -650,7 +650,7 @@ export default function InspectionReportPage() {
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#fef7ed',
+        backgroundColor: '#F3F6FA',
         logging: false,
         windowWidth: element.scrollWidth,
       });
@@ -824,7 +824,7 @@ export default function InspectionReportPage() {
         <Card className="!p-4">
           <div className="flex items-center gap-2 mb-3">
             <Car size={18} className="text-teal-600" />
-            <span className="font-bold text-[#1e3a5f]">פרטי רכב</span>
+            <span className="font-bold text-[#1B4E8A]">פרטי רכב</span>
           </div>
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between">
@@ -859,7 +859,7 @@ export default function InspectionReportPage() {
         <Card className="!p-4">
           <div className="flex items-center gap-2 mb-3">
             <Wrench size={18} className="text-teal-600" />
-            <span className="font-bold text-[#1e3a5f]">פרטי מוסך</span>
+            <span className="font-bold text-[#1B4E8A]">פרטי מוסך</span>
           </div>
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between">
@@ -1283,7 +1283,7 @@ export default function InspectionReportPage() {
         <Card>
           <div className="flex items-center gap-2 mb-3">
             <PenLine size={18} className="text-teal-600" />
-            <span className="font-bold text-[#1e3a5f]">חתימה דיגיטלית</span>
+            <span className="font-bold text-[#1B4E8A]">חתימה דיגיטלית</span>
           </div>
           <div className="space-y-3">
             <div className="flex gap-4 text-sm">
@@ -1307,10 +1307,10 @@ export default function InspectionReportPage() {
       )}
 
       {/* ===== AI ANALYSIS ===== */}
-      <Card className="border-teal-200 bg-gradient-to-l from-[#1e3a5f]/5 to-teal-50/80">
+      <Card className="border-teal-200 bg-gradient-to-l from-[#1B4E8A]/5 to-teal-50/80">
         <div className="flex items-center gap-2 mb-4">
           <Star size={18} className="text-teal-600" />
-          <span className="font-bold text-[#1e3a5f]">ניתוח חכם AutoLog AI</span>
+          <span className="font-bold text-[#1B4E8A]">ניתוח חכם AutoLog AI</span>
         </div>
 
         {aiLoading ? (
@@ -1322,13 +1322,13 @@ export default function InspectionReportPage() {
           <div className="space-y-4">
             {/* Overall Assessment */}
             <div className="bg-white/70 rounded-xl p-3.5 text-right">
-              <p className="text-sm text-[#1e3a5f] leading-relaxed">{aiAnalysis.overallAssessment}</p>
+              <p className="text-sm text-[#1B4E8A] leading-relaxed">{aiAnalysis.overallAssessment}</p>
             </div>
 
             {/* Key Findings */}
             {aiAnalysis.keyFindings?.length > 0 && (
               <div>
-                <h4 className="text-xs font-bold text-[#1e3a5f] text-right mb-2 flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-[#1B4E8A] text-right mb-2 flex items-center gap-1.5">
                   <FileText size={14} className="text-teal-500" />
                   ממצאים עיקריים
                 </h4>

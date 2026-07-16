@@ -1,0 +1,314 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import Logo from '@/components/ui/Logo';
+import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
+
+const post = getPostBySlug('autolog-rechev-app-chinam')!;
+
+export const metadata: Metadata = {
+  title: post.title,
+  description: post.description,
+  keywords: post.keywords,
+  alternates: { canonical: `/blog/${post.slug}` },
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    url: `https://autolog.click/blog/${post.slug}`,
+    type: 'article',
+    publishedTime: post.publishedAt,
+    authors: [post.author],
+    locale: 'he_IL',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: post.title,
+    description: post.description,
+    images: [`https://autolog.click/blog/${post.slug}/cover.png`],
+  },
+};
+
+export default function BlogPostPage() {
+  return (
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
+          <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1"><ChevronRight size={14} />חזרה לבלוג</Link>
+        </div>
+      </header>
+
+      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+        <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] leading-tight mb-4">{post.title}</h1>
+
+        <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
+          <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          <span className="flex items-center gap-1"><Clock size={14} />{post.readingTime}</span>
+          <span>מאת {post.author}</span>
+        </div>
+
+        <div className="prose-rtl space-y-6 text-gray-700 leading-relaxed text-[15px]">
+
+          <p>חיפוש "אפליקציה לרכב בחינם" מחזיר בגוגל עשרות תוצאות. רובן אפליקציות זרות בתרגום עברי חלקי, רובן עם "Free Tier" שמוגבל, ורובן דורשות הורדה מ-Play Store או App Store. <strong>אוטולוג</strong> היא יוצאת הדופן: פלטפורמה ישראלית, בעברית מלאה, חינמית לחלוטין, וללא צורך בהורדה.</p>
+
+          <p>במאמר הזה נסביר למה אוטולוג היא <strong>האפליקציה לרכב בחינם</strong> הטובה ביותר לבעלי רכב בישראל ב-2026.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">מה זה "אפליקציה לרכב בחינם" בעצם?</h2>
+
+          <p>לפני שאנחנו צוללים, שווה להגדיר מה אנשים מחפשים כשהם מקלידים את הביטוי הזה בגוגל:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>כלי שיעזור לזכור מתי הטסט הבא ומתי לחדש ביטוח.</li>
+  <li>מקום לשמור פוליסות, אישורי טסט, וקבלות מהמוסך.</li>
+  <li>מעקב אחר הוצאות הרכב (דלק, ביטוח, טיפולים).</li>
+  <li>ניהול היסטוריית טיפולים — חשוב כשמוכרים את הרכב.</li>
+  <li>העדפה: בעברית, חינם, ולא להכביד על הנייד.</li>
+</ul>
+
+          <p><strong>אוטולוג עונה על כל הצרכים האלה — וגם מספקת הרבה יותר.</strong></p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">למה אוטולוג היא ה"אפליקציה לרכב בחינם" הטובה ביותר</h2>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">1. חינמית באמת — ולא רק במילים</h3>
+
+          <p>לרוב, "אפליקציה לרכב בחינם" היא חינמית רק חלקית. יש Trial של 14 ימים, או "Free Tier" עם רכב אחד, או פיצ'רים נעולים מאחורי "Premium" ב-30 ש"ח לחודש.</p>
+
+          <p><strong>אוטולוג חינמית לחלוטין:</strong></p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>אין דמי הרשמה.</li>
+  <li>אין דמי חודשיים או שנתיים.</li>
+  <li>אין Trial שמסתיים.</li>
+  <li>אין "Premium" עם פיצ'רים נעולים.</li>
+  <li>אין הגבלה על מספר רכבים, מסמכים, או הוצאות.</li>
+</ul>
+
+          <p>המודל העסקי של אוטולוג מבוסס על שותפויות עם מוסכים, חברות ביטוח, וספקי שירות לרכב. המשתמשים הפרטיים לא משלמים — היום ובעתיד.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">2. עברית מלאה, לא תרגום</h3>
+
+          <p>רוב האפליקציות לרכב הזרות תורגמו לעברית — חלקן יותר, חלקן פחות. אבל <strong>תרגום זה לא אותו דבר כמו לבנות בעברית מהיום הראשון</strong>. אוטולוג נכתבה בעברית, על ידי ישראלים, לישראלים.</p>
+
+          <p>זה לא רק עניין של מילים מתורגמות נכון. זה גם:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>ההבנה שטסט שנתי זה לא "Annual Inspection".</li>
+  <li>הידיעה ש-ביטוח חובה ו-ביטוח מקיף הם שני דברים שונים בישראל.</li>
+  <li>ההבנה שיש "אגרת רישוי" ולא "Vehicle Tax".</li>
+  <li>כפתורים, תפריטים, והודעות שגיאה שנשמעים נכון בעברית.</li>
+  <li>תאריכים בפורמט dd/mm/yyyy, לא mm/dd.</li>
+  <li>כיווניות RTL מושלמת, לא ניסיון של RTL מתורגם.</li>
+</ul>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">3. ללא הורדה — אוטולוג עובדת מהדפדפן</h3>
+
+          <p>זה אולי הפיצ'ר הכי לא-ברור-מאליו, אבל הכי משמעותי לחוויה: <strong>אוטולוג היא פלטפורמת ווב.</strong> נכנסים מהדפדפן (Chrome, Safari, Firefox) ל-autolog.click ומתחילים.</p>
+
+          <p>מה זה אומר בפועל:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li><strong>לא מורידים אפליקציה</strong> מ-Play Store או App Store.</li>
+  <li><strong>לא תופסת מקום</strong> בנייד.</li>
+  <li><strong>לא דורשת אישורי הרשאות</strong> (מצלמה רק כשצריך, לא תמיד).</li>
+  <li><strong>לא צריך לעדכן ידנית</strong> — תמיד מקבלים את הגרסה האחרונה.</li>
+  <li><strong>עובדת על כל מכשיר</strong> — אנדרואיד, iPhone, מחשב, טאבלט.</li>
+</ul>
+
+          <p>מי שרוצה חוויה דמוית-אפליקציה — מוסיף את אוטולוג למסך הבית כ-PWA, ומקבל אייקון יפה, מסך מלא, וכל מה שצריך.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">4. תזכורות חכמות לטסט וביטוח</h3>
+
+          <p>זאת הליבה של אוטולוג. ברגע שמוסיפים רכב, אוטולוג שואלת מתי הטסט האחרון ומתי תוקף הביטוח — ושולחת תזכורות אוטומטיות:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li><strong>30 יום לפני</strong> — להתחיל לתכנן.</li>
+  <li><strong>14 יום לפני</strong> — להזמין תור במוסך / להשוות ביטוח.</li>
+  <li><strong>7 ימים לפני</strong> — אם עוד לא ביצעתם.</li>
+  <li><strong>1 יום לפני</strong> — תזכורת אחרונה.</li>
+</ul>
+
+          <p>תזכורות מגיעות באימייל, ב-Push Notifications לדפדפן, ובאופציה גם ב-SMS. <strong>בלי תזכורות, אנשים מפסידים מאות שקלים בקנסות.</strong> אוטולוג חוסכת את זה.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">5. סריקת מסמכים עם בינה מלאכותית</h3>
+
+          <p>אחת הפיצ'רים הכי מתקדמים של אוטולוג: <strong>סריקה אוטומטית של מסמכי רכב עם AI</strong>.</p>
+
+          <p>מצלמים פוליסה, אישור טסט, או קבלה ממוסך. תוך 3-5 שניות אוטולוג שולפת:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>סוג המסמך (פוליסה, טסט, קבלה).</li>
+  <li>תאריכים (התחלה, סיום, תאריך טיפול).</li>
+  <li>סכומים (פרמיה, עלות טיפול, מע"מ).</li>
+  <li>פרטי הסוכן או המוסך.</li>
+  <li>מספר רישוי, מספר פוליסה.</li>
+</ul>
+
+          <p>אין צורך להקליד שום דבר. זה חוסך 10-15 דקות בכל פעם.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">6. מעקב הוצאות מלא</h3>
+
+          <p>באוטולוג מתעדים כל הוצאת רכב — דלק, ביטוח, טסט, טיפולים, חניות, אגרות, קנסות, צמיגים, מצברים. בסוף החודש מקבלים דוח שמראה בדיוק כמה הרכב עולה.</p>
+
+          <p>מה רוב האנשים לא יודעים: <strong>רכב פרטי ממוצע בישראל עולה כ-3,500-4,500 ש"ח בחודש</strong> (כולל פחת). אבל רובם חושבים שזה בערך 1,500 ש"ח. אוטולוג מגלה לכם את המספר האמיתי — וזה הצעד הראשון לחיסכון.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">7. עוזר AI אישי לרכב</h3>
+
+          <p>באוטולוג יש עוזר AI שיודע על הרכב הספציפי שלכם, היצרן, הדגם, השנה, וההיסטוריה. שואלים אותו כל שאלה:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>"הרכב משמיע רעש בכל בוקר, מה זה?"</li>
+  <li>"כמה צריך לעלות החלפת מצמד לקורולה 2019?"</li>
+  <li>"האם הטיפול שעשיתי במוסך אתמול היה במחיר הוגן?"</li>
+  <li>"מתי הזמן להחליף שמן?"</li>
+</ul>
+
+          <p>תשובות מקצועיות, בעברית, תוך שניות. זה לא מחליף מכונאי, אבל זה נותן ביטחון.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">8. ניהול מספר רכבים</h3>
+
+          <p>אם יש לכם יותר מרכב אחד — אוטולוג מנהלת את כולם בחשבון אחד. בלתי מוגבל. חינם.</p>
+
+          <p>מתאים לבני זוג עם 2 רכבים, משפחה עם רכב הורים+ילדים, או עסקים קטנים עם 5-20 רכבים.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">9. אבטחה ברמה גבוהה</h3>
+
+          <p>לא כל אפליקציה חינמית שומרת על המידע שלכם. אוטולוג שונה:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>הצפנת AES-256-GCM של כל המידע הרגיש.</li>
+  <li>HTTPS עם SSL מ-Let's Encrypt.</li>
+  <li>JWT עם רוטציית טוקנים.</li>
+  <li>זיהוי דו-שלבי (MFA/TOTP) אופציונלי.</li>
+  <li>שרתים באירופה (GDPR compliant).</li>
+</ul>
+
+          <p>קראו עוד ב-<Link href="/blog/autolog-bitachon-praiut" className="text-teal-600 hover:text-teal-700 underline">מאמר על אבטחה ופרטיות באוטולוג</Link>.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">10. תמיכה בעברית</h3>
+
+          <p>אם משהו לא ברור — אוטולוג זמינה לעזור. שולחים מייל ל-info@autolog.click ומקבלים תשובה תוך 24 שעות, בעברית.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">למי אוטולוג מתאימה?</h2>
+
+          <p>אוטולוג מתאימה לכל בעל רכב בישראל, אבל יש קהלים שמרוויחים ממנה הכי הרבה:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li><strong>בעל רכב פרטי שלא רוצה להתעסק עם תאריכים</strong> — אוטולוג תזכיר אוטומטית.</li>
+  <li><strong>משפחה עם 2-3 רכבים</strong> — ניהול במקום אחד.</li>
+  <li><strong>עצמאי שצריך לעקוב אחרי הוצאות לצרכי מס</strong> — מעקב מובנה.</li>
+  <li><strong>בעל עסק קטן עם רכבי שירות</strong> — ניהול צי בסיסי, חינם.</li>
+  <li><strong>מי שזה עתה קנה רכב יד שנייה</strong> — מתחיל לתעד היסטוריה מהיום הראשון.</li>
+</ul>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">איך מתחילים?</h2>
+
+          <p>ההרשמה לאוטולוג היא תהליך של 30 שניות:</p>
+
+          <ol className="list-decimal list-inside space-y-2 mr-4">
+  <li>נכנסים ל-<Link href="https://autolog.click/auth/signup" className="text-teal-600 hover:text-teal-700 underline">autolog.click/auth/signup</Link>.</li>
+  <li>ממלאים שם, מייל, וטלפון.</li>
+  <li>בוחרים סיסמה.</li>
+  <li>מאמתים את המייל.</li>
+  <li>מוסיפים את הרכב לפי מספר רישוי — אוטולוג שואבת את כל הפרטים אוטומטית.</li>
+</ol>
+
+          <p>מדריך מפורט: <Link href="/blog/eich-lehirashem-le-autolog" className="text-teal-600 hover:text-teal-700 underline">איך נרשמים לאוטולוג צעד אחר צעד</Link>.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">אוטולוג מול האלטרנטיבות</h2>
+
+          <div className="overflow-x-auto my-6">
+<table className="w-full border-collapse border border-gray-300">
+<thead><tr><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">אפליקציה</th><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">חינמית?</th><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">בעברית?</th><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">התאמה לישראל?</th><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">הורדה?</th></tr></thead>
+<tbody>
+<tr><td className="border border-gray-300 px-4 py-2"><strong>אוטולוג</strong></td><td className="border border-gray-300 px-4 py-2">✓ לתמיד</td><td className="border border-gray-300 px-4 py-2">✓ מלאה</td><td className="border border-gray-300 px-4 py-2">✓ מלאה</td><td className="border border-gray-300 px-4 py-2">✗ לא נדרשת</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">Drivvo</td><td className="border border-gray-300 px-4 py-2">חלקי</td><td className="border border-gray-300 px-4 py-2">חלקית</td><td className="border border-gray-300 px-4 py-2">✗</td><td className="border border-gray-300 px-4 py-2">✓ נדרשת</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">Fuelio</td><td className="border border-gray-300 px-4 py-2">חלקי</td><td className="border border-gray-300 px-4 py-2">חלקית</td><td className="border border-gray-300 px-4 py-2">✗</td><td className="border border-gray-300 px-4 py-2">✓ Android בלבד</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">Vehicle Tracker</td><td className="border border-gray-300 px-4 py-2">✗ בתשלום</td><td className="border border-gray-300 px-4 py-2">✗</td><td className="border border-gray-300 px-4 py-2">✗</td><td className="border border-gray-300 px-4 py-2">✓ נדרשת</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">Excel</td><td className="border border-gray-300 px-4 py-2">✓</td><td className="border border-gray-300 px-4 py-2">✓</td><td className="border border-gray-300 px-4 py-2">✗ ידני</td><td className="border border-gray-300 px-4 py-2">✗</td></tr>
+</tbody>
+</table>
+</div>
+
+          <p><strong>אוטולוג מנצחת בכל קטגוריה רלוונטית לישראלי.</strong></p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">שאלות נפוצות</h2>
+
+          <p><strong>ש: אוטולוג באמת חינמית?</strong> ת: כן. לחלוטין. לתמיד. אין שום תשלום סמוי.</p>
+
+          <p><strong>ש: למה אוטולוג חינמית?</strong> ת: המודל העסקי מבוסס על שותפויות עם מוסכים, חברות ביטוח, וספקי שירות לרכב. המשתמשים הפרטיים לא משלמים.</p>
+
+          <p><strong>ש: האם אוטולוג תהיה חינמית גם בעוד שנתיים?</strong> ת: כן. אנחנו מתחייבים לזה. הפיצ'רים החינמיים יישארו חינמיים.</p>
+
+          <p><strong>ש: האם אני צריך אינטרנט כל הזמן כדי להשתמש באוטולוג?</strong> ת: כן, כי אוטולוג מבוססת ענן. אבל זה גם היתרון — תמיד יש לכם גיבוי.</p>
+
+          <p><strong>ש: האם אוטולוג עובדת באייפון?</strong> ת: כן. אוטולוג עובדת בכל דפדפן, בכל מכשיר.</p>
+
+          <p><strong>ש: כמה זמן לוקח להירשם?</strong> ת: 30 שניות. ועוד דקה להוסיף את הרכב הראשון.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">סיכום</h2>
+
+          <p><strong>אוטולוג היא האפליקציה לרכב בחינם הטובה ביותר לבעלי רכב בישראל ב-2026.</strong> היא חינמית באמת, בעברית מלאה, ללא הורדה, ועם פיצ'רים שאף אפליקציה אחרת לא מציעה — סריקת מסמכים עם AI, עוזר AI אישי, ותזכורות חכמות לטסט וביטוח.</p>
+
+          <p>לא צריך להסתכן עם אפליקציות זרות עם תרגום חלקי או עם "Premium" שננעל אחרי שבועיים. <strong>אוטולוג</strong> נבנתה במיוחד לכם.</p>
+
+          <p><Link href="https://autolog.click/auth/signup" className="text-teal-600 hover:text-teal-700 underline">הירשמו לאוטולוג בחינם</Link> — תיהנו מהשקט הנפשי.</p>
+
+          {/* CTA */}
+          <div className="bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-2xl p-8 my-10 text-center not-prose">
+            <h3 className="text-2xl font-bold mb-3">מתחילים עם אוטולוג עכשיו</h3>
+            <p className="text-white/90 mb-6 text-base leading-relaxed">
+              אוטולוג מאחדת את כל הניהול של הרכב — תזכורות אוטומטיות, סריקת מסמכים עם AI, מעקב הוצאות, היסטוריית טיפולים ועוזר AI אישי. בעברית. בחינם. ללא הורדה.
+            </p>
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-10 py-4 bg-cream-500 text-white font-bold text-lg rounded-xl hover:bg-cream-600 transition shadow-lg">
+              הרשמה לאוטולוג חינם<ArrowLeft size={18} />
+            </Link>
+          </div>
+        </div>
+
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'BlogPosting',
+              headline: post.title,
+              description: post.description,
+              datePublished: post.publishedAt,
+              dateModified: post.updatedAt || post.publishedAt,
+              image: [`https://autolog.click/blog/${post.slug}/cover.png`],
+              author: { '@type': 'Organization', name: 'אוטולוג', url: 'https://autolog.click' },
+              publisher: {
+                '@type': 'Organization',
+                name: 'אוטולוג',
+                logo: { '@type': 'ImageObject', url: 'https://autolog.click/logo.png', width: 512, height: 512 },
+              },
+              mainEntityOfPage: { '@type': 'WebPage', '@id': `https://autolog.click/blog/${post.slug}` },
+              inLanguage: 'he-IL',
+              articleSection: post.category,
+              keywords: post.keywords.join(', '),
+              isPartOf: { '@type': 'Blog', name: 'בלוג אוטולוג', url: 'https://autolog.click/blog' },
+            },
+            {
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'אוטולוג', item: 'https://autolog.click' },
+                { '@type': 'ListItem', position: 2, name: 'בלוג', item: 'https://autolog.click/blog' },
+                { '@type': 'ListItem', position: 3, name: post.title, item: `https://autolog.click/blog/${post.slug}` },
+              ],
+            },
+          ],
+        }) }} />
+
+        <div className="mt-12 pt-8 border-t border-gray-200 flex items-center justify-between">
+          <Link href="/blog" className="flex items-center gap-1 text-sm text-teal-600 font-semibold hover:text-teal-700 transition"><ChevronRight size={14} />כל המאמרים</Link>
+          <Link href="/" className="flex items-center gap-1 text-sm text-teal-600 font-semibold hover:text-teal-700 transition">חזרה לעמוד הבית<ChevronLeft size={14} /></Link>
+        </div>
+      </article>
+
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm"><p>&copy; {new Date().getFullYear()} אוטולוג (AutoLog). כל הזכויות שמורות.</p></footer>
+    </div>
+  );
+}

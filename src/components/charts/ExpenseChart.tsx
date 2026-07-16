@@ -44,7 +44,7 @@ export default function ExpenseChart({ data }: ExpenseChartProps) {
           {data.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={entry.isCurrent ? '#0d9488' : '#99f6e4'}
+              fill={entry.isCurrent ? '#2E77D0' : '#99f6e4'}
               opacity={entry.total === 0 ? 0.3 : 1}
             />
           ))}

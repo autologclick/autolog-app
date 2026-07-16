@@ -166,7 +166,7 @@ export default function BenefitsPage() {
       });
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || 'שגיאה ביצירת קוד הטבה');
+        toast.error(data.error || 'שגיאה ביצירת קוד הטבה');
         return;
       }
       const redemption = await res.json();
@@ -200,7 +200,7 @@ export default function BenefitsPage() {
 
   if (!GARAGES_ENABLED) {
     return (
-      <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+      <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
         <PageHeader
           title="🎁 הטבות מועדון"
           variant="green"
@@ -218,7 +218,7 @@ export default function BenefitsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
       <PageHeader
         title="🎁 הטבות מועדון"
         variant="green"

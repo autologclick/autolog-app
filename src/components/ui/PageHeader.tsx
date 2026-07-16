@@ -17,7 +17,7 @@ interface PageHeaderProps {
 }
 
 const gradients: Record<string, string> = {
-  navy: 'from-[#1e3a5f] to-[#2a5a8f]',
+  navy: 'from-[#1B4E8A] to-[#1D5FAF]',
   teal: 'from-teal-600 to-teal-700',
   purple: 'from-purple-600 to-purple-700',
   red: 'from-red-500 to-red-600',

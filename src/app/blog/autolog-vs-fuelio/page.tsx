@@ -1,0 +1,297 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import Logo from '@/components/ui/Logo';
+import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
+
+const post = getPostBySlug('autolog-vs-fuelio')!;
+
+export const metadata: Metadata = {
+  title: post.title,
+  description: post.description,
+  keywords: post.keywords,
+  alternates: { canonical: `/blog/${post.slug}` },
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    url: `https://autolog.click/blog/${post.slug}`,
+    type: 'article',
+    publishedTime: post.publishedAt,
+    authors: [post.author],
+    locale: 'he_IL',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: post.title,
+    description: post.description,
+    images: [`https://autolog.click/blog/${post.slug}/cover.png`],
+  },
+};
+
+export default function BlogPostPage() {
+  return (
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
+          <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1"><ChevronRight size={14} />חזרה לבלוג</Link>
+        </div>
+      </header>
+
+      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+        <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] leading-tight mb-4">{post.title}</h1>
+
+        <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
+          <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          <span className="flex items-center gap-1"><Clock size={14} />{post.readingTime}</span>
+          <span>מאת {post.author}</span>
+        </div>
+
+        <div className="prose-rtl space-y-6 text-gray-700 leading-relaxed text-[15px]">
+
+          <p>אם חיפשתם אפליקציה למעקב דלק והוצאות רכב, סביר שנתקלתם בשתי אפשרויות פופולריות: <strong>אוטולוג</strong> (פלטפורמת ניהול רכב ישראלית) ו-<strong>Fuelio</strong> (אפליקציית מעקב דלק אנדרואידית ותיקה). הן שתיהן חינמיות, שתיהן מטפלות במעקב הוצאות — אבל הן שונות בהיקף, בקהל היעד, ובאופי. במאמר הזה נשווה את שתיהן.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">אוטולוג בקצרה</h2>
+
+          <p>אוטולוג היא פלטפורמת ווב ישראלית מקיפה לניהול רכב חכם. היא מטפלת בכל מה שקשור לבעלות על רכב: תזכורות לטסט וביטוח, סריקת מסמכים עם AI, מעקב הוצאות מקיף (לא רק דלק), עוזר AI אישי, היסטוריית טיפולים, ועוד.</p>
+
+          <p>אוטולוג עובדת מהדפדפן (בלי הורדה), בעברית מלאה, חינמית לחלוטין.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">Fuelio בקצרה</h2>
+
+          <p>Fuelio היא אפליקציית אנדרואיד פולנית מ-2012, שהתמקדה היסטורית במעקב צריכת דלק. ב-2019 היא נרכשה ע"י Sygic (חברת ניווט סלובקית), והיום היא חלק מהאקוסיסטם שלהם. Fuelio מתמקדת בעיקר במעקב טנקי דלק, מחירי דלק, וניתוח יעילות צריכה.</p>
+
+          <p>יש גרסה חינמית עם פרסומות, וגרסה Premium ללא פרסומות בכ-$9.99 לשנה.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">הבדל מהותי: היקף האפליקציות</h2>
+
+          <p><strong>אוטולוג</strong> היא פלטפורמת ניהול רכב מקיפה. דלק זה רק חלק אחד מעשרות יכולות.</p>
+
+          <p><strong>Fuelio</strong> היא אפליקציית מעקב דלק. תוכל לתעד גם הוצאות אחרות, אבל זה לא המוקד.</p>
+
+          <p>זה ההבדל הגדול ביותר, וזה משפיע על כל ההשוואה.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">השוואה לפי קטגוריות</h2>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">1. מעקב צריכת דלק</h3>
+
+          <p><strong>אוטולוג:</strong> מעקב מלא של תדלוקים. שדות לכמות ליטרים, מחיר לליטר, סוג דלק, תחנה. חישוב אוטומטי של K"מ לליטר וגרפים של ביצועי הרכב לאורך זמן. תמיכה ברכבים חשמליים (כמות kWh במקום ליטרים).</p>
+
+          <p><strong>Fuelio:</strong> המעקב הכי מעמיק של דלק בשוק. שדות מפורטים (חלקי / מלא), חישובי "ממוצע נע", השוואה בין סוגי דלק, ואפילו תמיכה בקריאות מקילומטראז' של אמצע הטנק. זאת ההתמחות שלה.</p>
+
+          <p><strong>המנצח:</strong> Fuelio לדלק עצמו. אוטולוג כמעט שווה — אבל ההבדל הזה כמעט לא מורגש בשימוש יומיומי.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">2. תזכורות לטסט וביטוח</h3>
+
+          <p><strong>אוטולוג:</strong> המוקד המרכזי. תזכורות אוטומטיות 30/14/7/1 ימים לפני טסט, ביטוח חובה, ביטוח מקיף, רישיון. מגיעות באימייל, Push, ו-SMS.</p>
+
+          <p><strong>Fuelio:</strong> יש תזכורות לטיפולים תקופתיים (לפי K"מ), אבל לא יודעת מה זה טסט שנתי ישראלי או ביטוח חובה. אין שיוך אוטומטי לבירוקרטיה הישראלית.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג — בלי שאלה.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">3. סריקת מסמכים עם AI</h3>
+
+          <p><strong>אוטולוג:</strong> סריקה אוטומטית של פוליסות, אישורי טסט, וקבלות. ה-AI שולף את כל הפרטים.</p>
+
+          <p><strong>Fuelio:</strong> אין סריקה. הכל הזנה ידנית.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">4. עוזר AI</h3>
+
+          <p><strong>אוטולוג:</strong> עוזר AI אישי שיודע על הרכב שלכם וההיסטוריה שלו. שואלים אותו כל שאלה.</p>
+
+          <p><strong>Fuelio:</strong> אין AI.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">5. שפה והתאמה לישראל</h3>
+
+          <p><strong>אוטולוג:</strong> עברית מלאה, נכתבה לישראלים. מותאמת לבירוקרטיה הישראלית.</p>
+
+          <p><strong>Fuelio:</strong> תרגום עברי חלקי, חלק מהמסכים באנגלית. ברירת המחדל לפי תקני אירופה.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">6. הורדה והתקנה</h3>
+
+          <p><strong>אוטולוג:</strong> ללא הורדה — דפדפן בלבד.</p>
+
+          <p><strong>Fuelio:</strong> רק על אנדרואיד. אין גרסה ל-iOS! אם יש לכם אייפון — Fuelio לא רלוונטית.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג — נגישה לכולם.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">7. פרסומות</h3>
+
+          <p><strong>אוטולוג:</strong> ללא פרסומות. בכלל.</p>
+
+          <p><strong>Fuelio:</strong> פרסומות בגרסה החינמית. צריך לשלם כ-$10 לשנה כדי להסיר אותן.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">8. מחירי דלק</h3>
+
+          <p><strong>Fuelio:</strong> מציגה מחירי דלק עדכניים בתחנות באזור, בעזרת מאגר נתונים גלובלי (וגם ידני מהמשתמשים). זה הפיצ'ר שמשם הגיע השם — Fuel + IO.</p>
+
+          <p><strong>אוטולוג:</strong> לא מציגה מחירי דלק בזמן אמת.</p>
+
+          <p><strong>המנצח:</strong> Fuelio — אם זה מה שאתם מחפשים.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">9. סנכרון בין מכשירים</h3>
+
+          <p><strong>אוטולוג:</strong> סנכרון חינמי בכל המכשירים. נכנסים מאיפה שצריך.</p>
+
+          <p><strong>Fuelio:</strong> סנכרון דרך Google Drive (חינמי), אבל מוגבל לאנדרואיד.</p>
+
+          <p><strong>המנצח:</strong> אוטולוג — קרוס-פלטפורם מלא.</p>
+
+          <h3 className="text-xl font-bold text-[#1B4E8A] pt-4 mt-2">10. ניהול מספר רכבים</h3>
+
+          <p><strong>אוטולוג:</strong> בלתי מוגבל בחינם.</p>
+
+          <p><strong>Fuelio:</strong> בלתי מוגבל גם בחינם — נקודה לזכותה.</p>
+
+          <p><strong>המנצח:</strong> תיקו.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">טבלת סיכום</h2>
+
+          <div className="overflow-x-auto my-6">
+<table className="w-full border-collapse border border-gray-300">
+<thead><tr><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">קריטריון</th><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">אוטולוג</th><th className="border border-gray-300 px-4 py-2 bg-teal-50 text-right font-bold">Fuelio</th></tr></thead>
+<tbody>
+<tr><td className="border border-gray-300 px-4 py-2">מעקב דלק</td><td className="border border-gray-300 px-4 py-2">טוב</td><td className="border border-gray-300 px-4 py-2">מצוין ✓</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">מחירי דלק חיים</td><td className="border border-gray-300 px-4 py-2">✗</td><td className="border border-gray-300 px-4 py-2">✓</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">תזכורות טסט/ביטוח</td><td className="border border-gray-300 px-4 py-2">✓</td><td className="border border-gray-300 px-4 py-2">✗</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">סריקת מסמכים AI</td><td className="border border-gray-300 px-4 py-2">✓</td><td className="border border-gray-300 px-4 py-2">✗</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">עוזר AI</td><td className="border border-gray-300 px-4 py-2">✓</td><td className="border border-gray-300 px-4 py-2">✗</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">עברית מלאה</td><td className="border border-gray-300 px-4 py-2">✓</td><td className="border border-gray-300 px-4 py-2">חלקית</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">iOS</td><td className="border border-gray-300 px-4 py-2">✓</td><td className="border border-gray-300 px-4 py-2">✗</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">ללא הורדה</td><td className="border border-gray-300 px-4 py-2">✓</td><td className="border border-gray-300 px-4 py-2">✗</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">ללא פרסומות</td><td className="border border-gray-300 px-4 py-2">✓</td><td className="border border-gray-300 px-4 py-2">רק ב-Premium</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">התאמה לישראל</td><td className="border border-gray-300 px-4 py-2">מלאה ✓</td><td className="border border-gray-300 px-4 py-2">בסיסית</td></tr>
+<tr><td className="border border-gray-300 px-4 py-2">מסמכים דיגיטליים</td><td className="border border-gray-300 px-4 py-2">✓</td><td className="border border-gray-300 px-4 py-2">✗</td></tr>
+</tbody>
+</table>
+</div>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">למי Fuelio מתאימה?</h2>
+
+          <p>Fuelio מצוינת אם:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li>יש לכם אנדרואיד (לא iOS).</li>
+  <li>אתם מתמקדים אך ורק בצריכת דלק.</li>
+  <li>אתם רוצים לראות מחירי דלק חיים באזור.</li>
+  <li>אתם לא צריכים תזכורות לטסט / ביטוח.</li>
+  <li>אתם בסדר עם תרגום עברי חלקי.</li>
+  <li>אתם לא מתמקדים במעקב הוצאות מקיף.</li>
+</ul>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">למי אוטולוג מתאימה?</h2>
+
+          <p>אוטולוג היא הבחירה אם אתם רוצים:</p>
+
+          <ul className="list-disc list-inside space-y-2 mr-4">
+  <li><strong>לנהל הכל במקום אחד</strong> — לא רק דלק.</li>
+  <li><strong>תזכורות שיגרמו לכם לא לפספס טסט וביטוח</strong>.</li>
+  <li><strong>עברית אמיתית</strong> ולא תרגום.</li>
+  <li><strong>חוויה ללא הורדה</strong> — סתם נכנסים מהדפדפן.</li>
+  <li><strong>AI חכם</strong> שיעזור עם מסמכים ושאלות.</li>
+  <li><strong>תמיכה ל-iOS</strong> (אייפון).</li>
+  <li><strong>התאמה מלאה לישראל</strong>.</li>
+</ul>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">אפשר להשתמש בשתיהן?</h2>
+
+          <p>טכנית כן, אבל זה לא הגיוני. תיקח 5 דקות לכל תדלוק להזין באוטולוג, ועוד 5 דקות להזין ב-Fuelio. עדיף לבחור אחת.</p>
+
+          <p>אם אתם בעלי רכב בישראל — <strong>אוטולוג היא הבחירה הנכונה</strong>. היא נותנת לכם הכל במקום אחד: דלק, תזכורות, מסמכים, AI, התאמה לישראל. אם בעוד שנה תרצו ניתוח דלק יותר עמוק — אז כדאי לשקול את Fuelio בנוסף.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">איך עוברים מ-Fuelio לאוטולוג?</h2>
+
+          <p>אם אתם כבר משתמשי Fuelio קיימים:</p>
+
+          <ol className="list-decimal list-inside space-y-2 mr-4">
+  <li><strong>ייצאו מ-Fuelio</strong> — דרך הגדרות → ייצוא → CSV.</li>
+  <li><strong>נרשמו לאוטולוג בחינם</strong> — <Link href="https://autolog.click/auth/signup" className="text-teal-600 hover:text-teal-700 underline">autolog.click/auth/signup</Link>.</li>
+  <li><strong>הוסיפו את הרכב לאוטולוג</strong> — לפי מספר רישוי.</li>
+  <li><strong>טענו את ההיסטוריה</strong> — דרך ייבוא ידני או פשוט מתחילים מחדש מהיום.</li>
+</ol>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">שאלות נפוצות</h2>
+
+          <p><strong>ש: האם אוטולוג מציגה מחירי דלק בזמן אמת?</strong> ת: כרגע לא. בעתיד אנחנו שוקלים להוסיף את הפיצ'ר הזה. אם זה חשוב לכם — שלחו לנו פידבק ב-feedback@autolog.click.</p>
+
+          <p><strong>ש: האם Fuelio טובה יותר במעקב צריכה?</strong> ת: Fuelio קצת יותר עמוקה בניתוח דלק טהור. אוטולוג טובה יותר בכל היתר.</p>
+
+          <p><strong>ש: האם אני יכול לייבא נתוני Fuelio לאוטולוג?</strong> ת: בקרוב נשחרר כלי ייבוא CSV. בינתיים — ייבוא ידני.</p>
+
+          <p><strong>ש: האם אוטולוג עובדת ברכבים חשמליים?</strong> ת: כן. אוטולוג תומכת ב-kWh עבור רכבים חשמליים, kg עבור CNG/LPG, ובוודאי בליטרים לבנזין/דיזל.</p>
+
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-8 mt-2">סיכום</h2>
+
+          <p>Fuelio היא אפליקציה טובה לצרכן צר ומשקעי דלק עם אנדרואיד. <strong>אוטולוג היא הפלטפורמה השלמה לכל בעל רכב ישראלי.</strong></p>
+
+          <p>אם המטרה היא לעקוב רק אחרי דלק — Fuelio סבירה. אם המטרה היא לנהל את הרכב בצורה חכמה ולא לפספס שום תאריך — <strong>אוטולוג</strong> היא הבחירה.</p>
+
+          <p><Link href="https://autolog.click/auth/signup" className="text-teal-600 hover:text-teal-700 underline">התחילו עם אוטולוג בחינם</Link> — אין מה להתחרט עליו.</p>
+
+          {/* CTA */}
+          <div className="bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-2xl p-8 my-10 text-center not-prose">
+            <h3 className="text-2xl font-bold mb-3">מתחילים עם אוטולוג עכשיו</h3>
+            <p className="text-white/90 mb-6 text-base leading-relaxed">
+              אוטולוג מאחדת את כל הניהול של הרכב — תזכורות אוטומטיות, סריקת מסמכים עם AI, מעקב הוצאות, היסטוריית טיפולים ועוזר AI אישי. בעברית. בחינם. ללא הורדה.
+            </p>
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-10 py-4 bg-cream-500 text-white font-bold text-lg rounded-xl hover:bg-cream-600 transition shadow-lg">
+              הרשמה לאוטולוג חינם<ArrowLeft size={18} />
+            </Link>
+          </div>
+        </div>
+
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'BlogPosting',
+              headline: post.title,
+              description: post.description,
+              datePublished: post.publishedAt,
+              dateModified: post.updatedAt || post.publishedAt,
+              image: [`https://autolog.click/blog/${post.slug}/cover.png`],
+              author: { '@type': 'Organization', name: 'אוטולוג', url: 'https://autolog.click' },
+              publisher: {
+                '@type': 'Organization',
+                name: 'אוטולוג',
+                logo: { '@type': 'ImageObject', url: 'https://autolog.click/logo.png', width: 512, height: 512 },
+              },
+              mainEntityOfPage: { '@type': 'WebPage', '@id': `https://autolog.click/blog/${post.slug}` },
+              inLanguage: 'he-IL',
+              articleSection: post.category,
+              keywords: post.keywords.join(', '),
+              isPartOf: { '@type': 'Blog', name: 'בלוג אוטולוג', url: 'https://autolog.click/blog' },
+            },
+            {
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'אוטולוג', item: 'https://autolog.click' },
+                { '@type': 'ListItem', position: 2, name: 'בלוג', item: 'https://autolog.click/blog' },
+                { '@type': 'ListItem', position: 3, name: post.title, item: `https://autolog.click/blog/${post.slug}` },
+              ],
+            },
+          ],
+        }) }} />
+
+        <div className="mt-12 pt-8 border-t border-gray-200 flex items-center justify-between">
+          <Link href="/blog" className="flex items-center gap-1 text-sm text-teal-600 font-semibold hover:text-teal-700 transition"><ChevronRight size={14} />כל המאמרים</Link>
+          <Link href="/" className="flex items-center gap-1 text-sm text-teal-600 font-semibold hover:text-teal-700 transition">חזרה לעמוד הבית<ChevronLeft size={14} /></Link>
+        </div>
+      </article>
+
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm"><p>&copy; {new Date().getFullYear()} אוטולוג (AutoLog). כל הזכויות שמורות.</p></footer>
+    </div>
+  );
+}

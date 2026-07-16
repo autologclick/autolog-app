@@ -107,14 +107,14 @@ export default function AdminBodyworkPage() {
         {/* ── Stats ── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: 'סה"כ בקשות', value: totalRequests, icon: Hammer, color: 'text-[#1e3a5f]' },
+            { label: 'סה"כ בקשות', value: totalRequests, icon: Hammer, color: 'text-[#1B4E8A]' },
             { label: 'ממתינות', value: openCount, icon: Clock, color: 'text-blue-600' },
             { label: 'עם הצעות', value: quotedCount, icon: ShekelSign, color: 'text-amber-600' },
             { label: 'סגורות', value: acceptedCount, icon: CheckCircle2, color: 'text-green-600' },
           ].map(stat => (
             <div key={stat.label} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
               <stat.icon size={20} className={`mx-auto mb-1 ${stat.color}`} />
-              <p className="text-2xl font-extrabold text-[#1e3a5f]">{stat.value}</p>
+              <p className="text-2xl font-extrabold text-[#1B4E8A]">{stat.value}</p>
               <p className="text-xs text-gray-400">{stat.label}</p>
             </div>
           ))}
@@ -135,7 +135,7 @@ export default function AdminBodyworkPage() {
               onClick={() => setFilter(f.value)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${
                 filter === f.value
-                  ? 'bg-[#1e3a5f] text-white border-[#1e3a5f]'
+                  ? 'bg-[#1B4E8A] text-white border-[#1B4E8A]'
                   : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
               }`}
             >
@@ -151,7 +151,7 @@ export default function AdminBodyworkPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="חפש לפי שם, רכב, מספר רישוי..."
-            className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/10"
+            className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-[#1B4E8A] focus:ring-2 focus:ring-[#1B4E8A]/10"
             dir="rtl"
           />
         </div>
@@ -184,7 +184,7 @@ export default function AdminBodyworkPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-[#1e3a5f] text-sm">{req.user.fullName}</span>
+                          <span className="font-bold text-[#1B4E8A] text-sm">{req.user.fullName}</span>
                           <span className="text-xs text-gray-400">•</span>
                           <span className="text-xs text-gray-500">{req.vehicle.manufacturer} {req.vehicle.model}</span>
                         </div>
@@ -216,13 +216,13 @@ export default function AdminBodyworkPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-blue-50 rounded-xl p-3">
                 <p className="text-xs text-gray-400 mb-1">לקוח</p>
-                <p className="text-sm font-bold text-[#1e3a5f]">{viewRequest.user.fullName}</p>
+                <p className="text-sm font-bold text-[#1B4E8A]">{viewRequest.user.fullName}</p>
                 <p className="text-xs text-gray-500">{viewRequest.user.phone}</p>
                 <p className="text-xs text-gray-400">{viewRequest.user.city}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3">
                 <p className="text-xs text-gray-400 mb-1">רכב</p>
-                <p className="text-sm font-bold text-[#1e3a5f]">{viewRequest.vehicle.manufacturer} {viewRequest.vehicle.model} {viewRequest.vehicle.year}</p>
+                <p className="text-sm font-bold text-[#1B4E8A]">{viewRequest.vehicle.manufacturer} {viewRequest.vehicle.model} {viewRequest.vehicle.year}</p>
                 <p className="text-xs text-gray-500">{viewRequest.vehicle.licensePlate} • {viewRequest.vehicle.color || '—'}</p>
               </div>
             </div>
@@ -260,7 +260,7 @@ export default function AdminBodyworkPage() {
 
             {/* Quotes */}
             <div>
-              <h3 className="font-bold text-[#1e3a5f] mb-3 flex items-center gap-2">
+              <h3 className="font-bold text-[#1B4E8A] mb-3 flex items-center gap-2">
                 <ShekelSign size={16} />
                 הצעות מחיר ({viewRequest.quotes.length})
               </h3>
@@ -286,7 +286,7 @@ export default function AdminBodyworkPage() {
                           <div className="flex items-center gap-2">
                             <Building2 size={16} className="text-gray-400" />
                             <div>
-                              <span className="text-sm font-bold text-[#1e3a5f]">{quote.garage.name}</span>
+                              <span className="text-sm font-bold text-[#1B4E8A]">{quote.garage.name}</span>
                               <span className="text-xs text-gray-400 mr-2">{quote.garage.city}</span>
                               <span className="text-xs text-gray-400 flex items-center gap-0.5 inline-flex">
                                 <Star size={10} className="text-amber-400 fill-amber-400" />{quote.garage.rating}
@@ -294,7 +294,7 @@ export default function AdminBodyworkPage() {
                             </div>
                           </div>
                           <div className="text-left">
-                            <span className="text-lg font-extrabold text-[#1e3a5f]">₪{quote.price.toLocaleString()}</span>
+                            <span className="text-lg font-extrabold text-[#1B4E8A]">₪{quote.price.toLocaleString()}</span>
                             {quote.estimatedDays && <p className="text-xs text-gray-400">{quote.estimatedDays} ימים</p>}
                           </div>
                         </div>

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import 'leaflet/dist/leaflet.css';
 import {
   AlertTriangle, Phone, MapPin, Clock, Send, Loader2,
   CheckCircle2, Flame, Wrench, CircleDot, Fuel, Lock,
@@ -9,7 +10,7 @@ import {
 } from 'lucide-react';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
 import ComingSoonBanner from '@/components/shared/ComingSoonBanner';
-import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
+import { SOS_ENABLED } from '@/lib/constants/feature-flags';
 import { getRoadServiceById } from '@/lib/constants/road-services';
 
 /* ────────────────────── Types ────────────────────── */
@@ -38,13 +39,152 @@ interface Vehicle {
 
 /* ────────────────────── Constants ────────────────────── */
 
+/**
+ * LocationMapPicker — tap or drag a pin on an OpenStreetMap map to set the
+ * incident location. Works with NO permissions; if GPS happens to be
+ * available it just centers the map. Leaflet is loaded dynamically
+ * (client-only) and the marker is a pure-CSS divIcon (no image assets).
+ */
+type LocateFn = () => void;
+
+function LocationMapPicker({ onPick }: { onPick: (lat: number, lon: number) => void }) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const inited = useRef(false);
+  const onPickRef = useRef(onPick);
+  onPickRef.current = onPick;
+  const locateRef = useRef<LocateFn | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locError, setLocError] = useState('');
+
+  useEffect(() => {
+    if (!mapRef.current || inited.current) return;
+    inited.current = true;
+    let map: import('leaflet').Map | null = null;
+    import('leaflet').then((L) => {
+      if (!mapRef.current) return;
+      map = L.map(mapRef.current).setView([32.0853, 34.7818], 12); // default: Tel Aviv area
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap',
+        maxZoom: 19,
+      }).addTo(map);
+      const icon = L.divIcon({
+        className: '',
+        html: '<div style="width:24px;height:24px;background:#dc2626;border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>',
+        iconSize: [24, 24],
+        iconAnchor: [12, 24],
+      });
+      let marker: import('leaflet').Marker | null = null;
+      const setPin = (lat: number, lon: number) => {
+        if (marker) {
+          marker.setLatLng([lat, lon]);
+        } else if (map) {
+          marker = L.marker([lat, lon], { icon, draggable: true }).addTo(map);
+          marker.on('dragend', () => {
+            const ll = marker!.getLatLng();
+            onPickRef.current(ll.lat, ll.lng);
+          });
+        }
+        onPickRef.current(lat, lon);
+      };
+      map.on('click', (e: { latlng: { lat: number; lng: number } }) => setPin(e.latlng.lat, e.latlng.lng));
+      // Auto-locate: center the map AND drop the pin on the GPS position,
+      // so the user only fine-tunes instead of hunting for their spot.
+      const locate = () => {
+        if (!navigator.geolocation) {
+          setLocError('הדפדפן הזה לא תומך בזיהוי מיקום');
+          return;
+        }
+        setLocating(true);
+        setLocError('');
+        // watchPosition instead of a one-shot request: on Android the first
+        // fix is usually coarse (WiFi/cell). We keep listening and move the
+        // pin as the GPS lock improves, stopping at ~25m accuracy or 20s.
+        let bestAcc = 999999;
+        let gotFix = false;
+        const watchId = navigator.geolocation.watchPosition(
+          (pos) => {
+            gotFix = true;
+            const acc = pos.coords.accuracy || 999999;
+            if (acc < bestAcc) {
+              bestAcc = acc;
+              map?.setView([pos.coords.latitude, pos.coords.longitude], acc < 80 ? 17 : 15);
+              setPin(pos.coords.latitude, pos.coords.longitude);
+            }
+            if (acc <= 25) {
+              navigator.geolocation.clearWatch(watchId);
+              setLocating(false);
+            }
+          },
+          (err) => {
+            navigator.geolocation.clearWatch(watchId);
+            setLocating(false);
+            if (gotFix) return;
+            ipFallback(err.code);
+          },
+          { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 },
+        );
+        window.setTimeout(() => {
+          navigator.geolocation.clearWatch(watchId);
+          setLocating(false);
+          if (!gotFix) ipFallback(0);
+        }, 21000);
+      };
+      // No-permission fallback: approximate area by the internet connection
+      // (server-side IP lookup). Centers the map on the right neighborhood so
+      // the user only drags the pin the last bit.
+      const ipFallback = (errCode: number) => {
+        fetch('/api/geo/ip')
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d) => {
+            if (d && typeof d.latitude === 'number') {
+              map?.setView([d.latitude, d.longitude], 14);
+              setPin(d.latitude, d.longitude);
+              setLocError('המיקום הוערך לפי חיבור האינטרנט — גררו את הסיכה לנקודה המדויקת של הרכב');
+            } else if (errCode === 1) {
+              setLocError('הרשאת המיקום חסומה — סמנו את המיקום על המפה, או אשרו גישה למיקום בדפדפן');
+            } else {
+              setLocError('לא התקבל מיקום מהמכשיר — סמנו את המיקום על המפה');
+            }
+          })
+          .catch(() => {
+            setLocError('לא התקבל מיקום — סמנו את המיקום על המפה');
+          });
+      };
+      locateRef.current = locate;
+      try { locate(); } catch { /* ignore */ }
+    });
+    return () => { map?.remove(); };
+  }, []);
+
+  return (
+    <div>
+      <div className="relative">
+        <div ref={mapRef} dir="ltr" className="w-full h-56 rounded-xl overflow-hidden border-2 border-gray-200 z-0" />
+        <button
+          type="button"
+          onClick={() => { if (locateRef.current) locateRef.current(); }}
+          className="absolute bottom-2 right-2 z-[1000] flex items-center gap-1.5 px-3 py-2 rounded-full bg-white text-teal-700 text-xs font-bold shadow-lg border border-gray-200 active:scale-95 transition-transform"
+        >
+          <Navigation className={locating ? 'w-3.5 h-3.5 animate-pulse' : 'w-3.5 h-3.5'} />
+          {locating ? 'מאתר...' : 'המיקום שלי'}
+        </button>
+      </div>
+      {locError ? (
+        <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5 mt-1 text-center">{locError}</p>
+      ) : (
+        <p className="text-[11px] text-gray-400 mt-1 text-center">הסיכה הונחה לפי המיקום שלכם — גררו אותה לדיוק, או לחצו על המפה</p>
+      )}
+    </div>
+  );
+}
+
 const eventTypes = [
-  { id: 'accident', label: 'תאונה', icon: Flame, color: 'from-red-500 to-rose-600', bgLight: 'bg-red-50', textColor: 'text-red-600' },
-  { id: 'breakdown', label: 'תקלה מכנית', icon: Wrench, color: 'from-orange-500 to-amber-600', bgLight: 'bg-orange-50', textColor: 'text-orange-600' },
-  { id: 'flat_tire', label: 'צמיג תקוע', icon: CircleDot, color: 'from-amber-500 to-yellow-600', bgLight: 'bg-amber-50', textColor: 'text-amber-600' },
-  { id: 'fuel', label: 'דלק נגמר', icon: Fuel, color: 'from-yellow-500 to-lime-600', bgLight: 'bg-yellow-50', textColor: 'text-yellow-700' },
-  { id: 'electrical', label: 'נעילה ברכב', icon: Lock, color: 'from-purple-500 to-violet-600', bgLight: 'bg-purple-50', textColor: 'text-purple-600' },
-  { id: 'other', label: 'אחר', icon: HelpCircle, color: 'from-gray-500 to-slate-600', bgLight: 'bg-gray-50', textColor: 'text-gray-600' },
+  { id: 'accident', label: 'תאונה', desc: 'התנגשות או נזק לרכב', icon: Flame, color: 'from-red-500 to-rose-600', bgLight: 'bg-red-50', textColor: 'text-red-600' },
+  { id: 'breakdown', label: 'תקלה מכנית', desc: 'הרכב לא מניע או לא נוסע', icon: Wrench, color: 'from-orange-500 to-amber-600', bgLight: 'bg-orange-50', textColor: 'text-orange-600' },
+  { id: 'flat_tire', label: 'צמיג תקוע', desc: 'תקר או צמיג ללא אוויר', icon: CircleDot, color: 'from-amber-500 to-yellow-600', bgLight: 'bg-amber-50', textColor: 'text-amber-600' },
+  { id: 'fuel', label: 'דלק נגמר', desc: 'נשארת בלי דלק בדרך', icon: Fuel, color: 'from-yellow-500 to-lime-600', bgLight: 'bg-yellow-50', textColor: 'text-yellow-700' },
+  { id: 'electrical', label: 'נעילה ברכב', desc: 'המפתחות נשארו בפנים', icon: Lock, color: 'from-purple-500 to-violet-600', bgLight: 'bg-purple-50', textColor: 'text-purple-600' },
+  { id: 'other', label: 'אחר', desc: 'כל מקרה אחר — נעזור', icon: HelpCircle, color: 'from-gray-500 to-slate-600', bgLight: 'bg-gray-50', textColor: 'text-gray-600' },
 ];
 
 const eventTypeLabels: Record<string, string> = {
@@ -90,6 +230,20 @@ export default function SosPage() {
   const [location, setLocation] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+  const [documentOfferEventId, setDocumentOfferEventId] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState('');
+  const [showMapPicker, setShowMapPicker] = useState(false);
+
+  // Map pin picked — store coords and resolve a Hebrew address in the background
+  const handleMapPick = useCallback((lat: number, lon: number) => {
+    setLatitude(lat);
+    setLongitude(lon);
+    setLocation(`${lat.toFixed(5)}, ${lon.toFixed(5)}`);
+    fetch(`/api/geo/reverse?lat=${lat}&lon=${lon}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(data => { if (data?.address) setLocation(data.address); })
+      .catch(() => {});
+  }, []);
   const [events, setEvents] = useState<SosEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -126,24 +280,50 @@ export default function SosPage() {
     loadData();
   }, []);
 
+  const GEO_DENIED_HELP =
+    'הרשאת המיקום חסומה. כך מפעילים: לחצו על סמל המנעול/ההגדרות ליד כתובת האתר ← הרשאות ← מיקום ← אפשר. אם עדיין לא עובד — בהגדרות הטלפון: אפליקציות ← הדפדפן ← הרשאות ← מיקום ← אפשר, וודאו ששירותי המיקום (GPS) דלוקים.';
+
   const handleDetectLocation = async () => {
     setGeoLocating(true);
+    setSubmitError('');
     if ('geolocation' in navigator) {
+      // Detect a hard "denied" state up-front so we can show instructions
+      // instead of failing silently (the browser won't re-prompt when denied).
+      try {
+        if (navigator.permissions?.query) {
+          const perm = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
+          if (perm.state === 'denied') {
+            setSubmitError(GEO_DENIED_HELP);
+            setGeoLocating(false);
+            return;
+          }
+        }
+      } catch { /* permissions API unavailable — fall through to getCurrentPosition */ }
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
-          setLocation(`${position.coords.latitude.toFixed(5)}, ${position.coords.longitude.toFixed(5)}`);
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          setLatitude(lat);
+          setLongitude(lon);
+          // Coordinates as a fallback until (or unless) the address lookup succeeds
+          setLocation(`${lat.toFixed(5)}, ${lon.toFixed(5)}`);
+          try {
+            const r = await fetch(`/api/geo/reverse?lat=${lat}&lon=${lon}`);
+            if (r.ok) {
+              const data = await r.json();
+              if (data.address) setLocation(data.address);
+            }
+          } catch { /* keep coordinates fallback */ }
           setGeoLocating(false);
         },
-        () => {
-          setSubmitMessage('לא ניתן להשיג מיקום. אנא הזן ידנית.');
+        (err) => {
+          setSubmitError(err?.code === 1 ? GEO_DENIED_HELP : 'לא הצלחנו לזהות מיקום כרגע — נסו שוב בעוד רגע או הזינו כתובת ידנית.');
           setGeoLocating(false);
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
-      setSubmitMessage('שירותי מיקום לא זמינים בדפדפן שלך.');
+      setSubmitError('שירותי מיקום לא זמינים בדפדפן שלך.');
       setGeoLocating(false);
     }
   };
@@ -154,6 +334,7 @@ export default function SosPage() {
       return;
     }
     setSubmitting(true);
+    setSubmitError('');
     try {
       const res = await fetch('/api/sos', {
         method: 'POST',
@@ -163,26 +344,43 @@ export default function SosPage() {
           eventType: selectedType,
           description,
           location,
-          latitude,
-          longitude,
+          // Zod rejects null — omit coords entirely when GPS wasn't detected
+          latitude: latitude ?? undefined,
+          longitude: longitude ?? undefined,
         }),
       });
       const data = await res.json();
       if (res.ok) {
         setSubmitMessage('הדיווח נשלח בהצלחה! נחזור אליכם בהקדם.');
+        // Open WhatsApp to the dispatch center with the report details;
+        // the user then attaches live location (no browser permissions needed).
+        const etLabel = eventTypes.find(t => t.id === selectedType)?.label || 'אירוע חירום';
+        const waLines = [
+          'שלום, אני זקוק לעזרה בדרך 🚨',
+          `סוג האירוע: ${etLabel}`,
+          description.trim() ? `תיאור: ${description.trim()}` : '',
+          location.trim() ? `מיקום: ${location.trim()}` : '',
+          'מצרף את המיקום המדויק שלי:',
+        ].filter(Boolean);
+        const waUrl = `https://wa.me/972533131310?text=${encodeURIComponent(waLines.join('\n'))}`;
+        setTimeout(() => { window.location.href = waUrl; }, 600);
+        setDocumentOfferEventId(data.event?.id || null);
         setShowReportModal(false);
         resetForm();
+        if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
         const evRes = await fetch('/api/sos');
         const evData = await evRes.json();
         if (evData.events) setEvents(evData.events);
+        setTimeout(() => setSubmitMessage(''), 12000);
+      } else if (res.status === 401) {
+        window.location.href = '/auth/login';
       } else {
-        setSubmitMessage(data.error || 'שגיאה בשליחת הדיווח');
+        setSubmitError(data.error || 'שגיאה בשליחת הדיווח. אנא נסה שוב.');
       }
     } catch {
-      setSubmitMessage('שגיאת חיבור');
+      setSubmitError('שגיאת חיבור - בדוק חיבור אינטרנט ונסה שוב.');
     }
     setSubmitting(false);
-    setTimeout(() => setSubmitMessage(''), 5000);
   };
 
   const resetForm = () => {
@@ -225,9 +423,9 @@ export default function SosPage() {
   const resolvedEvents = events.filter(e => e.status === 'resolved');
 
   /* ── Coming Soon gate ── */
-  if (!GARAGES_ENABLED) {
+  if (!SOS_ENABLED) {
     return (
-      <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+      <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
         {/* Header */}
         <div className="bg-gradient-to-l from-red-600 to-red-700 text-white px-4 pt-6 pb-8 rounded-b-3xl">
           <h1 className="text-2xl font-bold">SOS חירום</h1>
@@ -245,7 +443,7 @@ export default function SosPage() {
 
   /* ── Main render ── */
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
       {/* Header */}
       <div className="bg-gradient-to-l from-red-600 to-red-700 text-white px-4 pt-6 pb-10 rounded-b-3xl relative overflow-hidden">
         {/* Decorative circles */}
@@ -274,52 +472,83 @@ export default function SosPage() {
         </div>
       )}
 
+      {/* Follow-up: offer insurance documentation for the event just reported */}
+      {documentOfferEventId && (
+        <div className="mx-4 mt-4 p-4 rounded-2xl bg-white border border-teal-200 shadow-sm">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Shield size={20} className="text-teal-600" />
+              </div>
+              <div>
+                <p className="font-bold text-[#1B4E8A] text-sm mb-0.5">לתעד את האירוע לתביעת ביטוח?</p>
+                <p className="text-xs text-gray-500">מומלץ לצלם את הזירה עכשיו — נדריך אותך שלב-שלב</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setDocumentOfferEventId(null)}
+              className="p-1.5 hover:bg-gray-100 rounded-lg flex-shrink-0"
+              aria-label="סגור הצעת תיעוד"
+            >
+              <X size={16} className="text-gray-400" />
+            </button>
+          </div>
+          <a
+            href={`/user/sos/document?eventId=${documentOfferEventId}`}
+            className="mt-3 w-full bg-teal-600 text-white font-bold text-sm py-3 px-4 rounded-xl hover:bg-teal-700 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+          >
+            <Shield size={16} />
+            התחל תיעוד לביטוח
+          </a>
+        </div>
+      )}
+
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
           <Loader2 size={32} className="animate-spin text-red-500" />
           <p className="text-gray-400 text-sm">טוען נתונים...</p>
         </div>
       ) : (
-        <div className="px-4 -mt-4 space-y-5">
+        <div className={`px-4 space-y-5 ${submitMessage || documentOfferEventId ? 'mt-4' : '-mt-4'}`}>
 
           {/* ═══ Emergency Action Card ═══ */}
           <div className="bg-white rounded-3xl shadow-lg overflow-hidden border border-red-100">
             <div className="p-6 text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-rose-600 rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg shadow-red-200">
-                <AlertTriangle size={36} className="text-white" />
-              </div>
-              <h2 className="text-xl font-bold text-[#1e3a5f] mb-2">צריך עזרה דחופה?</h2>
+              <h2 className="text-xl font-bold text-[#1B4E8A] mb-1">צריך עזרה דחופה?</h2>
               <p className="text-gray-500 text-sm mb-6">דווחו על אירוע ונשלח לכם עזרה בהקדם</p>
-              <button
-                onClick={() => { setShowReportModal(true); resetForm(); }}
-                className="w-full bg-gradient-to-l from-red-600 to-red-500 text-white font-bold text-lg py-4 px-6 rounded-2xl shadow-lg shadow-red-200 hover:shadow-xl hover:from-red-700 hover:to-red-600 transition-all active:scale-[0.98] flex items-center justify-center gap-3"
+              {/* Big circular SOS button — Stitch design */}
+              <div className="relative mx-auto mb-6 w-48 h-48">
+                <span className="absolute inset-0 rounded-full bg-red-500/20 animate-ping" style={{ animationDuration: '2.2s' }} />
+                <span className="absolute inset-2 rounded-full bg-red-500/10" />
+                <button
+                  onClick={() => { setShowReportModal(true); resetForm(); }}
+                  className="absolute inset-4 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white font-bold shadow-xl shadow-red-300 hover:from-red-600 hover:to-red-700 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
+                >
+                  <AlertTriangle size={40} />
+                  <span className="text-base leading-tight px-4">דווח על<br />אירוע חירום</span>
+                </button>
+              </div>
+              <a
+                href="/user/sos/document"
+                className="mt-3 w-full bg-gray-50 border-2 border-gray-200 rounded-2xl py-3 px-6 hover:bg-teal-50 hover:border-teal-300 transition-all active:scale-[0.98] flex items-center justify-center gap-3"
               >
-                <AlertTriangle size={22} />
-                דווח על אירוע חירום
-              </button>
+                <Shield size={22} className="text-teal-600 flex-shrink-0" />
+                <span className="text-right">
+                  <span className="block font-bold text-base text-[#1B4E8A]">תיעוד אירוע לביטוח</span>
+                  <span className="block text-xs text-gray-500">בלי דיווח למוקד · איסוף ראיות מודרך</span>
+                </span>
+              </a>
             </div>
 
             {/* Quick actions strip */}
-            <div className="border-t border-gray-100 grid grid-cols-2 divide-x divide-gray-100">
+            <div className="border-t border-gray-100">
               <a
                 href="tel:0533131310"
-                className="flex items-center justify-center gap-2 py-4 text-sm font-semibold text-[#1e3a5f] hover:bg-gray-50 transition-colors active:bg-gray-100"
+                className="flex items-center justify-center gap-2 py-4 text-sm font-semibold text-[#1B4E8A] hover:bg-gray-50 transition-colors active:bg-gray-100"
               >
                 <PhoneCall size={18} className="text-red-500" />
                 <span>חייג למוקד</span>
               </a>
-              <button
-                onClick={handleDetectLocation}
-                disabled={geoLocating}
-                className="flex items-center justify-center gap-2 py-4 text-sm font-semibold text-[#1e3a5f] hover:bg-gray-50 transition-colors active:bg-gray-100 disabled:opacity-50"
-              >
-                {geoLocating ? (
-                  <Loader2 size={18} className="animate-spin text-teal-600" />
-                ) : (
-                  <Navigation size={18} className="text-teal-600" />
-                )}
-                <span>{geoLocating ? 'מאתר...' : 'זהה מיקום'}</span>
-              </button>
             </div>
 
             {/* Show detected location */}
@@ -335,7 +564,7 @@ export default function SosPage() {
           {/* ═══ Active Events ═══ */}
           {activeEvents.length > 0 && (
             <div>
-              <h2 className="text-lg font-bold text-[#1e3a5f] mb-3 flex items-center gap-2">
+              <h2 className="text-lg font-bold text-[#1B4E8A] mb-3 flex items-center gap-2">
                 <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                 אירועים פעילים ({activeEvents.length})
               </h2>
@@ -360,7 +589,7 @@ export default function SosPage() {
                               <EventIcon size={20} className="text-red-600" />
                             </div>
                             <div>
-                              <p className="font-bold text-[#1e3a5f] text-sm">{translateEventType(event.eventType)}</p>
+                              <p className="font-bold text-[#1B4E8A] text-sm">{translateEventType(event.eventType)}</p>
                               <p className="text-xs text-gray-400 mt-0.5">
                                 {event.vehicle?.nickname} • {event.vehicle?.licensePlate}
                               </p>
@@ -446,7 +675,7 @@ export default function SosPage() {
 
           {/* ═══ Event History ═══ */}
           <div>
-            <h2 className="text-lg font-bold text-[#1e3a5f] mb-3 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-[#1B4E8A] mb-3 flex items-center gap-2">
               <Clock size={18} className="text-gray-400" />
               היסטוריית אירועים
             </h2>
@@ -456,7 +685,7 @@ export default function SosPage() {
                 <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
                   <CheckCircle2 size={28} className="text-green-500" />
                 </div>
-                <p className="font-semibold text-[#1e3a5f] mb-1">הכל בסדר!</p>
+                <p className="font-semibold text-[#1B4E8A] mb-1">הכל בסדר!</p>
                 <p className="text-gray-400 text-sm">אין אירועי חירום קודמים</p>
               </div>
             ) : (
@@ -467,7 +696,8 @@ export default function SosPage() {
                   return (
                     <div
                       key={e.id}
-                      className={`bg-white rounded-2xl p-4 shadow-sm border transition-colors ${
+                      onClick={() => { if (typeof window !== "undefined") window.location.href = "/user/sos/" + e.id; }}
+                      className={`cursor-pointer hover:shadow-md bg-white rounded-2xl p-4 shadow-sm border transition-colors ${
                         e.status === 'resolved' ? 'border-green-100' : 'border-gray-100'
                       }`}
                     >
@@ -478,7 +708,7 @@ export default function SosPage() {
                           <EventIcon size={18} className={e.status === 'resolved' ? 'text-green-600' : 'text-red-500'} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm text-[#1e3a5f]">{translateEventType(e.eventType)}</p>
+                          <p className="font-semibold text-sm text-[#1B4E8A]">{translateEventType(e.eventType)}</p>
                           <p className="text-xs text-gray-400 mt-0.5 truncate">
                             {e.vehicle?.licensePlate || 'ללא רכב'} • {new Date(e.createdAt).toLocaleDateString('he-IL')} {new Date(e.createdAt).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
                           </p>
@@ -496,10 +726,10 @@ export default function SosPage() {
 
           {/* ═══ Emergency Numbers Reference ═══ */}
           <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <h3 className="text-sm font-bold text-[#1e3a5f] mb-3">מספרי חירום</h3>
+            <h3 className="text-sm font-bold text-[#1B4E8A] mb-3">מספרי חירום</h3>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: 'מוקד AutoLog', number: '053-313-1310', icon: Shield },
+                { label: 'ידידים', number: '053-313-1310', icon: Shield },
                 { label: 'משטרה', number: '100', icon: Phone },
                 { label: 'מד"א', number: '101', icon: Phone },
                 { label: 'כיבוי אש', number: '102', icon: Phone },
@@ -511,7 +741,7 @@ export default function SosPage() {
                 >
                   <item.icon size={16} className="text-red-500 flex-shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold text-[#1e3a5f] truncate">{item.label}</p>
+                    <p className="text-xs font-semibold text-[#1B4E8A] truncate">{item.label}</p>
                     <p className="text-xs text-gray-400 font-mono" dir="ltr">{item.number}</p>
                   </div>
                 </a>
@@ -533,20 +763,28 @@ export default function SosPage() {
           {/* Modal content */}
           <div className="relative w-full sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
             {/* Modal header */}
-            <div className="sticky top-0 bg-white z-10 px-5 pt-5 pb-3 border-b border-gray-100 rounded-t-3xl">
+            <div className="sticky top-0 z-10 px-5 pt-5 pb-4 rounded-t-3xl bg-gradient-to-br from-red-500 to-rose-600">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-[#1e3a5f]">דיווח אירוע חירום</h2>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle size={22} className="text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">דיווח אירוע חירום</h2>
+                    <p className="text-xs text-white/85">נאתר אותך ונשלח עזרה בהקדם</p>
+                  </div>
+                </div>
                 <button
                   onClick={() => setShowReportModal(false)}
-                  className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                  className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
                 >
-                  <X size={16} className="text-gray-500" />
+                  <X size={16} className="text-white" />
                 </button>
               </div>
               {/* Steps indicator */}
-              <div className="flex items-center gap-2 mt-3">
-                <div className={`flex-1 h-1 rounded-full ${step >= 0 ? 'bg-red-500' : 'bg-gray-200'}`} />
-                <div className={`flex-1 h-1 rounded-full ${step >= 1 ? 'bg-red-500' : 'bg-gray-200'}`} />
+              <div className="flex items-center gap-2 mt-4">
+                <div className={`flex-1 h-1 rounded-full ${step >= 0 ? 'bg-white' : 'bg-white/30'}`} />
+                <div className={`flex-1 h-1 rounded-full ${step >= 1 ? 'bg-white' : 'bg-white/30'}`} />
               </div>
             </div>
 
@@ -555,7 +793,7 @@ export default function SosPage() {
                 <div className="space-y-5">
                   {/* Vehicle select */}
                   <div>
-                    <label className="text-sm font-bold text-[#1e3a5f] mb-2 block">בחר את הרכב</label>
+                    <label className="text-sm font-bold text-[#1B4E8A] mb-2 block">בחר את הרכב</label>
                     <select
                       value={selectedVehicleId || ''}
                       onChange={(e) => setSelectedVehicleId(e.target.value)}
@@ -598,24 +836,28 @@ export default function SosPage() {
 
                   {/* Event type grid */}
                   <div>
-                    <label className="text-sm font-bold text-[#1e3a5f] mb-3 block">מה קרה?</label>
-                    <div className="grid grid-cols-3 gap-3">
+                    <label className="text-sm font-bold text-[#1B4E8A] mb-3 block">מה קרה?</label>
+                    <div className="space-y-3">
                       {eventTypes.map(t => {
                         const isSelected = selectedType === t.id;
                         return (
                           <button
                             key={t.id}
                             onClick={() => { setSelectedType(t.id); setStep(1); }}
-                            className={`p-4 rounded-2xl text-center transition-all border-2 ${
+                            className={`w-full flex items-center gap-4 p-4 rounded-2xl text-right transition-all border-2 shadow-sm ${
                               isSelected
                                 ? 'border-red-500 bg-red-50 shadow-md'
-                                : 'border-gray-100 bg-white hover:border-red-200 hover:bg-red-50/30'
+                                : 'border-gray-100 bg-white hover:border-red-200 hover:shadow-md'
                             }`}
                           >
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-2 ${t.bgLight}`}>
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${t.bgLight}`}>
                               <t.icon size={24} className={t.textColor} />
                             </div>
-                            <p className="text-xs font-bold text-[#1e3a5f]">{t.label}</p>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-bold text-base text-[#1B4E8A]">{t.label}</p>
+                              <p className="text-xs text-gray-500">{t.desc}</p>
+                            </div>
+                            <ChevronLeft size={18} className="text-gray-300 flex-shrink-0" />
                           </button>
                         );
                       })}
@@ -636,7 +878,7 @@ export default function SosPage() {
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${et?.bgLight || 'bg-gray-100'}`}>
                             <Icon size={16} className={et?.textColor || 'text-gray-600'} />
                           </div>
-                          <span className="text-sm font-bold text-[#1e3a5f]">{et?.label}</span>
+                          <span className="text-sm font-bold text-[#1B4E8A]">{et?.label}</span>
                           <button
                             onClick={() => setStep(0)}
                             className="mr-auto text-xs text-red-500 font-semibold hover:underline"
@@ -650,7 +892,7 @@ export default function SosPage() {
 
                   {/* Description */}
                   <div>
-                    <label className="text-sm font-bold text-[#1e3a5f] mb-2 block">תיאור האירוע</label>
+                    <label className="text-sm font-bold text-[#1B4E8A] mb-2 block">תיאור האירוע</label>
                     <div className="relative">
                       <textarea
                         placeholder="ספר בקצרה מה קרה..."
@@ -667,17 +909,7 @@ export default function SosPage() {
 
                   {/* Location */}
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-bold text-[#1e3a5f]">מיקום</label>
-                      <button
-                        onClick={handleDetectLocation}
-                        disabled={geoLocating}
-                        className="flex items-center gap-1.5 text-xs font-semibold text-teal-600 hover:text-teal-700 disabled:opacity-50 px-3 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 transition-colors"
-                      >
-                        {geoLocating ? <Loader2 size={12} className="animate-spin" /> : <Navigation size={12} />}
-                        {geoLocating ? 'מאתר...' : 'זהה GPS'}
-                      </button>
-                    </div>
+                    <label className="text-sm font-bold text-[#1B4E8A] mb-2 block">מיקום (לא חובה)</label>
                     <div className="relative">
                       <input
                         type="text"
@@ -688,13 +920,13 @@ export default function SosPage() {
                       />
                       <MapPin size={16} className="absolute top-3.5 right-3 text-gray-400" />
                     </div>
-                    {latitude && longitude && (
-                      <p className="text-[11px] text-teal-600 mt-1.5 flex items-center gap-1">
-                        <CheckCircle2 size={12} />
-                        מיקום GPS זוהה בהצלחה
-                      </p>
-                    )}
                   </div>
+
+                  {submitError && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 font-medium text-center">
+                      {submitError}
+                    </div>
+                  )}
 
                   {/* Actions */}
                   <div className="flex gap-3 pt-2">
@@ -717,6 +949,9 @@ export default function SosPage() {
                       {submitting ? 'שולח...' : 'שלח דיווח חירום'}
                     </button>
                   </div>
+                  <p className="text-[11px] text-gray-400 text-center">
+                    לאחר השליחה ייפתח וואטסאפ מול המוקד עם פרטי האירוע — לחצו על סמל הצירוף (📎) ← מיקום ← המיקום הנוכחי
+                  </p>
                 </div>
               )}
             </div>

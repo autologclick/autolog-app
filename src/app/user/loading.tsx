@@ -1,6 +1,6 @@
 export default function UserLoading() {
   return (
-    <div className="min-h-screen bg-[#fef7ed] p-4 md:p-6 animate-fade-in">
+    <div className="min-h-screen bg-[#F3F6FA] p-4 md:p-6 animate-fade-in">
       {/* Header skeleton */}
       <div className="flex items-center justify-between mb-6">
         <div className="space-y-2">

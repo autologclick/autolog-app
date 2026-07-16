@@ -124,7 +124,7 @@ export default function SecurityCenterPage() {
     : '';
 
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
       <PageHeader title="אבטחה" backUrl="/user/profile" />
 
       <div className="max-w-2xl mx-auto px-4 space-y-6 pt-6">

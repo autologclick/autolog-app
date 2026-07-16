@@ -47,6 +47,8 @@ const schema = z.object({
   // Optional: company name for insurance renewals
   insuranceCompany: z.string().max(100).optional(),
   policyNumber: z.string().max(100).optional(),
+  // Optional: user-edited next expiry (overrides the computed one)
+  overrideExpiryDate: z.string().optional(),
 });
 
 // Human-readable labels for notifications/messages
@@ -116,6 +118,7 @@ export async function POST(
       select: {
         id: true, userId: true, nickname: true,
         manufacturer: true, model: true, licensePlate: true, mileage: true,
+        testExpiryDate: true,
       },
     });
     if (!vehicle) return errorResponse(NOT_FOUND.VEHICLE, 404);
@@ -131,8 +134,25 @@ export async function POST(
     const vehicleUpdate: Record<string, unknown> = {};
     let newExpiryDate: Date | null = null;
 
+    // User-edited next expiry wins over the computed one (when valid)
+    const overrideDate = data.overrideExpiryDate ? new Date(data.overrideExpiryDate) : null;
+    const hasOverride = !!(overrideDate && !isNaN(overrideDate.getTime()));
+
     if (data.reminderType === 'test') {
-      newExpiryDate = addYears(data.completedDate, 1);
+      // תוקף הטסט בישראל מעוגן לתאריך התפוגה הקיים — לא לתאריך הביצוע בפועל.
+      // תוקף חדש = תאריך התפוגה הקיים + שנה. אם אין תאריך קיים — לפי תאריך הביצוע.
+      if (hasOverride) {
+        newExpiryDate = overrideDate;
+      } else if (vehicle.testExpiryDate) {
+        newExpiryDate = addYears(vehicle.testExpiryDate.toISOString(), 1);
+        // רכב שעמד בלי טסט תקופה ארוכה: מוסיפים שנים עד שהתוקף עתידי
+        const completed = new Date(data.completedDate);
+        while (newExpiryDate <= completed) {
+          newExpiryDate.setFullYear(newExpiryDate.getFullYear() + 1);
+        }
+      } else {
+        newExpiryDate = addYears(data.completedDate, 1);
+      }
       vehicleUpdate.testExpiryDate = newExpiryDate;
       vehicleUpdate.testDate = new Date(data.completedDate);
       vehicleUpdate.testStatus = 'valid';
@@ -140,7 +160,7 @@ export async function POST(
       if (data.garageName) vehicleUpdate.testStation = data.garageName;
       if (data.mileage) vehicleUpdate.testMileageAtTest = data.mileage;
     } else if (data.reminderType === 'compulsory_insurance') {
-      newExpiryDate = addYears(data.completedDate, 1);
+      newExpiryDate = hasOverride ? overrideDate : addYears(data.completedDate, 1);
       vehicleUpdate.compulsoryInsuranceExpiry = newExpiryDate;
       vehicleUpdate.compulsoryInsuranceStart = new Date(data.completedDate);
       vehicleUpdate.compulsoryInsuranceStatus = 'valid';
@@ -148,7 +168,7 @@ export async function POST(
       if (data.insuranceCompany) vehicleUpdate.compulsoryInsuranceCompany = data.insuranceCompany;
       if (data.policyNumber) vehicleUpdate.compulsoryInsurancePolicyNumber = data.policyNumber;
     } else if (data.reminderType === 'comprehensive_insurance') {
-      newExpiryDate = addYears(data.completedDate, 1);
+      newExpiryDate = hasOverride ? overrideDate : addYears(data.completedDate, 1);
       vehicleUpdate.insuranceExpiry = newExpiryDate;
       vehicleUpdate.insuranceStart = new Date(data.completedDate);
       vehicleUpdate.insuranceStatus = 'valid';

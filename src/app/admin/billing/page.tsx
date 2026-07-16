@@ -130,11 +130,11 @@ export default function AdminBillingPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] border-2 border-[#1e3a5f] rounded-lg flex items-center justify-center">
-            <Receipt size={20} className="text-[#1e3a5f]" />
+          <div className="w-10 h-10 bg-[#F3F6FA] border-2 border-[#1B4E8A] rounded-lg flex items-center justify-center">
+            <Receipt size={20} className="text-[#1B4E8A]" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">מעקב חיוב מוסכים</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1B4E8A]">מעקב חיוב מוסכים</h1>
             <p className="text-sm text-gray-500">סיכום אבחונים ועלויות לפי מוסך</p>
           </div>
         </div>
@@ -164,13 +164,13 @@ export default function AdminBillingPage() {
       {/* Summary Stats */}
       {!loading && filtered.length > 0 && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <Card className="border-t-4 border-t-[#1e3a5f]">
+          <Card className="border-t-4 border-t-[#1B4E8A]">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#1e3a5f] bg-opacity-10 rounded-lg flex items-center justify-center">
-                <BarChart3 size={18} className="text-[#1e3a5f]" />
+              <div className="w-10 h-10 bg-[#1B4E8A] bg-opacity-10 rounded-lg flex items-center justify-center">
+                <BarChart3 size={18} className="text-[#1B4E8A]" />
               </div>
               <div>
-                <div className="text-2xl font-bold text-[#1e3a5f]">{totalAll}</div>
+                <div className="text-2xl font-bold text-[#1B4E8A]">{totalAll}</div>
                 <div className="text-xs text-gray-500">סה״כ אבחונים</div>
               </div>
             </div>
@@ -186,13 +186,13 @@ export default function AdminBillingPage() {
               </div>
             </div>
           </Card>
-          <Card className="border-t-4 border-t-[#0d9488]">
+          <Card className="border-t-4 border-t-[#2E77D0]">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
-                <ShekelSign size={18} className="text-[#0d9488]" />
+                <ShekelSign size={18} className="text-[#2E77D0]" />
               </div>
               <div>
-                <div className="text-2xl font-bold text-[#0d9488]">
+                <div className="text-2xl font-bold text-[#2E77D0]">
                   ₪{garageSummaries.reduce((sum, g) => sum + g.totalCost, 0).toLocaleString()}
                 </div>
                 <div className="text-xs text-gray-500">סה״כ עלויות</div>
@@ -215,12 +215,12 @@ export default function AdminBillingPage() {
 
       {/* AI Billing Insights */}
       {!loading && garageSummaries.length > 0 && (
-        <Card className="bg-gradient-to-r from-[#fef7ed] to-white border-r-4 border-r-[#0d9488]">
+        <Card className="bg-gradient-to-r from-[#F3F6FA] to-white border-r-4 border-r-[#2E77D0]">
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-[#0d9488] bg-opacity-10 rounded-lg flex items-center justify-center">
-              <Brain size={18} className="text-[#0d9488]" />
+            <div className="w-8 h-8 bg-[#2E77D0] bg-opacity-10 rounded-lg flex items-center justify-center">
+              <Brain size={18} className="text-[#2E77D0]" />
             </div>
-            <h2 className="text-lg font-bold text-[#1e3a5f]">תובנות AI לחיוב</h2>
+            <h2 className="text-lg font-bold text-[#1B4E8A]">תובנות AI לחיוב</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {/* Top garage insight */}
@@ -350,7 +350,7 @@ export default function AdminBillingPage() {
                           const workCost = i.workPerformed?.reduce((sum, w) => sum + (w.cost || 0), 0) || 0;
                           const displayCost = i.cost || workCost;
                           return (
-                            <tr key={i.id} className="border-b border-gray-50 hover:bg-[#fef7ed]/30 transition">
+                            <tr key={i.id} className="border-b border-gray-50 hover:bg-[#F3F6FA]/30 transition">
                               <td className="py-2 px-2">
                                 <div className="flex items-center gap-1">
                                   <Car size={12} className="text-gray-400" />

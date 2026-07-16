@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     type: 'article',
     locale: 'he_IL',
     siteName: 'AutoLog',
+    images: [{ url: '/og/help.png', width: 1200, height: 630, alt: 'מרכז העזרה של אוטולוג' }],
   },
 };
 
@@ -271,9 +272,9 @@ const GUIDES: Guide[] = [
 
 export default function HelpPage() {
   return (
-    <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
       {/* Header */}
-      <header className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="hover:opacity-80 transition">
             <Logo size="sm" />
@@ -286,7 +287,7 @@ export default function HelpPage() {
       </header>
 
       {/* Hero */}
-      <section className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white pb-16 pt-8">
+      <section className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white pb-16 pt-8">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
             <BookOpen className="w-8 h-8" />
@@ -301,7 +302,7 @@ export default function HelpPage() {
       {/* Table of Contents */}
       <section className="max-w-3xl mx-auto px-4 sm:px-6 -mt-8 mb-12">
         <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
-          <h2 className="flex items-center gap-2 text-base font-bold text-[#1e3a5f] mb-4">
+          <h2 className="flex items-center gap-2 text-base font-bold text-[#1B4E8A] mb-4">
             <BookOpen size={18} />
             במדריך הזה
           </h2>
@@ -310,7 +311,7 @@ export default function HelpPage() {
               <li key={g.id}>
                 <a
                   href={`#${g.id}`}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#fef7ed] transition group"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F3F6FA] transition group"
                 >
                   <g.icon size={14} className="text-teal-600 flex-shrink-0" />
                   <span className="text-gray-700 group-hover:text-teal-700 truncate">{g.title}</span>
@@ -336,7 +337,7 @@ export default function HelpPage() {
                   <guide.icon size={24} className="text-teal-600" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-xl sm:text-2xl font-extrabold text-[#1e3a5f] mb-1 leading-tight">
+                  <h2 className="text-xl sm:text-2xl font-extrabold text-[#1B4E8A] mb-1 leading-tight">
                     {guide.title}
                   </h2>
                   <p className="text-sm text-gray-500 mb-2 leading-relaxed">{guide.description}</p>
@@ -352,7 +353,7 @@ export default function HelpPage() {
             <ol className="px-6 py-6 space-y-5">
               {guide.steps.map((step, i) => (
                 <li key={i} className="flex gap-4">
-                  <div className="flex-shrink-0 w-7 h-7 bg-[#fef7ed] border-2 border-teal-600 rounded-full flex items-center justify-center text-sm font-bold text-teal-700">
+                  <div className="flex-shrink-0 w-7 h-7 bg-[#F3F6FA] border-2 border-teal-600 rounded-full flex items-center justify-center text-sm font-bold text-teal-700">
                     {i + 1}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -390,7 +391,7 @@ export default function HelpPage() {
 
         {/* Final CTA — Direct contact methods (works for both logged-in
             and anonymous visitors — no auth required) */}
-        <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] rounded-3xl p-6 sm:p-10 text-white">
+        <div className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] rounded-3xl p-6 sm:p-10 text-white">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-extrabold mb-3">לא מצאת תשובה?</h2>
             <p className="text-white/80 max-w-md mx-auto leading-relaxed">
@@ -401,7 +402,7 @@ export default function HelpPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Phone */}
             <a
-              href="tel:0543161610"
+              href="tel:0535266741"
               className="bg-white/10 hover:bg-white/15 transition rounded-2xl p-4 text-center border border-white/15"
             >
               <div className="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center mx-auto mb-2">
@@ -409,12 +410,12 @@ export default function HelpPage() {
               </div>
               <div className="font-bold mb-0.5">טלפון</div>
               <div className="text-xs text-white/70 mb-2">א׳-ה׳ 08:00-18:00</div>
-              <div className="text-sm font-semibold" dir="ltr">054-316-1610</div>
+              <div className="text-sm font-semibold" dir="ltr">053-526-6741</div>
             </a>
 
             {/* WhatsApp */}
             <a
-              href="https://wa.me/972543161610"
+              href="https://wa.me/972535266741"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-green-500/20 hover:bg-green-500/30 transition rounded-2xl p-4 text-center border border-green-400/30"
@@ -424,7 +425,7 @@ export default function HelpPage() {
               </div>
               <div className="font-bold mb-0.5">וואטסאפ</div>
               <div className="text-xs text-white/70 mb-2">מענה מהיר בצ׳אט</div>
-              <div className="text-sm font-semibold" dir="ltr">054-316-1610</div>
+              <div className="text-sm font-semibold" dir="ltr">053-526-6741</div>
             </a>
 
             {/* Email */}
@@ -467,7 +468,7 @@ export default function HelpPage() {
       />
 
       {/* Footer */}
-      <footer className="bg-[#1e3a5f] text-white/60 py-6 text-center text-sm">
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm">
         <p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p>
       </footer>
     </div>

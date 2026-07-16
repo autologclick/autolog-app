@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
 
 const post = getPostBySlug('mechoney-bdika-cholon')!;
 
@@ -11,14 +12,24 @@ export const metadata: Metadata = {
   description: post.description,
   keywords: post.keywords,
   alternates: { canonical: `/blog/${post.slug}` },
-  openGraph: { title: post.title, description: post.description, url: `https://autolog.click/blog/${post.slug}`, type: 'article', publishedTime: post.publishedAt, authors: [post.author], locale: 'he_IL', siteName: 'AutoLog' },
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    url: `https://autolog.click/blog/${post.slug}`,
+    type: 'article',
+    publishedTime: post.publishedAt,
+    authors: [post.author],
+    locale: 'he_IL',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
+  },
   twitter: { card: 'summary_large_image', title: post.title, description: post.description },
 };
 
 export default function BlogPostPage() {
   return (
-    <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
-      <header className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white">
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
           <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1"><ChevronRight size={14} />חזרה לבלוג</Link>
@@ -27,7 +38,7 @@ export default function BlogPostPage() {
 
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] leading-tight mb-4">{post.title}</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] leading-tight mb-4">{post.title}</h1>
 
         <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
           <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
@@ -40,9 +51,9 @@ export default function BlogPostPage() {
             חולון ובת ים שייכות לאזור גוש דן הצפוף, ובהן פועלים מספר מכוני בדיקה לרכב מקצועיים. אם אתם תושבי חולון, בת ים, אזור או רמת גן — המאמר ירכז עבורכם את כל המכונים, המחירים והטיפים.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מכוני בדיקה מומלצים בחולון</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">מכוני בדיקה מומלצים בחולון</h2>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">1. סיטי סנטר טסט חולון</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">1. סיטי סנטר טסט חולון</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>מיקום:</strong> מרכז העיר חולון</li>
             <li><strong>מחיר:</strong> 640-830 ש&quot;ח</li>
@@ -50,22 +61,22 @@ export default function BlogPostPage() {
             <li><strong>שירות:</strong> בדיקות מהירות, חניה זמינה</li>
           </ul>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">2. קומפיוטסט חולון</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">2. קומפיוטסט חולון</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>מחיר:</strong> 680-870 ש&quot;ח</li>
             <li><strong>התמחות:</strong> רכבים פרטיים, מסחריים</li>
           </ul>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">3. דינמומטר חולון (סניף השלושה)</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">3. דינמומטר חולון (סניף השלושה)</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>מחיר:</strong> 640-820 ש&quot;ח</li>
             <li><strong>ותק:</strong> מעל 60 שנה</li>
           </ul>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">4. מכון בדיקה בת ים (אלטרנטיבה קרובה)</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">4. מכון בדיקה בת ים (אלטרנטיבה קרובה)</h3>
           <p>תושבי בת ים — שווה לבדוק גם את המכונים בבת ים, מחירים דומים.</p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה בחולון?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">כמה עולה בחולון?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li><strong>רכב פרטי:</strong> 650-870 ש&quot;ח</li>
             <li><strong>4x4 / SUV:</strong> 800-1,050 ש&quot;ח</li>
@@ -73,7 +84,7 @@ export default function BlogPostPage() {
           </ul>
           <p>חולון דומה במחירים לתל אביב — אבל המכונים פחות עמוסים.</p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">דברים מיוחדים לבדוק ברכב מחולון</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">דברים מיוחדים לבדוק ברכב מחולון</h2>
           <ol className="list-decimal list-inside space-y-2 mr-4">
             <li><strong>בלמים</strong> — תנועה צפופה במרכז גוש דן = שחיקה מואצת</li>
             <li><strong>מתלים</strong> — דרכים פגומות בחלק מהשכונות</li>
@@ -81,25 +92,25 @@ export default function BlogPostPage() {
             <li><strong>צבע</strong> — שמש חזקה מדהה את הצבע</li>
           </ol>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">המלצות</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">המלצות</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li><strong>הזול ביותר:</strong> סיטי סנטר טסט / דינמומטר (350 ש&quot;ח)</li>
             <li><strong>מקצועיות וותק:</strong> דינמומטר חולון</li>
             <li><strong>במרכז העיר:</strong> סיטי סנטר טסט</li>
           </ul>
 
-          <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
+          <div className="bg-[#1B4E8A] text-white rounded-2xl p-8 my-8 text-center">
             <h3 className="text-xl font-bold mb-3">תיעוד מלא לרכב</h3>
             <p className="text-white/80 mb-5 text-sm">AutoLog שומרת את הדוח, פוליסות וטיפולים — חינם.</p>
-            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg">הרשמה בחינם<ArrowLeft size={16} /></Link>
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-cream-500 text-white font-bold rounded-xl hover:bg-cream-600 transition shadow-lg">הרשמה בחינם<ArrowLeft size={16} /></Link>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">שאלות נפוצות</h2>
-          <h3 className="text-lg font-bold text-[#1e3a5f]">תושבי בת ים — לאן עדיף?</h3>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">שאלות נפוצות</h2>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">תושבי בת ים — לאן עדיף?</h3>
           <p>תלוי במיקום בבת ים. למרכז → סיטי סנטר חולון. לדרום בת ים → המכון המקומי.</p>
-          <h3 className="text-lg font-bold text-[#1e3a5f]">האם יש מכונים פתוחים מאוחר?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">האם יש מכונים פתוחים מאוחר?</h3>
           <p>רוב המכונים סוגרים ב-17:00. הזמינו תור עד 16:00.</p>
-          <h3 className="text-lg font-bold text-[#1e3a5f]">תושבי רמת גן — לחולון או לתל אביב?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">תושבי רמת גן — לחולון או לתל אביב?</h3>
           <p>חולון לרוב יותר זול ב-15-30 ש&quot;ח, ופחות עומס.</p>
         </div>
 
@@ -120,7 +131,7 @@ export default function BlogPostPage() {
         </div>
       </article>
 
-      <footer className="bg-[#1e3a5f] text-white/60 py-6 text-center text-sm"><p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p></footer>
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm"><p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p></footer>
     </div>
   );
 }

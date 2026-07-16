@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     });
 
     const user1 = await prisma.user.create({
-      data: { email: 'philip@autolog.co.il', passwordHash: hash, fullName: 'פיליפ בדיקה', role: 'user', phone: '054-316-1610', licenseNumber: 'D9876543' },
+      data: { email: 'philip@autolog.co.il', passwordHash: hash, fullName: 'פיליפ בדיקה', role: 'user', phone: '053-526-6741', licenseNumber: 'D9876543' },
     });
 
     const garageOwner = await prisma.user.create({

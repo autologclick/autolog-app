@@ -66,7 +66,7 @@ export function buildCSP(_nonce?: string): string {
     ['default-src', "'self'"],
     ['script-src', scriptSrc.join(' ')],
     ['style-src', "'self' 'unsafe-inline' https://fonts.googleapis.com"],
-    ['img-src', "'self' data: blob: https://*.vercel-storage.com https://*.public.blob.vercel-storage.com https://api.qrserver.com"],
+    ['img-src', "'self' data: blob: https://*.vercel-storage.com https://*.public.blob.vercel-storage.com https://api.qrserver.com https://*.tile.openstreetmap.org"],
     ['font-src', "'self' data: https://fonts.gstatic.com"],
     ['connect-src', connectSrc.join(' ')],
     ['worker-src', "'self' blob:"],

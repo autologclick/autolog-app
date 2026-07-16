@@ -188,7 +188,7 @@ export default function AdminApplicationsPage() {
             </p>
             <button
               onClick={() => setCredentialsInfo(null)}
-              className="w-full py-2.5 bg-[#1e3a5f] text-white font-bold rounded-xl hover:bg-[#162d4a] transition"
+              className="w-full py-2.5 bg-[#1B4E8A] text-white font-bold rounded-xl hover:bg-[#162d4a] transition"
             >
               סגור
             </button>
@@ -199,11 +199,11 @@ export default function AdminApplicationsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] border-2 border-[#1e3a5f] rounded-lg flex items-center justify-center">
-            <Building2 size={20} className="text-[#1e3a5f]" />
+          <div className="w-10 h-10 bg-[#F3F6FA] border-2 border-[#1B4E8A] rounded-lg flex items-center justify-center">
+            <Building2 size={20} className="text-[#1B4E8A]" />
           </div>
           <div>
-          <h1 className="text-2xl font-bold text-[#1e3a5f]">בקשות הצטרפות מוסכים</h1>
+          <h1 className="text-2xl font-bold text-[#1B4E8A]">בקשות הצטרפות מוסכים</h1>
           <p className="text-sm text-gray-500 mt-1">
             {counts.pending > 0
               ? `${counts.pending} בקשות ממתינות לאישור מתוך ${counts.total}`
@@ -272,14 +272,14 @@ export default function AdminApplicationsPage() {
                 {/* Summary Row */}
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : app.id)}
-                  className="w-full p-5 flex items-center gap-4 text-right hover:bg-[#fef7ed]/50 transition"
+                  className="w-full p-5 flex items-center gap-4 text-right hover:bg-[#F3F6FA]/50 transition"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl flex items-center justify-center flex-shrink-0">
                     <Building2 className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-[#1e3a5f] truncate">{app.garageName}</h3>
+                      <h3 className="font-bold text-[#1B4E8A] truncate">{app.garageName}</h3>
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusConf.color}`}>
                         <StatusIcon size={12} />
                         {statusConf.label}

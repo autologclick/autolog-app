@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import Badge, { StatusBadge } from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import PageHeader from '@/components/ui/PageHeader';
 import PageSkeleton from '@/components/ui/PageSkeleton';
 import {
@@ -46,6 +47,7 @@ interface ShareRequest {
   vehicleId: string;
   status: string;
   createdAt: string;
+  sharedWithEmail?: string;
   vehicle: { id: string; nickname: string; licensePlate: string; manufacturer: string; model: string };
   sharedUser?: { fullName: string; email: string; phone?: string };
   owner?: { fullName: string };
@@ -86,8 +88,9 @@ function VehicleImage({ vehicleId, imageUrl, size = 'md', className = '' }: { ve
 }
 
 // Image upload section component
-function ImageUploadSection({ imagePreview, onImageSelect, onImageRemove, onCameraCapture }: {
+function ImageUploadSection({ imagePreview, imageProcessing, onImageSelect, onImageRemove, onCameraCapture }: {
   imagePreview: string | null;
+  imageProcessing?: boolean;
   onImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onImageRemove: () => void;
   onCameraCapture: () => void;
@@ -97,7 +100,11 @@ function ImageUploadSection({ imagePreview, onImageSelect, onImageRemove, onCame
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-700">תמונת הרכב</label>
-      {imagePreview ? (
+      {imageProcessing ? (
+        <div className="flex items-center justify-center gap-2 w-full h-40 rounded-xl border border-gray-200 bg-[#F3F6FA] text-gray-500 text-sm">
+          <Loader2 size={18} className="animate-spin" /> מעבד את התמונה...
+        </div>
+      ) : imagePreview ? (
         <div className="relative w-full h-40 rounded-xl overflow-hidden border border-gray-200">
           <img src={imagePreview} alt="תצוגה מקדימה" loading="lazy" className="w-full h-full object-cover" />
           <button
@@ -122,7 +129,7 @@ function ImageUploadSection({ imagePreview, onImageSelect, onImageRemove, onCame
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex-1 flex flex-col items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-xl hover:bg-[#fef7ed]/50 transition text-gray-500"
+            className="flex-1 flex flex-col items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-xl hover:bg-[#F3F6FA]/50 transition text-gray-500"
           >
             <Upload size={24} />
             <span className="text-xs font-medium">העלה מהגלריה</span>
@@ -130,7 +137,7 @@ function ImageUploadSection({ imagePreview, onImageSelect, onImageRemove, onCame
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*,application/pdf"
+            accept="image/*,.heic,.heif"
             className="hidden"
             onChange={onImageSelect}
           />
@@ -146,6 +153,7 @@ export default function VehiclesPage() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [deleteVehicleId, setDeleteVehicleId] = useState<string | null>(null);
   const [editVehicleId, setEditVehicleId] = useState<string | null>(null);
   const [expandedVehicle, setExpandedVehicle] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -153,6 +161,7 @@ export default function VehiclesPage() {
   const [lookingUp, setLookingUp] = useState(false);
   const [lookupMessage, setLookupMessage] = useState('');
   const lookupDoneRef = useRef<string>(''); // tracks last plate that was looked up
+  const detailsStartRef = useRef<HTMLDivElement>(null); // scroll target after successful MOT lookup
   const emptyForm = { nickname: '', licensePlate: '', manufacturer: '', model: '', year: '', testExpiryDate: '', insuranceExpiry: '', mileage: '', fuelType: '', color: '' };
 
   // Restore draft from sessionStorage if exists
@@ -170,6 +179,7 @@ export default function VehiclesPage() {
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
+  const [imageProcessing, setImageProcessing] = useState(false);
 
   // Share request state
   const [shareRequests, setShareRequests] = useState<ShareRequest[]>([]);
@@ -177,13 +187,21 @@ export default function VehiclesPage() {
   const [sharePlate, setSharePlate] = useState('');
   const [processingShareId, setProcessingShareId] = useState<string | null>(null);
 
-  // Auto-save form draft to sessionStorage
+  // Owner-initiated sharing ("שתף רכב" modal)
+  const [shareVehicle, setShareVehicle] = useState<Vehicle | null>(null);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteBusy, setInviteBusy] = useState(false);
+  const [inviteMsg, setInviteMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
+
+  // Auto-save form draft to sessionStorage — only while the ADD modal is open,
+  // so editing an existing vehicle never pollutes the new-vehicle draft.
   useEffect(() => {
+    if (!showAddModal) return;
     const hasData = Object.values(formData).some(v => v !== '');
     if (hasData) {
       sessionStorage.setItem('autolog_vehicle_draft', JSON.stringify(formData));
     }
-  }, [formData]);
+  }, [formData, showAddModal]);
 
   // Auto-open modal if draft exists
   useEffect(() => {
@@ -229,6 +247,47 @@ export default function VehiclesPage() {
     }
   };
 
+  // Owner invites someone (family / employee) to a vehicle they own
+  const handleInvite = async () => {
+    if (!shareVehicle || !inviteEmail.trim()) return;
+    setInviteBusy(true);
+    setInviteMsg(null);
+    try {
+      const res = await fetch('/api/vehicles/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vehicleId: shareVehicle.id, sharedWithEmail: inviteEmail.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setInviteMsg({ type: 'ok', text: data.message || 'הרכב שותף בהצלחה' });
+        setInviteEmail('');
+        fetchShareRequests();
+      } else {
+        setInviteMsg({ type: 'err', text: data.error || 'השיתוף נכשל' });
+      }
+    } catch {
+      setInviteMsg({ type: 'err', text: 'שגיאת רשת — נסה שוב' });
+    }
+    setInviteBusy(false);
+  };
+
+  // Owner revokes an existing share / removes a member
+  const handleRevokeShare = async (shareId: string) => {
+    setProcessingShareId(shareId);
+    try {
+      const res = await fetch('/api/vehicles/share', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shareId }),
+      });
+      if (res.ok) fetchShareRequests();
+    } catch {
+      // Silent fail
+    }
+    setProcessingShareId(null);
+  };
+
   const handleShareAction = async (shareId: string, action: 'approve' | 'reject') => {
     setProcessingShareId(shareId);
     try {
@@ -271,30 +330,39 @@ export default function VehiclesPage() {
   useEffect(() => { fetchVehicles(); fetchShareRequests(); }, []);
 
   const handleLookup = async () => {
-    if (!formData.licensePlate || formData.licensePlate.length < 5) {
+    const requested = formData.licensePlate.replace(/[-\s]/g, '');
+    if (!requested || requested.length < 5) {
       setLookupMessage('נא להזין מספר רישוי תקין');
       return;
     }
+    // Mark this plate as the active lookup so a stale response can be ignored
+    lookupDoneRef.current = requested;
     setLookingUp(true);
     setLookupMessage('');
     try {
-      const res = await fetch(`/api/vehicles/lookup?plate=${formData.licensePlate}`);
+      const res = await fetch(`/api/vehicles/lookup?plate=${encodeURIComponent(formData.licensePlate)}`);
       const data = await res.json();
+      // User changed the plate while fetching — drop this outdated result
+      if (lookupDoneRef.current !== requested) { setLookingUp(false); return; }
       if (res.ok && data.vehicle) {
         const v = data.vehicle;
         setFormData(prev => ({
           ...prev,
-          manufacturer: v.manufacturer || prev.manufacturer,
-          model: v.model || prev.model,
-          year: v.year ? String(v.year) : prev.year,
-          fuelType: v.fuelType || prev.fuelType,
-          color: v.color || prev.color,
-          testExpiryDate: v.testExpiryDate ? v.testExpiryDate.split('T')[0] : prev.testExpiryDate,
-          nickname: prev.nickname || `${v.manufacturer} ${v.model}`.trim(),
+          manufacturer: v.manufacturer || '',
+          model: v.model || '',
+          year: v.year ? String(v.year) : '',
+          fuelType: v.fuelType || '',
+          color: v.color || '',
+          testExpiryDate: v.testExpiryDate ? v.testExpiryDate.split('T')[0] : '',
+          nickname: `${v.manufacturer || ''} ${v.model || ''}`.trim() || prev.nickname,
         }));
         setLookupMessage('הנתונים נטענו ממשרד התחבורה!');
+        // Guide first-time users: reveal the remaining fields (mileage etc.)
+        setTimeout(() => {
+          detailsStartRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 700);
       } else {
-        setLookupMessage('NOT_FOUND');
+        setLookupMessage('לא נמצא במאגר משרד התחבורה - ייתכן שזה רכב מיובא או שתוקף הטסט פג. אנא מלא את הפרטים ידנית או צלם את רישיון הרכב לחילוץ אוטומטי של הפרטים.');
       }
     } catch {
       setLookupMessage('שגיאה בחיפוש - נסה שוב');
@@ -302,10 +370,21 @@ export default function VehiclesPage() {
     setLookingUp(false);
   };
 
-  // Auto-trigger lookup when license plate reaches valid length (7+ chars)
+  // React to plate edits: clear stale auto-filled data immediately, then
+  // (re)lookup live. Runs whether it's the first entry or a correction.
   useEffect(() => {
     const plate = formData.licensePlate.replace(/[-\s]/g, '');
-    if (plate.length >= 7 && plate !== lookupDoneRef.current && !lookingUp) {
+    // Plate moved away from the last looked-up value → wipe stale MOT fields
+    if (lookupDoneRef.current && plate !== lookupDoneRef.current) {
+      lookupDoneRef.current = '';
+      setLookupMessage('');
+      setFormData(prev => (
+        !prev.manufacturer && !prev.model && !prev.year && !prev.fuelType && !prev.color && !prev.testExpiryDate
+          ? prev
+          : { ...prev, manufacturer: '', model: '', year: '', fuelType: '', color: '', testExpiryDate: '', nickname: '' }
+      ));
+    }
+    if (plate.length >= 7 && plate !== lookupDoneRef.current) {
       const timer = setTimeout(() => {
         lookupDoneRef.current = plate;
         handleLookup();
@@ -329,7 +408,8 @@ export default function VehiclesPage() {
   const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) {
+    const isHeic = /hei[cf]/i.test(file.type) || /\.hei[cf]$/i.test(file.name);
+    if (!file.type.startsWith('image/') && !isHeic) {
       setError('נא לבחור קובץ תמונה בלבד');
       return;
     }
@@ -337,28 +417,40 @@ export default function VehiclesPage() {
       setError('התמונה גדולה מדי (מקסימום 20MB)');
       return;
     }
-    // Fast visual preview using object URL (doesn't choke on large images)
+    setError('');
+    setImagePreview(null);
+    setImageProcessing(true);
     try {
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
-    } catch {
-      // ignore preview failure — we'll still try upload
-    }
-
-    // Try compressing; if that fails (HEIC, memory, etc.) fall back to raw data URL
-    try {
-      const compressed = await compressImage(file, 1600, 0.85);
-      setImageData(compressed);
-    } catch {
-      try {
-        const raw = await fileToDataUrl(file);
-        setImageData(raw);
-      } catch {
-        setError('לא ניתן לטעון את התמונה. נסה תמונה אחרת.');
+      let source: Blob = file;
+      // HEIC/HEIF (iPhone/Samsung gallery) — convert to JPEG first,
+      // browsers can't render it in <img> and canvas can't decode it
+      if (isHeic) {
+        const heic2any = (await import('heic2any')).default;
+        const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+        source = Array.isArray(converted) ? converted[0] : converted;
       }
+      const compressed = await compressImage(source, 1600, 0.85);
+      setImageData(compressed);
+      // Preview shows EXACTLY what will be uploaded — no more broken previews
+      setImagePreview(compressed);
+    } catch {
+      // Fallback: raw data URL, but only for formats browsers can actually display
+      if (!isHeic) {
+        try {
+          const raw = await fileToDataUrl(file);
+          setImageData(raw);
+          setImagePreview(raw);
+        } catch {
+          setError('לא ניתן לטעון את התמונה. נסו תמונה אחרת או צלמו עם המצלמה.');
+        }
+      } else {
+        setError('לא ניתן להמיר את התמונה. נסו תמונה אחרת או צלמו עם המצלמה.');
+      }
+    } finally {
+      setImageProcessing(false);
+      // Reset input value so same file can be selected again
+      e.target.value = '';
     }
-    // Reset input value so same file can be selected again
-    e.target.value = '';
   };
 
   const fileToDataUrl = (file: File): Promise<string> =>
@@ -371,7 +463,7 @@ export default function VehiclesPage() {
 
   // Resize + recompress image to a safe data URL for upload
   // Supports HEIC/HEIF via createImageBitmap fallback
-  const compressImage = async (file: File, maxEdge: number, quality: number): Promise<string> => {
+  const compressImage = async (file: Blob, maxEdge: number, quality: number): Promise<string> => {
     const drawToCanvas = (source: ImageBitmap | HTMLImageElement, w: number, h: number): string => {
       const canvas = document.createElement('canvas');
       canvas.width = w;
@@ -537,7 +629,6 @@ export default function VehiclesPage() {
   }
 
   const handleDeleteVehicle = async (vehicleId: string) => {
-    if (!confirm('האם אתה בטוח שברצונך למחוק רכב זה?')) return;
     try {
       const res = await fetch(`/api/vehicles/${vehicleId}`, { method: 'DELETE' });
       if (res.ok) {
@@ -564,7 +655,7 @@ export default function VehiclesPage() {
   };
 
   return (
-    <div className="bg-[#fef7ed] min-h-screen pb-24" dir="rtl">
+    <div className="bg-[#F3F6FA] min-h-screen pb-24" dir="rtl">
       {/* Hidden camera input for capture */}
       <input
         ref={cameraInputRef}
@@ -606,11 +697,11 @@ export default function VehiclesPage() {
               <div className="w-8 h-8 bg-teal-500/10 rounded-lg flex items-center justify-center">
                 <Brain size={18} className="text-teal-600" />
               </div>
-              <h2 className="text-base font-bold text-[#1e3a5f]">תובנות AI לרכבים</h2>
+              <h2 className="text-base font-bold text-[#1B4E8A]">תובנות AI לרכבים</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Test Status Card */}
-              <div className="bg-[#fef7ed] rounded-xl p-3 border border-amber-100">
+              <div className="bg-[#F3F6FA] rounded-xl p-3 border border-amber-100">
                 <div className="flex items-center gap-2 mb-2">
                   <AlertTriangleIcon size={14} className="text-amber-500" />
                   <span className="text-xs font-bold text-gray-700">סטטוס טסט</span>
@@ -623,7 +714,7 @@ export default function VehiclesPage() {
               </div>
 
               {/* Insurance Status Card */}
-              <div className="bg-[#fef7ed] rounded-xl p-3 border border-blue-100">
+              <div className="bg-[#F3F6FA] rounded-xl p-3 border border-blue-100">
                 <div className="flex items-center gap-2 mb-2">
                   <Shield size={14} className="text-blue-500" />
                   <span className="text-xs font-bold text-gray-700">סטטוס ביטוח</span>
@@ -636,7 +727,7 @@ export default function VehiclesPage() {
               </div>
 
               {/* Activity Summary Card */}
-              <div className="bg-[#fef7ed] rounded-xl p-3 border border-green-100">
+              <div className="bg-[#F3F6FA] rounded-xl p-3 border border-green-100">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp size={14} className="text-green-500" />
                   <span className="text-xs font-bold text-gray-700">סיכום פעילות</span>
@@ -656,7 +747,7 @@ export default function VehiclesPage() {
               <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
                 <UserPlus size={18} className="text-blue-600" />
               </div>
-              <h2 className="text-base font-bold text-[#1e3a5f]">בקשות שיתוף ממתינות</h2>
+              <h2 className="text-base font-bold text-[#1B4E8A]">בקשות שיתוף ממתינות</h2>
               <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">
                 {shareRequests.filter(r => r.status === 'pending').length}
               </span>
@@ -700,7 +791,7 @@ export default function VehiclesPage() {
               <Car size={32} className="text-teal-600" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-[#1e3a5f] mb-2">הוסף את הרכב הראשון שלך</h3>
+              <h3 className="text-lg font-bold text-[#1B4E8A] mb-2">הוסף את הרכב הראשון שלך</h3>
               <p className="text-sm text-gray-500 mb-4">התחל לעקוב אחר הרכבים שלך עם AutoLog</p>
             </div>
             <button
@@ -728,7 +819,7 @@ export default function VehiclesPage() {
                   <VehicleImage vehicleId={v.id} imageUrl={v.imageUrl} size="md" key={`img-${v.id}`} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-base font-bold text-[#1e3a5f]">{v.nickname}</h3>
+                      <h3 className="text-base font-bold text-[#1B4E8A]">{v.nickname}</h3>
                       {v.isPrimary && (
                         <Badge variant="info" className="text-xs">ראשי</Badge>
                       )}
@@ -759,11 +850,23 @@ export default function VehiclesPage() {
                       onClick={() => openEditModal(v)}
                       className="text-gray-600 hover:text-teal-600"
                     />
+                    {/* Share — only for vehicles I own (not ones shared with me) */}
+                    {!v.isShared && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        icon={<UserPlus size={14} />}
+                        onClick={() => { setShareVehicle(v); setInviteEmail(''); setInviteMsg(null); }}
+                        className="text-gray-600 hover:text-blue-600"
+                        title="שתף רכב"
+                        aria-label="שתף רכב"
+                      />
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"
                       icon={<Trash2 size={14} />}
-                      onClick={() => handleDeleteVehicle(v.id)}
+                      onClick={() => setDeleteVehicleId(v.id)}
                       className="text-gray-600 hover:text-red-600"
                     />
                     <Button
@@ -817,37 +920,37 @@ export default function VehiclesPage() {
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
                         <div className="text-xs text-gray-500 mb-1">תוקף טסט</div>
-                        <div className="font-medium text-[#1e3a5f]">
+                        <div className="font-medium text-[#1B4E8A]">
                           {v.testExpiryDate ? new Date(v.testExpiryDate).toLocaleDateString('he-IL') : '—'}
                         </div>
                       </div>
                       <div>
                         <div className="text-xs text-gray-500 mb-1">תוקף ביטוח</div>
-                        <div className="font-medium text-[#1e3a5f]">
+                        <div className="font-medium text-[#1B4E8A]">
                           {v.insuranceExpiry ? new Date(v.insuranceExpiry).toLocaleDateString('he-IL') : '—'}
                         </div>
                       </div>
                       <div>
                         <div className="text-xs text-gray-500 mb-1">ק״מ</div>
-                        <div className="font-medium text-[#1e3a5f]">
+                        <div className="font-medium text-[#1B4E8A]">
                           {v.mileage?.toLocaleString() || '—'}
                         </div>
                       </div>
                       <div>
                         <div className="text-xs text-gray-500 mb-1">דלק</div>
-                        <div className="font-medium text-[#1e3a5f]">
+                        <div className="font-medium text-[#1B4E8A]">
                           {v.fuelType || '—'}
                         </div>
                       </div>
                       <div>
                         <div className="text-xs text-gray-500 mb-1">צבע</div>
-                        <div className="font-medium text-[#1e3a5f]">
+                        <div className="font-medium text-[#1B4E8A]">
                           {v.color || '—'}
                         </div>
                       </div>
                       <div>
                         <div className="text-xs text-gray-500 mb-1">אבחונים</div>
-                        <div className="font-medium text-[#1e3a5f]">
+                        <div className="font-medium text-[#1B4E8A]">
                           {v._count?.inspections || 0}
                         </div>
                       </div>
@@ -866,7 +969,7 @@ export default function VehiclesPage() {
                       )}
                       <button
                         onClick={() => router.push(`/user/vehicles/${v.id}`)}
-                        className="w-full text-center bg-[#fef7ed] hover:bg-gray-100 text-[#1e3a5f] rounded-xl py-2 px-3 font-medium text-sm transition-colors"
+                        className="w-full text-center bg-[#F3F6FA] hover:bg-gray-100 text-[#1B4E8A] rounded-xl py-2 px-3 font-medium text-sm transition-colors"
                       >
                         צפה בדוחות
                       </button>
@@ -880,6 +983,87 @@ export default function VehiclesPage() {
       </div>
 
       {/* Edit Vehicle Modal */}
+      {/* Share vehicle (owner-initiated) — invite by email + manage who it's shared with */}
+      <Modal
+        isOpen={!!shareVehicle}
+        onClose={() => { setShareVehicle(null); setInviteEmail(''); setInviteMsg(null); }}
+        title={shareVehicle ? `שיתוף רכב — ${shareVehicle.nickname}` : 'שיתוף רכב'}
+        size="md"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600 leading-relaxed">
+            שתף את הרכב עם בן משפחה או עובד. לאחר השיתוף הרכב יופיע ברשימת הרכבים שלו.
+            אם הוא עדיין לא רשום — הרכב יופיע אצלו אוטומטית מיד לאחר ההרשמה עם אותו מייל.
+          </p>
+
+          <div className="flex gap-2 items-start">
+            <Input
+              type="email"
+              inputMode="email"
+              placeholder="כתובת מייל לשיתוף"
+              value={inviteEmail}
+              onChange={e => setInviteEmail(e.target.value)}
+              className="flex-1"
+            />
+            <Button
+              onClick={handleInvite}
+              loading={inviteBusy}
+              disabled={!inviteEmail.trim() || inviteBusy}
+              icon={<Send size={14} />}
+            >
+              שתף
+            </Button>
+          </div>
+
+          {inviteMsg && (
+            <p className={`text-sm ${inviteMsg.type === 'ok' ? 'text-green-600' : 'text-red-500'}`}>
+              {inviteMsg.text}
+            </p>
+          )}
+
+          <div>
+            <h4 className="text-sm font-bold text-[#1B4E8A] mb-2">משותף עם</h4>
+            {(() => {
+              const list = shareRequests.filter(r => r.vehicleId === shareVehicle?.id);
+              if (!list.length) {
+                return <p className="text-sm text-gray-400">הרכב עדיין לא משותף עם אף אחד.</p>;
+              }
+              return (
+                <div className="space-y-2">
+                  {list.map(s => (
+                    <div key={s.id} className="flex items-center justify-between gap-2 bg-gray-50 rounded-xl px-3 py-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-800 truncate">
+                          {s.sharedUser?.fullName || s.sharedWithEmail}
+                        </p>
+                        {s.sharedUser?.fullName && (
+                          <p className="text-xs text-gray-500 truncate">{s.sharedWithEmail}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {s.status === 'approved' && <Badge variant="success" className="text-[10px]">משותף</Badge>}
+                        {s.status === 'pending' && <Badge variant="warning" className="text-[10px]">ממתין לאישורך</Badge>}
+                        {s.status === 'rejected' && <Badge variant="danger" className="text-[10px]">נדחה</Badge>}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          icon={<X size={14} />}
+                          onClick={() => handleRevokeShare(s.id)}
+                          loading={processingShareId === s.id}
+                          className="text-gray-500 hover:text-red-600"
+                          title="הסר שיתוף"
+                          aria-label="הסר שיתוף"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      </Modal>
+
       <Modal isOpen={showEditModal} onClose={() => { setShowEditModal(false); setEditVehicleId(null); resetForm(); }} title="עריכת רכב" size="lg">
         <div className="space-y-4">
           {/* License Scan */}
@@ -888,6 +1072,7 @@ export default function VehiclesPage() {
           {/* Image Upload */}
           <ImageUploadSection
             imagePreview={imagePreview}
+            imageProcessing={imageProcessing}
             onImageSelect={handleImageSelect}
             onImageRemove={handleImageRemove}
             onCameraCapture={handleCameraCapture}
@@ -904,42 +1089,35 @@ export default function VehiclesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">יצרן</label>
-              <select
+              <input
+                type="text"
+                list="mfr-options"
                 value={formData.manufacturer}
                 onChange={e => setFormData({ ...formData, manufacturer: e.target.value, model: '' })}
+                placeholder="בחר או הקלד יצרן"
                 className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
-              >
-                <option value="">בחר יצרן</option>
-                {formData.manufacturer && !getManufacturerNames().includes(formData.manufacturer) && (
-                  <option value={formData.manufacturer}>{formData.manufacturer}</option>
-                )}
+              />
+              <datalist id="mfr-options">
                 {getManufacturerNames().map(m => (
-                  <option key={m} value={m}>{m}</option>
+                  <option key={m} value={m} />
                 ))}
-              </select>
+              </datalist>
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">דגם</label>
-              {formData.manufacturer && getModelNames(formData.manufacturer).length > 0 ? (
-                <select
-                  value={formData.model}
-                  onChange={e => setFormData({ ...formData, model: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
-                >
-                  <option value="">בחר דגם</option>
-                  {formData.model && !getModelNames(formData.manufacturer).includes(formData.model) && (
-                    <option value={formData.model}>{formData.model}</option>
-                  )}
-                  {getModelNames(formData.manufacturer).map(m => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-              ) : (
-                <input type="text" value={formData.model}
-                  onChange={e => setFormData({ ...formData, model: e.target.value })}
-                  placeholder="הזן דגם"
-                  className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm" />
-              )}
+              <input
+                type="text"
+                list="model-options"
+                value={formData.model}
+                onChange={e => setFormData({ ...formData, model: e.target.value })}
+                placeholder="בחר או הקלד דגם"
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+              />
+              <datalist id="model-options">
+                {getModelNames(formData.manufacturer).map(m => (
+                  <option key={m} value={m} />
+                ))}
+              </datalist>
             </div>
             <Input label="שנת ייצור" type="number" value={formData.year}
               onChange={e => setFormData({ ...formData, year: e.target.value })} />
@@ -980,7 +1158,7 @@ export default function VehiclesPage() {
       </Modal>
 
       {/* Add Vehicle Modal */}
-      <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)} title="הוספת רכב חדש" size="lg">
+      <Modal isOpen={showAddModal} onClose={() => { setShowAddModal(false); resetForm(); }} title="הוספת רכב חדש" size="lg">
         <div className="space-y-4">
           {/* MOT Lookup Section */}
           <div className="bg-blue-50 border-2 border-blue-300 rounded-2xl p-4 shadow-sm">
@@ -1019,9 +1197,15 @@ export default function VehiclesPage() {
               </div>
             )}
             {lookupMessage && lookupMessage !== 'NOT_FOUND' && (
-              <p className="text-sm mt-2 text-green-600 font-medium">
-                ✓ {lookupMessage}
-              </p>
+              <>
+                <p className="text-sm mt-2 text-green-600 font-medium">
+                  ✓ {lookupMessage}
+                </p>
+                <p className="text-xs mt-1.5 text-[#1B4E8A] font-bold flex items-center gap-1.5 animate-bounce">
+                  <span>המשיכו למלא את שאר הפרטים למטה</span>
+                  <span className="text-base leading-none">↓</span>
+                </p>
+              </>
             )}
           </div>
 
@@ -1031,12 +1215,13 @@ export default function VehiclesPage() {
           {/* Image Upload */}
           <ImageUploadSection
             imagePreview={imagePreview}
+            imageProcessing={imageProcessing}
             onImageSelect={handleImageSelect}
             onImageRemove={handleImageRemove}
             onCameraCapture={handleCameraCapture}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div ref={detailsStartRef} className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex items-end gap-2">
               <div className="flex-1"><Input label="כינוי" placeholder="למשל: ספורטז' לבנה" value={formData.nickname}
                 onChange={e => setFormData({ ...formData, nickname: e.target.value })} /></div>
@@ -1048,42 +1233,35 @@ export default function VehiclesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">יצרן</label>
-              <select
+              <input
+                type="text"
+                list="mfr-options"
                 value={formData.manufacturer}
                 onChange={e => setFormData({ ...formData, manufacturer: e.target.value, model: '' })}
+                placeholder="בחר או הקלד יצרן"
                 className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
-              >
-                <option value="">בחר יצרן</option>
-                {formData.manufacturer && !getManufacturerNames().includes(formData.manufacturer) && (
-                  <option value={formData.manufacturer}>{formData.manufacturer}</option>
-                )}
+              />
+              <datalist id="mfr-options">
                 {getManufacturerNames().map(m => (
-                  <option key={m} value={m}>{m}</option>
+                  <option key={m} value={m} />
                 ))}
-              </select>
+              </datalist>
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">דגם</label>
-              {formData.manufacturer && getModelNames(formData.manufacturer).length > 0 ? (
-                <select
-                  value={formData.model}
-                  onChange={e => setFormData({ ...formData, model: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
-                >
-                  <option value="">בחר דגם</option>
-                  {formData.model && !getModelNames(formData.manufacturer).includes(formData.model) && (
-                    <option value={formData.model}>{formData.model}</option>
-                  )}
-                  {getModelNames(formData.manufacturer).map(m => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-              ) : (
-                <input type="text" value={formData.model}
-                  onChange={e => setFormData({ ...formData, model: e.target.value })}
-                  placeholder="הזן דגם"
-                  className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm" />
-              )}
+              <input
+                type="text"
+                list="model-options"
+                value={formData.model}
+                onChange={e => setFormData({ ...formData, model: e.target.value })}
+                placeholder="בחר או הקלד דגם"
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-gray-800 text-sm"
+              />
+              <datalist id="model-options">
+                {getModelNames(formData.manufacturer).map(m => (
+                  <option key={m} value={m} />
+                ))}
+              </datalist>
             </div>
             <Input label="שנת ייצור" placeholder="2020" type="number" value={formData.year}
               onChange={e => setFormData({ ...formData, year: e.target.value })} />
@@ -1167,12 +1345,21 @@ export default function VehiclesPage() {
 
           {shareState === 'idle' && (
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              <Button variant="ghost" onClick={() => setShowAddModal(false)} className="w-full sm:w-auto">ביטול</Button>
+              <Button variant="ghost" onClick={() => { setShowAddModal(false); resetForm(); }} className="w-full sm:w-auto">ביטול</Button>
               <Button loading={saving} onClick={handleAddVehicle} className="w-full sm:w-auto">המשך</Button>
             </div>
           )}
         </div>
       </Modal>
+      <ConfirmDialog
+        isOpen={deleteVehicleId !== null}
+        title="מחיקת רכב"
+        message="האם אתה בטוח שברצונך למחוק רכב זה?"
+        confirmLabel="מחק"
+        danger
+        onConfirm={() => { const id = deleteVehicleId; setDeleteVehicleId(null); if (id) handleDeleteVehicle(id); }}
+        onCancel={() => setDeleteVehicleId(null)}
+      />
     </div>
   );
 }

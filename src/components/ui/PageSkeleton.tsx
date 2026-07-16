@@ -6,7 +6,7 @@
  */
 export default function PageSkeleton({ cards = 3 }: { cards?: number }) {
   return (
-    <div className="min-h-screen bg-[#fef7ed] animate-pulse">
+    <div className="min-h-screen bg-[#F3F6FA] animate-pulse">
       {/* Header skeleton */}
       <div className="bg-gradient-to-l from-gray-200 to-gray-300 px-4 pt-6 pb-8 rounded-b-3xl">
         <div className="h-6 w-32 bg-white/30 rounded-lg mb-2" />

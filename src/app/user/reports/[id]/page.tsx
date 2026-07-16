@@ -65,7 +65,7 @@ const inspectionTypeLabels: Record<string, string> = {
 
 function ScoreCircle({ score }: { score: number }) {
   const getColor = () => {
-    if (score >= 80) return '#0d9488';
+    if (score >= 80) return '#2E77D0';
     if (score >= 60) return '#f59e0b';
     return '#ef4444';
   };
@@ -172,7 +172,7 @@ export default function InspectionDetailPage({ params }: { params: { id: string 
   if (error || !inspection) {
     return (
       <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
-        <h1 className="text-2xl font-bold text-[#1e3a5f]">דוח אבחון</h1>
+        <h1 className="text-2xl font-bold text-[#1B4E8A]">דוח אבחון</h1>
         <Card className="text-center py-12 bg-red-50 border-red-200">
           <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4">
             <FileText size={24} className="text-red-600" />
@@ -201,7 +201,7 @@ export default function InspectionDetailPage({ params }: { params: { id: string 
           <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
             <FileText size={20} className="text-blue-600" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1e3a5f]">דוח אבחון</h1>
+          <h1 className="text-2xl font-bold text-[#1B4E8A]">דוח אבחון</h1>
         </div>
         <div className="flex gap-2">
           <Button
@@ -299,7 +299,7 @@ export default function InspectionDetailPage({ params }: { params: { id: string 
             </div>
           </div>
           <div className="p-3 bg-gray-50 rounded-lg">
-            <div className="text-xs text-gray-500 uppercase mb-1">מכניק</div>
+            <div className="text-xs text-gray-500 uppercase mb-1">מכונאי</div>
             <div className="font-semibold text-gray-800">{inspection.mechanicName || '-'}</div>
           </div>
           <div className="p-3 bg-gray-50 rounded-lg">
@@ -391,12 +391,12 @@ export default function InspectionDetailPage({ params }: { params: { id: string 
         <div className="space-y-4 mt-4">
           {Object.entries(itemsByCategory).map(([category, items]) => (
             <div key={category}>
-              <div className="font-semibold text-[#1e3a5f] mb-2 pb-2 border-b">
+              <div className="font-semibold text-[#1B4E8A] mb-2 pb-2 border-b">
                 {categoryLabel(category)}
               </div>
               <div className="space-y-2">
                 {items.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-2 hover:bg-[#fef7ed] rounded">
+                  <div key={idx} className="flex items-center justify-between p-2 hover:bg-[#F3F6FA] rounded">
                     <div className="flex items-center gap-2 flex-1">
                       <span className={`w-3 h-3 rounded-full ${
                         item.status === 'ok'

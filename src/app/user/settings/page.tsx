@@ -210,7 +210,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
       <PageHeader title="הגדרות" backUrl="/user/profile" />
 
       <div className="max-w-2xl mx-auto px-4 space-y-6 pt-6">
@@ -220,7 +220,7 @@ export default function SettingsPage() {
             <div
               className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white flex-shrink-0"
               style={{
-                background: `linear-gradient(135deg, #1e3a5f 0%, #14b8a6 100%)`
+                background: `linear-gradient(135deg, #1B4E8A 0%, #2E77D0 100%)`
               }}
             >
               {profile.fullName.charAt(0) || '?'}
@@ -282,7 +282,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label htmlFor="settings-license" className="block text-sm font-medium text-gray-700 mb-2">מספר רישיון</label>
+                <label htmlFor="settings-license" className="block text-sm font-medium text-gray-700 mb-2">מספר רישיון נהיגה</label>
                 <input
                   id="settings-license"
                   type="text"
@@ -401,6 +401,59 @@ export default function SettingsPage() {
                 {profile.email.split('@')[0]}
               </code>
             </div>
+          </div>
+        </div>
+
+        {/* Privacy & Account Section */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <h3 className="flex items-center gap-2 font-bold text-gray-900 mb-4">
+            <Shield size={20} className="text-[#2E77D0]" />
+            פרטיות וחשבון
+          </h3>
+          <div className="space-y-2">
+            <a
+              href="/privacy"
+              className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition"
+            >
+              <div>
+                <p className="font-medium text-sm text-gray-800">מדיניות פרטיות</p>
+                <p className="text-xs text-gray-500">איזה מידע נאסף עליך ומה נעשה בו</p>
+              </div>
+              <span className="text-gray-300 text-lg">‹</span>
+            </a>
+
+            <a
+              href="/terms"
+              className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition"
+            >
+              <div>
+                <p className="font-medium text-sm text-gray-800">תנאי שימוש</p>
+                <p className="text-xs text-gray-500">התנאים החלים על השימוש בשירות</p>
+              </div>
+              <span className="text-gray-300 text-lg">‹</span>
+            </a>
+
+            <a
+              href="/user/settings/export-data"
+              className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition"
+            >
+              <div>
+                <p className="font-medium text-sm text-gray-800">ייצוא המידע שלי</p>
+                <p className="text-xs text-gray-500">הורדת כל המידע שנשמר עליך (זכות עיון)</p>
+              </div>
+              <span className="text-gray-300 text-lg">‹</span>
+            </a>
+
+            <a
+              href="/user/settings/delete-account"
+              className="flex items-center justify-between p-4 hover:bg-red-50 rounded-xl transition border-t border-gray-100 mt-2 pt-4"
+            >
+              <div>
+                <p className="font-medium text-sm text-red-600">מחיקת חשבון</p>
+                <p className="text-xs text-gray-500">מחיקה לצמיתות של החשבון וכל המידע</p>
+              </div>
+              <span className="text-red-300 text-lg">‹</span>
+            </a>
           </div>
         </div>
 

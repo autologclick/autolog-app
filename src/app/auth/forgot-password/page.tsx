@@ -118,7 +118,7 @@ export default function ForgotPasswordPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="relative w-14 h-14 bg-gradient-to-br from-teal-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="relative w-14 h-14 bg-gradient-to-br from-teal-500 to-teal-700 rounded-2xl flex items-center justify-center shadow-lg">
               <KeyRound className="w-7 h-7 text-white" />
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function ForgotPasswordPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white"
+                className="w-full bg-[#2E77D0] hover:bg-[#1D4F8F] text-white"
                 size="lg"
                 loading={loading}
                 icon={<Lock size={18} />}
@@ -222,7 +222,7 @@ export default function ForgotPasswordPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white"
+                className="w-full bg-[#2E77D0] hover:bg-[#1D4F8F] text-white"
                 size="lg"
                 loading={loading}
                 icon={<Mail size={18} />}

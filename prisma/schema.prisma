@@ -15,10 +15,11 @@ model User {
   id            String    @id @default(cuid())
   email         String    @unique
   phone         String?
-  passwordHash  String
+  passwordHash  String?
   fullName      String
   idNumber      String?   @unique
   licenseNumber String?
+  licenseExpiry DateTime? // driver's license expiry — reminder cron checks this
   role          String    @default("user") // user | admin | garage_owner
   avatarUrl     String?
   resetToken       String?
@@ -59,11 +60,14 @@ model User {
   ownedShares   VehicleShare[] @relation("SharedVehicleOwner")
   sharedVehicles VehicleShare[] @relation("SharedVehicleUser")
   bodyworkRequests BodyworkRequest[]
+  savedGarages  SavedGarage[]
 
   @@index([email])
   @@index([role])
   @@index([city])
   @@index([referredById])
+  // OAuth providers (Google, etc.)
+  oauthAccounts OAuthAccount[]
 }
 
 // ============================================================
@@ -401,6 +405,7 @@ model Appointment {
 // ============================================================
 
 model SosEvent {
+  incidentData String?   // JSON: structured incident-documentation report
   id          String    @id @default(cuid())
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -972,3 +977,72 @@ model BrandAsset {
   @@index([isActive])
 }
 
+
+
+// ============================================================
+// OAUTH ACCOUNTS (Google, Apple, etc.)
+// ============================================================
+model OAuthAccount {
+  id                String   @id @default(cuid())
+  userId            String
+  provider          String   // 'google' | future: 'apple' | 'facebook'
+  providerAccountId String   // Google's stable `sub` claim
+  email             String?  // snapshot of email at link time (for audit)
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+// ============================================================
+// GARAGE DIRECTORY (reference data — MOT authorized garages)
+// Separate from the existing Garage module. Populated from
+// data.gov.il (resource bb68386a-...). Read-only directory.
+// ============================================================
+
+model GarageDirectory {
+  id          Int      @id @default(autoincrement())
+  licenseNum  Int?     @unique          // mispar_mosah (null for non-MOT sources, e.g. car washes)
+  extId       String?  @unique          // external id for non-MOT sources, e.g. "osm:node/123"
+  name        String                     // shem_mosah
+  type        String                     // sug_mosah
+  address     String                     // ktovet
+  city        String                     // yishuv
+  phone       String?
+  zip         String?
+  categories  String[]                   // MECHANICS / ELECTRICITY / BODYWORK / TIRES
+  professions Json                       // full list [{cod, name}]
+  lat         Float?                     // phase 2 (geocoding)
+  lng         Float?
+  active      Boolean  @default(true)    // soft-delete: false when gone from source
+  source      String   @default("data.gov.il")
+  importedAt  DateTime @updatedAt
+  claimedById String?                    // future: link to a registered Garage
+
+  // Phase B — Google Places photo enrichment (inert until GOOGLE_PLACES_API_KEY is set)
+  placeId          String?   // matched Google place_id (stored permanently, allowed by ToS)
+  photoRef         String?   // latest Place Photo resource name/reference (re-fetched, not stored as bytes)
+  photoAttribution String?   // required Google author attribution to display with the photo
+  photoFetchedAt   DateTime? // when the photoRef was last refreshed (cache window)
+
+  savedBy     SavedGarage[]
+
+  @@index([city])
+  @@index([categories], type: Gin)
+}
+
+// Per-user saved garages from the directory (survives across devices).
+model SavedGarage {
+  id                Int             @id @default(autoincrement())
+  userId            String
+  garageDirectoryId Int
+  createdAt         DateTime        @default(now())
+
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  garage GarageDirectory @relation(fields: [garageDirectoryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, garageDirectoryId])
+  @@index([userId])
+}

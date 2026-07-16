@@ -61,11 +61,45 @@ function FeatureCard({ icon: Icon, title, description, delay }: {
       <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center mb-5">
         <Icon className="w-7 h-7 text-teal-600" />
       </div>
-      <h3 className="text-lg font-bold text-[#1e3a5f] mb-3">{title}</h3>
+      <h3 className="text-lg font-bold text-[#1B4E8A] mb-3">{title}</h3>
       <p className="text-gray-600 leading-relaxed text-sm">{description}</p>
     </div>
   );
 }
+
+// ============================================================================
+// HOMEPAGE FAQ ITEMS — visible text MUST match the FAQPage schema below
+// ============================================================================
+const HOMEPAGE_FAQS = [
+  {
+    q: 'מה זה אוטולוג?',
+    a: 'אוטולוג היא הפלטפורמה הישראלית המובילה לניהול רכב חכם. עם אוטולוג מקבלים תזכורות אוטומטיות לטסט וביטוח, סורקים מסמכים עם בינה מלאכותית, עוקבים אחרי הוצאות הרכב, ומקבלים עוזר AI אישי לכל שאלה על הרכב. הכל חינם, ללא הורדת אפליקציה.',
+  },
+  {
+    q: 'האם אוטולוג בחינם?',
+    a: 'כן! אוטולוג חינמית לחלוטין לכל המשתמשים הפרטיים. אין דמי הרשמה, אין דמי חודשיים — אוטולוג חינם לתמיד. גם אחרי שנים של שימוש, אף שקל לא יוצא מהכיס.',
+  },
+  {
+    q: 'האם צריך להוריד אפליקציה כדי להשתמש באוטולוג?',
+    a: 'לא צריך! אוטולוג עובדת ישירות דרך הדפדפן בטלפון או במחשב. פשוט נכנסים לאוטולוג, נרשמים ומתחילים. אפשר גם להוסיף קיצור דרך למסך הבית וזה יעבוד בדיוק כמו אפליקציה.',
+  },
+  {
+    q: 'איך המוסך שלי מצטרף לאוטולוג?',
+    a: 'יש דף ייעודי להצטרפות מוסכים בשם "למוסכים" בעמוד הבית של אוטולוג. לחיצה, מילוי טופס קצר עם פרטי המוסך, ואנחנו חוזרים אליכם תוך 24 שעות. ההצטרפות לאוטולוג חינמית לחלוטין.',
+  },
+  {
+    q: 'האם המידע שלי באוטולוג מאובטח?',
+    a: 'פרטיות ואבטחה הם עדיפות #1 באוטולוג. כל המידע מוצפן ב-AES-256, התעבורה מוצפנת ב-HTTPS, ויש זיהוי דו-שלבי אופציונלי (MFA). הנתונים שלכם לעולם לא נמכרים לצד שלישי.',
+  },
+  {
+    q: 'האם אפשר לנהל באוטולוג כמה רכבים?',
+    a: 'בהחלט! באוטולוג אפשר להוסיף כמה רכבים שרוצים לחשבון אחד — בלתי מוגבל. תזכורות, מסמכים, אבחונים — הכל מסודר בנפרד לכל רכב. מושלם למשפחות עם כמה רכבים או לבעלי צי קטן.',
+  },
+  {
+    q: 'איך קובעים תור למוסך דרך אוטולוג?',
+    a: 'אנחנו כרגע מחברים מוסכים שותפים לאוטולוג. בקרוב תוכלו לקבוע תור ישירות מהאפליקציה — בלחיצה אחת, בלי טלפונים. בינתיים, אוטולוג כבר עובדת במלוא העוצמה לניהול הרכבים, מסמכים, טיפולים והוצאות.',
+  },
+];
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -87,7 +121,10 @@ export default function Home() {
 
   return (
     <div className="bg-white" dir="rtl">
-      {/* ============ STRUCTURED DATA (JSON-LD) ============ */}
+      {/* ============ STRUCTURED DATA (JSON-LD) ============
+         Brand name in Hebrew ("אוטולוג") is the primary entity signal.
+         Organization + WebSite are in layout.tsx (site-wide).
+         Here we add page-specific: SoftwareApplication + FAQPage. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -95,79 +132,47 @@ export default function Home() {
             '@context': 'https://schema.org',
             '@graph': [
               {
-                '@type': 'Organization',
-                '@id': 'https://autolog.click/#organization',
-                name: 'AutoLog',
-                url: 'https://autolog.click',
-                logo: 'https://autolog.click/logo.png',
-                description: 'הפלטפורמה המובילה בישראל לניהול רכבים חכם',
-                sameAs: ['https://autolog.click'],
-                contactPoint: {
-                  '@type': 'ContactPoint',
-                  contactType: 'Customer Service',
-                  email: 'info@autolog.click',
-                  url: 'https://autolog.click',
-                },
-              },
-              {
                 '@type': 'SoftwareApplication',
                 '@id': 'https://autolog.click/#software',
-                name: 'AutoLog',
-                applicationCategory: 'Productivity',
-                operatingSystem: 'Web, iOS, Android',
+                name: 'אוטולוג',
+                alternateName: 'AutoLog',
+                applicationCategory: 'BusinessApplication',
+                applicationSubCategory: 'Vehicle Management',
+                operatingSystem: 'Web, iOS, Android (Progressive Web App)',
                 url: 'https://autolog.click',
-                description: 'ניהול רכבים חכם עם AI — סריקת מסמכים, תזכורות, מעקב הוצאות, קביעת תורים ושירות חירום',
+                description: 'אוטולוג — אפליקציית ניהול רכב חינמית בעברית. תזכורות אוטומטיות לטסט וביטוח, מעקב הוצאות, סריקת מסמכים עם AI, היסטוריית טיפולים, ועוזר רכב חכם. ללא הורדה.',
+                inLanguage: 'he-IL',
+                isAccessibleForFree: true,
                 offers: {
                   '@type': 'Offer',
                   price: '0',
                   priceCurrency: 'ILS',
+                  availability: 'https://schema.org/InStock',
+                  url: 'https://autolog.click/auth/signup',
                 },
+                featureList: [
+                  'תזכורות אוטומטיות לטסט שנתי',
+                  'תזכורות לחידוש ביטוח רכב',
+                  'סריקת מסמכים עם בינה מלאכותית (AI)',
+                  'מעקב הוצאות רכב',
+                  'היסטוריית טיפולים ותחזוקה',
+                  'קביעת תורים למוסך',
+                  'עוזר AI אישי לרכב',
+                  'הקלטה קולית בעברית',
+                  'שירות חירום SOS',
+                  'ניהול מספר רכבים בחשבון אחד',
+                ],
+                publisher: { '@id': 'https://autolog.click/#organization' },
               },
               {
                 '@type': 'FAQPage',
                 '@id': 'https://autolog.click/#faq',
-                mainEntity: [
-                  {
-                    '@type': 'Question',
-                    name: 'האם AutoLog בחינם?',
-                    acceptedAnswer: {
-                      '@type': 'Answer',
-                      text: 'כן! AutoLog בחינם לחלוטין לכל המשתמשים. אין דמי הרשמה, אין דמי חודשיים — זה חינם לתמיד.',
-                    },
-                  },
-                  {
-                    '@type': 'Question',
-                    name: 'האם צריך להוריד אפליקציה?',
-                    acceptedAnswer: {
-                      '@type': 'Answer',
-                      text: 'לא צריך! AutoLog עובדת דרך הדפדפן של הטלפון שלך. פשוט נכנסים לאתר, נרשמים ומתחילים.',
-                    },
-                  },
-                  {
-                    '@type': 'Question',
-                    name: 'איך המוסך שלי מצטרף?',
-                    acceptedAnswer: {
-                      '@type': 'Answer',
-                      text: 'יש דף ייעודי להצטרפות מוסכים בשם "למוסכים" בעמוד הבית. לחיצה, מילוי טופס קצר, ואנחנו חוזרים אליכם תוך 24 שעות.',
-                    },
-                  },
-                  {
-                    '@type': 'Question',
-                    name: 'האם המידע שלי מאובטח?',
-                    acceptedAnswer: {
-                      '@type': 'Answer',
-                      text: 'פרטיות ואבטחה הם עדיפות #1 שלנו. כל המידע מוצפן בסטנדרטים בנקאיים ומאוחסן בשרתים מאובטחים.',
-                    },
-                  },
-                  {
-                    '@type': 'Question',
-                    name: 'האם אפשר לנהל כמה רכבים?',
-                    acceptedAnswer: {
-                      '@type': 'Answer',
-                      text: 'בהחלט! אפשר להוסיף כמה רכבים שרוצים לחשבון אחד. כל רכב מסודר בנפרד.',
-                    },
-                  },
-                ],
+                inLanguage: 'he-IL',
+                mainEntity: HOMEPAGE_FAQS.map((f) => ({
+                  '@type': 'Question',
+                  name: f.q,
+                  acceptedAnswer: { '@type': 'Answer', text: f.a },
+                })),
               },
             ],
           }),
@@ -185,33 +190,36 @@ export default function Home() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-6">
-            <a href="#features" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1e3a5f]' : 'text-white/80 hover:text-white'}`}>
+            <a href="#features" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1B4E8A]' : 'text-white/80 hover:text-white'}`}>
               תכונות
             </a>
-            <a href="#how-it-works" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1e3a5f]' : 'text-white/80 hover:text-white'}`}>
+            <a href="#how-it-works" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1B4E8A]' : 'text-white/80 hover:text-white'}`}>
               איך זה עובד
             </a>
-            <a href="#garages" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1e3a5f]' : 'text-white/80 hover:text-white'}`}>
+            <a href="#garages" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1B4E8A]' : 'text-white/80 hover:text-white'}`}>
               למוסכים
             </a>
-            <a href="#faq" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1e3a5f]' : 'text-white/80 hover:text-white'}`}>
+            <a href="#faq" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1B4E8A]' : 'text-white/80 hover:text-white'}`}>
               שאלות נפוצות
             </a>
-            <Link href="/blog" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1e3a5f]' : 'text-white/80 hover:text-white'}`}>
+            <Link href="/blog" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1B4E8A]' : 'text-white/80 hover:text-white'}`}>
               בלוג
+            </Link>
+            <Link href="/about" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1B4E8A]' : 'text-white/80 hover:text-white'}`}>
+              אודות
             </Link>
             <div className="w-px h-6 bg-gray-300/30 mx-1" />
             <Link
               href="/auth/login"
               className={`px-5 py-2 text-sm font-medium rounded-lg transition ${
-                isScrolled ? 'text-[#1e3a5f] hover:bg-gray-100' : 'text-white hover:bg-white/10'
+                isScrolled ? 'text-[#1B4E8A] hover:bg-gray-100' : 'text-white hover:bg-white/10'
               }`}
             >
               כניסה
             </Link>
             <Link
               href="/auth/signup"
-              className="px-5 py-2.5 bg-[#0d9488] text-white text-sm font-bold rounded-lg hover:bg-[#0b7e74] transition shadow-md shadow-teal-500/20"
+              className="px-5 py-2.5 bg-[#F97316] text-white text-sm font-bold rounded-lg hover:bg-[#EA6A0B] transition shadow-md shadow-orange-500/20"
             >
               הרשמה בחינם
             </Link>
@@ -233,16 +241,17 @@ export default function Home() {
         {mobileMenuOpen && (
           <div className="md:hidden bg-white shadow-xl border-t">
             <div className="px-4 py-3 space-y-1">
-              <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">תכונות</a>
-              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">איך זה עובד</a>
-              <a href="#garages" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">למוסכים</a>
-              <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">שאלות נפוצות</a>
-              <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#fef7ed]/50 rounded-lg text-base">בלוג</Link>
+              <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#F3F6FA]/50 rounded-lg text-base">תכונות</a>
+              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#F3F6FA]/50 rounded-lg text-base">איך זה עובד</a>
+              <a href="#garages" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#F3F6FA]/50 rounded-lg text-base">למוסכים</a>
+              <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#F3F6FA]/50 rounded-lg text-base">שאלות נפוצות</a>
+              <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#F3F6FA]/50 rounded-lg text-base">בלוג</Link>
+              <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#F3F6FA]/50 rounded-lg text-base">אודות אוטולוג</Link>
               <hr className="my-2" />
-              <Link href="/auth/login" className="block px-4 py-3 text-[#1e3a5f] font-medium hover:bg-[#fef7ed]/50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/auth/login" className="block px-4 py-3 text-[#1B4E8A] font-medium hover:bg-[#F3F6FA]/50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>
                 כניסה
               </Link>
-              <Link href="/auth/signup" className="block px-4 py-3 bg-[#0d9488] text-white text-center font-bold rounded-lg" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/auth/signup" className="block px-4 py-3 bg-[#F97316] text-white text-center font-bold rounded-lg" onClick={() => setMobileMenuOpen(false)}>
                 הרשמה בחינם
               </Link>
             </div>
@@ -254,7 +263,7 @@ export default function Home() {
       {/* ============ HERO ============ */}
       <section className="relative min-h-[85vh] sm:min-h-[100vh] flex items-center overflow-hidden">
         {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0f2b47] via-[#1e3a5f] to-[#0d7377]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0f2b47] via-[#1B4E8A] to-[#0d7377]" />
         <div className="absolute inset-0 opacity-[0.04]" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h60v60H0z' fill='none'/%3E%3Cpath d='M30 5l5 10h10l-8 6 3 10-10-7-10 7 3-10-8-6h10z' fill='white' opacity='.3'/%3E%3C/svg%3E")`,
         }} />
@@ -268,7 +277,7 @@ export default function Home() {
             {/* Text content */}
             <div className="text-right">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-                כל מה שצריך{' '}
+                אוטולוג — כל מה שצריך{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-l from-teal-300 to-cyan-300">
                   לרכב שלך
                 </span>
@@ -276,15 +285,15 @@ export default function Home() {
               </h1>
 
               <p className="text-base sm:text-lg text-gray-300 leading-relaxed mb-8 max-w-lg">
-                תזכורות חכמות, סריקת מסמכים עם AI, מעקב הוצאות, קביעת תורים, היסטוריית טיפולים ושירות חירום — הכל בפלטפורמה דיגיטלית אחת, בחינם.
+                אוטולוג היא הפלטפורמה הישראלית המובילה לניהול רכב חכם. תזכורות חכמות, סריקת מסמכים עם AI, מעקב הוצאות, קביעת תורים, היסטוריית טיפולים ושירות חירום — הכל בפלטפורמה דיגיטלית אחת, בחינם.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 mb-10">
                 <Link
                   href="/auth/signup"
-                  className="px-6 sm:px-8 py-3.5 sm:py-4 bg-[#0d9488] text-white rounded-xl font-bold text-base sm:text-lg hover:bg-[#0b7e74] transition-all shadow-xl shadow-teal-600/30 hover:shadow-teal-600/40 hover:-translate-y-0.5 text-center"
+                  className="px-6 sm:px-8 py-3.5 sm:py-4 bg-[#F97316] text-white rounded-xl font-bold text-base sm:text-lg hover:bg-[#EA6A0B] transition-all shadow-xl shadow-orange-600/30 hover:shadow-orange-600/40 hover:-translate-y-0.5 text-center"
                 >
-                  התחילו בחינם — ללא כרטיס אשראי
+                  התחילו באוטולוג בחינם
                 </Link>
                 <Link
                   href="/auth/login"
@@ -407,18 +416,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Trust bar removed — badges already in hero */}
-
       {/* ============ FEATURES ============ */}
       <section id="features" className="py-20 sm:py-28 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <span className="text-teal-600 font-semibold text-sm mb-2 block">למה AutoLog?</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-4">
+            <span className="text-teal-600 font-semibold text-sm mb-2 block">למה אוטולוג?</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] mb-4">
               די עם הסטרס מהרכב
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto text-lg">
-              AutoLog דואגת לכל ההתעסקות עם הרכב — תזכורות לטסט וביטוח, סריקת מסמכים עם AI, מעקב הוצאות, היסטוריית טיפולים. הכל חכם, אוטומטי, וחינם.
+              אוטולוג דואגת לכל ההתעסקות עם הרכב — תזכורות לטסט וביטוח, סריקת מסמכים עם AI, מעקב הוצאות, היסטוריית טיפולים. הכל חכם, אוטומטי, וחינם.
             </p>
           </div>
 
@@ -426,49 +433,49 @@ export default function Home() {
             <FeatureCard
               icon={Camera}
               title="סריקת מסמכים עם AI"
-              description="צלמו ביטוח, טסט או קבלה — הבינה המלאכותית שולפת את כל הפרטים אוטומטית ושומרת אותם במערכת."
+              description="צלמו ביטוח, טסט או קבלה — הבינה המלאכותית של אוטולוג שולפת את כל הפרטים אוטומטית ושומרת אותם במערכת."
               delay={0}
             />
             <FeatureCard
               icon={Bell}
               title="תזכורות חכמות"
-              description="התראות אוטומטיות לפני שפג תוקף הטסט, הביטוח או הרישיון. לא תפספסו שום תאריך חשוב."
+              description="התראות אוטומטיות לפני שפג תוקף הטסט, הביטוח או הרישיון. עם אוטולוג לא תפספסו שום תאריך חשוב."
               delay={100}
             />
             <FeatureCard
               icon={Sparkles}
               title="עוזר AI אישי לרכב"
-              description="שאלו כל שאלה על הרכב שלכם — רעש מוזר, נורת חיווי, מחיר טיפול. ה-AI מכיר את הרכב ועוזר מיד."
+              description="שאלו את אוטולוג כל שאלה על הרכב שלכם — רעש מוזר, נורת חיווי, מחיר טיפול. ה-AI מכיר את הרכב ועוזר מיד."
               delay={200}
             />
             <FeatureCard
               icon={CalendarCheck}
               title="קביעת תורים אונליין"
-              description="בקרוב — תזמנו אבחון או טיפול במוסך ישירות מהמערכת. ללא טלפונים, ללא המתנה."
+              description="בקרוב באוטולוג — תזמנו אבחון או טיפול במוסך ישירות מהמערכת. ללא טלפונים, ללא המתנה."
               delay={300}
             />
             <FeatureCard
               icon={Mic}
               title="הקלטה קולית"
-              description="במקום להקליד — פשוט דברו. בכל שדה באפליקציה אפשר להקליט בעברית והטקסט נכתב לבד."
+              description="במקום להקליד — פשוט דברו. בכל שדה באוטולוג אפשר להקליט בעברית והטקסט נכתב לבד."
               delay={400}
             />
             <FeatureCard
               icon={ShekelSign}
               title="מעקב הוצאות"
-              description="תעדו כל הוצאה על הרכב — דלק, ביטוח, תיקונים. תמיד תדעו כמה הרכב באמת עולה."
+              description="תעדו באוטולוג כל הוצאה על הרכב — דלק, ביטוח, תיקונים. תמיד תדעו כמה הרכב באמת עולה."
               delay={500}
             />
             <FeatureCard
               icon={ClipboardCheck}
               title="דוחות אבחון דיגיטליים"
-              description="דוח אבחון מפורט מהמוסך ישירות לנייד — עם ציונים, תמונות והמלצות לטיפול."
+              description="דוח אבחון מפורט מהמוסך ישירות לאוטולוג — עם ציונים, תמונות והמלצות לטיפול."
               delay={600}
             />
             <FeatureCard
               icon={HeartPulse}
               title="SOS חירום"
-              description="בקרוב — נתקעתם בדרך? לחיצה אחת שולחת קריאת עזרה למוסך שלכם או לשירות חירום הקרוב."
+              description="נתקעתם בדרך? לחיצה אחת שולחת קריאת עזרה למוסך שלכם או לשירות חירום הקרוב."
               delay={700}
             />
           </div>
@@ -480,11 +487,11 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="text-teal-600 font-semibold text-sm mb-2 block">פשוט וקל</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-4">
-              מתחילים בשלושה צעדים
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] mb-4">
+              מתחילים באוטולוג בשלושה צעדים
             </h2>
             <p className="text-gray-500 max-w-xl mx-auto">
-              ללא הורדת אפליקציה. ללא כרטיס אשראי. פשוט נרשמים ומתחילים.
+              ללא הורדת אפליקציה. ללא כרטיס אשראי. פשוט נרשמים לאוטולוג ומתחילים.
             </p>
           </div>
 
@@ -493,21 +500,21 @@ export default function Home() {
               {
                 num: '01',
                 title: 'הרשמה מהירה',
-                desc: 'נרשמים עם מייל ומספר טלפון. תוך 30 שניות החשבון מוכן.',
+                desc: 'נרשמים לאוטולוג עם מייל ומספר טלפון. תוך 30 שניות החשבון מוכן.',
                 icon: Smartphone,
                 color: 'from-blue-500 to-blue-600',
               },
               {
                 num: '02',
                 title: 'הוספת הרכבים שלכם',
-                desc: 'מוסיפים את הרכב עם מספר רישוי — המערכת שולפת את כל הפרטים אוטומטית.',
+                desc: 'מוסיפים את הרכב עם מספר רישוי — אוטולוג שולפת את כל הפרטים אוטומטית.',
                 icon: Car,
                 color: 'from-teal-500 to-teal-600',
               },
               {
                 num: '03',
                 title: 'שליטה מלאה',
-                desc: 'תזכורות, תיעוד, תורים ומעקב הוצאות — הכל מסודר ומנוהל בשבילכם.',
+                desc: 'תזכורות, תיעוד, תורים ומעקב הוצאות — הכל מסודר ומנוהל בשבילכם באוטולוג.',
                 icon: CheckCircle2,
                 color: 'from-green-500 to-green-600',
               },
@@ -521,7 +528,7 @@ export default function Home() {
                   <step.icon className="w-9 h-9 text-white" />
                 </div>
                 <div className="text-xs font-bold text-teal-600 mb-2">שלב {step.num}</div>
-                <h3 className="text-xl font-bold text-[#1e3a5f] mb-3">{step.title}</h3>
+                <h3 className="text-xl font-bold text-[#1B4E8A] mb-3">{step.title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
               </div>
             ))}
@@ -530,7 +537,7 @@ export default function Home() {
       </section>
 
       {/* ============ HIGHLIGHTS ============ */}
-      <section ref={stats.ref} className="py-16 bg-[#1e3a5f]">
+      <section ref={stats.ref} className="py-16 bg-[#1B4E8A]">
         <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-1000 ${stats.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
             {[
@@ -554,7 +561,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <span className="text-teal-600 font-semibold text-sm mb-2 block">מה אומרים עלינו</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f]">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A]">
               הלקוחות שלנו מדברים
             </h2>
           </div>
@@ -564,19 +571,19 @@ export default function Home() {
               {
                 name: 'דני כהן',
                 role: 'בעל 3 רכבים',
-                text: 'מאז שאני משתמש ב-AutoLog אני לא מפספס שום תאריך. הטסט, הביטוח — הכל מסודר. פשוט שקט נפשי.',
+                text: 'מאז שאני משתמש באוטולוג אני לא מפספס שום תאריך. הטסט, הביטוח — הכל מסודר. פשוט שקט נפשי.',
                 stars: 5,
               },
               {
                 name: 'מיכל לוי',
                 role: 'מנהלת צי רכבים',
-                text: 'אנחנו מנהלים 20 רכבים דרך המערכת. ההיסטוריה המלאה לכל רכב חוסכת לנו שעות של עבודה ידנית בכל חודש.',
+                text: 'אנחנו מנהלים 20 רכבים דרך אוטולוג. ההיסטוריה המלאה לכל רכב חוסכת לנו שעות של עבודה ידנית בכל חודש.',
                 stars: 5,
               },
               {
                 name: 'יוסי אברהם',
                 role: 'בעל מוסך',
-                text: 'הדוחות הדיגיטליים שינו לנו את העסק. הלקוחות מקבלים דוח מקצועי ישר לנייד והמוניטין שלנו עלה.',
+                text: 'הדוחות הדיגיטליים של אוטולוג שינו לנו את העסק. הלקוחות מקבלים דוח מקצועי ישר לנייד והמוניטין שלנו עלה.',
                 stars: 5,
               },
             ].map((t, i) => (
@@ -590,9 +597,9 @@ export default function Home() {
                     <Star key={j} size={16} className="text-amber-400 fill-amber-400" />
                   ))}
                 </div>
-                <p className="text-gray-600 text-sm leading-relaxed mb-5">"{t.text}"</p>
+                <p className="text-gray-600 text-sm leading-relaxed mb-5">&quot;{t.text}&quot;</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#1e3a5f] to-[#0d9488] rounded-full flex items-center justify-center text-white text-sm font-bold">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#1B4E8A] to-[#2E77D0] rounded-full flex items-center justify-center text-white text-sm font-bold">
                     {t.name[0]}
                   </div>
                   <div>
@@ -613,17 +620,17 @@ export default function Home() {
             {/* Content */}
             <div>
               <span className="text-emerald-600 font-semibold text-sm mb-2 block">למוסכים ובעלי עסקים</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-6">
-                הפכו את המוסך שלכם לדיגיטלי
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] mb-6">
+                הפכו את המוסך שלכם לדיגיטלי עם אוטולוג
               </h2>
               <p className="text-gray-500 text-lg leading-relaxed mb-8">
-                הצטרפו כמוסך שותף וקבלו כלים מתקדמים לניהול הלקוחות, האבחונים והתורים — בחינם.
+                הצטרפו לאוטולוג כמוסך שותף וקבלו כלים מתקדמים לניהול הלקוחות, האבחונים והתורים — בחינם.
               </p>
 
               <div className="space-y-5 mb-8">
                 {[
                   { icon: ClipboardCheck, title: 'דוחות אבחון דיגיטליים', desc: 'יצירת דוחות מקצועיים בשניות עם הקלטה קולית, תמונות וציונים.' },
-                  { icon: CalendarCheck, title: 'ניהול תורים חכם', desc: 'הלקוחות קובעים תור ישירות מהמערכת. ללא טלפונים מיותרים.' },
+                  { icon: CalendarCheck, title: 'ניהול תורים חכם', desc: 'הלקוחות קובעים תור ישירות מאוטולוג. ללא טלפונים מיותרים.' },
                   { icon: Star, title: 'בניית מוניטין', desc: 'דירוגים וביקורות מלקוחות מרוצים — ובליטה בין המוסכים באזור.' },
                   { icon: TrendingUp, title: 'ניתוח ביצועים', desc: 'דשבורד עם סטטיסטיקות, הכנסות ומעקב אחר ביצועי המוסך.' },
                 ].map(({ icon: Icon, title, desc }) => (
@@ -632,7 +639,7 @@ export default function Home() {
                       <Icon className="w-5 h-5 text-emerald-600" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-[#1e3a5f] text-sm mb-1">{title}</h3>
+                      <h3 className="font-bold text-[#1B4E8A] text-sm mb-1">{title}</h3>
                       <p className="text-gray-500 text-sm">{desc}</p>
                     </div>
                   </div>
@@ -652,12 +659,12 @@ export default function Home() {
             <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-8 border border-emerald-100">
               <div className="bg-white rounded-2xl shadow-lg p-6 mb-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-[#1e3a5f]"><BarChart3 size={16} className="inline" /> סיכום חודשי</h3>
+                  <h3 className="font-bold text-[#1B4E8A]"><BarChart3 size={16} className="inline" /> סיכום חודשי</h3>
                   <span className="text-xs text-gray-400">מרץ 2026</span>
                 </div>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div className="bg-gray-50 rounded-xl p-3">
-                    <p className="text-2xl font-bold text-[#1e3a5f]">47</p>
+                    <p className="text-2xl font-bold text-[#1B4E8A]">47</p>
                     <p className="text-xs text-gray-500">אבחונים</p>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3">
@@ -665,21 +672,21 @@ export default function Home() {
                     <p className="text-xs text-gray-500">דירוג</p>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3">
-                    <p className="text-2xl font-bold text-[#1e3a5f]">92%</p>
+                    <p className="text-2xl font-bold text-[#1B4E8A]">92%</p>
                     <p className="text-xs text-gray-500">חזרו שוב</p>
                   </div>
                 </div>
               </div>
 
               <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h3 className="font-bold text-[#1e3a5f] mb-3"><Calendar size={16} className="inline" /> תורים להיום</h3>
+                <h3 className="font-bold text-[#1B4E8A] mb-3"><Calendar size={16} className="inline" /> תורים להיום</h3>
                 <div className="space-y-3">
                   {[
                     { time: '09:00', name: 'דני כהן', type: 'טסט שנתי', color: 'bg-blue-100 text-blue-700' },
                     { time: '10:30', name: 'שרה מזרחי', type: 'אבחון כללי', color: 'bg-teal-100 text-teal-700' },
                     { time: '12:00', name: 'אבי רוזן', type: 'החלפת שמן', color: 'bg-amber-100 text-amber-700' },
                   ].map(item => (
-                    <div key={item.time} className="flex items-center gap-3 p-2 hover:bg-[#fef7ed]/50 rounded-lg transition">
+                    <div key={item.time} className="flex items-center gap-3 p-2 hover:bg-[#F3F6FA]/50 rounded-lg transition">
                       <span className="text-xs font-mono text-gray-400 w-10">{item.time}</span>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-800">{item.name}</p>
@@ -698,42 +705,17 @@ export default function Home() {
       <section id="faq" ref={faq.ref} className="py-20 sm:py-28 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <span className="text-teal-600 font-semibold text-sm mb-2 block">שאלות נפוצות</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-4">
+            <span className="text-teal-600 font-semibold text-sm mb-2 block">שאלות נפוצות על אוטולוג</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] mb-4">
               תשובות לשאלות הנפוצות שלכם
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto">
-              כל מה שאנחנו נשאלים הכי הרבה על AutoLog — במקום אחד.
+              כל מה שאנחנו נשאלים הכי הרבה על אוטולוג — במקום אחד.
             </p>
           </div>
 
           <div className={`space-y-3 transition-all duration-1000 ${faq.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            {[
-              {
-                q: 'האם AutoLog בחינם?',
-                a: 'כן! AutoLog בחינם לחלוטין לכל המשתמשים. אין דמי הרשמה, אין דמי חודשיים — זה חינם לתמיד. גם אחרי שנים של שימוש, אף שקל לא יוצא מהכיס.',
-              },
-              {
-                q: 'האם צריך להוריד אפליקציה?',
-                a: 'לא צריך! AutoLog עובדת ישירות דרך הדפדפן בטלפון. פשוט נכנסים לאתר, נרשמים ומתחילים. אפשר גם להוסיף קיצור דרך למסך הבית וזה יעבוד בדיוק כמו אפליקציה.',
-              },
-              {
-                q: 'איך המוסך שלי מצטרף?',
-                a: 'יש דף ייעודי להצטרפות מוסכים בשם "למוסכים" בעמוד הבית. לחיצה, מילוי טופס קצר עם פרטי המוסך, ואנחנו חוזרים אליכם תוך 24 שעות. ההצטרפות חינמית לחלוטין.',
-              },
-              {
-                q: 'האם המידע שלי מאובטח?',
-                a: 'פרטיות ואבטחה הם עדיפות #1 שלנו. כל המידע מוצפן בסטנדרטים בנקאיים (SSL/TLS) ומאוחסן בשרתים מאובטחים. הנתונים שלכם לעולם לא נמכרים לצד שלישי.',
-              },
-              {
-                q: 'האם אפשר לנהל כמה רכבים?',
-                a: 'בהחלט! אפשר להוסיף כמה רכבים שרוצים לחשבון אחד. תזכורות, מסמכים, אבחונים — הכל מסודר בנפרד לכל רכב. מושלם למשפחות עם כמה רכבים או לבעלי צי קטן.',
-              },
-              {
-                q: 'איך קובעים תור למוסך?',
-                a: 'אנחנו כרגע מחברים מוסכים שותפים לפלטפורמה. בקרוב תוכלו לקבוע תור ישירות מהאפליקציה — בלחיצה אחת, בלי טלפונים. בינתיים, AutoLog כבר עובדת במלוא העוצמה לניהול הרכבים, מסמכים, טיפולים והוצאות.',
-              },
-            ].map((item, i) => (
+            {HOMEPAGE_FAQS.map((item, i) => (
               <button
                 key={i}
                 onClick={() => setExpandedFAQ(expandedFAQ === i ? null : i)}
@@ -741,7 +723,7 @@ export default function Home() {
               >
                 <div className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl p-5 transition">
                   <div className="flex items-start justify-between gap-4">
-                    <h3 className="font-bold text-[#1e3a5f] text-base leading-snug">{item.q}</h3>
+                    <h3 className="font-bold text-[#1B4E8A] text-base leading-snug">{item.q}</h3>
                     <ChevronDown
                       size={20}
                       className={`flex-shrink-0 text-teal-600 transition-transform duration-300 ${
@@ -762,12 +744,12 @@ export default function Home() {
 
           <div className="mt-12 p-8 bg-gradient-to-br from-teal-50 to-emerald-50 rounded-2xl border border-teal-100 text-center">
             <p className="text-gray-700 font-medium mb-4">
-              עוד שאלה? אנחנו כאן בשבילכם!
+              עוד שאלה על אוטולוג? אנחנו כאן בשבילכם!
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <a
                 href="mailto:info@autolog.click"
-                className="px-6 py-2.5 bg-[#0d9488] text-white font-bold rounded-lg hover:bg-[#0b7e74] transition inline-flex items-center justify-center gap-2"
+                className="px-6 py-2.5 bg-[#2E77D0] text-white font-bold rounded-lg hover:bg-[#2563B0] transition inline-flex items-center justify-center gap-2"
               >
                 <Mail size={16} />
                 שלח לנו מייל
@@ -778,13 +760,13 @@ export default function Home() {
       </section>
 
       {/* ============ BLOG SHOWCASE ============ */}
-      <section className="py-20 sm:py-24 bg-gradient-to-b from-white to-[#fef7ed]">
+      <section className="py-20 sm:py-24 bg-gradient-to-b from-white to-[#F3F6FA]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-700 bg-teal-50 px-4 py-1.5 rounded-full mb-5">
             <BookOpen size={14} />
-            הבלוג שלנו
+            הבלוג של אוטולוג
           </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-4 leading-tight">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] mb-4 leading-tight">
             מדריכים וטיפים לבעלי רכב בישראל
           </h2>
           <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto mb-10">
@@ -799,7 +781,7 @@ export default function Home() {
             <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-amber-600 bg-amber-50 px-3 py-1 rounded-full mx-auto mb-3 w-max">
               ⭐ המדריך המקיף ביותר
             </div>
-            <h3 className="text-xl sm:text-2xl font-extrabold text-[#1e3a5f] mb-2 group-hover:text-teal-700 transition text-center">
+            <h3 className="text-xl sm:text-2xl font-extrabold text-[#1B4E8A] mb-2 group-hover:text-teal-700 transition text-center">
               המדריך השלם לבעל רכב חדש בישראל 2026
             </h3>
             <p className="text-sm text-gray-500 text-center leading-relaxed">
@@ -821,7 +803,7 @@ export default function Home() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-400">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 size={14} className="text-teal-500" />
-              <span>24+ מאמרים מקצועיים</span>
+              <span>33+ מאמרים מקצועיים</span>
             </div>
             <div className="flex items-center gap-1.5">
               <CheckCircle2 size={14} className="text-teal-500" />
@@ -838,7 +820,7 @@ export default function Home() {
       {/* ============ CTA ============ */}
       <section ref={cta.ref} className="py-20 sm:py-24">
         <div className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-1000 ${cta.isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-          <div className="bg-gradient-to-br from-[#1e3a5f] via-[#244b75] to-[#0d7377] rounded-3xl p-6 sm:p-14 text-center text-white relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[#1B4E8A] via-[#244b75] to-[#0d7377] rounded-3xl p-6 sm:p-14 text-center text-white relative overflow-hidden">
             {/* Decorative */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-400/10 rounded-full blur-3xl" />
@@ -846,16 +828,16 @@ export default function Home() {
             <div className="relative z-10">
               <LogoIcon size={48} className="mx-auto mb-6" />
               <h2 className="text-3xl sm:text-4xl font-extrabold mb-4">
-                מוכנים לנהל את הרכב חכם?
+                מוכנים לנהל את הרכב חכם עם אוטולוג?
               </h2>
               <p className="text-lg text-gray-300 mb-8 max-w-lg mx-auto">
-                הצטרפו לאלפי בעלי רכב שכבר חוסכים זמן וכסף עם AutoLog. ההרשמה חינמית ותמיד תישאר כזו.
+                הצטרפו לבעלי רכב שכבר חוסכים זמן וכסף עם אוטולוג. ההרשמה לאוטולוג חינמית ותמיד תישאר כזו.
               </p>
               <Link
                 href="/auth/signup"
-                className="inline-block px-10 py-4 bg-white text-[#1e3a5f] font-bold text-lg rounded-xl hover:bg-gray-100 transition shadow-xl hover:-translate-y-0.5"
+                className="inline-block px-10 py-4 bg-white text-[#1B4E8A] font-bold text-lg rounded-xl hover:bg-gray-100 transition shadow-xl hover:-translate-y-0.5"
               >
-                הרשמה עכשיו — בחינם
+                הרשמה לאוטולוג עכשיו — בחינם
               </Link>
             </div>
           </div>
@@ -872,7 +854,7 @@ export default function Home() {
             <div>
               <Logo size="md" dark className="mb-4" />
               <p className="text-gray-400 text-sm leading-relaxed mb-4">
-                הפלטפורמה המובילה בישראל לניהול רכבים חכם. כל המסמכים, התזכורות והשירותים — במקום אחד.
+                אוטולוג — הפלטפורמה המובילה בישראל לניהול רכבים חכם. כל המסמכים, התזכורות והשירותים — במקום אחד.
               </p>
 
             </div>
@@ -884,9 +866,10 @@ export default function Home() {
                 <li><a href="#features" className="hover:text-white transition">תכונות</a></li>
                 <li><a href="#how-it-works" className="hover:text-white transition">איך זה עובד</a></li>
                 <li><a href="#garages" className="hover:text-white transition">למוסכים</a></li>
+                <li><Link href="/about" className="hover:text-white transition">אודות אוטולוג</Link></li>
                 <li><Link href="/blog" className="hover:text-white transition">בלוג</Link></li>
                 <li><Link href="/help" className="hover:text-white transition">מדריך משתמש</Link></li>
-                <li><Link href="/auth/signup" className="hover:text-white transition">הרשמה</Link></li>
+                <li><Link href="/auth/signup" className="hover:text-white transition">הרשמה לאוטולוג</Link></li>
               </ul>
             </div>
 
@@ -903,7 +886,7 @@ export default function Home() {
 
             {/* Contact */}
             <div>
-              <h3 className="font-bold mb-4 text-sm">צור קשר</h3>
+              <h3 className="font-bold mb-4 text-sm">צור קשר עם אוטולוג</h3>
               <ul className="space-y-3 text-gray-400 text-sm">
                 <li className="flex items-center gap-2">
                   <Mail size={14} />
@@ -920,7 +903,7 @@ export default function Home() {
           <div className="border-t border-gray-700 pt-8">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
               <p className="text-gray-400 text-sm">
-                © 2026 AutoLog. כל הזכויות שמורות.
+                © 2026 אוטולוג (AutoLog). כל הזכויות שמורות.
               </p>
               <div className="flex gap-4 text-gray-400 text-sm">
                 <a href="mailto:info@autolog.click" className="hover:text-white transition flex items-center gap-1.5">

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
 
 const post = getPostBySlug('matai-hatest-shel-harechev-sheli')!;
 
@@ -19,7 +20,8 @@ export const metadata: Metadata = {
     publishedTime: post.publishedAt,
     authors: [post.author],
     locale: 'he_IL',
-    siteName: 'AutoLog',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
   },
   twitter: {
     card: 'summary_large_image',
@@ -30,9 +32,9 @@ export const metadata: Metadata = {
 
 export default function BlogPostPage() {
   return (
-    <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
       {/* Header */}
-      <header className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="hover:opacity-80 transition">
             <Logo size="sm" />
@@ -52,7 +54,7 @@ export default function BlogPostPage() {
         </span>
 
         {/* Title */}
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] leading-tight mb-4">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] leading-tight mb-4">
           {post.title}
         </h1>
 
@@ -76,29 +78,29 @@ export default function BlogPostPage() {
             במדריך הזה נסביר בדיוק איך לבדוק מתי הטסט של הרכב שלך, כמה זה עולה, ואיך להימנע מלפספס את המועד.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה זה בכלל טסט?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">מה זה בכלל טסט?</h2>
           <p>
             הטסט (מבחן שנתי לרכב) הוא בדיקה חובה שכל רכב בישראל חייב לעבור בכל שנה כדי לחדש את רישיון הרכב.
             הבדיקה כוללת בדיקת בלמים, תאורה, פליטות, מערכת היגוי, צמיגים, ועוד. ללא טסט בתוקף, הרכב לא מורשה לנסוע על הכביש ואתם חשופים לקנסות ולביטול ביטוח.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">איך בודקים מתי הטסט של הרכב שלי?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">איך בודקים מתי הטסט של הרכב שלי?</h2>
           <p>
             יש כמה דרכים לבדוק את תאריך הטסט:
           </p>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">1. רישיון הרכב</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">1. רישיון הרכב</h3>
           <p>
             הדרך הפשוטה ביותר — הסתכלו על רישיון הרכב (הכרטיסייה). תאריך התוקף מופיע בצד הקדמי.
             אם הרישיון פג — הרכב צריך טסט לפני חידוש.
           </p>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">2. אתר משרד התחבורה</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">2. אתר משרד התחבורה</h3>
           <p>
             באתר gov.il אפשר להזין מספר רישוי ולקבל את תאריך הטסט הבא. השירות חינמי ופתוח לכולם.
           </p>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">3. AutoLog — תזכורת אוטומטית</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">3. AutoLog — תזכורת אוטומטית</h3>
           <p>
             ב-AutoLog אתם מוסיפים את הרכב פעם אחת — והמערכת מתזכרת אתכם אוטומטית לפני שהטסט פג.
             גם על ביטוח, גם על טיפול תקופתי. בלי לזכור כלום בעצמכם.
@@ -107,23 +109,23 @@ export default function BlogPostPage() {
           <div className="bg-teal-50 border border-teal-200 rounded-2xl p-6 my-6">
             <p className="font-bold text-teal-800 mb-2">טיפ מ-AutoLog</p>
             <p className="text-teal-700 text-sm">
-              ניתן לבצע את הטסט עד 60 יום לפני תאריך התפוגה ללא אובדן ימים. כלומר, אם הטסט פג ב-1 בספטמבר, אפשר לעשות אותו כבר ב-3 ביולי והטסט הבא עדיין יהיה ב-1 בספטמבר של השנה הבאה.
+              ניתן לבצע את הטסט עד 30 יום לפני תאריך התפוגה ללא אובדן ימים. כלומר, אם הטסט פג ב-1 בספטמבר, אפשר לעשות אותו כבר ב-2 באוגוסט והטסט הבא עדיין יהיה ב-1 בספטמבר של השנה הבאה.
             </p>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה טסט לרכב?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">כמה עולה טסט לרכב?</h2>
           <p>
             עלות הטסט הבסיסי לרכב פרטי ב-2026 נעה בין <strong>220-300 שקלים</strong>, תלוי במכון הרישוי ובאזור הגיאוגרפי (במכונים פרטיים בגוש דן עד 360 ש&quot;ח). אם הרכב נכשל ודורש בדיקה חוזרת, העלות סביב 130-180 שקלים.
             לרכבי 4x4 / SUV — 320-420 ש&quot;ח. למסחרי קל — 300-400 ש&quot;ח. שווה להשוות בין מכונים.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה קורה אם הטסט פג ואני ממשיך לנסוע?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">מה קורה אם הטסט פג ואני ממשיך לנסוע?</h2>
           <p>
             נהיגה ללא טסט בתוקף היא עבירה. הקנס על נהיגה ללא טסט הוא מאות שקלים, וזה עלול לגרום לביטול כיסוי ביטוחי.
             במקרה של תאונה ללא טסט בתוקף, חברת הביטוח עלולה לסרב לכסות את הנזקים. פשוט לא שווה את הסיכון.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">איך לא לפספס את הטסט — אף פעם?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">איך לא לפספס את הטסט — אף פעם?</h2>
           <p>
             הדרך הכי בטוחה היא להשתמש בתזכורות אוטומטיות. ב-AutoLog, ברגע שמוסיפים את הרכב, המערכת:
           </p>
@@ -134,7 +136,7 @@ export default function BlogPostPage() {
             <li>עוקבת גם אחרי ביטוח, טיפולים תקופתיים, ורישיון נהיגה</li>
           </ul>
 
-          <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
+          <div className="bg-[#1B4E8A] text-white rounded-2xl p-8 my-8 text-center">
             <h3 className="text-xl font-bold mb-3">לעולם לא תפספסו טסט שוב</h3>
             <p className="text-white/80 mb-5 text-sm">הצטרפו בחינם ל-AutoLog וקבלו תזכורות אוטומטיות על טסט, ביטוח וטיפולים.</p>
             <Link
@@ -146,15 +148,15 @@ export default function BlogPostPage() {
             </Link>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">שאלות נפוצות</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">שאלות נפוצות</h2>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">האם אפשר לעשות טסט בכל מכון רישוי?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">האם אפשר לעשות טסט בכל מכון רישוי?</h3>
           <p>כן, אפשר לעשות טסט בכל מכון רישוי מורשה בארץ, לא חייבים ללכת לאחד ספציפי.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">כמה זמן לוקח הטסט?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">כמה זמן לוקח הטסט?</h3>
           <p>הבדיקה עצמה לוקחת בין 20-40 דקות. עם זמן המתנה, כדאי לתכנן כשעה-שעתיים.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">מה לקחת איתי לטסט?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">מה לקחת איתי לטסט?</h3>
           <p>רישיון רכב, תעודת ביטוח חובה בתוקף, ואישור על תשלום אגרת רישוי. את הרכב כדאי להביא נקי.</p>
         </div>
 
@@ -190,7 +192,7 @@ export default function BlogPostPage() {
       </article>
 
       {/* Footer */}
-      <footer className="bg-[#1e3a5f] text-white/60 py-6 text-center text-sm">
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm">
         <p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p>
       </footer>
     </div>

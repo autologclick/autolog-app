@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-[#fef7ed] flex items-center justify-center">
+    <div className="min-h-screen bg-[#F3F6FA] flex items-center justify-center">
       <div className="text-center">
         {/* Animated Logo */}
         <div className="mb-6 inline-block animate-pulse">
@@ -17,7 +17,7 @@ export default function Loading() {
         </div>
 
         {/* Loading Text */}
-        <h2 className="text-lg font-semibold text-[#1e3a5f] mb-2">טוען...</h2>
+        <h2 className="text-lg font-semibold text-[#1B4E8A] mb-2">טוען...</h2>
         <p className="text-sm text-gray-500">אנא המתן רגע</p>
 
         {/* Skeleton Content */}

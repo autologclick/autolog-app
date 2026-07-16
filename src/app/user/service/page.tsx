@@ -64,9 +64,9 @@ export default function ServicePage() {
   const past = appointments.filter(a => ['completed', 'cancelled'].includes(a.status));
 
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white px-4 pt-6 pb-6 rounded-b-3xl">
+      <div className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white px-4 pt-6 pb-6 rounded-b-3xl">
         <h1 className="text-2xl font-bold mb-1">שירות</h1>
         <p className="text-sm text-white/70">{GARAGES_ENABLED ? 'בחר שירות והזמן תור למוסך' : 'שירותי רכב — חלק מהשירותים יהיו זמינים בקרוב'}</p>
       </div>
@@ -74,7 +74,7 @@ export default function ServicePage() {
       <div className="px-4 mt-4 space-y-5">
         {/* Service Cards — direct selection */}
         <div>
-          <h2 className="text-lg font-bold text-[#1e3a5f] mb-3">באיזה שירות אתה מעוניין?</h2>
+          <h2 className="text-lg font-bold text-[#1B4E8A] mb-3">באיזה שירות אתה מעוניין?</h2>
           <div className="grid grid-cols-2 gap-3">
             {serviceOptions.map(service => (
               <button
@@ -86,7 +86,7 @@ export default function ServicePage() {
                   <span className="absolute top-2 left-2"><ComingSoonBadge /></span>
                 )}
                 <div className="mb-2">{service.icon}</div>
-                <div className="font-bold text-sm text-[#1e3a5f]">{service.label}</div>
+                <div className="font-bold text-sm text-[#1B4E8A]">{service.label}</div>
                 <div className="mt-2 pt-2 border-t border-gray-100">
                   <span className="text-teal-600 font-bold text-sm">{service.price}</span>
                   {service.addon && (
@@ -109,7 +109,7 @@ export default function ServicePage() {
               <Hammer size={24} className="text-orange-500" />
             </div>
             <div className="flex-1">
-              <div className="font-bold text-[#1e3a5f]">פחחות — הצעות מחיר</div>
+              <div className="font-bold text-[#1B4E8A]">פחחות — הצעות מחיר</div>
               <div className="text-xs text-gray-500 mt-1 leading-relaxed">צלם את הנזק, קבל הצעות ממוסכים ובחר את הטובה ביותר</div>
             </div>
             <ChevronLeft size={18} className="text-gray-300 flex-shrink-0" />
@@ -119,7 +119,7 @@ export default function ServicePage() {
         {/* Upcoming Appointments */}
         {GARAGES_ENABLED ? (
         <div>
-          <h2 className="text-lg font-bold text-[#1e3a5f] mb-3 flex items-center gap-2">
+          <h2 className="text-lg font-bold text-[#1B4E8A] mb-3 flex items-center gap-2">
             <Calendar size={18} className="text-teal-600" />
             תורים קרובים
           </h2>
@@ -145,8 +145,8 @@ export default function ServicePage() {
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Wrench size={16} className="text-[#1e3a5f]" />
-                        <span className="font-bold text-[#1e3a5f]">{serviceTypeLabel(appt.serviceType)}</span>
+                        <Wrench size={16} className="text-[#1B4E8A]" />
+                        <span className="font-bold text-[#1B4E8A]">{serviceTypeLabel(appt.serviceType)}</span>
                       </div>
                       <span className={`inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full border ${cfg.color}`}>
                         {cfg.icon}
@@ -190,7 +190,7 @@ export default function ServicePage() {
         {past.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-bold text-[#1e3a5f] flex items-center gap-2">
+              <h2 className="text-lg font-bold text-[#1B4E8A] flex items-center gap-2">
                 <Clock size={18} className="text-gray-400" />
                 תורים קודמים
               </h2>
@@ -208,7 +208,7 @@ export default function ServicePage() {
                     <CheckCircle size={18} className="text-gray-400" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm font-semibold text-[#1e3a5f]">{serviceTypeLabel(appt.serviceType)}</div>
+                    <div className="text-sm font-semibold text-[#1B4E8A]">{serviceTypeLabel(appt.serviceType)}</div>
                     <div className="text-xs text-gray-400">
                       {appt.garage?.name} • {new Date(appt.date).toLocaleDateString('he-IL')}
                     </div>

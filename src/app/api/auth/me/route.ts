@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
       select: {
         id: true, email: true, fullName: true, phone: true,
         role: true, avatarUrl: true, licenseNumber: true,
+        licenseExpiry: true,
         idNumber: true, isActive: true, createdAt: true,
         // New profile fields
         city: true, address: true, dateOfBirth: true,
@@ -51,7 +52,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const {
-      fullName, phone, licenseNumber,
+      fullName, phone, licenseNumber, licenseExpiry,
       city, address, dateOfBirth, gender,
       preferredLanguage, avatarUrl, notificationPreferences,
     } = validation.data;
@@ -60,6 +61,7 @@ export async function PUT(req: NextRequest) {
     if (fullName !== undefined) updateData.fullName = fullName;
     if (phone !== undefined) updateData.phone = phone || null;
     if (licenseNumber !== undefined) updateData.licenseNumber = licenseNumber || null;
+    if (licenseExpiry !== undefined) updateData.licenseExpiry = licenseExpiry ? new Date(licenseExpiry) : null;
     if (city !== undefined) updateData.city = city || null;
     if (address !== undefined) updateData.address = address || null;
     if (dateOfBirth !== undefined) updateData.dateOfBirth = dateOfBirth ? new Date(dateOfBirth) : null;
@@ -75,7 +77,7 @@ export async function PUT(req: NextRequest) {
       data: updateData,
       select: {
         id: true, email: true, fullName: true, phone: true,
-        role: true, licenseNumber: true, avatarUrl: true,
+        role: true, licenseNumber: true, licenseExpiry: true, avatarUrl: true,
         city: true, address: true, dateOfBirth: true,
         gender: true, preferredLanguage: true,
         emailVerified: true, phoneVerified: true,

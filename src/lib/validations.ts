@@ -48,6 +48,7 @@ export const updateProfileSchema = z.object({
     .optional()
     .or(z.literal('')),
   licenseNumber: z.string().optional().or(z.literal('')),
+  licenseExpiry: z.string().nullable().optional().or(z.literal('')),
   city: z.string().max(100, 'שם עיר ארוך מדי').optional().or(z.literal('')),
   address: z.string().max(200, 'כתובת ארוכה מדי').optional().or(z.literal('')),
   dateOfBirth: z.string().optional().or(z.literal('')),

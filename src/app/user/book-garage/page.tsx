@@ -133,7 +133,14 @@ function getAvailableTimeSlots(garage: Garage | undefined, dateStr: string): { s
   const open = dayData.open || '08:00';
   const close = dayData.close || '18:00';
 
-  const filtered = ALL_TIME_SLOTS.filter(slot => slot >= open && slot < close);
+  // If booking for today, filter out time slots that already passed
+  const _now = new Date();
+  const _todayStr = _now.toISOString().split('T')[0];
+  const _isToday = dateStr === _todayStr;
+  const _nowStr = _isToday
+    ? `${String(_now.getHours()).padStart(2, '0')}:${String(_now.getMinutes()).padStart(2, '0')}`
+    : '00:00';
+  const filtered = ALL_TIME_SLOTS.filter(slot => slot >= open && slot < close && slot > _nowStr);
   return { slots: filtered, closed: false, hours: { open, close } };
 }
 
@@ -332,8 +339,8 @@ export default function BookGaragePage() {
     try {
       const res = await fetch(`/api/vehicles/lookup?plate=${plate}`);
       const data = await res.json();
-      if (res.ok && data.manufacturer) {
-        setInlineLookupData({ manufacturer: data.manufacturer, model: data.model, year: data.year, color: data.color });
+      if (res.ok && data.vehicle) {
+        setInlineLookupData({ manufacturer: data.vehicle.manufacturer, model: data.vehicle.model, year: data.vehicle.year, color: data.vehicle.color });
       } else {
         setInlineError(data.error || 'לא נמצאו נתונים לרכב זה');
       }
@@ -472,7 +479,7 @@ export default function BookGaragePage() {
 
   if (!GARAGES_ENABLED) {
     return (
-      <div className="bg-[#fef7ed] min-h-screen pb-24" dir="rtl">
+      <div className="bg-[#F3F6FA] min-h-screen pb-24" dir="rtl">
         <PageHeader title="הזמן שירות" variant="teal" backUrl="/user/service" />
         <div className="px-4 py-6 max-w-4xl mx-auto">
           <ComingSoonBanner
@@ -489,7 +496,7 @@ export default function BookGaragePage() {
   }
 
   return (
-    <div className="bg-[#fef7ed] min-h-screen pb-24" dir="rtl">
+    <div className="bg-[#F3F6FA] min-h-screen pb-24" dir="rtl">
       <PageHeader title="הזמן שירות" variant="teal" backUrl="/user/service" />
 
       <div className="px-4 py-6 max-w-4xl mx-auto space-y-6">
@@ -551,8 +558,8 @@ export default function BookGaragePage() {
 
             {/* Disclaimer */}
             <div className="bg-white border border-gray-200 rounded-2xl p-4 flex gap-3 items-start">
-              <div className="w-8 h-8 bg-[#1e3a5f]/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                <FileText size={16} className="text-[#1e3a5f]" />
+              <div className="w-8 h-8 bg-[#1B4E8A]/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                <FileText size={16} className="text-[#1B4E8A]" />
               </div>
               <div className="flex-1 text-right">
                 <p className="text-xs text-gray-600 leading-relaxed">
@@ -662,7 +669,7 @@ export default function BookGaragePage() {
             <h3 className="text-2xl font-bold text-gray-800 mb-2">התור נקבע בהצלחה!</h3>
             <p className="text-gray-500 text-sm mb-6">המוסך יאשר את התור בקרוב ותקבל התראה</p>
 
-            <div className="bg-[#fef7ed] rounded-2xl p-4 space-y-3 text-sm text-right mb-6">
+            <div className="bg-[#F3F6FA] rounded-2xl p-4 space-y-3 text-sm text-right mb-6">
               <div className="flex justify-between">
                 <span className="font-bold text-gray-800">{selectedGarage?.name}</span>
                 <span className="text-gray-600">מוסך:</span>
@@ -722,7 +729,7 @@ export default function BookGaragePage() {
                 {vehicles.length === 1 ? 'הרכב שלך' : 'בחר את הרכב שלך'}
               </label>
               {vehicles.length === 0 ? (
-                <div className="bg-[#fef7ed] rounded-2xl border-2 border-dashed border-teal-300 p-4">
+                <div className="bg-[#F3F6FA] rounded-2xl border-2 border-dashed border-teal-300 p-4">
                   <p className="text-sm font-bold text-gray-800 mb-2">הזן מספר רכב לאבחון</p>
                   <p className="text-xs text-gray-500 mb-3">נמצא את פרטי הרכב אוטומטית ממשרד התחבורה</p>
                   <div className="flex gap-2" dir="ltr">
@@ -932,7 +939,7 @@ export default function BookGaragePage() {
                 icon={<Check size={16} />}
                 className="w-full"
               >
-                אשר תור
+                קבע תור
               </Button>
             </div>
 

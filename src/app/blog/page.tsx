@@ -16,14 +16,15 @@ export const metadata: Metadata = {
     description: 'מדריכים, טיפים וכלים לבעלי רכב פרטי בישראל.',
     url: 'https://autolog.click/blog',
     type: 'website',
+    images: [{ url: '/og/blog.png', width: 1200, height: 630, alt: 'הבלוג של אוטולוג' }],
   },
 };
 
 export default function BlogPage() {
   return (
-    <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
       {/* Header */}
-      <header className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="hover:opacity-80 transition">
             <Logo size="sm" />
@@ -35,7 +36,7 @@ export default function BlogPage() {
       </header>
 
       {/* Hero */}
-      <section className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white pb-16 pt-8">
+      <section className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white pb-16 pt-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
             <BookOpen className="w-7 h-7" />
@@ -93,7 +94,7 @@ export default function BlogPage() {
 
               {/* Content */}
               <div className="px-6 pb-6">
-                <h2 className="text-lg font-bold text-[#1e3a5f] mb-2 group-hover:text-teal-700 transition-colors leading-snug">
+                <h2 className="text-lg font-bold text-[#1B4E8A] mb-2 group-hover:text-teal-700 transition-colors leading-snug">
                   {post.title}
                 </h2>
                 <p className="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-3">
@@ -128,7 +129,7 @@ export default function BlogPage() {
 
         {/* CTA */}
         <div className="mt-16 bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sm:p-12 text-center">
-          <h2 className="text-2xl font-extrabold text-[#1e3a5f] mb-3">רוצים לנהל את הרכב בצורה חכמה?</h2>
+          <h2 className="text-2xl font-extrabold text-[#1B4E8A] mb-3">רוצים לנהל את הרכב בצורה חכמה?</h2>
           <p className="text-gray-500 mb-6 max-w-lg mx-auto">
             הצטרפו בחינם ל-AutoLog — תזכורות טסט וביטוח, מעקב הוצאות, סריקת מסמכים עם AI ועוד.
           </p>
@@ -143,7 +144,7 @@ export default function BlogPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1e3a5f] text-white/60 py-6 text-center text-sm">
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm">
         <p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p>
       </footer>
     </div>

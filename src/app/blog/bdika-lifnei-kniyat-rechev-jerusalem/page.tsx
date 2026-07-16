@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
 
 const post = getPostBySlug('bdika-lifnei-kniyat-rechev-jerusalem')!;
 
@@ -19,15 +20,16 @@ export const metadata: Metadata = {
     publishedTime: post.publishedAt,
     authors: [post.author],
     locale: 'he_IL',
-    siteName: 'AutoLog',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
   },
   twitter: { card: 'summary_large_image', title: post.title, description: post.description },
 };
 
 export default function BlogPostPage() {
   return (
-    <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
-      <header className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white">
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
           <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1">
@@ -38,7 +40,7 @@ export default function BlogPostPage() {
 
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] leading-tight mb-4">{post.title}</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] leading-tight mb-4">{post.title}</h1>
 
         <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
           <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
@@ -53,7 +55,7 @@ export default function BlogPostPage() {
             השוואת מחירים, ועצות מקצועיות לבדיקה רכב יד שנייה בירושלים.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">למה בדיקת רכב יד שנייה בירושלים שונה?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">למה בדיקת רכב יד שנייה בירושלים שונה?</h2>
           <p>רכב שנהג בעיקר בירושלים סובל יותר מ:</p>
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li><strong>שחיקת בלמים</strong> — יותר מסע יורד-עולה</li>
@@ -63,36 +65,36 @@ export default function BlogPostPage() {
           </ul>
           <p>כשאתם בודקים רכב בירושלים, הקדישו תשומת לב מיוחדת לאלה.</p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">רשימת מכוני בדיקה מומלצים בירושלים</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">רשימת מכוני בדיקה מומלצים בירושלים</h2>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">1. קומפיוטסט ירושלים — תלפיות</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">1. קומפיוטסט ירושלים — תלפיות</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>כתובת:</strong> אזור תעשייה תלפיות</li>
             <li><strong>דירוג Google:</strong> 4.0+</li>
             <li><strong>מחיר:</strong> 680-850 ש&quot;ח</li>
           </ul>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">2. טכנו טסט ירושלים</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">2. טכנו טסט ירושלים</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>שני סניפים:</strong> מערב ירושלים ותלפיות</li>
             <li><strong>מחיר:</strong> 700-900 ש&quot;ח</li>
             <li><strong>התמחות:</strong> חשמליים והיברידיים</li>
           </ul>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">3. מבדק ירושלים</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">3. מבדק ירושלים</h3>
           <ul className="list-disc list-inside space-y-1 mr-4">
             <li><strong>כתובת:</strong> גבעת שאול</li>
             <li><strong>דירוג Google:</strong> 4.2</li>
             <li><strong>מחיר:</strong> 650-820 ש&quot;ח</li>
           </ul>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">4. מכון בדיקה הר חוצבים</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">4. מכון בדיקה הר חוצבים</h3>
           <p>קרוב לאזור היי-טק, מחיר 680-850 ש&quot;ח, חניה רחבה.</p>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">5. מבדק ארצי — סניף בית שמש (אלטרנטיבה זולה)</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">5. מבדק ארצי — סניף בית שמש (אלטרנטיבה זולה)</h3>
           <p>20-30 דקות נסיעה מירושלים. מחיר: 600-780 ש&quot;ח (חוסך ~80-150 ש&quot;ח).</p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה בדיקה לפני קנייה בירושלים?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">כמה עולה בדיקה לפני קנייה בירושלים?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li><strong>רכב פרטי בסיסי:</strong> 650-850 ש&quot;ח</li>
             <li><strong>4x4 / SUV:</strong> 800-1,050 ש&quot;ח</li>
@@ -102,7 +104,7 @@ export default function BlogPostPage() {
           </ul>
           <p>ירושלים בדרך כלל זולה ב-5-10% מתל אביב, אבל יקרה ממכונים בפריפריה.</p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">דברים מיוחדים שכדאי לבדוק ברכב מירושלים</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">דברים מיוחדים שכדאי לבדוק ברכב מירושלים</h2>
           <ol className="list-decimal list-inside space-y-2 mr-4">
             <li><strong>מצב הבלמים</strong> — לבקש מהבודק לבדוק לעומק את הדיסקיות והרפידות</li>
             <li><strong>חלודה בתחתית</strong> — לוודא שאין נזק קורוזיוני</li>
@@ -111,7 +113,7 @@ export default function BlogPostPage() {
             <li><strong>תקלות חוזרות במחשב</strong> — לבקש לראות היסטוריה מלאה ב-OBD</li>
           </ol>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">איך לבחור מכון בדיקה?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">איך לבחור מכון בדיקה?</h2>
           <p><strong>3 דברים שחייבים לבדוק לפני שמזמינים תור:</strong></p>
           <ol className="list-decimal list-inside space-y-2 mr-4">
             <li>דירוג Google של 4.0+ עם לפחות 100 ביקורות</li>
@@ -126,7 +128,7 @@ export default function BlogPostPage() {
             <li>הבדיקה &quot;תיקח 15 דקות&quot; — בדיקה אמיתית לוקחת לפחות שעה</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">אחרי הבדיקה — מה הלאה?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">אחרי הבדיקה — מה הלאה?</h2>
           <p>
             <strong>אם הבדיקה תקינה:</strong> תעדו את הדוח ב-AutoLog ושימרו אותו. זה יהיה חלק מהיסטוריית הרכב שלכם,
             ויעזור לכם לקבל מחיר טוב יותר כשתמכרו את הרכב בעתיד.
@@ -138,26 +140,26 @@ export default function BlogPostPage() {
             <li>ליקויים גדולים (5,000+ ש&quot;ח) — לרוב סימן לוותר על הקנייה</li>
           </ul>
 
-          <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
+          <div className="bg-[#1B4E8A] text-white rounded-2xl p-8 my-8 text-center">
             <h3 className="text-xl font-bold mb-3">תעדו את הרכב מהיום הראשון</h3>
             <p className="text-white/80 mb-5 text-sm">AutoLog שומרת את כל ההיסטוריה — דוח בדיקה, פוליסות, טיפולים. הרשמה חינמית.</p>
-            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg">
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-cream-500 text-white font-bold rounded-xl hover:bg-cream-600 transition shadow-lg">
               הרשמה בחינם<ArrowLeft size={16} />
             </Link>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">שאלות נפוצות</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">שאלות נפוצות</h2>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">האם יש מכוני בדיקה במזרח ירושלים?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">האם יש מכוני בדיקה במזרח ירושלים?</h3>
           <p>יש, אבל קומפיוטסט וטכנו טסט (הרשתות הגדולות) פועלים בעיקר בחלקים המערביים והדרומיים של העיר.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">מה זמני ההמתנה לתור בירושלים?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">מה זמני ההמתנה לתור בירושלים?</h3>
           <p>בימי שיא יכול להיות 3-5 ימים. ביום עבודה רגיל — לרוב אפשר באותו יום או ליום למחרת.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">האם הבדיקות בירושלים פחות מקצועיות מבתל אביב?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">האם הבדיקות בירושלים פחות מקצועיות מבתל אביב?</h3>
           <p>לא. רוב המכונים שייכים לאותן רשתות גדולות ועובדים לפי אותם סטנדרטים.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">האם כדאי לבדוק רכב מירושלים במכון בתל אביב?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">האם כדאי לבדוק רכב מירושלים במכון בתל אביב?</h3>
           <p>לא בהכרח. אם תוסיפו דלק, חניה ובזבוז זמן — לא חוסכים. הסיכון העיקרי הוא נסיעה ארוכה ברכב לא בדוק.</p>
         </div>
 
@@ -200,7 +202,7 @@ export default function BlogPostPage() {
         </div>
       </article>
 
-      <footer className="bg-[#1e3a5f] text-white/60 py-6 text-center text-sm">
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm">
         <p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p>
       </footer>
     </div>

@@ -28,7 +28,7 @@ export default function UserError({
         </div>
 
         {/* Heading */}
-        <h1 className="text-3xl font-bold text-[#1e3a5f] mb-3">אירעה שגיאה</h1>
+        <h1 className="text-3xl font-bold text-[#1B4E8A] mb-3">אירעה שגיאה</h1>
 
         {/* Description */}
         <p className="text-gray-600 mb-2 leading-relaxed">

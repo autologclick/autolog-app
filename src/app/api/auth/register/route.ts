@@ -88,6 +88,18 @@ export async function POST(req: NextRequest) {
       role: 'user',
     }, { req });
 
+    // An owner may have shared a vehicle with this email before the person had
+    // an account. Link those pre-approved shares now so the vehicle shows up on
+    // first login. Non-blocking — a failure here must never break signup.
+    try {
+      await prisma.vehicleShare.updateMany({
+        where: { sharedWithEmail: email.toLowerCase(), sharedWithUserId: null },
+        data: { sharedWithUserId: user.id },
+      });
+    } catch {
+      /* ignore — sharing is secondary to account creation */
+    }
+
     // Credit the referring partner, if any. Non-blocking — a referral
     // failure must never break signup, so creditReferral swallows errors
     // internally. Awaited only to ensure the partner totals are updated

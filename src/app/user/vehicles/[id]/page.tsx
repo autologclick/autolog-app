@@ -186,6 +186,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showAddTreatment, setShowAddTreatment] = useState(false);
+  const [expandedTreatment, setExpandedTreatment] = useState<string | null>(null);
   const [showScanning, setShowScanning] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -466,6 +467,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = ''; // allow re-selecting the same file after an error (no refresh needed)
     if (file) {
       setTreatmentData(prev => ({ ...prev, image: file }));
     }
@@ -721,7 +723,7 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
               <div className="flex gap-3 mt-4">
                 <button
                   onClick={() => setShowEditModal(true)}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#1e3a5f] hover:bg-[#162d4a] text-white rounded-xl font-semibold text-sm transition-colors shadow-sm"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#1B4E8A] hover:bg-[#162d4a] text-white rounded-xl font-semibold text-sm transition-colors shadow-sm"
                 >
                   <Edit size={16} />
                   ערוך פרטי רכב
@@ -744,16 +746,26 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
             <h2 className="text-lg font-bold text-gray-800">תזכורות</h2>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            {visibleReminders.map((reminder, idx) => (
-              <ReminderCard
-                key={selectedReminderIndex + idx}
-                title={reminder.title}
-                value={reminder.value || '—'}
-                subtitle={reminder.subtitle || undefined}
-                status={reminder.status || undefined}
-                onMarkDone={() => setActiveMarkDoneType(reminder.reminderType)}
-              />
+          <div
+            id="reminders-scroll"
+            onScroll={(e) => {
+              const el = e.currentTarget;
+              const page = Math.round(Math.abs(el.scrollLeft) / el.clientWidth);
+              setSelectedReminderIndex(page * 2);
+            }}
+            className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-1 no-scrollbar"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+          >
+            {reminders.map((reminder, idx) => (
+              <div key={idx} className="snap-start shrink-0" style={{ width: 'calc(50% - 6px)' }}>
+                <ReminderCard
+                  title={reminder.title}
+                  value={reminder.value || '—'}
+                  subtitle={reminder.subtitle || undefined}
+                  status={reminder.status || undefined}
+                  onMarkDone={() => setActiveMarkDoneType(reminder.reminderType)}
+                />
+              </div>
             ))}
           </div>
 
@@ -762,7 +774,11 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
               {Array.from({ length: Math.ceil(reminders.length / 2) }).map((_, idx) => (
                 <button
                   key={idx}
-                  onClick={() => setSelectedReminderIndex(idx * 2)}
+                  aria-label={'עמוד תזכורות ' + (idx + 1)}
+                  onClick={() => {
+                    const el = document.getElementById('reminders-scroll');
+                    (el?.children[idx * 2] as HTMLElement | undefined)?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+                  }}
                   className={`w-2 h-2 rounded-full transition-colors ${
                     idx === Math.floor(selectedReminderIndex / 2) ? 'bg-blue-600' : 'bg-gray-300'
                   }`}
@@ -772,13 +788,68 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
           )}
         </div>
 
+        {/* Inspections Section */}
+        {vehicle.inspections && vehicle.inspections.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between px-4">
+              <h2 className="text-lg font-bold text-gray-800">אבחונים</h2>
+              <button
+                onClick={() => router.push('/user/reports')}
+                className="text-xs text-blue-600 hover:text-blue-700"
+              >
+                ראה הכל ›
+              </button>
+            </div>
+            <div className="space-y-3">
+              {vehicle.inspections.slice(0, 5).map(insp => {
+                const typeLabels: Record<string, string> = {
+                  full: 'בדיקה מקיפה', rot: 'בדיקת ROT', engine: 'בדיקת מנוע',
+                  pre_test: 'בדיקה לפני טסט', tires: 'בדיקת צמיגים', brakes: 'בדיקת בלמים',
+                  periodic: 'בדיקה תקופתית', troubleshoot: 'איבחון תקלה',
+                };
+                return (
+                  <button
+                    key={insp.id}
+                    onClick={() => router.push(`/inspection/${insp.id}`)}
+                    className="w-full text-right"
+                  >
+                    <Card className="p-4 hover:border-teal-400 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-teal-50 rounded-lg">
+                          <FileText size={20} className="text-teal-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-gray-800">{typeLabels[insp.inspectionType] || 'אבחון'}</h3>
+                          <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                            <Clock size={12} />
+                            {new Date(insp.date).toLocaleDateString('he-IL')}
+                            {insp.garage?.name && (<><MapPin size={12} />{insp.garage.name}</>)}
+                          </div>
+                        </div>
+                        {typeof insp.overallScore === 'number' && (
+                          <span className={`px-2.5 py-1 rounded-full text-sm font-bold ${
+                            insp.overallScore >= 80 ? 'bg-green-100 text-green-800' :
+                            insp.overallScore >= 60 ? 'bg-amber-100 text-amber-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>{insp.overallScore}/100</span>
+                        )}
+                        <ChevronLeft size={18} className="text-gray-400 flex-shrink-0" />
+                      </div>
+                    </Card>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Treatments Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between px-4">
             <h2 className="text-lg font-bold text-gray-800">הטיפולים</h2>
             {treatments.length > 0 && (
               <button
-                onClick={() => router.push('/user/treatments')}
+                onClick={() => router.push(`/user/treatments?vehicleId=${id}`)}
                 className="text-xs text-blue-600 hover:text-blue-700"
               >
                 ראה הכל ›
@@ -799,18 +870,23 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
             </Card>
           ) : (
             <div className="space-y-3">
-              {treatments.slice(0, 3).map(treatment => (
+              {treatments.slice(0, 3).map(treatment => {
+                const expanded = expandedTreatment === treatment.id;
+                return (
                 <Card key={treatment.id} className="p-4">
-                  <div className="flex items-start gap-3">
+                  <button
+                    onClick={() => setExpandedTreatment(expanded ? null : treatment.id)}
+                    className="w-full flex items-start gap-3 text-right"
+                  >
                     <div className="p-2 bg-blue-50 rounded-lg">
                       <Wrench size={20} className="text-blue-600" />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-gray-800">{treatment.title}</h3>
                       {treatment.description && (
                         <p className="text-sm text-gray-500 mt-1">{treatment.description}</p>
                       )}
-                      <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                      <div className="flex items-center gap-2 mt-2 text-xs text-gray-500 flex-wrap">
                         <Clock size={12} />
                         {new Date(treatment.date).toLocaleDateString('he-IL')}
                         {treatment.garageName && (
@@ -821,9 +897,31 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
                         )}
                       </div>
                     </div>
-                  </div>
+                    <ChevronDown size={18} className={`text-gray-400 flex-shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+                  </button>
+                  {expanded && (
+                    <div className="mt-3 pt-3 border-t border-gray-100 space-y-2 text-sm">
+                      {typeof treatment.cost === 'number' && (
+                        <div className="flex justify-between"><span className="text-gray-500">עלות</span><span className="font-medium text-gray-800">{'₪'}{treatment.cost.toLocaleString()}</span></div>
+                      )}
+                      {typeof treatment.mileage === 'number' && (
+                        <div className="flex justify-between"><span className="text-gray-500">קילומטראז'</span><span className="font-medium text-gray-800">{treatment.mileage.toLocaleString()} ק"מ</span></div>
+                      )}
+                      {treatment.status && (
+                        <div className="flex justify-between"><span className="text-gray-500">סטטוס</span><span className="font-medium text-gray-800">{treatment.status === 'completed' ? 'הושלם' : treatment.status}</span></div>
+                      )}
+                      {treatment.image && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={treatment.image} alt={treatment.title} className="w-full rounded-lg mt-2 border border-gray-100" />
+                      )}
+                      {!treatment.cost && !treatment.mileage && !treatment.image && (
+                        <p className="text-gray-400 text-xs">אין פרטים נוספים לטיפול זה</p>
+                      )}
+                    </div>
+                  )}
                 </Card>
-              ))}
+                );
+              })}
             </div>
           )}
 

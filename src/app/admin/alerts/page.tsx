@@ -133,11 +133,11 @@ export default function AdminAlertsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] border-2 border-[#1e3a5f] rounded-lg flex items-center justify-center">
-            <Bell size={22} className="text-[#1e3a5f]" />
+          <div className="w-10 h-10 bg-[#F3F6FA] border-2 border-[#1B4E8A] rounded-lg flex items-center justify-center">
+            <Bell size={22} className="text-[#1B4E8A]" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">מרכז התראות</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1B4E8A]">מרכז התראות</h1>
             <p className="text-sm text-gray-500">{visibleAlerts.length} התראות פעילות</p>
           </div>
         </div>
@@ -196,7 +196,7 @@ export default function AdminAlertsPage() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
               filter === tab.key
                 ? 'bg-teal-600 text-white shadow-sm'
-                : 'bg-white text-gray-600 border border-gray-200 hover:bg-[#fef7ed]/50'
+                : 'bg-white text-gray-600 border border-gray-200 hover:bg-[#F3F6FA]/50'
             }`}
           >
             {tab.label} ({tab.count})
@@ -240,7 +240,7 @@ export default function AdminAlertsPage() {
                 >
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <h3 className={`font-bold text-sm ${
-                      !alert.read && !dismissedIds.has(alert.id) ? 'text-[#1e3a5f]' : 'text-gray-700'
+                      !alert.read && !dismissedIds.has(alert.id) ? 'text-[#1B4E8A]' : 'text-gray-700'
                     }`}>
                       {alert.title}
                     </h3>

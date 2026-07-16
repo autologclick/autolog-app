@@ -9,12 +9,12 @@ export default function AccessibilityPage() {
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-[#1e3a5f] hover:opacity-80 transition">
+          <Link href="/" className="flex items-center gap-2 text-[#1B4E8A] hover:opacity-80 transition">
             <ArrowRight size={20} />
             <span className="text-sm font-medium">חזרה לדף הבית</span>
           </Link>
-          <Link href="/" className="text-xl font-bold text-[#1e3a5f]">
-            Auto<span className="text-[#0d9488]">Log</span>
+          <Link href="/" className="text-xl font-bold text-[#1B4E8A]">
+            Auto<span className="text-[#2E77D0]">Log</span>
           </Link>
         </div>
       </header>
@@ -26,7 +26,7 @@ export default function AccessibilityPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-2xl mb-4">
             <Accessibility className="w-8 h-8 text-blue-600" />
           </div>
-          <h1 className="text-3xl font-bold text-[#1e3a5f] mb-2">הצהרת נגישות</h1>
+          <h1 className="text-3xl font-bold text-[#1B4E8A] mb-2">הצהרת נגישות</h1>
           <p className="text-gray-500 text-sm">עדכון אחרון: פברואר 2026</p>
         </div>
 
@@ -44,7 +44,7 @@ export default function AccessibilityPage() {
 
           {/* What we did */}
           <section>
-            <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">1. פעולות הנגשה שבוצעו</h2>
+            <h2 className="text-xl font-bold text-[#1B4E8A] mb-3">1. פעולות הנגשה שבוצעו</h2>
             <p className="mb-3">במסגרת מחויבותנו לנגישות, ביצענו את ההתאמות הבאות:</p>
             <ul className="space-y-3">
               {[
@@ -60,7 +60,7 @@ export default function AccessibilityPage() {
                 'תמיכה בהגדלת טקסט — האפליקציה תומכת בהגדלה עד 200% ללא אובדן תוכן',
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#0d9488] mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-[#2E77D0] mt-0.5 shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -69,7 +69,7 @@ export default function AccessibilityPage() {
 
           {/* Assistive tech */}
           <section>
-            <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">2. טכנולוגיות מסייעות</h2>
+            <h2 className="text-xl font-bold text-[#1B4E8A] mb-3">2. טכנולוגיות מסייעות</h2>
             <p className="mb-3">האפליקציה נבדקה ותומכת בטכנולוגיות המסייעות הבאות:</p>
             <ul className="space-y-2 list-disc list-inside">
               <li>קוראי מסך: NVDA, JAWS, VoiceOver (iOS/Mac), TalkBack (Android)</li>
@@ -81,7 +81,7 @@ export default function AccessibilityPage() {
 
           {/* Keyboard nav */}
           <section>
-            <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">3. ניווט באמצעות מקלדת</h2>
+            <h2 className="text-xl font-bold text-[#1B4E8A] mb-3">3. ניווט באמצעות מקלדת</h2>
             <p className="mb-3">ניתן לנווט באפליקציה באמצעות המקלדת:</p>
             <div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
               <div className="flex justify-between items-center py-1 border-b border-gray-200">
@@ -109,7 +109,7 @@ export default function AccessibilityPage() {
 
           {/* Known limitations */}
           <section>
-            <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">4. מגבלות ידועות</h2>
+            <h2 className="text-xl font-bold text-[#1B4E8A] mb-3">4. מגבלות ידועות</h2>
             <p className="mb-3">
               אנו עושים מאמצים רבים להנגיש את כלל התכנים באפליקציה. עם זאת, ייתכנו רכיבים
               שטרם הונגשו באופן מלא. אנו ממשיכים לעבוד על שיפור הנגישות בכל עת.
@@ -124,7 +124,7 @@ export default function AccessibilityPage() {
 
           {/* Legal framework */}
           <section>
-            <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">5. מסגרת חוקית</h2>
+            <h2 className="text-xl font-bold text-[#1B4E8A] mb-3">5. מסגרת חוקית</h2>
             <p>
               הנגשת האפליקציה נעשית בהתאם לחוק שוויון זכויות לאנשים עם מוגבלות, התשנ&quot;ח-1998,
               ותקנות שוויון זכויות לאנשים עם מוגבלות (התאמות נגישות לשירות), התשע&quot;ג-2013.
@@ -134,7 +134,7 @@ export default function AccessibilityPage() {
 
           {/* Browser zoom */}
           <section>
-            <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">6. שינוי גודל תצוגה</h2>
+            <h2 className="text-xl font-bold text-[#1B4E8A] mb-3">6. שינוי גודל תצוגה</h2>
             <p>ניתן לשנות את גודל התצוגה בדפדפן באמצעות:</p>
             <div className="bg-gray-50 rounded-xl p-4 mt-3 space-y-2 text-sm">
               <div className="flex justify-between items-center py-1 border-b border-gray-200">
@@ -154,30 +154,30 @@ export default function AccessibilityPage() {
 
           {/* Feedback */}
           <section>
-            <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">7. משוב ופניות בנושא נגישות</h2>
+            <h2 className="text-xl font-bold text-[#1B4E8A] mb-3">7. משוב ופניות בנושא נגישות</h2>
             <p className="mb-4">
               נתקלתם בבעיית נגישות? אנחנו כאן לעזור. נשמח לקבל פניות ומשוב
               כדי לשפר את חוויית השימוש עבור כולם.
             </p>
             <div className="bg-blue-50 rounded-xl p-5 space-y-3">
-              <h3 className="font-bold text-[#1e3a5f]">רכז/ת נגישות:</h3>
+              <h3 className="font-bold text-[#1B4E8A]">רכז/ת נגישות:</h3>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
-                  <Mail className="w-4 h-4 text-[#0d9488]" />
+                  <Mail className="w-4 h-4 text-[#2E77D0]" />
                   <span>דוא&quot;ל: </span>
-                  <a href="mailto:info@autolog.click" className="text-[#0d9488] hover:underline">info@autolog.click</a>
+                  <a href="mailto:info@autolog.click" className="text-[#2E77D0] hover:underline">info@autolog.click</a>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <Mail className="w-4 h-4 text-[#0d9488]" />
+                  <Mail className="w-4 h-4 text-[#2E77D0]" />
                   <span>דוא&quot;ל כללי: </span>
-                  <a href="mailto:info@autolog.click" className="text-[#0d9488] hover:underline">info@autolog.click</a>
+                  <a href="mailto:info@autolog.click" className="text-[#2E77D0] hover:underline">info@autolog.click</a>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <Phone className="w-4 h-4 text-[#0d9488]" />
-                  <span>טלפון: 050-1234567</span>
+                  <Phone className="w-4 h-4 text-[#2E77D0]" />
+                  <span>טלפון: 053-526-6741</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <MapPin className="w-4 h-4 text-[#0d9488]" />
+                  <MapPin className="w-4 h-4 text-[#2E77D0]" />
                   <span>כתובת: משה בקר 29, ראשון לציון</span>
                 </div>
               </div>
@@ -189,7 +189,7 @@ export default function AccessibilityPage() {
 
           {/* Accessibility statement update */}
           <section>
-            <h2 className="text-xl font-bold text-[#1e3a5f] mb-3">8. עדכון הצהרת הנגישות</h2>
+            <h2 className="text-xl font-bold text-[#1B4E8A] mb-3">8. עדכון הצהרת הנגישות</h2>
             <p>
               הצהרת נגישות זו מתעדכנת מעת לעת בהתאם לשינויים באפליקציה ולשיפורי נגישות שמבוצעים.
               תאריך העדכון האחרון מופיע בראש העמוד.
@@ -199,9 +199,9 @@ export default function AccessibilityPage() {
 
         {/* Footer links */}
         <div className="flex justify-center gap-6 mt-8 text-sm">
-          <Link href="/terms" className="text-[#0d9488] hover:underline font-medium">תנאי שימוש</Link>
+          <Link href="/terms" className="text-[#2E77D0] hover:underline font-medium">תנאי שימוש</Link>
           <span className="text-gray-300">|</span>
-          <Link href="/privacy" className="text-[#0d9488] hover:underline font-medium">מדיניות פרטיות</Link>
+          <Link href="/privacy" className="text-[#2E77D0] hover:underline font-medium">מדיניות פרטיות</Link>
         </div>
       </main>
     </div>

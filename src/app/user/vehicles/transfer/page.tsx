@@ -1,5 +1,6 @@
 'use client';
 
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -63,6 +64,7 @@ export default function TransferPage() {
 
   // New transfer form
   const [showForm, setShowForm] = useState(false);
+  const [completeTransferId, setCompleteTransferId] = useState<string | null>(null);
   const [selectedVehicle, setSelectedVehicle] = useState('');
   const [toEmail, setToEmail] = useState('');
   const [includeInspections, setIncludeInspections] = useState(true);
@@ -86,8 +88,17 @@ export default function TransferPage() {
       ]);
       const vData = await vRes.json();
       const tData = await tRes.json();
-      setVehicles(vData.vehicles || []);
-      setTransfers(tData.transfers || []);
+      const vList = vData.vehicles || [];
+      const tList = tData.transfers || [];
+      setVehicles(vList);
+      setTransfers(tList);
+      const activeIds = tList
+        .filter((t: Transfer) => t.status === 'pending' || t.status === 'accepted')
+        .map((t: Transfer) => t.vehicleId);
+      const available = vList.filter((v: Vehicle) => !activeIds.includes(v.id));
+      if (available.length === 1) {
+        setSelectedVehicle(available[0].id);
+      }
     } catch {
       setError('שגיאה בטעינת הנתונים');
     } finally {
@@ -137,8 +148,6 @@ export default function TransferPage() {
   };
 
   const handleComplete = async (transferId: string) => {
-    if (!confirm('האם אתה בטוח שברצונך להשלים את ההעברה? פעולה זו אינה הפיכה.')) return;
-
     setBusy(true);
     setError('');
     setSuccess('');
@@ -444,7 +453,7 @@ export default function TransferPage() {
                     {/* Seller: Complete transfer (after buyer accepted) */}
                     {t.isSender && t.status === 'accepted' && (
                       <button
-                        onClick={() => handleComplete(t.id)}
+                        onClick={() => setCompleteTransferId(t.id)}
                         disabled={busy}
                         className="flex-1 bg-green-600 text-white rounded-xl py-2.5 text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-1"
                       >
@@ -501,6 +510,14 @@ export default function TransferPage() {
           ))}
         </div>
       )}
+      <ConfirmDialog
+        isOpen={completeTransferId !== null}
+        title="השלמת העברה"
+        message="האם אתה בטוח שברצונך להשלים את ההעברה? פעולה זו אינה הפיכה."
+        confirmLabel="השלם העברה"
+        onConfirm={() => { const id = completeTransferId; setCompleteTransferId(null); if (id) handleComplete(id); }}
+        onCancel={() => setCompleteTransferId(null)}
+      />
     </div>
   );
 }

@@ -94,6 +94,9 @@ const TYPE_ICONS: Record<string, string> = {
 export default function UserTreatmentsPage() {
   const router = useRouter();
   const [treatments, setTreatments] = useState<Treatment[]>([]);
+  const [vehicleFilter, setVehicleFilter] = useState<string | null>(
+    typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('vehicleId') : null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -133,6 +136,14 @@ export default function UserTreatmentsPage() {
     businessName?: string;
     suggestedCategory?: string;
     invoiceNumber?: string;
+    licensePlate?: string | null;
+  } | null>(null);
+  // Plate-mismatch confirmation: set when the scanned receipt's plate differs
+  // from the selected vehicle — the user must explicitly choose how to proceed.
+  const [plateWarning, setPlateWarning] = useState<{
+    scanned: string;
+    matchId?: string;
+    matchLabel?: string;
   } | null>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -142,7 +153,7 @@ export default function UserTreatmentsPage() {
       const res = await fetch('/api/treatments');
       if (!res.ok) throw new Error('שגיאה בטעינת הטיפולים');
       const data = await res.json();
-      setTreatments(data.treatments || []);
+      setTreatments((data.treatments || []).filter((t: Treatment) => t.type !== 'inspection'));
     } catch (err) {
       setError('שגיאה בטעינת הטיפולים');
     } finally {
@@ -355,10 +366,25 @@ export default function UserTreatmentsPage() {
     setScanMessage('');
   };
 
-  const handleAddTreatment = async () => {
+  const handleAddTreatment = async (skipPlateCheck = false, overrideVehicleId?: string) => {
     if (!addForm.vehicleId || !addForm.title || !addForm.type || !addForm.date) {
       setError('נא למלא רכב, סוג טיפול, כותרת ותאריך');
       return;
+    }
+    // Receipt plate vs. selected vehicle — ask before saving on mismatch
+    if (!skipPlateCheck && scanData?.licensePlate) {
+      const scannedPlate = String(scanData.licensePlate).replace(/\D/g, '');
+      const selected = vehicles.find(v => v.id === addForm.vehicleId);
+      const selectedPlate = (selected?.licensePlate || '').replace(/\D/g, '');
+      if (scannedPlate && selectedPlate && scannedPlate !== selectedPlate) {
+        const match = vehicles.find(v => v.licensePlate.replace(/\D/g, '') === scannedPlate);
+        setPlateWarning({
+          scanned: scannedPlate,
+          matchId: match?.id,
+          matchLabel: match ? `${match.nickname} (${match.licensePlate})` : undefined,
+        });
+        return;
+      }
     }
     setSaving(true);
     setError('');
@@ -367,7 +393,7 @@ export default function UserTreatmentsPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          vehicleId: addForm.vehicleId,
+          vehicleId: overrideVehicleId || addForm.vehicleId,
           type: addForm.type,
           title: addForm.title,
           description: addForm.description || undefined,
@@ -410,8 +436,9 @@ export default function UserTreatmentsPage() {
     setSaving(false);
   };
 
-  const pendingTreatments = treatments.filter(t => t.status === 'pending_approval');
-  const otherTreatments = treatments.filter(t => t.status !== 'pending_approval');
+  const scopedTreatments = vehicleFilter ? treatments.filter(t => t.vehicleId === vehicleFilter) : treatments;
+  const pendingTreatments = scopedTreatments.filter(t => t.status === 'pending_approval');
+  const otherTreatments = scopedTreatments.filter(t => t.status !== 'pending_approval');
 
   const parseItems = (itemsStr: string | null): Array<{ item?: string; action?: string; notes?: string; cost?: number; name?: string }> => {
     if (!itemsStr) return [];
@@ -464,7 +491,7 @@ export default function UserTreatmentsPage() {
                 {icon}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-[#1e3a5f] truncate">{treatment.title}</h3>
+                <h3 className="font-bold text-[#1B4E8A] truncate">{treatment.title}</h3>
                 <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400 mt-1.5">
                   {treatment.garageName && (
                     <span className="flex items-center gap-1">
@@ -477,7 +504,7 @@ export default function UserTreatmentsPage() {
                     {formatDate(treatment.date)}
                   </span>
                   {treatment.cost != null && treatment.cost > 0 && (
-                    <span className="font-medium text-[#1e3a5f]">
+                    <span className="font-medium text-[#1B4E8A]">
                       {treatment.cost.toLocaleString()} ₪
                     </span>
                   )}
@@ -500,7 +527,7 @@ export default function UserTreatmentsPage() {
             {/* Description */}
             {treatment.description && (
               <div>
-                <h4 className="text-sm font-semibold text-[#1e3a5f] mb-1">תיאור</h4>
+                <h4 className="text-sm font-semibold text-[#1B4E8A] mb-1">תיאור</h4>
                 <p className="text-sm text-gray-600">{treatment.description}</p>
               </div>
             )}
@@ -527,7 +554,7 @@ export default function UserTreatmentsPage() {
             {/* Items List */}
             {items.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-[#1e3a5f] mb-2">פירוט עבודות</h4>
+                <h4 className="text-sm font-semibold text-[#1B4E8A] mb-2">פירוט עבודות</h4>
                 <div className="space-y-1.5">
                   {items.map((item, i) => (
                     <div key={i} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 text-sm">
@@ -635,17 +662,30 @@ export default function UserTreatmentsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+      <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
         <PageSkeleton />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
       <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Page Header */}
         <PageHeader title="טיפולים" />
+        {vehicleFilter && (
+          <div className="mb-4 flex items-center justify-between gap-2 bg-teal-50 border border-teal-200 rounded-lg px-4 py-2.5">
+            <span className="text-sm text-teal-800 font-medium">
+              מציג טיפולים לרכב {vehicles.find(v => v.id === vehicleFilter)?.nickname || vehicles.find(v => v.id === vehicleFilter)?.licensePlate || 'נבחר'}
+            </span>
+            <button
+              onClick={() => { setVehicleFilter(null); window.history.replaceState(null, '', '/user/treatments'); }}
+              className="text-sm text-teal-700 font-semibold hover:text-teal-900 whitespace-nowrap"
+            >
+              הצג הכל
+            </button>
+          </div>
+        )}
 
         {/* Error */}
         {error && (
@@ -661,7 +701,7 @@ export default function UserTreatmentsPage() {
           <div className="mb-6">
             <button
               onClick={() => setShowAddModal(true)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-bold hover:from-teal-600 hover:to-teal-700 transition-all shadow-md"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#2E77D0] text-white rounded-2xl font-bold hover:bg-[#2563B0] transition-all shadow-md"
             >
               <Plus size={20} />
               הוסף טיפול חדש
@@ -673,7 +713,7 @@ export default function UserTreatmentsPage() {
         {treatments.length > 0 && (
           <div className="grid grid-cols-2 gap-3 mb-6">
             <div className="bg-white rounded-xl p-3 shadow-sm text-center">
-              <div className="text-2xl font-bold text-[#1e3a5f]">{treatments.length}</div>
+              <div className="text-2xl font-bold text-[#1B4E8A]">{treatments.length}</div>
               <div className="text-xs text-gray-400 mt-1">סך הכל טיפולים</div>
             </div>
             <div className="bg-white rounded-xl p-3 shadow-sm text-center">
@@ -688,7 +728,7 @@ export default function UserTreatmentsPage() {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-              <h2 className="text-lg font-bold text-[#1e3a5f]">
+              <h2 className="text-lg font-bold text-[#1B4E8A]">
                 ממתינים לאישור
               </h2>
               <span className="ml-2 text-sm text-gray-400">({pendingTreatments.length})</span>
@@ -704,7 +744,7 @@ export default function UserTreatmentsPage() {
         {/* Other Treatments */}
         {otherTreatments.length > 0 && (
           <div>
-            <h2 className="text-lg font-bold text-[#1e3a5f] mb-4">
+            <h2 className="text-lg font-bold text-[#1B4E8A] mb-4">
               היסטוריית טיפולים
               <span className="text-sm text-gray-400 font-normal mr-2">({otherTreatments.length})</span>
             </h2>
@@ -722,11 +762,11 @@ export default function UserTreatmentsPage() {
             <div className="w-16 h-16 bg-teal-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Wrench size={32} className="text-teal-600" />
             </div>
-            <h3 className="text-lg font-bold text-[#1e3a5f] mb-2">אין טיפולים עדיין</h3>
+            <h3 className="text-lg font-bold text-[#1B4E8A] mb-2">אין טיפולים עדיין</h3>
             <p className="text-sm text-gray-400 mb-6">כאשר מוסך ישלח טיפול, הוא יופיע כאן לאישור</p>
             <button
               onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-bold hover:from-teal-600 hover:to-teal-700 transition-all shadow-md"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#2E77D0] text-white rounded-2xl font-bold hover:bg-[#2563B0] transition-all shadow-md"
             >
               <Plus size={18} />
               הוסף טיפול חדש
@@ -949,11 +989,59 @@ export default function UserTreatmentsPage() {
             <Button variant="ghost" onClick={() => setShowAddModal(false)} className="flex-1">ביטול</Button>
             <Button
               loading={saving}
-              onClick={handleAddTreatment}
+              onClick={() => handleAddTreatment()}
               className="flex-1 bg-gradient-to-r from-teal-500 to-teal-600"
               disabled={!addForm.vehicleId || !addForm.title || !addForm.type}
             >
               הוסף טיפול
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Plate mismatch confirmation */}
+      <Modal
+        isOpen={!!plateWarning}
+        onClose={() => setPlateWarning(null)}
+        title="מספר הרכב לא תואם"
+      >
+        <div className="space-y-4">
+          <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+            <AlertTriangle size={18} className="flex-shrink-0 mt-0.5" />
+            <p>
+              על הקבלה מופיע מספר רכב <b dir="ltr">{plateWarning?.scanned}</b>,{' '}
+              {plateWarning?.matchLabel ? (
+                <>שתואם רכב אחר שלך: <b>{plateWarning.matchLabel}</b>.</>
+              ) : (
+                <>שלא תואם אף רכב שלך — ייתכן שהמספר נרשם שגוי בקבלה.</>
+              )}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2">
+            {plateWarning?.matchLabel && (
+              <Button
+                loading={saving}
+                onClick={() => {
+                  const id = plateWarning?.matchId;
+                  if (!id) return;
+                  setAddForm(prev => ({ ...prev, vehicleId: id }));
+                  setPlateWarning(null);
+                  handleAddTreatment(true, id);
+                }}
+                className="w-full bg-gradient-to-r from-teal-500 to-teal-600"
+              >
+                שמור לרכב {plateWarning.matchLabel}
+              </Button>
+            )}
+            <Button
+              loading={saving}
+              onClick={() => { setPlateWarning(null); handleAddTreatment(true); }}
+              className="w-full"
+            >
+              שמור בכל זאת לרכב שנבחר
+            </Button>
+            <Button variant="ghost" onClick={() => setPlateWarning(null)} className="w-full">
+              ביטול
             </Button>
           </div>
         </div>

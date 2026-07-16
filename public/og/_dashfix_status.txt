@@ -1,0 +1,8 @@
+RUNNING (20260622-122958)
+patch: OK appts=PATCHED dash=PATCHED_x2 (rc=0)
+verify:
+231:      router.refresh();
+77:        const res = await fetch('/api/garage/dashboard', { cache: 'no-store' });
+102:      fetch('/api/garage/dashboard', { cache: 'no-store' })
+building (pm2 stopped, ~1-3 min)...
+RESULT=DONE build=ok localhost3000=200  dashboard pending-count refresh fix applied

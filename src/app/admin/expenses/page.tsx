@@ -103,11 +103,11 @@ export default function AdminExpensesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] border-2 border-[#1e3a5f] rounded-lg flex items-center justify-center">
-            <BarChart3 className="w-5 h-5 text-[#1e3a5f]" />
+          <div className="w-10 h-10 bg-[#F3F6FA] border-2 border-[#1B4E8A] rounded-lg flex items-center justify-center">
+            <BarChart3 className="w-5 h-5 text-[#1B4E8A]" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">ניהול הוצאות</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1B4E8A]">ניהול הוצאות</h1>
             <p className="text-sm text-gray-500">צפייה וניהול כל הוצאות המשתמשים</p>
           </div>
         </div>
@@ -236,7 +236,7 @@ export default function AdminExpensesPage() {
                     const config = categoryConfig[expense.category as keyof typeof categoryConfig];
                     const Icon = config?.icon || Receipt;
                     return (
-                      <tr key={expense.id} className="border-b hover:bg-[#fef7ed]/50">
+                      <tr key={expense.id} className="border-b hover:bg-[#F3F6FA]/50">
                         <td className="p-4">
                           <div className={`w-fit px-2 py-1 rounded ${config?.color}`}>
                             <div className="flex items-center gap-2">

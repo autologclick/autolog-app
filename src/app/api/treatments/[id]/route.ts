@@ -9,6 +9,7 @@ import {
   rejectTreatment,
 } from '@/lib/treatments-db';
 import prisma from '@/lib/db';
+import { updateVehicleMileage, MileageError } from '@/lib/mileage';
 import { createNotification } from '@/lib/services/notification-service';
 import { sendEmail, buildTreatmentEmailHtml } from '@/lib/email';
 import { sendPushToUser } from '@/lib/push-sender';
@@ -208,6 +209,28 @@ export async function PATCH(
       }
       // Notify garage owner — best-effort, fire-and-forget
       notifyGarageOfDecision(params.id, 'approved').catch(() => {});
+      // Mirror cost into expense tracking on approval (idempotent)
+      try {
+        const t = await getTreatmentById(params.id);
+        if (t && t.mileage && t.mileage > 0) {
+          try {
+            await updateVehicleMileage(t.vehicleId, t.mileage);
+          } catch (me) {
+            if (!(me instanceof MileageError)) console.warn('[treatments] approve mileage update failed', me);
+          }
+        }
+        if (t && t.cost && t.cost > 0) {
+          const existing = await prisma.expense.findUnique({ where: { treatmentId: t.id } });
+          const desc = t.title + (t.garageName ? ' (' + t.garageName + ')' : '');
+          if (existing) {
+            await prisma.expense.update({ where: { id: existing.id }, data: { amount: t.cost, description: desc, date: new Date(t.date) } });
+          } else {
+            await prisma.expense.create({ data: { vehicleId: t.vehicleId, category: 'maintenance', amount: t.cost, description: desc, date: new Date(t.date), treatmentId: t.id } });
+          }
+        }
+      } catch (e) {
+        console.warn('[treatments] approve expense sync failed', e);
+      }
       return jsonResponse({ message: SUCCESS_MESSAGES.TREATMENT_APPROVED });
     }
 

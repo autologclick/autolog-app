@@ -357,7 +357,7 @@ export default function AppointmentsPage() {
 
   if (!GARAGES_ENABLED) {
     return (
-      <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+      <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
         <PageHeader title="התורים שלי" backUrl="/user/service" />
         <div className="px-4 py-6 max-w-4xl mx-auto">
           <ComingSoonBanner
@@ -371,7 +371,7 @@ export default function AppointmentsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fef7ed] pb-24">
+      <div className="min-h-screen bg-[#F3F6FA] pb-24">
         <PageHeader title="התורים שלי" backUrl="/user/service" />
         <PageSkeleton />
       </div>
@@ -379,7 +379,7 @@ export default function AppointmentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
       <PageHeader title="התורים שלי" backUrl="/user/service" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 space-y-4">
@@ -461,7 +461,7 @@ export default function AppointmentsPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Next Appointment */}
-              <div className="bg-[#fef7ed] rounded-xl p-3 border border-gray-200">
+              <div className="bg-[#F3F6FA] rounded-xl p-3 border border-gray-200">
                 <div className="flex items-center gap-2 mb-2">
                   <Target size={14} className="text-teal-600" />
                   <span className="text-xs font-bold text-gray-700">תור הבא</span>
@@ -476,7 +476,7 @@ export default function AppointmentsPage() {
               </div>
 
               {/* Appointments Status Overview */}
-              <div className="bg-[#fef7ed] rounded-xl p-3 border border-gray-200">
+              <div className="bg-[#F3F6FA] rounded-xl p-3 border border-gray-200">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp size={14} className="text-teal-600" />
                   <span className="text-xs font-bold text-gray-700">סטטוס תורים</span>
@@ -487,7 +487,7 @@ export default function AppointmentsPage() {
               </div>
 
               {/* Most Visited Garage */}
-              <div className="bg-[#fef7ed] rounded-xl p-3 border border-gray-200">
+              <div className="bg-[#F3F6FA] rounded-xl p-3 border border-gray-200">
                 <div className="flex items-center gap-2 mb-2">
                   <Target size={14} className="text-teal-600" />
                   <span className="text-xs font-bold text-gray-700">מוסך מועדף</span>
@@ -775,7 +775,7 @@ function DetailAndCancelModals({
             <StatusTimeline currentStatus={selectedAppointment.status} />
 
             {/* Appointment Details */}
-            <div className="bg-[#fef7ed] border border-gray-200 rounded-2xl p-4 space-y-3 text-sm text-right">
+            <div className="bg-[#F3F6FA] border border-gray-200 rounded-2xl p-4 space-y-3 text-sm text-right">
               <div className="flex justify-between">
                 <span className="text-gray-600">מוסך:</span>
                 <span className="font-medium">{selectedAppointment.garage.name}</span>

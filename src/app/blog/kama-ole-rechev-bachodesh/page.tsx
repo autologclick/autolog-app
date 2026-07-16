@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
 
 const post = getPostBySlug('kama-ole-rechev-bachodesh')!;
 
@@ -19,13 +20,15 @@ export const metadata: Metadata = {
     publishedTime: post.publishedAt,
     authors: [post.author],
     locale: 'he_IL',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
   },
 };
 
 export default function BlogPostPage() {
   return (
-    <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
-      <header className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white">
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
           <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1">
@@ -36,7 +39,7 @@ export default function BlogPostPage() {
 
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] leading-tight mb-4">{post.title}</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] leading-tight mb-4">{post.title}</h1>
         <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
           <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
           <span className="flex items-center gap-1"><Clock size={14} />{post.readingTime}</span>
@@ -48,39 +51,39 @@ export default function BlogPostPage() {
             דלק זה רק ההתחלה — יש ביטוח, טסט, תחזוקה, צמיגים, חנייה ועוד. בואו נפרק את המספרים.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">ההוצאות שכולם יודעים עליהן</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">ההוצאות שכולם יודעים עליהן</h2>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">דלק — 800-1,500 ש"ח/חודש</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">דלק — 800-1,500 ש"ח/חודש</h3>
           <p>
             הוצאת הדלק תלויה בסוג הרכב, סוג הנהיגה (עיר/כביש בינעירוני) וכמות הקילומטרים.
             נהג ממוצע בישראל נוסע כ-15,000 ק"מ בשנה, מה שמתרגם ל-800-1,500 ש"ח בחודש על דלק.
           </p>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">ביטוח — 400-1,000 ש"ח/חודש</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">ביטוח — 400-1,000 ש"ח/חודש</h3>
           <p>
             ביטוח מקיף לרכב ממוצע עולה 4,000-9,000 ש"ח בשנה (לרכבי יוקרה: 8,000-15,000 ש"ח). ביטוח חובה הוא בנוסף — כ-1,200-2,000 ש"ח בשנה.
             ביחד, מדובר ב-450-1,000 ש"ח בחודש לרכב משפחתי, ועד 1,500 ש"ח לרכב יוקרה.
           </p>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">טסט — כ-30 ש"ח/חודש</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">טסט — כ-30 ש"ח/חודש</h3>
           <p>
             הטסט עולה 220-360 ש"ח בשנה (תלוי באזור ובמכון), מה שיוצא כ-25-30 ש"ח בחודש. זה נשמע מעט, אבל כשמצטרף לכל השאר — זה מצטבר.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">ההוצאות שמפספסים</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">ההוצאות שמפספסים</h2>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">טיפולים ותחזוקה — 400-900 ש"ח/חודש</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">טיפולים ותחזוקה — 400-900 ש"ח/חודש</h3>
           <p>
             החלפת שמן כל 10,000-15,000 ק"מ (450-900 ש"ח לטיפול), פילטרים, בלמים (1,200-2,500 ש"ח לסט), צמיגים (1,800-4,500 ש"ח לסט מלא) — כל אלה מצטברים ל-5,000-11,000 ש"ח בשנה לרכב משפחתי. רכבי יוקרה יותר.
           </p>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">פחת (ירידת ערך) — 500-1,500 ש"ח/חודש</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">פחת (ירידת ערך) — 500-1,500 ש"ח/חודש</h3>
           <p>
             זו ההוצאה ה"נסתרת" הגדולה ביותר. רכב חדש מאבד 15-25% מערכו בשנה הראשונה.
             רכב שנקנה ב-150,000 ש"ח יכול לאבד 30,000 ש"ח בשנה — 2,500 ש"ח בחודש!
           </p>
 
-          <h3 className="text-xl font-bold text-[#1e3a5f]">חנייה ודוחות — 100-600 ש"ח/חודש</h3>
+          <h3 className="text-xl font-bold text-[#1B4E8A]">חנייה ודוחות — 100-600 ש"ח/חודש</h3>
           <p>
             חנייה שמורה בבניין בתל אביב יכולה לעלות 500-1,200 ש"ח בחודש. דוחות חנייה ומהירות מוסיפים עוד.
           </p>
@@ -94,7 +97,7 @@ export default function BlogPostPage() {
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">איך לחסוך?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">איך לחסוך?</h2>
           <p>הצעד הראשון לחיסכון הוא לדעת כמה באמת מוציאים. ואלה כמה טיפים:</p>
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li>מעקב אחרי כל הוצאה — AutoLog עושה את זה אוטומטית</li>
@@ -104,10 +107,10 @@ export default function BlogPostPage() {
             <li>שקילת מעבר לרכב חשמלי/היברידי — חיסכון של 50-70% בדלק</li>
           </ul>
 
-          <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
+          <div className="bg-[#1B4E8A] text-white rounded-2xl p-8 my-8 text-center">
             <h3 className="text-xl font-bold mb-3">תדעו בדיוק כמה הרכב עולה</h3>
             <p className="text-white/80 mb-5 text-sm">AutoLog עוקבת אחרי כל הוצאה ומראה בדיוק לאן הכסף הולך.</p>
-            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg">
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-cream-500 text-white font-bold rounded-xl hover:bg-cream-600 transition shadow-lg">
               התחילו מעקב בחינם
               <ArrowLeft size={16} />
             </Link>
@@ -134,7 +137,7 @@ export default function BlogPostPage() {
         </div>
       </article>
 
-      <footer className="bg-[#1e3a5f] text-white/60 py-6 text-center text-sm">
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm">
         <p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p>
       </footer>
     </div>

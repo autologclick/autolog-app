@@ -106,11 +106,11 @@ export default function AdminSosDetailPage() {
           <button onClick={() => router.push('/admin/sos')} className="p-2 hover:bg-gray-100 rounded-lg transition">
             <ArrowRight size={20} />
           </button>
-          <div className="w-10 h-10 bg-[#fef7ed] rounded-lg flex items-center justify-center border-2 border-[#1e3a5f]">
+          <div className="w-10 h-10 bg-[#F3F6FA] rounded-lg flex items-center justify-center border-2 border-[#1B4E8A]">
             <AlertTriangle size={22} className="text-red-600" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#1e3a5f]">אירוע SOS</h1>
+            <h1 className="text-xl font-bold text-[#1B4E8A]">אירוע SOS</h1>
             <p className="text-sm text-gray-500">#{event.id?.slice(-8) || ''}</p>
           </div>
         </div>

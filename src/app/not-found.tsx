@@ -9,7 +9,7 @@ export default function NotFound() {
         {/* Large 404 with Icon */}
         <div className="mb-8">
           <div className="inline-block relative mb-4">
-            <div className="text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-[#1e3a5f]">
+            <div className="text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-[#1B4E8A]">
               404
             </div>
             <div className="absolute inset-0 flex items-center justify-center">
@@ -19,7 +19,7 @@ export default function NotFound() {
         </div>
 
         {/* Heading */}
-        <h1 className="text-3xl font-bold text-[#1e3a5f] mb-3">הדף לא נמצא</h1>
+        <h1 className="text-3xl font-bold text-[#1B4E8A] mb-3">הדף לא נמצא</h1>
 
         {/* Description */}
         <p className="text-gray-600 mb-8 leading-relaxed">

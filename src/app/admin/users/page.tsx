@@ -172,11 +172,11 @@ export default function AdminUsersPage() {
     <div className="space-y-6 pt-12 lg:pt-0" dir="rtl">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fef7ed] border-2 border-[#1e3a5f] rounded-lg flex items-center justify-center">
-            <Users size={20} className="text-[#1e3a5f]" />
+          <div className="w-10 h-10 bg-[#F3F6FA] border-2 border-[#1B4E8A] rounded-lg flex items-center justify-center">
+            <Users size={20} className="text-[#1B4E8A]" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1e3a5f]">ניהול משתמשים</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1B4E8A]">ניהול משתמשים</h1>
             <p className="text-sm text-gray-500">צפייה ועריכת משתמשי המערכת</p>
           </div>
         </div>
@@ -187,9 +187,9 @@ export default function AdminUsersPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="bg-white rounded-xl p-3 border border-gray-200 shadow-sm text-center">
           <div className="flex items-center justify-center gap-2 mb-1">
-            <Users size={14} className="text-[#1e3a5f]" />
+            <Users size={14} className="text-[#1B4E8A]" />
           </div>
-          <p className="text-2xl font-bold text-[#1e3a5f]">{users.filter(u => u.role === 'user').length}</p>
+          <p className="text-2xl font-bold text-[#1B4E8A]">{users.filter(u => u.role === 'user').length}</p>
           <p className="text-xs text-gray-500">משתמשים</p>
         </div>
         <div className="bg-white rounded-xl p-3 border border-gray-200 shadow-sm text-center">
@@ -245,7 +245,7 @@ export default function AdminUsersPage() {
             key={tab.key}
             onClick={() => setRoleFilter(tab.key)}
             className={`px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2 whitespace-nowrap ${
-              roleFilter === tab.key ? 'bg-[#1e3a5f] text-white shadow-md' : 'bg-white text-gray-600 border-2 border-gray-300 hover:border-[#1e3a5f]'
+              roleFilter === tab.key ? 'bg-[#1B4E8A] text-white shadow-md' : 'bg-white text-gray-600 border-2 border-gray-300 hover:border-[#1B4E8A]'
             }`}
           >
             {tab.label} ({tab.count})
@@ -283,10 +283,10 @@ export default function AdminUsersPage() {
                 </tr>
               )}
               {filtered.map(u => (
-                <tr key={u.id} className="border-b border-gray-100 hover:bg-[#fef7ed]/50 transition">
+                <tr key={u.id} className="border-b border-gray-100 hover:bg-[#F3F6FA]/50 transition">
                   <td className="py-2 sm:py-3 px-2 sm:px-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-[#fef7ed] rounded-full flex items-center justify-center text-xs font-bold text-[#1e3a5f] flex-shrink-0">
+                      <div className="w-8 h-8 bg-[#F3F6FA] rounded-full flex items-center justify-center text-xs font-bold text-[#1B4E8A] flex-shrink-0">
                         {u.fullName.charAt(0)}
                       </div>
                       <span className="font-medium text-xs sm:text-sm">{u.fullName}</span>
@@ -475,7 +475,7 @@ export default function AdminUsersPage() {
             </p>
             <button
               onClick={() => setCredentialsInfo(null)}
-              className="w-full py-2.5 bg-[#1e3a5f] text-white font-bold rounded-xl hover:bg-[#162d4a] transition"
+              className="w-full py-2.5 bg-[#1B4E8A] text-white font-bold rounded-xl hover:bg-[#162d4a] transition"
             >
               סגור
             </button>

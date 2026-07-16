@@ -446,7 +446,7 @@ export default function DocumentsPage() {
   });
 
   return (
-    <div className="bg-[#fef7ed] min-h-screen pb-24" dir="rtl">
+    <div className="bg-[#F3F6FA] min-h-screen pb-24" dir="rtl">
       {/* Hidden file inputs */}
       <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
         onChange={(e) => { if (e.target.files?.[0]) handleFileSelected(e.target.files[0]); e.target.value = ''; }} className="hidden" />
@@ -498,18 +498,32 @@ export default function DocumentsPage() {
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => cameraInputRef.current?.click()}
-            className="flex items-center justify-center gap-2 py-3 rounded-xl bg-teal-600 text-white font-semibold text-sm shadow-sm hover:bg-teal-700 active:scale-[0.98] transition"
+            className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#1B4E8A] text-white font-bold text-sm shadow-sm hover:bg-[#12345C] active:scale-[0.98] transition"
           >
             <Camera size={18} />
             <span>סרוק מסמך</span>
           </button>
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center justify-center gap-2 py-3 rounded-xl bg-white text-teal-700 font-semibold text-sm border-2 border-teal-600 hover:bg-teal-50 active:scale-[0.98] transition"
+            className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white text-[#1B4E8A] font-bold text-sm border-2 border-[#2E77D0] hover:bg-[#EAF2FC] active:scale-[0.98] transition"
           >
             <Upload size={18} />
             <span>העלה קובץ</span>
           </button>
+        </div>
+
+        {/* Smart-scan info banner (visual only) */}
+        <div
+          className="flex items-center gap-3 rounded-2xl px-4 py-3 text-white shadow-sm"
+          style={{ background: 'linear-gradient(120deg, #1B4E8A 0%, #2E77D0 100%)' }}
+        >
+          <div className="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center flex-shrink-0">
+            <span className="text-lg">✨</span>
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-bold leading-tight">זיהוי מסמכים חכם</p>
+            <p className="text-[11px] text-white/75 leading-relaxed">צלמו ביטוח, טסט או קבלה — הפרטים והתוקף מזוהים אוטומטית</p>
+          </div>
         </div>
 
         {/* ================================================ */}
@@ -700,7 +714,7 @@ export default function DocumentsPage() {
               <select
                 value={activeFilter}
                 onChange={(e) => setActiveFilter(e.target.value)}
-                className="bg-transparent border-0 outline-none font-semibold text-[#1e3a5f] pr-1"
+                className="bg-transparent border-0 outline-none font-semibold text-[#1B4E8A] pr-1"
               >
                 {CATEGORIES.map(cat => {
                   const count = getCategoryCount(cat.id);

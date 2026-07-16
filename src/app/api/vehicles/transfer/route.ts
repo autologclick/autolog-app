@@ -10,6 +10,7 @@ import {
 } from '@/lib/api-helpers';
 import { sendEmail } from '@/lib/email';
 import crypto from 'crypto';
+import { notifyTelegram } from '@/lib/telegram';
 
 // ─── helpers ───────────────────────────────────────────────────────
 function generateCode(): string {
@@ -162,6 +163,11 @@ export async function POST(req: NextRequest) {
       subject: `העברת בעלות על רכב — ${vehicleLabel}`,
       html: buildTransferEmailHtml(seller.fullName, vehicleLabel, code, appUrl, !!buyer),
     });
+
+    notifyTelegram(
+      '🔁 העברת בעלות התחילה',
+      `מוכר: ${seller.fullName}\nרכב: ${vehicleLabel}\nאל: ${cleanEmail}${buyer ? ' (משתמש קיים)' : ' (לא רשום)'}`,
+    );
 
     return jsonResponse({
       message: buyer

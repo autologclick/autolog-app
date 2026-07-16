@@ -5,6 +5,7 @@
  */
 
 import prisma from '@/lib/db';
+import { notifyTelegram } from '@/lib/telegram';
 
 // =============================================
 // Types
@@ -57,6 +58,9 @@ export async function notifyAdmins(
 ) {
   const admins = await prisma.user.findMany({ where: { role: 'admin' } });
   if (admins.length === 0) return;
+
+  // Mirror to Telegram ops feed (fire-and-forget).
+  notifyTelegram(title, message);
 
   return prisma.notification.createMany({
     data: admins.map((admin) => ({

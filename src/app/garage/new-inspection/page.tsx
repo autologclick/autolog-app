@@ -223,6 +223,11 @@ export default function NewInspectionPage() {
   const searchParams = useSearchParams();
   const appointmentId = searchParams.get('appointmentId') || '';
   const [step, setStep] = useState<Step>(0);
+
+  // Auto-scroll to top on step change so user lands at the top of each step
+  useEffect(() => {
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [step]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successModal, setSuccessModal] = useState(false);
@@ -643,7 +648,7 @@ export default function NewInspectionPage() {
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.strokeStyle = '#1e3a5f';
+    ctx.strokeStyle = '#1B4E8A';
     ctx.lineTo(x, y);
     ctx.stroke();
   };
@@ -741,6 +746,7 @@ export default function NewInspectionPage() {
         inspectionType,
         mechanicName: mechanicName || undefined,
         mileage: mileage ? parseInt(mileage) : undefined,
+        customerSignature: signatureData || undefined,
       };
 
       let payload: Record<string, unknown>;
@@ -949,11 +955,11 @@ export default function NewInspectionPage() {
     <div className="space-y-6 pt-12 lg:pt-0 pb-24 px-2 sm:px-0" dir="rtl">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-[#fef7ed] rounded-lg border-2 border-[#1e3a5f] flex items-center justify-center shadow-sm">
-          <Shield size={20} className="text-[#1e3a5f]" />
+        <div className="w-10 h-10 bg-[#F3F6FA] rounded-lg border-2 border-[#1B4E8A] flex items-center justify-center shadow-sm">
+          <Shield size={20} className="text-[#1B4E8A]" />
         </div>
         <div>
-          <h1 className="text-lg sm:text-2xl font-bold text-[#1e3a5f]">
+          <h1 className="text-lg sm:text-2xl font-bold text-[#1B4E8A]">
             {step === 0 ? 'פעולה חדשה' : inspectionTypes.find(t => t.value === inspectionType)?.label || 'אבחון חדש'}
           </h1>
           <p className="text-sm text-gray-500">ביצוע אבחון ומילוי ממצאים</p>
@@ -1176,7 +1182,7 @@ export default function NewInspectionPage() {
                     </div>
                     <div className="flex gap-2">
                       <button onClick={() => { setVehicleMode('scan'); handleScanPhoto(); }}
-                        className="flex items-center gap-1 px-3 py-2 bg-white rounded-lg border border-gray-300 text-xs text-gray-600 hover:bg-[#fef7ed]/50 transition">
+                        className="flex items-center gap-1 px-3 py-2 bg-white rounded-lg border border-gray-300 text-xs text-gray-600 hover:bg-[#F3F6FA]/50 transition">
                         <Camera size={14} /> צלם רישיון רכב
                       </button>
                       <button onClick={() => { setVehicleMode('select'); setManualPlate(''); setScanPreview(''); }}
@@ -1218,7 +1224,7 @@ export default function NewInspectionPage() {
                             <Camera size={16} /> צלם תמונה
                           </button>
                           <button onClick={() => setVehicleMode('manual')}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-600 rounded-xl text-sm font-medium hover:bg-[#fef7ed]/50 transition">
+                            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-600 rounded-xl text-sm font-medium hover:bg-[#F3F6FA]/50 transition">
                             <Keyboard size={16} /> הזנה ידנית
                           </button>
                         </div>
@@ -1232,7 +1238,7 @@ export default function NewInspectionPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <Input label="קילומטראז' *" placeholder="140,000" type="number" required value={mileage} onChange={e => setMileage(e.target.value)} />
-                <Input label="שם מכניק" placeholder="שם המכניק" value={mechanicName} onChange={e => setMechanicName(e.target.value)} />
+                <Input label="שם מכונאי" placeholder="שם המכונאי" value={mechanicName} onChange={e => setMechanicName(e.target.value)} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <Input label="מספר מנוע" placeholder="Hw523h" value={engineNumber} onChange={e => setEngineNumber(e.target.value)} />

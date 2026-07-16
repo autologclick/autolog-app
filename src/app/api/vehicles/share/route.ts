@@ -9,7 +9,12 @@ import {
 } from '@/lib/api-helpers';
 import { sendEmail, buildVehicleShareRequestEmailHtml } from '@/lib/email';
 
-// POST /api/vehicles/share — Request to share a vehicle
+// POST /api/vehicles/share
+// Two flows:
+//  A) Owner-initiated invite  { vehicleId, sharedWithEmail } — the owner grants
+//     access to someone (family / employee). Approved immediately by definition.
+//  B) Requester-initiated     { licensePlate } — someone asks the owner for access
+//     (the original flow, triggered when adding an already-registered plate).
 export async function POST(req: NextRequest) {
   try {
     const payload = requireAuth(req);
@@ -17,8 +22,77 @@ export async function POST(req: NextRequest) {
     if (rateLimitError) return rateLimitError;
 
     const body = await req.json();
-    const { licensePlate } = body;
+    const { licensePlate, vehicleId, sharedWithEmail } = body;
 
+    // ── Flow A: owner invites someone to a vehicle they own ──
+    if (vehicleId && sharedWithEmail) {
+      const email = String(sharedWithEmail).trim().toLowerCase();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+        return errorResponse('כתובת מייל לא תקינה', 400);
+      }
+
+      const vehicle = await prisma.vehicle.findUnique({
+        where: { id: String(vehicleId) },
+        select: { id: true, userId: true, nickname: true, licensePlate: true },
+      });
+      if (!vehicle) return errorResponse('רכב לא נמצא', 404);
+      if (vehicle.userId !== payload.userId) {
+        return errorResponse('אפשר לשתף רק רכב בבעלותך', 403);
+      }
+
+      const owner = await prisma.user.findUnique({
+        where: { id: payload.userId },
+        select: { fullName: true, email: true },
+      });
+      if (owner?.email && owner.email.toLowerCase() === email) {
+        return errorResponse('אין אפשרות לשתף רכב עם עצמך', 400);
+      }
+
+      // link to an existing account when the invitee is already registered;
+      // otherwise the share is linked on signup (see /api/auth/register)
+      const invitee = await prisma.user.findFirst({
+        where: { email: { equals: email, mode: 'insensitive' } },
+        select: { id: true, fullName: true },
+      });
+
+      await prisma.vehicleShare.upsert({
+        where: { vehicleId_sharedWithEmail: { vehicleId: vehicle.id, sharedWithEmail: email } },
+        create: {
+          vehicleId: vehicle.id,
+          ownerUserId: payload.userId,
+          sharedWithEmail: email,
+          sharedWithUserId: invitee?.id ?? null,
+          status: 'approved', // the owner is the authority — no extra approval needed
+        },
+        update: {
+          status: 'approved',
+          ...(invitee?.id ? { sharedWithUserId: invitee.id } : {}),
+        },
+      });
+
+      const vehicleLabel = `${vehicle.nickname || ''} (${vehicle.licensePlate})`.trim();
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://autolog.click';
+      await sendEmail({
+        to: email,
+        subject: `שותף איתך רכב ב-AutoLog — ${vehicleLabel}`,
+        html: `<div dir="rtl" style="font-family:Arial,sans-serif;padding:20px;">
+          <h2>שותף איתך רכב</h2>
+          <p><strong>${owner?.fullName || 'בעל הרכב'}</strong> שיתף איתך את הרכב <strong>${vehicleLabel}</strong> ב-AutoLog.</p>
+          ${invitee
+            ? `<p>הרכב כבר מופיע ברשימת הרכבים שלך.</p><p><a href="${appUrl}/user/vehicles">לצפייה ברכב</a></p>`
+            : `<p>כדי לצפות ברכב, יש להירשם ל-AutoLog עם כתובת המייל הזו — והרכב יופיע אצלך אוטומטית.</p><p><a href="${appUrl}/auth/signup">להרשמה</a></p>`}
+          <p style="margin-top:20px;color:#888;">— AutoLog</p>
+        </div>`,
+      });
+
+      return jsonResponse({
+        message: invitee
+          ? 'הרכב שותף בהצלחה'
+          : 'ההזמנה נשלחה — הרכב יופיע אצלו מיד לאחר ההרשמה',
+      }, 201);
+    }
+
+    // ── Flow B: requester asks the owner for access (by plate) ──
     if (!licensePlate) {
       return errorResponse('מספר רכב נדרש', 400);
     }
@@ -207,6 +281,33 @@ export async function PATCH(req: NextRequest) {
     const msg = action === 'approve' ? 'השיתוף אושר בהצלחה' : 'הבקשה נדחתה';
     return jsonResponse({ message: msg });
 
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
+// DELETE /api/vehicles/share — owner revokes a share / removes a member
+export async function DELETE(req: NextRequest) {
+  try {
+    const payload = requireAuth(req);
+    const rateLimitError = await enforceRateLimit(payload.userId);
+    if (rateLimitError) return rateLimitError;
+
+    const body = await req.json().catch(() => null);
+    const shareId = body?.shareId;
+    if (!shareId) return errorResponse('פרמטרים לא תקינים', 400);
+
+    const share = await prisma.vehicleShare.findUnique({
+      where: { id: String(shareId) },
+      select: { id: true, ownerUserId: true },
+    });
+    if (!share) return errorResponse('שיתוף לא נמצא', 404);
+    if (share.ownerUserId !== payload.userId) {
+      return errorResponse('אין הרשאה לפעולה זו', 403);
+    }
+
+    await prisma.vehicleShare.delete({ where: { id: share.id } });
+    return jsonResponse({ message: 'השיתוף בוטל' });
   } catch (error) {
     return handleApiError(error);
   }

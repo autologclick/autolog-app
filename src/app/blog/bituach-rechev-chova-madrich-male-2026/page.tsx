@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import { getPostBySlug } from '@/lib/blog/posts';
+import { ogImageForPost } from '@/lib/blog/og';
 
 const post = getPostBySlug('bituach-rechev-chova-madrich-male-2026')!;
 
@@ -11,14 +12,24 @@ export const metadata: Metadata = {
   description: post.description,
   keywords: post.keywords,
   alternates: { canonical: `/blog/${post.slug}` },
-  openGraph: { title: post.title, description: post.description, url: `https://autolog.click/blog/${post.slug}`, type: 'article', publishedTime: post.publishedAt, authors: [post.author], locale: 'he_IL', siteName: 'AutoLog' },
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    url: `https://autolog.click/blog/${post.slug}`,
+    type: 'article',
+    publishedTime: post.publishedAt,
+    authors: [post.author],
+    locale: 'he_IL',
+    siteName: 'אוטולוג',
+    images: ogImageForPost(post.slug),
+  },
   twitter: { card: 'summary_large_image', title: post.title, description: post.description },
 };
 
 export default function BlogPostPage() {
   return (
-    <div className="min-h-screen bg-[#fef7ed]" dir="rtl">
-      <header className="bg-gradient-to-l from-[#1e3a5f] to-[#2a5a8f] text-white">
+    <div className="min-h-screen bg-[#F3F6FA]" dir="rtl">
+      <header className="bg-gradient-to-l from-[#1B4E8A] to-[#1D5FAF] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="hover:opacity-80 transition"><Logo size="sm" /></Link>
           <Link href="/blog" className="text-sm text-white/70 hover:text-white transition flex items-center gap-1"><ChevronRight size={14} />חזרה לבלוג</Link>
@@ -27,7 +38,7 @@ export default function BlogPostPage() {
 
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mb-4">{post.category}</span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] leading-tight mb-4">{post.title}</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A] leading-tight mb-4">{post.title}</h1>
 
         <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-200">
           <span className="flex items-center gap-1"><Calendar size={14} />{new Date(post.publishedAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
@@ -40,12 +51,12 @@ export default function BlogPostPage() {
             ביטוח חובה הוא הביטוח היחיד שנדרש על פי חוק לכל רכב מנועי בישראל. אסור לנסוע בלעדיו, ואי-עמידה בכך גוררת קנסות פליליים, פסילת רישיון, ואחריות אישית למאות אלפי שקלים. במאמר נסביר בדיוק מה זה כולל, כמה זה עולה, איך לחסוך, ואת ההבדל החשוב מביטוח מקיף.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה זה ביטוח חובה?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">מה זה ביטוח חובה?</h2>
           <p>
             ביטוח חובה (פלת&quot;ד — חוק פיצויים לנפגעי תאונות דרכים) הוא ביטוח שהמדינה מחייבת בו כל בעל רכב. הוא מכסה <strong>נזק גוף שנגרם לנפגעי תאונות דרכים</strong> — בין אם זה הנהג, הנוסעים, הולכי רגל או רוכבי אופניים.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה ביטוח חובה מכסה?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">מה ביטוח חובה מכסה?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li>טיפול רפואי לנפגעים — ללא הגבלת סכום</li>
             <li>אובדן הכנסה (אם הנפגע לא יכול לעבוד)</li>
@@ -54,7 +65,7 @@ export default function BlogPostPage() {
             <li>פיצוי במקרה מוות (לבני המשפחה)</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה ביטוח חובה לא מכסה?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">מה ביטוח חובה לא מכסה?</h2>
           <p>זה חשוב להבין — חובה <strong>לא</strong> מכסה:</p>
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li>נזק לרכב שלכם (פח, חלקים, גנבה)</li>
@@ -65,7 +76,7 @@ export default function BlogPostPage() {
           </ul>
           <p>בשביל הדברים האלה צריך <Link href="/blog/bituach-rechev-makif-eich-bocharim" className="text-teal-600 hover:text-teal-700 underline">ביטוח מקיף</Link> או צד ג&apos;.</p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">כמה עולה ביטוח חובה ב-2026?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">כמה עולה ביטוח חובה ב-2026?</h2>
           <p>המחיר תלוי במספר גורמים: גיל הנהג, ותק נהיגה, סוג הרכב, אזור מגורים, היסטוריית תאונות. טווחים נפוצים:</p>
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li><strong>נהג צעיר (פחות מ-3 שנות ותק):</strong> 2,500-4,500 ש&quot;ח לשנה</li>
@@ -74,16 +85,16 @@ export default function BlogPostPage() {
             <li><strong>אופנוע:</strong> 1,800-4,000 ש&quot;ח (תלוי בנפח)</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">איך משווים מחירי ביטוח חובה?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">איך משווים מחירי ביטוח חובה?</h2>
           <ol className="list-decimal list-inside space-y-2 mr-4">
-            <li>היכנסו לאתר השוואה כמו <strong>Wobi</strong>, <strong>InsuranceGenie</strong> או <strong>איסכלת</strong></li>
+            <li>היכנסו לאתר השוואה כמו <strong>Wobi</strong>, <strong>InsuranceGenie</strong> או <strong>Bituach.gov.il</strong></li>
             <li>הזינו את פרטי הרכב והנהג</li>
             <li>קבלו הצעות מ-5-10 חברות תוך דקות</li>
             <li>בחרו את ההצעה הזולה ביותר עם תנאים סבירים</li>
           </ol>
           <p>טיפ: ההפרש בין החברה היקרה לזולה יכול להגיע ל-1,000-2,000 ש&quot;ח לשנה!</p>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">איך לחסוך על ביטוח חובה?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">איך לחסוך על ביטוח חובה?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li><strong>השוו כל שנה</strong> — אל תחדשו אוטומטית</li>
             <li><strong>הגדילו השתתפות עצמית</strong> — אם רלוונטי</li>
@@ -92,7 +103,7 @@ export default function BlogPostPage() {
             <li><strong>הוסיפו נהג מבוגר וותיק</strong> — להוריד הצעיר במחיר</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">מה קורה אם אני נוסע בלי ביטוח חובה?</h2>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">מה קורה אם אני נוסע בלי ביטוח חובה?</h2>
           <ul className="list-disc list-inside space-y-2 mr-4">
             <li><strong>קנס פלילי</strong> — עד 14,500 ש&quot;ח</li>
             <li><strong>פסילת רישיון</strong> לתקופה משמעותית</li>
@@ -101,26 +112,26 @@ export default function BlogPostPage() {
             <li><strong>עיכוב הרכב</strong> במקום</li>
           </ul>
 
-          <div className="bg-[#1e3a5f] text-white rounded-2xl p-8 my-8 text-center">
+          <div className="bg-[#1B4E8A] text-white rounded-2xl p-8 my-8 text-center">
             <h3 className="text-xl font-bold mb-3">לא לפספס חידוש ביטוח</h3>
             <p className="text-white/80 mb-5 text-sm">AutoLog שולחת תזכורת אוטומטית 30 יום לפני שהביטוח פג. צילום אחד והכל מסודר.</p>
-            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition shadow-lg">הרשמה בחינם<ArrowLeft size={16} /></Link>
+            <Link href="/auth/signup" className="inline-flex items-center gap-2 px-7 py-3 bg-cream-500 text-white font-bold rounded-xl hover:bg-cream-600 transition shadow-lg">הרשמה בחינם<ArrowLeft size={16} /></Link>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#1e3a5f] pt-4">שאלות נפוצות</h2>
-          <h3 className="text-lg font-bold text-[#1e3a5f]">האם ביטוח חובה מתחדש אוטומטית?</h3>
+          <h2 className="text-2xl font-bold text-[#1B4E8A] pt-4">שאלות נפוצות</h2>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">האם ביטוח חובה מתחדש אוטומטית?</h3>
           <p>לא, אלא אם יש הוראת קבע. תמיד תוודאו שהוא בתוקף.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">מה ההבדל בין חובה למקיף?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">מה ההבדל בין חובה למקיף?</h3>
           <p>חובה — נזק גוף בלבד. מקיף — גם נזק לרכב שלכם וגם נזק לצד שלישי. <Link href="/blog/bituach-rechev-makif-eich-bocharim" className="text-teal-600 hover:text-teal-700 underline">קראו על ביטוח מקיף</Link>.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">מה זה ביטוח צד ג&apos;?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">מה זה ביטוח צד ג&apos;?</h3>
           <p>ביטוח שמכסה רק נזק שאתם גורמים לרכב/רכוש של אחרים. זול מביטוח מקיף, מתאים לרכבים ישנים.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">האם נהג צעיר יכול לבטח רכב?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">האם נהג צעיר יכול לבטח רכב?</h3>
           <p>כן, אבל המחיר גבוה משמעותית. רוב הצעירים מעדיפים שההורים יבטחו והם יוכלו לנהוג בתור &quot;נהג נוסף&quot;.</p>
 
-          <h3 className="text-lg font-bold text-[#1e3a5f]">מה עושים אחרי תאונה?</h3>
+          <h3 className="text-lg font-bold text-[#1B4E8A]">מה עושים אחרי תאונה?</h3>
           <p>1) דאגו לבטיחות. 2) דווחו למשטרה אם יש פצועים. 3) אספו פרטי הצד השני. 4) פנו לחברת הביטוח שלכם תוך 24 שעות.</p>
         </div>
 
@@ -142,7 +153,7 @@ export default function BlogPostPage() {
         </div>
       </article>
 
-      <footer className="bg-[#1e3a5f] text-white/60 py-6 text-center text-sm"><p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p></footer>
+      <footer className="bg-[#1B4E8A] text-white/60 py-6 text-center text-sm"><p>&copy; {new Date().getFullYear()} AutoLog. כל הזכויות שמורות.</p></footer>
     </div>
   );
 }

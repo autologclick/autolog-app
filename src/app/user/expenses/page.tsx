@@ -1,5 +1,6 @@
 'use client';
 
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Card, CardTitle, StatCard } from '@/components/ui/Card';
@@ -62,6 +63,7 @@ export default function ExpensesPage() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [deleteExpenseId, setDeleteExpenseId] = useState<string | null>(null);
   const [editExpenseId, setEditExpenseId] = useState<string | null>(null);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -271,8 +273,6 @@ export default function ExpensesPage() {
   };
 
   const handleDeleteExpense = async (id: string) => {
-    if (!confirm('האם אתה בטוח שברצונך למחוק הוצאה זו?')) return;
-
     try {
       const res = await fetch(`/api/expenses/${id}`, { method: 'DELETE' });
       if (res.ok) {
@@ -341,7 +341,7 @@ export default function ExpensesPage() {
   const currentMonth = new Date().toLocaleDateString('he-IL', { year: 'numeric', month: 'long' });
 
   return (
-    <div className="min-h-screen bg-[#fef7ed] pb-24" dir="rtl">
+    <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
         {/* Page Header */}
         <PageHeader
@@ -357,14 +357,14 @@ export default function ExpensesPage() {
               resetForm(selectedCategory);
               setShowAddModal(true);
             }}
-            className="flex-1 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700"
+            className="flex-1 bg-[#F97316] hover:bg-[#EA6A0B] shadow-md shadow-orange-500/20"
           >
             הוסף הוצאה
           </Button>
           {expenses.length > 0 && (
             <button
               onClick={exportCSV}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium text-[#1e3a5f] hover:bg-gray-50 hover:border-gray-300 transition shadow-sm"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium text-[#1B4E8A] hover:bg-gray-50 hover:border-gray-300 transition shadow-sm"
               title="ייצוא לקובץ CSV"
             >
               <Download size={16} />
@@ -376,11 +376,11 @@ export default function ExpensesPage() {
         {/* Vehicle Selector */}
         {vehicles.length > 0 && (
           <div className="relative">
-            <label className="block text-sm font-semibold text-[#1e3a5f] mb-3 text-right">בחירת רכב</label>
+            <label className="block text-sm font-semibold text-[#1B4E8A] mb-3 text-right">בחירת רכב</label>
             <select
               value={selectedVehicleId || ''}
               onChange={(e) => setSelectedVehicleId(e.target.value)}
-              className="w-full p-3 rounded-2xl border border-gray-200 bg-white text-right text-sm hover:border-teal-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition appearance-none cursor-pointer text-[#1e3a5f]"
+              className="w-full p-3 rounded-2xl border border-gray-200 bg-white text-right text-sm hover:border-teal-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition appearance-none cursor-pointer text-[#1B4E8A]"
               style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 12 12%27%3E%3Cpath fill=%27%23666%27 d=%27M6 9L1 4h10z%27/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'left 12px center', paddingRight: '32px', paddingLeft: '12px' }}
             >
               <option value="">כל הרכבים</option>
@@ -397,22 +397,22 @@ export default function ExpensesPage() {
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-white rounded-2xl p-3 text-center shadow-sm">
             <p className="text-xs text-gray-500 mb-1">סה״כ הוצאות</p>
-            <p className="text-lg font-bold text-[#1e3a5f]">₪{totalExpenses.toLocaleString()}</p>
+            <p className="text-lg font-bold text-[#1B4E8A]">₪{totalExpenses.toLocaleString()}</p>
           </div>
           <div className="bg-white rounded-2xl p-3 text-center shadow-sm">
             <p className="text-xs text-gray-500 mb-1">החודש</p>
-            <p className="text-lg font-bold text-teal-600">₪{monthlyExpenses.toLocaleString()}</p>
+            <p className="text-lg font-bold text-[#F97316]">₪{monthlyExpenses.toLocaleString()}</p>
           </div>
           <div className="bg-white rounded-2xl p-3 text-center shadow-sm">
             <p className="text-xs text-gray-500 mb-1">ממוצע חודשי</p>
-            <p className="text-lg font-bold text-[#1e3a5f]">₪{monthlyAverage.toLocaleString()}</p>
+            <p className="text-lg font-bold text-[#1B4E8A]">₪{monthlyAverage.toLocaleString()}</p>
           </div>
         </div>
 
         {/* Category Breakdown Cards */}
         {Object.keys(categoryBreakdown).length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-[#1e3a5f] mb-3 text-right">התפלגות לפי קטגוריה</h3>
+            <h3 className="text-sm font-semibold text-[#1B4E8A] mb-3 text-right">התפלגות לפי קטגוריה</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {Object.entries(categoryBreakdown).map(([cat, amount]) => {
                 const catData = CATEGORIES[cat as keyof typeof CATEGORIES];
@@ -421,7 +421,7 @@ export default function ExpensesPage() {
                   <div key={cat} className="bg-white rounded-2xl p-4 text-center shadow-sm hover:shadow-md transition">
                     <div className="text-2xl mb-2">{catData.emoji}</div>
                     <p className="text-xs text-gray-500 font-medium mb-2">{catData.label}</p>
-                    <p className="text-sm font-bold text-[#1e3a5f]">₪{amount.toLocaleString()}</p>
+                    <p className="text-sm font-bold text-[#1B4E8A]">₪{amount.toLocaleString()}</p>
                     <p className="text-xs text-gray-400 mt-1">{percentage}%</p>
                   </div>
                 );
@@ -432,7 +432,7 @@ export default function ExpensesPage() {
 
         {/* Monthly Chart */}
         <div>
-          <h3 className="text-sm font-semibold text-[#1e3a5f] mb-3 text-right">טרנד חודשי</h3>
+          <h3 className="text-sm font-semibold text-[#1B4E8A] mb-3 text-right">טרנד חודשי</h3>
           <div className="bg-white rounded-2xl p-4 shadow-sm">
             <ExpenseChart data={monthlyChartData} />
             {/* Legend */}
@@ -456,7 +456,7 @@ export default function ExpensesPage() {
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center flex-shrink-0">
                 <Brain size={16} className="text-white" />
               </div>
-              <h3 className="text-sm font-bold text-[#1e3a5f]">ניתוח AI של הוצאות</h3>
+              <h3 className="text-sm font-bold text-[#1B4E8A]">ניתוח AI של הוצאות</h3>
             </div>
 
           {aiExpenseLoading ? (
@@ -485,7 +485,7 @@ export default function ExpensesPage() {
                   <div className="text-[10px] text-gray-400">מגמה</div>
                 </div>
                 <div className="bg-white/70 rounded-xl p-3 text-center">
-                  <div className="text-sm font-bold text-[#1e3a5f]">₪{aiExpenseAnalysis.monthlyAverage?.toLocaleString()}</div>
+                  <div className="text-sm font-bold text-[#1B4E8A]">₪{aiExpenseAnalysis.monthlyAverage?.toLocaleString()}</div>
                   <div className="text-[10px] text-gray-400">ממוצע חודשי</div>
                 </div>
               </div>
@@ -551,7 +551,7 @@ export default function ExpensesPage() {
         {filteredExpenses.length === 0 ? (
           <div className="text-center py-16">
             <div className="text-5xl mb-4">💰</div>
-            <h3 className="text-lg font-bold text-[#1e3a5f] mb-2">אין הוצאות עדיין</h3>
+            <h3 className="text-lg font-bold text-[#1B4E8A] mb-2">אין הוצאות עדיין</h3>
             <p className="text-gray-500 mb-6">הוסיפו הוצאה כדי להתחיל לעקוב אחרי הוצאות הרכב</p>
             <Button
               icon={<Plus size={16} />}
@@ -579,7 +579,7 @@ export default function ExpensesPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2 mb-1">
                         <span className="text-xs font-medium text-gray-500">{catData.label}</span>
-                        <span className="font-bold text-[#1e3a5f]">₪{exp.amount.toLocaleString()}</span>
+                        <span className="font-bold text-[#1B4E8A]">₪{exp.amount.toLocaleString()}</span>
                       </div>
                       <p className="text-sm text-gray-700 mb-1">{exp.description}</p>
                       <div className="flex items-center justify-between gap-2 text-xs text-gray-400">
@@ -591,7 +591,7 @@ export default function ExpensesPage() {
                             עריכה
                           </button>
                           <button
-                            onClick={() => handleDeleteExpense(exp.id)}
+                            onClick={() => setDeleteExpenseId(exp.id)}
                             className="text-red-600 hover:text-red-700 font-medium"
                           >
                             מחיקה
@@ -628,13 +628,13 @@ export default function ExpensesPage() {
                     {paginatedExpenses.map((exp, idx) => {
                       const catData = CATEGORIES[exp.category];
                       return (
-                        <tr key={exp.id} className={`${idx < paginatedExpenses.length - 1 ? 'border-b border-gray-100' : ''} hover:bg-[#fef7ed] transition`}>
+                        <tr key={exp.id} className={`${idx < paginatedExpenses.length - 1 ? 'border-b border-gray-100' : ''} hover:bg-[#F3F6FA] transition`}>
                           <td className="py-3 px-4 text-sm text-gray-600">
                             {new Date(exp.date).toLocaleDateString('he-IL')}
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center gap-2 justify-end">
-                              <span className="text-sm font-medium text-[#1e3a5f]">{catData.label}</span>
+                              <span className="text-sm font-medium text-[#1B4E8A]">{catData.label}</span>
                               <span className="text-lg">{catData.emoji}</span>
                             </div>
                           </td>
@@ -642,7 +642,7 @@ export default function ExpensesPage() {
                           <td className="py-3 px-4 text-sm text-gray-600">
                             {exp.vehicle?.nickname || '—'}
                           </td>
-                          <td className="py-3 px-4 text-sm font-bold text-[#1e3a5f]">
+                          <td className="py-3 px-4 text-sm font-bold text-[#1B4E8A]">
                             ₪{exp.amount.toLocaleString()}
                           </td>
                           <td className="py-3 px-4">
@@ -655,7 +655,7 @@ export default function ExpensesPage() {
                                 <Edit size={16} />
                               </button>
                               <button
-                                onClick={() => handleDeleteExpense(exp.id)}
+                                onClick={() => setDeleteExpenseId(exp.id)}
                                 className="text-red-600 hover:text-red-700 transition"
                                 title="מחק"
                               >
@@ -688,11 +688,11 @@ export default function ExpensesPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-[#1e3a5f] mb-2 text-right">רכב</label>
+                <label className="block text-sm font-medium text-[#1B4E8A] mb-2 text-right">רכב</label>
                 <select
                   value={formData.vehicleId}
                   onChange={(e) => setFormData({ ...formData, vehicleId: e.target.value })}
-                  className="w-full p-3 rounded-2xl border border-gray-200 bg-white text-right text-sm hover:border-teal-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition appearance-none cursor-pointer text-[#1e3a5f]"
+                  className="w-full p-3 rounded-2xl border border-gray-200 bg-white text-right text-sm hover:border-teal-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition appearance-none cursor-pointer text-[#1B4E8A]"
                   style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 12 12%27%3E%3Cpath fill=%27%23666%27 d=%27M6 9L1 4h10z%27/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'left 12px center', paddingRight: '32px', paddingLeft: '12px' }}
                 >
                   <option value="">בחירת רכב</option>
@@ -704,11 +704,11 @@ export default function ExpensesPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#1e3a5f] mb-2 text-right">קטגוריה</label>
+                <label className="block text-sm font-medium text-[#1B4E8A] mb-2 text-right">קטגוריה</label>
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value as keyof typeof CATEGORIES })}
-                  className="w-full p-3 rounded-2xl border border-gray-200 bg-white text-right text-sm hover:border-teal-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition appearance-none cursor-pointer text-[#1e3a5f]"
+                  className="w-full p-3 rounded-2xl border border-gray-200 bg-white text-right text-sm hover:border-teal-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition appearance-none cursor-pointer text-[#1B4E8A]"
                   style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 12 12%27%3E%3Cpath fill=%27%23666%27 d=%27M6 9L1 4h10z%27/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'left 12px center', paddingRight: '32px', paddingLeft: '12px' }}
                 >
                   {CATEGORY_KEYS.map(cat => (
@@ -768,11 +768,11 @@ export default function ExpensesPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-[#1e3a5f] mb-2 text-right">רכב</label>
+                <label className="block text-sm font-medium text-[#1B4E8A] mb-2 text-right">רכב</label>
                 <select
                   value={formData.vehicleId}
                   onChange={(e) => setFormData({ ...formData, vehicleId: e.target.value })}
-                  className="w-full p-3 rounded-2xl border border-gray-200 bg-white text-right text-sm hover:border-teal-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition appearance-none cursor-pointer text-[#1e3a5f]"
+                  className="w-full p-3 rounded-2xl border border-gray-200 bg-white text-right text-sm hover:border-teal-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition appearance-none cursor-pointer text-[#1B4E8A]"
                   style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 12 12%27%3E%3Cpath fill=%27%23666%27 d=%27M6 9L1 4h10z%27/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'left 12px center', paddingRight: '32px', paddingLeft: '12px' }}
                 >
                   <option value="">בחירת רכב</option>
@@ -784,11 +784,11 @@ export default function ExpensesPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#1e3a5f] mb-2 text-right">קטגוריה</label>
+                <label className="block text-sm font-medium text-[#1B4E8A] mb-2 text-right">קטגוריה</label>
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value as keyof typeof CATEGORIES })}
-                  className="w-full p-3 rounded-2xl border border-gray-200 bg-white text-right text-sm hover:border-teal-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition appearance-none cursor-pointer text-[#1e3a5f]"
+                  className="w-full p-3 rounded-2xl border border-gray-200 bg-white text-right text-sm hover:border-teal-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition appearance-none cursor-pointer text-[#1B4E8A]"
                   style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 12 12%27%3E%3Cpath fill=%27%23666%27 d=%27M6 9L1 4h10z%27/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'left 12px center', paddingRight: '32px', paddingLeft: '12px' }}
                 >
                   {CATEGORY_KEYS.map(cat => (
@@ -836,6 +836,15 @@ export default function ExpensesPage() {
             </div>
           </div>
         </Modal>
+        <ConfirmDialog
+          isOpen={deleteExpenseId !== null}
+          title="מחיקת הוצאה"
+          message="האם אתה בטוח שברצונך למחוק הוצאה זו?"
+          confirmLabel="מחק"
+          danger
+          onConfirm={() => { const id = deleteExpenseId; setDeleteExpenseId(null); if (id) handleDeleteExpense(id); }}
+          onCancel={() => setDeleteExpenseId(null)}
+        />
       </div>
     </div>
   );
