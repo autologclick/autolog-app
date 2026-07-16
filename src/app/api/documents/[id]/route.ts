@@ -8,8 +8,8 @@ import {
   validationErrorResponse,
   handleApiError,
   AuthError,
-  requireOwnership,
 } from '@/lib/api-helpers';
+import { assertVehicleRecordAccess } from '@/lib/vehicle-access';
 import { updateDocumentSchema } from '@/lib/validations';
 import { NOT_FOUND, SUCCESS_MESSAGES } from '@/lib/messages';
 
@@ -43,7 +43,7 @@ export async function GET(
     }
 
     // Verify user owns the vehicle
-    requireOwnership(payload.userId, document.vehicle.userId);
+    await assertVehicleRecordAccess(payload.userId, document.vehicleId);
 
     return jsonResponse({ document });
   } catch (error) {
@@ -81,7 +81,7 @@ export async function PUT(
       return errorResponse(NOT_FOUND.DOCUMENT, 404);
     }
 
-    requireOwnership(payload.userId, document.vehicle.userId);
+    await assertVehicleRecordAccess(payload.userId, document.vehicleId);
 
     // Build update data from validated input
     const updateData: Prisma.DocumentUpdateInput = {};
@@ -153,7 +153,7 @@ export async function DELETE(
       return errorResponse(NOT_FOUND.DOCUMENT, 404);
     }
 
-    requireOwnership(payload.userId, document.vehicle.userId);
+    await assertVehicleRecordAccess(payload.userId, document.vehicleId);
 
     // Delete document
     await prisma.document.delete({

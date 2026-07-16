@@ -9,6 +9,7 @@ import {
   rejectTreatment,
 } from '@/lib/treatments-db';
 import prisma from '@/lib/db';
+import { assertVehicleRecordAccess } from '@/lib/vehicle-access';
 import { updateVehicleMileage, MileageError } from '@/lib/mileage';
 import { createNotification } from '@/lib/services/notification-service';
 import { sendEmail, buildTreatmentEmailHtml } from '@/lib/email';
@@ -109,9 +110,12 @@ export async function GET(
     const payload = requireAuth(req);
     const treatment = await getTreatmentById(params.id);
 
-    if (!treatment || treatment.userId !== payload.userId) {
+    if (!treatment) {
       return errorResponse(NOT_FOUND.TREATMENT, 404);
     }
+
+    // Owner or approved-share user may view this vehicle's treatments
+    await assertVehicleRecordAccess(payload.userId, treatment.vehicleId);
 
     return jsonResponse({ treatment });
   } catch (error) {

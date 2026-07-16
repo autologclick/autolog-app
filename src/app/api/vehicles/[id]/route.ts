@@ -10,6 +10,7 @@ import {
   AuthError,
   requireOwnership,
 } from '@/lib/api-helpers';
+import { assertVehicleRecordAccess } from '@/lib/vehicle-access';
 import { NOT_FOUND } from '@/lib/messages';
 import { getExpiryStatus } from '@/lib/utils';
 import { normalizeManufacturer, friendlyModel } from '@/lib/vehicle-names';
@@ -93,7 +94,9 @@ export async function GET(
       return jsonResponse({ error: NOT_FOUND.VEHICLE }, 404);
     }
 
-    requireOwnership(payload.userId, vehicle.userId);
+    // Owner or approved-share user — a co-manager needs to see the vehicle and
+    // its records; only mutating the vehicle itself is owner-only.
+    await assertVehicleRecordAccess(payload.userId, id);
 
     // Translate MOT codes to commercial names ("XTA03" → "ספייס סטאר",
     // "מיצובישי תאילנד" → "מיצובישי") — see /api/vehicles for full rationale.
@@ -158,7 +161,19 @@ export async function PUT(
       return jsonResponse({ error: NOT_FOUND.VEHICLE }, 404);
     }
 
-    requireOwnership(payload.userId, vehicle.userId);
+    // Editing the vehicle's DETAILS stays owner-only. A co-manager (approved
+    // share) may still keep the odometer up to date, so allow a non-owner with
+    // access through only when the update touches nothing but `mileage`.
+    if (vehicle.userId !== payload.userId) {
+      const touchedFields = Object.keys(validation.data).filter(
+        (k) => (validation.data as Record<string, unknown>)[k] !== undefined,
+      );
+      const mileageOnly = touchedFields.length > 0 && touchedFields.every((k) => k === 'mileage');
+      if (!mileageOnly) {
+        requireOwnership(payload.userId, vehicle.userId); // throws 403
+      }
+      await assertVehicleRecordAccess(payload.userId, id); // throws 403 if not shared
+    }
 
     const updateData: Prisma.VehicleUpdateInput = {};
     const d = validation.data;

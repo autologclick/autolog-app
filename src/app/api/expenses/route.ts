@@ -9,11 +9,10 @@ import {
   handleApiError,
   getPaginationParams,
   paginationMeta,
-  requireOwnership,
   enforceRateLimit,
 } from '@/lib/api-helpers';
+import { assertVehicleRecordAccess, getAccessibleVehicleIds } from '@/lib/vehicle-access';
 import { expenseSchema } from '@/lib/validations';
-import { NOT_FOUND } from '@/lib/messages';
 import { isValidExpenseCategory, aggregateExpenses } from '@/lib/services/expense-service';
 import { createDocumentFromExpense } from '@/lib/services/expense-document-sync';
 
@@ -34,28 +33,15 @@ export async function GET(req: NextRequest) {
     // Build query filters
     const whereFilters: Prisma.ExpenseWhereInput = {};
 
-    // If vehicleId is provided, verify ownership
+    // Owner and approved-share users are equal for a vehicle's records
     if (vehicleId) {
-      const vehicle = await prisma.vehicle.findUnique({
-        where: { id: vehicleId },
-        select: { userId: true },
-      });
-
-      if (!vehicle) {
-        return errorResponse(NOT_FOUND.VEHICLE, 404);
-      }
-
-      requireOwnership(payload.userId, vehicle.userId);
-
+      await assertVehicleRecordAccess(payload.userId, vehicleId);
       whereFilters.vehicleId = vehicleId;
     } else {
-      // Get all vehicles belonging to this user
-      const userVehicles = await prisma.vehicle.findMany({
-        where: { userId: payload.userId },
-        select: { id: true },
-      });
+      // Every vehicle the user can manage: owned + shared with them
+      const accessibleIds = await getAccessibleVehicleIds(payload.userId);
 
-      if (userVehicles.length === 0) {
+      if (accessibleIds.length === 0) {
         return jsonResponse({
           expenses: [],
           total: 0,
@@ -64,9 +50,7 @@ export async function GET(req: NextRequest) {
         });
       }
 
-      whereFilters.vehicleId = {
-        in: userVehicles.map((v) => v.id),
-      };
+      whereFilters.vehicleId = { in: accessibleIds };
     }
 
     // Add category filter if provided
@@ -136,17 +120,8 @@ export async function POST(req: NextRequest) {
     const { vehicleId, category, amount, description, date, receiptUrl } =
       validation.data;
 
-    // Verify vehicle exists and belongs to user
-    const vehicle = await prisma.vehicle.findUnique({
-      where: { id: vehicleId },
-      select: { userId: true },
-    });
-
-    if (!vehicle) {
-      return errorResponse(NOT_FOUND.VEHICLE, 404);
-    }
-
-    requireOwnership(payload.userId, vehicle.userId);
+    // Owner or approved-share user may add records to this vehicle
+    await assertVehicleRecordAccess(payload.userId, vehicleId);
 
     // Parse date
     const expenseDate = new Date(date);

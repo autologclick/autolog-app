@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
+import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import { getUserTreatments, createTreatment, getPendingTreatments } from '@/lib/treatments-db';
+import { assertVehicleRecordAccess } from '@/lib/vehicle-access';
 import { z } from 'zod';
-import { NOT_FOUND } from '@/lib/messages';
 import { updateVehicleMileage, MileageError } from '@/lib/mileage';
 
 const createTreatmentSchema = z.object({
@@ -45,6 +46,9 @@ export async function GET(req: NextRequest) {
       return jsonResponse({ treatments });
     }
 
+    // Explicit vehicle → must have access to it (owner or approved share)
+    if (vehicleId) await assertVehicleRecordAccess(payload.userId, vehicleId);
+
     const treatments = await getUserTreatments(payload.userId, vehicleId);
     return jsonResponse({ treatments });
   } catch (error) {
@@ -65,16 +69,8 @@ export async function POST(req: NextRequest) {
 
     const data = validation.data;
 
-    // Verify vehicle belongs to user
-    const prismaClient = (await import('@/lib/db')).default;
-    const vehicle = await prismaClient.vehicle.findFirst({
-      where: { id: data.vehicleId, userId: payload.userId },
-      select: { id: true, mileage: true },
-    });
-
-    if (!vehicle) {
-      return errorResponse(NOT_FOUND.VEHICLE, 404);
-    }
+    // Owner or approved-share user may record a treatment on this vehicle
+    await assertVehicleRecordAccess(payload.userId, data.vehicleId);
 
     // Validate mileage BEFORE creating the treatment so we can reject it cleanly
     if (data.mileage && data.mileage > 0) {
@@ -107,7 +103,7 @@ export async function POST(req: NextRequest) {
         other: 'other',
       };
       try {
-        const expense = await prismaClient.expense.create({
+        const expense = await prisma.expense.create({
           data: {
             vehicleId: data.vehicleId,
             category: categoryMap[data.type] || 'maintenance',
@@ -131,7 +127,7 @@ export async function POST(req: NextRequest) {
     let createdDocumentId: string | null = null;
     if (data.receiptImage && data.receiptImage.startsWith('data:image/')) {
       try {
-        const doc = await prismaClient.document.create({
+        const doc = await prisma.document.create({
           data: {
             vehicleId: data.vehicleId,
             type: 'receipt',
@@ -147,7 +143,7 @@ export async function POST(req: NextRequest) {
 
         // Link the document to the auto-created expense (if one exists)
         if (createdExpenseId) {
-          await prismaClient.expense.update({
+          await prisma.expense.update({
             where: { id: createdExpenseId },
             data: { documentId: createdDocumentId },
           });

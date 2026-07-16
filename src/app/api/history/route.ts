@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, errorResponse, handleApiError,
   enforceRateLimit,
 } from '@/lib/api-helpers';
+import { assertVehicleRecordAccess, getAccessibleVehicleIds } from '@/lib/vehicle-access';
 import {
   buildVehicleMap,
   buildInspectionEvents,
@@ -32,20 +33,15 @@ export async function GET(req: NextRequest) {
       return errorResponse('סוג אירוע לא תקין', 400);
     }
 
-    // If vehicleId is specified, verify user owns it
+    // If vehicleId is specified, verify access (owner or approved share)
     if (vehicleId) {
-      const vehicle = await prisma.vehicle.findUnique({
-        where: { id: vehicleId },
-      });
-
-      if (!vehicle || vehicle.userId !== payload.userId) {
-        return errorResponse('אין הרשאה לגישה לרכב זה', 403);
-      }
+      await assertVehicleRecordAccess(payload.userId, vehicleId);
     }
 
-    // Get all user vehicles for filtering
+    // Every vehicle the user can manage — owned + shared with them
+    const accessibleIds = await getAccessibleVehicleIds(payload.userId);
     const userVehicles = await prisma.vehicle.findMany({
-      where: { userId: payload.userId },
+      where: { id: { in: accessibleIds } },
       select: { id: true, nickname: true, licensePlate: true, manufacturer: true, model: true },
     });
 

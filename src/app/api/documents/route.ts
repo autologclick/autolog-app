@@ -11,9 +11,9 @@ import {
   validationErrorResponse,
   handleApiError,
   AuthError,
-  requireOwnership,
   enforceRateLimit,
 } from '@/lib/api-helpers';
+import { assertVehicleRecordAccess, getAccessibleVehicleIds } from '@/lib/vehicle-access';
 import { documentSchema } from '@/lib/validations';
 import { NOT_FOUND } from '@/lib/messages';
 import { createExpenseFromDocument } from '@/lib/services/expense-document-sync';
@@ -40,14 +40,14 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const vehicleId = url.searchParams.get('vehicleId');
 
-    // Build query filters
+    // Documents of every vehicle the user can manage (owned + shared)
+    const accessibleIds = await getAccessibleVehicleIds(payload.userId);
     const whereClause: Prisma.DocumentWhereInput = {
-      vehicle: {
-        userId: payload.userId, // Ensure user owns the vehicle
-      },
+      vehicleId: { in: accessibleIds },
     };
 
     if (vehicleId) {
+      await assertVehicleRecordAccess(payload.userId, vehicleId);
       whereClause.vehicleId = vehicleId;
     }
 
@@ -106,17 +106,8 @@ export async function POST(req: NextRequest) {
     // Normalize legacy document types to canonical types
     const type = normalizeDocType(rawType);
 
-    // Verify user owns the vehicle
-    const vehicle = await prisma.vehicle.findUnique({
-      where: { id: vehicleId },
-      select: { userId: true },
-    });
-
-    if (!vehicle) {
-      return errorResponse(NOT_FOUND.VEHICLE, 404);
-    }
-
-    requireOwnership(payload.userId, vehicle.userId);
+    // Owner or approved-share user may add documents to this vehicle
+    await assertVehicleRecordAccess(payload.userId, vehicleId);
 
     // Parse expiry date if provided
     let parsedExpiryDate: Date | null = null;
