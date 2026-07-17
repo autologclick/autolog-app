@@ -38,7 +38,9 @@ const userMobileNav: NavItem[] = [
   { label: 'דף הבית', href: '/user', icon: <Home size={20} /> },
   { label: 'רכבים', href: '/user/vehicles', icon: <Car size={20} /> },
   { label: 'מסמכים', href: '/user/documents', icon: <FolderOpen size={20} /> },
-  { label: 'הוצאות', href: '/user/expenses', icon: <Receipt size={20} /> },
+  // Expenses moved off the bar (still on the home page + in "עוד"); this slot is
+  // the car-services directory. Single short word so it can't widen the tab.
+  { label: 'שירותים', href: '/user/find-garage', icon: <Wrench size={20} /> },
   { label: 'עוד', href: '/user/more', icon: <Menu size={20} /> },
 ];
 

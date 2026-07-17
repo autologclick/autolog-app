@@ -2129,7 +2129,7 @@ export default function UserHomePage() {
                 href="/user/find-garage?category=MECHANICS"
                 className="inline-flex items-center gap-1.5 mt-3 bg-[#2E77D0] hover:bg-[#1D5FAF] text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors"
               >
-                🔧 מצא מוסך למכונאות
+                🔧 שירותי רכב — מכונאות
               </a>
             </div>
 
