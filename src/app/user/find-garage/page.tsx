@@ -300,7 +300,7 @@ function FindGarageInner() {
   return (
     <div className={styles.wrap} dir="rtl">
       <div className={styles.top}>
-        <div className={styles.brand}><span className={styles.dot}>🔧</span> מצא מוסך</div>
+        <div className={styles.brand}><span className={styles.dot}>🔧</span> שירותי רכב</div>
       </div>
 
       <div className={styles.searchBox}>

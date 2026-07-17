@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {
   Wrench, MapPin, AlertTriangle, Calendar, Hammer,
   Clock, FileText, Repeat, Gift, CreditCard,
-  User, Bell, Shield, Settings, LifeBuoy, HelpCircle, Search
+  User, Bell, Shield, Settings, LifeBuoy, HelpCircle, Search, Receipt
 } from 'lucide-react';
 import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 
@@ -20,7 +20,7 @@ const sections: { title: string; items: MoreItem[] }[] = [
     title: 'שירותים',
     items: [
       { label: 'טיפולים', href: '/user/treatments', icon: <Wrench size={22} /> },
-      { label: 'מצא מוסך', href: '/user/find-garage', icon: <Search size={22} /> },
+      { label: 'שירותי רכב', href: '/user/find-garage', icon: <Search size={22} /> },
       { label: 'הזמנת מוסך', href: '/user/book-garage', icon: <MapPin size={22} />, soon: !GARAGES_ENABLED },
       { label: 'SOS חירום', href: '/user/sos', icon: <AlertTriangle size={22} /> },
       { label: 'תורים', href: '/user/appointments', icon: <Calendar size={22} /> },
@@ -33,6 +33,7 @@ const sections: { title: string; items: MoreItem[] }[] = [
       { label: 'היסטוריה', href: '/user/history', icon: <Clock size={22} /> },
       { label: 'דוחות', href: '/user/reports', icon: <FileText size={22} /> },
       { label: 'העברת בעלות', href: '/user/vehicles/transfer', icon: <Repeat size={22} /> },
+      { label: 'הוצאות', href: '/user/expenses', icon: <Receipt size={22} /> },
       { label: 'הטבות', href: '/user/benefits', icon: <Gift size={22} /> },
       { label: 'תשלומים', href: '/user/payments', icon: <CreditCard size={22} /> },
     ],
