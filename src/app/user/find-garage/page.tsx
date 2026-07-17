@@ -79,9 +79,19 @@ interface Garage {
   lat?: number | null;
   lng?: number | null;
   source?: string;
+  rating?: number | null;          // Google rating
+  userRatingCount?: number | null; // number of Google reviews
+  googleMapsUri?: string | null;   // link to the full reviews on Google
   photoUrl?: string | null;
   photoAttribution?: string | null;
   _distKm?: number | null; // client-only: aerial distance from user (never persisted)
+}
+
+/** ★ row for a Google rating, rounded to the nearest half-star. */
+function starsFor(rating: number): string {
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.5;
+  return '★'.repeat(full) + (half ? '⯪' : '') + '☆'.repeat(Math.max(0, 5 - full - (half ? 1 : 0)));
 }
 
 // aerial (haversine) distance in km
@@ -106,6 +116,8 @@ function FindGarageInner() {
   const [city, setCity] = useState<string>('');
   const [category, setCategory] = useState<CatKey>(initialCat);
   const [q, setQ] = useState('');
+  const [sortByRating, setSortByRating] = useState(false);
+  const [detail, setDetail] = useState<Garage | null>(null);
 
   const [items, setItems] = useState<Garage[]>([]);
   const [saved, setSaved] = useState<Garage[]>([]);
@@ -154,7 +166,9 @@ function FindGarageInner() {
     setLoading(true);
     (async () => {
       try {
-        const res = await fetch(`/api/garage-directory?city=${encodeURIComponent(city)}&category=${category}&limit=500`);
+        const res = await fetch(
+          `/api/garage-directory?city=${encodeURIComponent(city)}&category=${category}&limit=500${sortByRating ? '&sort=rating' : ''}`,
+        );
         const json = res.ok ? await res.json() : { items: [] };
         if (!alive) return;
         setItems(json.items || []);
@@ -165,7 +179,7 @@ function FindGarageInner() {
       }
     })();
     return () => { alive = false; };
-  }, [city, category]);
+  }, [city, category, sortByRating]);
 
   const onCityChange = (v: string) => {
     setCity(v);
@@ -259,6 +273,10 @@ function FindGarageInner() {
         ...g,
         _distKm: g.lat != null && g.lng != null ? distanceKm(userPos.lat, userPos.lng, g.lat, g.lng) : null,
       }));
+    }
+    // distance ordering only when we're not explicitly sorting by rating
+    // (the rating order comes from the server)
+    if (userPos && !sortByRating) {
       // nearest first; rows without coordinates keep their name order at the end
       list = [...list].sort((a, b) => {
         if (a._distKm == null && b._distKm == null) return 0;
@@ -268,7 +286,7 @@ function FindGarageInner() {
       });
     }
     return list;
-  }, [items, q, userPos]);
+  }, [items, q, userPos, sortByRating]);
 
   const anyDistances = !!userPos && filtered.some((g) => g._distKm != null);
 
@@ -312,6 +330,13 @@ function FindGarageInner() {
           title="מיין לפי מרחק ממני"
         >
           {geoLoading ? '⏳ מאתר…' : userPos ? '📍 לפי מרחק ✕' : '🎯 קרוב אליי'}
+        </button>
+        <button
+          className={`${styles.sortBtn} ${sortByRating ? styles.on : ''}`}
+          onClick={() => setSortByRating((v) => !v)}
+          title="מיין לפי דירוג בגוגל"
+        >
+          {sortByRating ? '⭐ לפי דירוג ✕' : '⭐ דירוג'}
         </button>
       </div>
 
@@ -358,7 +383,14 @@ function FindGarageInner() {
             const showPhoto = g.photoUrl && !photoFailed.has(g.id);
             const isSaved = savedIds.has(g.id);
             return (
-              <div key={g.id} className={styles.row}>
+              <div
+                key={g.id}
+                className={styles.row}
+                onClick={() => setDetail(g)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter') setDetail(g); }}
+              >
                 <div className={styles.thumb} style={{ background: `linear-gradient(135deg,${main.grad[0]},${main.grad[1]})` }}>
                   {showPhoto ? (
                     <>
@@ -379,6 +411,15 @@ function FindGarageInner() {
 
                 <div className={styles.info}>
                   <div className={styles.rowName}>{g.name}</div>
+                  {g.rating != null && (
+                    <div className={styles.rate}>
+                      <span className={styles.rateNum}>{g.rating.toFixed(1)}</span>
+                      <span className={styles.stars}>{starsFor(g.rating)}</span>
+                      {g.userRatingCount != null && (
+                        <span className={styles.rateCount}>({g.userRatingCount})</span>
+                      )}
+                    </div>
+                  )}
                   <div className={styles.rowCats}>
                     {g.categories.filter(isValidCat).map((k) => (
                       <span key={k} className={styles.cat} style={{ color: CATS[k].color, background: CATS[k].bg }}>{CATS[k].label}</span>
@@ -391,7 +432,7 @@ function FindGarageInner() {
                   </div>
                 </div>
 
-                <div className={styles.actions}>
+                <div className={styles.actions} onClick={(e) => e.stopPropagation()}>
                   {g.phone && <a className={`${styles.iconBtn} ${styles.call}`} href={telUrl(g)} title={`חיוג ${g.phone}`} aria-label="חיוג">📞</a>}
                   <a className={styles.iconBtn} href={wazeUrl(g)} target="_blank" rel="noopener noreferrer" title="ניווט ב-Waze" aria-label="ניווט">🧭</a>
                   <button
@@ -416,6 +457,81 @@ function FindGarageInner() {
         נתוני מוסכים: מאגר משרד התחבורה (data.gov.il) · מתעדכן חודשית<br />
         שטיפות רכב: © OpenStreetMap contributors (ODbL)
       </div>
+
+
+      {/* Garage detail sheet — the "garage page": prominent Google rating + reviews link */}
+      {detail && (() => {
+        const dCat = (detail.categories.find(isValidCat) as CatKey | undefined) || category;
+        const dMain = CATS[dCat];
+        const dPhoto = detail.photoUrl && !photoFailed.has(detail.id);
+        return (
+          <div className={styles.drawer} onClick={(e) => { if (e.target === e.currentTarget) setDetail(null); }}>
+            <div className={styles.sheet}>
+              <div className={styles.sheetHead}>
+                <h3>פרטי {detail.categories.includes('WASH') ? 'שטיפה' : 'מוסך'}</h3>
+                <button className={styles.sheetClose} onClick={() => setDetail(null)} aria-label="סגור">✕</button>
+              </div>
+              <div className={styles.sheetBody}>
+                <div className={styles.detailHead}>
+                  <div className={styles.detailThumb} style={{ background: `linear-gradient(135deg,${dMain.grad[0]},${dMain.grad[1]})` }}>
+                    {dPhoto ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={detail.photoUrl as string} alt={detail.name} />
+                    ) : dMain.icon}
+                  </div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div className={styles.detailName}>{detail.name}</div>
+                    <div className={styles.rowCats} style={{ marginTop: 6 }}>
+                      {detail.categories.filter(isValidCat).map((k) => (
+                        <span key={k} className={styles.cat} style={{ color: CATS[k].color, background: CATS[k].bg }}>{CATS[k].label}</span>
+                      ))}
+                    </div>
+                    <div className={styles.detailAddr}>
+                      🏠 {[detail.address, detail.city].filter(Boolean).join(', ')}
+                      {detail.licenseNum ? ` · רישיון ${detail.licenseNum}` : ''}
+                      {detail._distKm != null ? ` · ${detail._distKm.toFixed(1)} ק״מ` : ''}
+                    </div>
+                  </div>
+                </div>
+
+                {detail.rating != null ? (
+                  <div className={styles.bigRate}>
+                    <span className={styles.bigRateNum}>{detail.rating.toFixed(1)}</span>
+                    <span>
+                      <span className={styles.bigStars}>{starsFor(detail.rating)}</span>
+                      <div className={styles.bigRateCount}>
+                        {detail.userRatingCount != null ? `${detail.userRatingCount} ביקורות בגוגל` : 'דירוג מגוגל'}
+                      </div>
+                    </span>
+                    {detail.googleMapsUri && (
+                      <a className={styles.reviewsLink} href={detail.googleMapsUri} target="_blank" rel="noopener noreferrer">
+                        קרא ביקורות ב-Google ↗
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  <div className={styles.noRate}>אין עדיין דירוג בגוגל למקום הזה.</div>
+                )}
+
+                <div className={styles.detailCta}>
+                  {detail.phone && <a className={`${styles.btn} ${styles.call}`} href={telUrl(detail)}>📞 {detail.phone}</a>}
+                  <a className={`${styles.btn} ${styles.nav}`} href={wazeUrl(detail)} target="_blank" rel="noopener noreferrer">🧭 ניווט</a>
+                  <button
+                    className={`${styles.btn} ${styles.nav}`}
+                    onClick={() => toggleSave(detail)}
+                  >{savedIds.has(detail.id) ? '♥ הסר' : '♡ שמור'}</button>
+                </div>
+
+                <div className={styles.attrib}>
+                  דירוגים, ביקורות{detail.photoAttribution ? ' ותמונות' : ''} — מקור: Google
+                  {detail.photoAttribution ? ` · תמונה: © ${detail.photoAttribution}` : ''}
+                  <br />Powered by Google
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {saved.length > 0 && (
         <button className={styles.savedFab} onClick={() => setDrawerOpen(true)}>♥ נשמרו {saved.length}</button>
