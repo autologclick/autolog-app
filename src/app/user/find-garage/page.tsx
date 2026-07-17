@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, Suspense } from 'react';
+import { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styles from './find-garage.module.css';
 
@@ -118,6 +118,10 @@ function FindGarageInner() {
   const [q, setQ] = useState('');
   const [sortByRating, setSortByRating] = useState(false);
   const [detail, setDetail] = useState<Garage | null>(null);
+  // full-screen photo viewer (opened from a thumbnail — never opens the sheet)
+  const [lightbox, setLightbox] = useState<Garage | null>(null);
+  const [lbDragY, setLbDragY] = useState(0);
+  const lbTouchStartY = useRef<number | null>(null);
 
   const [items, setItems] = useState<Garage[]>([]);
   const [saved, setSaved] = useState<Garage[]>([]);
@@ -180,6 +184,30 @@ function FindGarageInner() {
     })();
     return () => { alive = false; };
   }, [city, category, sortByRating]);
+
+
+  // lightbox: Escape closes, and the page behind it must not scroll
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setLightbox(null); };
+    document.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [lightbox]);
+
+  const closeLightbox = () => { setLightbox(null); setLbDragY(0); lbTouchStartY.current = null; };
+
+  // open the photo viewer WITHOUT letting the click reach the row (which opens the sheet)
+  const openLightbox = (e: React.MouseEvent, g: Garage) => {
+    e.stopPropagation();
+    if (!g.photoUrl || photoFailed.has(g.id)) return; // nothing to show for gradient placeholders
+    setLbDragY(0);
+    setLightbox(g);
+  };
 
   const onCityChange = (v: string) => {
     setCity(v);
@@ -391,7 +419,13 @@ function FindGarageInner() {
                 tabIndex={0}
                 onKeyDown={(e) => { if (e.key === 'Enter') setDetail(g); }}
               >
-                <div className={styles.thumb} style={{ background: `linear-gradient(135deg,${main.grad[0]},${main.grad[1]})` }}>
+                <div
+                  className={styles.thumb}
+                  style={{ background: `linear-gradient(135deg,${main.grad[0]},${main.grad[1]})`, cursor: showPhoto ? 'zoom-in' : undefined }}
+                  onClick={(e) => openLightbox(e, g)}
+                  role={showPhoto ? 'button' : undefined}
+                  aria-label={showPhoto ? `הגדל תמונה של ${g.name}` : undefined}
+                >
                   {showPhoto ? (
                     <>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -473,7 +507,11 @@ function FindGarageInner() {
               </div>
               <div className={styles.sheetBody}>
                 <div className={styles.detailHead}>
-                  <div className={styles.detailThumb} style={{ background: `linear-gradient(135deg,${dMain.grad[0]},${dMain.grad[1]})` }}>
+                  <div
+                    className={styles.detailThumb}
+                    style={{ background: `linear-gradient(135deg,${dMain.grad[0]},${dMain.grad[1]})`, cursor: dPhoto ? 'zoom-in' : undefined }}
+                    onClick={(e) => openLightbox(e, detail)}
+                  >
                     {dPhoto ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={detail.photoUrl as string} alt={detail.name} />
@@ -535,6 +573,51 @@ function FindGarageInner() {
 
       {saved.length > 0 && (
         <button className={styles.savedFab} onClick={() => setDrawerOpen(true)}>♥ נשמרו {saved.length}</button>
+      )}
+
+
+      {/* Full-screen photo viewer — opened only from a thumbnail */}
+      {lightbox && lightbox.photoUrl && (
+        <div
+          className={styles.lightbox}
+          onClick={closeLightbox}                       /* tap outside the image closes */
+          onTouchStart={(e) => { lbTouchStartY.current = e.touches[0].clientY; }}
+          onTouchMove={(e) => {
+            if (lbTouchStartY.current == null) return;
+            setLbDragY(e.touches[0].clientY - lbTouchStartY.current);
+          }}
+          onTouchEnd={() => {
+            // swipe far enough in either direction → dismiss (native photo-viewer feel)
+            if (Math.abs(lbDragY) > 90) closeLightbox();
+            else { setLbDragY(0); lbTouchStartY.current = null; }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`תמונה של ${lightbox.name}`}
+        >
+          <button className={styles.lightboxClose} onClick={closeLightbox} aria-label="סגור">✕</button>
+
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className={styles.lightboxImg}
+            src={`${lightbox.photoUrl}?w=1600`}          /* sharper copy via the same proxy */
+            alt={lightbox.name}
+            onClick={(e) => e.stopPropagation()}         /* tapping the photo keeps it open */
+            style={{
+              transform: lbDragY ? `translateY(${lbDragY}px)` : undefined,
+              opacity: lbDragY ? Math.max(0.35, 1 - Math.abs(lbDragY) / 320) : 1,
+            }}
+            onError={() => { setPhotoFailed((s2) => new Set(s2).add(lightbox.id)); closeLightbox(); }}
+          />
+
+          <div className={styles.lightboxCap}>
+            <span className={styles.lbName}>{lightbox.name}</span>
+            <span className={styles.lbAttr}>
+              {lightbox.photoAttribution ? `תמונה: © ${lightbox.photoAttribution} · ` : ''}Powered by Google
+            </span>
+            <div className={styles.lightboxHint}>סגירה: הקש מחוץ לתמונה, ✕, או החלק</div>
+          </div>
+        </div>
       )}
 
       {drawerOpen && (
