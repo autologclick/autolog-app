@@ -1021,11 +1021,14 @@ model GarageDirectory {
   importedAt  DateTime @updatedAt
   claimedById String?                    // future: link to a registered Garage
 
-  // Phase B — Google Places photo enrichment (inert until GOOGLE_PLACES_API_KEY is set)
+  // Phase B — Google Places enrichment (inert until GOOGLE_PLACES_API_KEY is set)
   placeId          String?   // matched Google place_id (stored permanently, allowed by ToS)
   photoRef         String?   // latest Place Photo resource name/reference (re-fetched, not stored as bytes)
   photoAttribution String?   // required Google author attribution to display with the photo
-  photoFetchedAt   DateTime? // when the photoRef was last refreshed (cache window)
+  photoFetchedAt   DateTime? // when the Places data was last refreshed (cache window)
+  rating           Float?    // Google rating (refreshed on the same cycle as the photo)
+  userRatingCount  Int?      // number of Google reviews behind that rating
+  googleMapsUri    String?   // canonical Google Maps link — required for "read the reviews"
 
   savedBy     SavedGarage[]
 

@@ -61,6 +61,9 @@ export interface PlacePhotoResult {
   placeId: string;
   photoRef: string | null;         // Places photo resource name, e.g. "places/XXX/photos/YYY"
   photoAttribution: string | null; // author display name (required attribution)
+  rating: number | null;           // Google rating
+  userRatingCount: number | null;  // number of Google reviews
+  googleMapsUri: string | null;    // canonical link to the place (and its reviews)
 }
 
 /**
@@ -101,13 +104,19 @@ export async function matchPlaceId(name: string, address: string, city: string):
  * Fetch the primary photo reference + attribution for a place_id.
  * Returns null when not configured or the place has no photos.
  */
-export async function fetchPlacePhoto(placeId: string): Promise<{ photoRef: string; photoAttribution: string | null } | null> {
+export async function fetchPlacePhoto(placeId: string): Promise<{
+  photoRef: string | null;
+  photoAttribution: string | null;
+  rating: number | null;
+  userRatingCount: number | null;
+  googleMapsUri: string | null;
+} | null> {
   if (!isPlacesConfigured()) return null;
   try {
     const res = await fetch(`${PLACES_BASE}/places/${encodeURIComponent(placeId)}?languageCode=he`, {
       headers: {
         'X-Goog-Api-Key': process.env.GOOGLE_PLACES_API_KEY as string,
-        'X-Goog-FieldMask': 'photos',
+        'X-Goog-FieldMask': 'photos,rating,userRatingCount,googleMapsUri',
       },
     });
     if (!res.ok) {
@@ -116,9 +125,13 @@ export async function fetchPlacePhoto(placeId: string): Promise<{ photoRef: stri
     }
     const data = await res.json();
     const photo = data?.photos?.[0];
-    if (!photo?.name) return null;
-    const attribution: string | null = photo.authorAttributions?.[0]?.displayName ?? null;
-    return { photoRef: photo.name, photoAttribution: attribution };
+    return {
+      photoRef: photo?.name ?? null,
+      photoAttribution: photo?.authorAttributions?.[0]?.displayName ?? null,
+      rating: typeof data?.rating === 'number' ? data.rating : null,
+      userRatingCount: typeof data?.userRatingCount === 'number' ? data.userRatingCount : null,
+      googleMapsUri: data?.googleMapsUri ?? null,
+    };
   } catch (e) {
     logger.warn('Places details error', { message: (e as Error).message });
     return null;
@@ -133,7 +146,14 @@ export async function enrichGaragePhoto(name: string, address: string, city: str
   const placeId = await matchPlaceId(name, address, city);
   if (!placeId) return null;
   const photo = await fetchPlacePhoto(placeId);
-  return { placeId, photoRef: photo?.photoRef ?? null, photoAttribution: photo?.photoAttribution ?? null };
+  return {
+    placeId,
+    photoRef: photo?.photoRef ?? null,
+    photoAttribution: photo?.photoAttribution ?? null,
+    rating: photo?.rating ?? null,
+    userRatingCount: photo?.userRatingCount ?? null,
+    googleMapsUri: photo?.googleMapsUri ?? null,
+  };
 }
 
 export interface CarWashMatch {
@@ -142,6 +162,9 @@ export interface CarWashMatch {
   phone: string | null;
   photoRef: string | null;
   photoAttribution: string | null;
+  rating: number | null;
+  userRatingCount: number | null;
+  googleMapsUri: string | null;
 }
 
 /**
@@ -157,7 +180,7 @@ export async function enrichCarWashByCoords(lat: number, lng: number, radiusM = 
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': process.env.GOOGLE_PLACES_API_KEY as string,
-        'X-Goog-FieldMask': 'places.id,places.displayName,places.nationalPhoneNumber,places.photos',
+        'X-Goog-FieldMask': 'places.id,places.displayName,places.nationalPhoneNumber,places.photos,places.rating,places.userRatingCount,places.googleMapsUri',
       },
       body: JSON.stringify({
         includedTypes: ['car_wash'],
@@ -182,6 +205,9 @@ export async function enrichCarWashByCoords(lat: number, lng: number, radiusM = 
       phone: p.nationalPhoneNumber ?? null,
       photoRef: photo?.name ?? null,
       photoAttribution: photo?.authorAttributions?.[0]?.displayName ?? null,
+      rating: typeof p.rating === 'number' ? p.rating : null,
+      userRatingCount: typeof p.userRatingCount === 'number' ? p.userRatingCount : null,
+      googleMapsUri: p.googleMapsUri ?? null,
     };
   } catch (e) {
     logger.warn('Places searchNearby error', { message: (e as Error).message });
@@ -199,7 +225,7 @@ export async function fetchCarWashDetails(placeId: string): Promise<CarWashMatch
     const res = await fetch(`${PLACES_BASE}/places/${encodeURIComponent(placeId)}?languageCode=he`, {
       headers: {
         'X-Goog-Api-Key': process.env.GOOGLE_PLACES_API_KEY as string,
-        'X-Goog-FieldMask': 'id,displayName,nationalPhoneNumber,photos',
+        'X-Goog-FieldMask': 'id,displayName,nationalPhoneNumber,photos,rating,userRatingCount,googleMapsUri',
       },
     });
     if (!res.ok) {
@@ -215,6 +241,9 @@ export async function fetchCarWashDetails(placeId: string): Promise<CarWashMatch
       phone: p.nationalPhoneNumber ?? null,
       photoRef: photo?.name ?? null,
       photoAttribution: photo?.authorAttributions?.[0]?.displayName ?? null,
+      rating: typeof p.rating === 'number' ? p.rating : null,
+      userRatingCount: typeof p.userRatingCount === 'number' ? p.userRatingCount : null,
+      googleMapsUri: p.googleMapsUri ?? null,
     };
   } catch (e) {
     logger.warn('Places details (car wash) error', { message: (e as Error).message });

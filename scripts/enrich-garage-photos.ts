@@ -69,6 +69,9 @@ async function main() {
             placeId: m?.placeId ?? g.placeId,  // never drop a permanently-stored place_id
             photoRef: m?.photoRef ?? null,
             photoAttribution: m?.photoAttribution ?? null,
+            rating: m?.rating ?? null,
+            userRatingCount: m?.userRatingCount ?? null,
+            googleMapsUri: m?.googleMapsUri ?? null,
             photoFetchedAt: new Date(),
           },
         });
@@ -81,6 +84,9 @@ async function main() {
             placeId: r?.placeId ?? null,
             photoRef: r?.photoRef ?? null,
             photoAttribution: r?.photoAttribution ?? null,
+            rating: r?.rating ?? null,
+            userRatingCount: r?.userRatingCount ?? null,
+            googleMapsUri: r?.googleMapsUri ?? null,
             photoFetchedAt: new Date(),
           },
         });

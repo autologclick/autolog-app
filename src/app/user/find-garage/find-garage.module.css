@@ -51,6 +51,33 @@
 .geoHelpBody b{color:var(--text-900)}
 .dist{display:inline-block;color:var(--blue-700);background:var(--blue-50);font-weight:800;font-size:11px;padding:1px 7px;border-radius:99px;margin-left:6px}
 
+/* ── Google rating (card) — quiet: renders nothing when unrated ── */
+.rate{display:inline-flex;align-items:center;gap:3px;font-size:11px;white-space:nowrap;margin-right:6px}
+.rateNum{font-weight:800;color:var(--warning-500)}
+.stars{color:#F59E0B;letter-spacing:.5px;font-size:10px}
+.rateCount{color:var(--text-400);font-size:10px}
+
+/* sort control next to the "near me" button */
+.sortBtn{flex:0 0 auto;background:var(--bg-card);color:var(--blue-700);border:1px solid var(--border);border-radius:var(--r-btn);padding:10px 12px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:var(--shadow-card)}
+.sortBtn.on{background:var(--blue-500);border-color:var(--blue-500);color:#fff}
+
+/* ── detail sheet (the "garage page") ── */
+.detailHead{display:flex;gap:12px;align-items:flex-start}
+.detailThumb{position:relative;flex:0 0 auto;width:84px;height:84px;border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.detailThumb svg{width:38px;height:38px}
+.detailThumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.detailName{font-size:17px;font-weight:800;color:var(--text-900);line-height:1.25}
+.detailAddr{color:var(--text-600);font-size:12.5px;margin-top:4px}
+/* prominent rating block */
+.bigRate{display:flex;align-items:center;gap:8px;background:var(--warning-50);border:1px solid #F5D9A8;border-radius:var(--r-btn);padding:10px 12px;margin-top:12px}
+.bigRateNum{font-size:26px;font-weight:800;color:var(--warning-500);line-height:1}
+.bigStars{color:#F59E0B;font-size:14px;letter-spacing:1px}
+.bigRateCount{color:var(--text-600);font-size:12px}
+.reviewsLink{margin-right:auto;background:var(--blue-500);color:#fff;text-decoration:none;font-size:12px;font-weight:700;padding:7px 12px;border-radius:var(--r-btn);white-space:nowrap}
+.noRate{color:var(--text-400);font-size:12.5px;background:var(--bg-page);border:1px solid var(--border);border-radius:var(--r-btn);padding:10px 12px;margin-top:12px}
+.detailCta{display:flex;gap:8px;margin-top:14px}
+.attrib{font-size:10px;color:var(--text-400);text-align:center;margin-top:12px;line-height:1.5}
+
 .chips{display:flex;flex-wrap:wrap;gap:7px;padding-bottom:8px}
 .chip{flex:1 1 28%;min-width:84px;text-align:center;background:var(--bg-card);border:1px solid var(--border);color:var(--text-600);border-radius:99px;padding:8px 6px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap}
 .chip.on{background:var(--blue-500);border-color:var(--blue-500);color:#fff}

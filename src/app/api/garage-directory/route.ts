@@ -10,6 +10,7 @@ import { requireAuth, handleApiError, errorResponse } from '@/lib/api-helpers';
 //   category  (optional)  — one of MECHANICS | ELECTRICITY | BODYWORK | TIRES
 //   limit     (optional)  — default 30, max 500
 //   offset    (optional)  — default 0
+//   sort      (optional)  — 'name' (default) | 'rating' (best first, unrated last)
 // Response: { items: [...], total }
 // Each item includes `professions` (Hebrew profession names) so the client can
 // free-text search by profession without another round-trip.
@@ -34,6 +35,7 @@ export async function GET(req: NextRequest) {
       return errorResponse('קטגוריה לא חוקית', 400);
     }
 
+    const sort = url.searchParams.get('sort') === 'rating' ? 'rating' : 'name';
     const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit') || '30', 10) || 30, 1), 500);
     const offset = Math.max(parseInt(url.searchParams.get('offset') || '0', 10) || 0, 0);
 
@@ -56,10 +58,16 @@ export async function GET(req: NextRequest) {
           lat: true,
           lng: true,
           source: true,
+          rating: true,
+          userRatingCount: true,
+          googleMapsUri: true,
           photoRef: true,
           photoAttribution: true,
         },
-        orderBy: { name: 'asc' },
+        // rating desc puts the best first; unrated places sort last, never hidden
+        orderBy: sort === 'rating'
+          ? [{ rating: { sort: 'desc', nulls: 'last' } }, { userRatingCount: 'desc' }]
+          : [{ name: 'asc' }],
         skip: offset,
         take: limit,
       }),
