@@ -5,8 +5,8 @@ import {
   jsonResponse,
   errorResponse,
   handleApiError,
-  requireOwnership,
 } from '@/lib/api-helpers';
+import { assertVehicleRecordAccess } from '@/lib/vehicle-access';
 import { NOT_FOUND } from '@/lib/messages';
 import { getExpiryStatus } from '@/lib/utils';
 
@@ -42,7 +42,7 @@ export async function GET(
       return errorResponse(NOT_FOUND.VEHICLE, 404);
     }
 
-    requireOwnership(payload.userId, vehicle.userId);
+    await assertVehicleRecordAccess(payload.userId, params.id);
 
     return jsonResponse({
       testExpiryDate: vehicle.testExpiryDate,
@@ -80,7 +80,7 @@ export async function PUT(
       return errorResponse(NOT_FOUND.VEHICLE, 404);
     }
 
-    requireOwnership(payload.userId, vehicle.userId);
+    await assertVehicleRecordAccess(payload.userId, params.id);
 
     const updateData: Record<string, unknown> = {};
 

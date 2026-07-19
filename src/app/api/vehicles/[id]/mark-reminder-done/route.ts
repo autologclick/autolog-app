@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/db';
+import { assertVehicleRecordAccess } from '@/lib/vehicle-access';
 import {
   requireAuth, jsonResponse, errorResponse, handleApiError, validationErrorResponse,
 } from '@/lib/api-helpers';
@@ -122,8 +123,9 @@ export async function POST(
       },
     });
     if (!vehicle) return errorResponse(NOT_FOUND.VEHICLE, 404);
-    if (vehicle.userId !== payload.userId && payload.role !== 'admin') {
-      return errorResponse('אין לך הרשאה לעדכן רכב זה', 403);
+    // Owner or approved-share user may mark a reminder done (co-managed vehicle)
+    if (payload.role !== 'admin') {
+      await assertVehicleRecordAccess(payload.userId, params.id);
     }
 
     const vehicleLabel = vehicle.nickname || `${vehicle.manufacturer} ${vehicle.model}`;
@@ -206,7 +208,7 @@ export async function POST(
     const treatment = await prisma.treatment.create({
       data: {
         vehicleId: vehicle.id,
-        userId: vehicle.userId,
+        userId: payload.userId, // whoever actually performed it, not the owner
         garageId: null,
         garageName: data.garageName || null,
         type: TREATMENT_TYPE_MAP[data.reminderType],

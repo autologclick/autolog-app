@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
 import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { assertVehicleRecordAccess } from '@/lib/vehicle-access';
 
 const treatmentTypeHeb: Record<string, string> = {
   maintenance: 'טיפול שוטף',
@@ -41,9 +42,11 @@ export async function GET(
     const payload = requireAuth(req);
     const { id } = params;
 
-    // Verify ownership
+    // Owner or approved-share user may read this vehicle's report
+    await assertVehicleRecordAccess(payload.userId, id);
+
     const vehicle = await prisma.vehicle.findFirst({
-      where: { id, userId: payload.userId },
+      where: { id },
     });
 
     if (!vehicle) {

@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { hashPassword, generateToken, generateRefreshToken } from '@/lib/auth';
 import { jsonResponse, errorResponse, validationErrorResponse, sanitizeInput } from '@/lib/api-helpers';
 import { registerSchema } from '@/lib/validations';
+import { verifyShareInviteToken } from '@/lib/share-tokens';
 import { AUTH_ERRORS, SUCCESS_MESSAGES } from '@/lib/messages';
 import { checkRegisterRateLimit } from '@/lib/rate-limit';
 import { createRequestLogger } from '@/lib/logger';
@@ -89,13 +90,30 @@ export async function POST(req: NextRequest) {
     }, { req });
 
     // An owner may have shared a vehicle with this email before the person had
-    // an account. Link those pre-approved shares now so the vehicle shows up on
-    // first login. Non-blocking — a failure here must never break signup.
+    // an account. Link that share ONLY when the signup carries the signed invite
+    // from the e-mail we sent: owning an invited address is not proof you are the
+    // intended recipient, so an unsigned signup links nothing.
+    // Non-blocking — a failure here must never break signup.
     try {
-      await prisma.vehicleShare.updateMany({
-        where: { sharedWithEmail: email.toLowerCase(), sharedWithUserId: null },
-        data: { sharedWithUserId: user.id },
-      });
+      const inviteToken = typeof body?.inviteToken === 'string' ? body.inviteToken : null;
+      const inviteExp = Number(body?.inviteExp);
+      const inviteVehicleId = typeof body?.inviteVehicleId === 'string' ? body.inviteVehicleId : null;
+
+      if (inviteToken && inviteVehicleId && Number.isFinite(inviteExp)) {
+        const valid = verifyShareInviteToken(inviteVehicleId, email, inviteToken, inviteExp);
+        if (valid) {
+          await prisma.vehicleShare.updateMany({
+            where: {
+              vehicleId: inviteVehicleId,
+              sharedWithEmail: email.toLowerCase(),
+              sharedWithUserId: null,
+            },
+            data: { sharedWithUserId: user.id },
+          });
+        } else {
+          logger.warn('Rejected vehicle-share invite with an invalid/expired token', { userId: user.id });
+        }
+      }
     } catch {
       /* ignore — sharing is secondary to account creation */
     }

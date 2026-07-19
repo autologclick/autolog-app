@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { requireAuth, handleApiError, errorResponse, jsonResponse } from '@/lib/api-helpers';
+import { assertVehicleRecordAccess } from '@/lib/vehicle-access';
 import prisma from '@/lib/db';
 import { NOT_FOUND } from '@/lib/messages';
 
@@ -14,8 +15,10 @@ export async function POST(
     const payload = requireAuth(req);
     const { id } = params;
 
+    await assertVehicleRecordAccess(payload.userId, id);
+
     const vehicle = await prisma.vehicle.findFirst({
-      where: { id, userId: payload.userId },
+      where: { id },
       select: { id: true, imageUrl: true },
     });
 
@@ -56,8 +59,10 @@ export async function DELETE(
     const payload = requireAuth(req);
     const { id } = params;
 
+    await assertVehicleRecordAccess(payload.userId, id);
+
     const vehicle = await prisma.vehicle.findFirst({
-      where: { id, userId: payload.userId },
+      where: { id },
       select: { id: true, imageUrl: true },
     });
 
