@@ -30,7 +30,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: 'no photo' }, { status: 404 });
     }
 
-    const mediaUrl = buildPhotoMediaUrl(garage.photoRef, 800);
+    // ?w= lets the lightbox request a sharper copy of the same photo.
+    // Clamped so a caller can't drive up Google traffic with silly sizes.
+    const requestedW = parseInt(req.nextUrl.searchParams.get('w') || '', 10);
+    const maxWidthPx = Number.isFinite(requestedW)
+      ? Math.min(Math.max(requestedW, 200), 1600)
+      : 800; // card thumbnails keep the cheap default
+
+    const mediaUrl = buildPhotoMediaUrl(garage.photoRef, maxWidthPx);
     if (!mediaUrl) return NextResponse.json({ error: 'not configured' }, { status: 404 });
 
     const upstream = await fetch(mediaUrl);

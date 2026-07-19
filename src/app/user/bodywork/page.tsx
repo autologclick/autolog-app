@@ -10,7 +10,7 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Modal from '@/components/ui/Modal';
 import VoiceMicButton from '@/components/ui/VoiceMicButton';
-import ComingSoonBanner from '@/components/shared/ComingSoonBanner';
+import ComingSoonGate from '@/components/shared/ComingSoonGate';
 import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 import {
   Camera, Upload, X, Car, Loader2, CheckCircle2,
@@ -262,15 +262,11 @@ export default function BodyworkPage() {
 
   if (!GARAGES_ENABLED) {
     return (
-      <div className="space-y-6">
-        <PageHeader title="פחחות — הצעות מחיר" backUrl="/user/service" />
-        <div className="px-4">
-          <ComingSoonBanner
-            title="פחחות — בקרוב!"
-            description="בקרוב תוכל לצלם את הנזק, לקבל הצעות מחיר ממוסכי פחחות ולבחור את ההצעה הטובה ביותר."
-          />
-        </div>
-      </div>
+      <ComingSoonGate
+        title="פחחות — הצעות מחיר"
+        bannerTitle="פחחות — בקרוב!"
+        description="בקרוב תוכל לצלם את הנזק, לקבל הצעות מחיר ממוסכי פחחות ולבחור את ההצעה הטובה ביותר."
+      />
     );
   }
 

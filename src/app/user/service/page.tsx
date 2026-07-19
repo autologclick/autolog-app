@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import ComingSoonBanner from '@/components/shared/ComingSoonBanner';
 import { ComingSoonBadge } from '@/components/shared/ComingSoonBanner';
+import ComingSoonGate from '@/components/shared/ComingSoonGate';
 import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 
 interface Appointment {
@@ -62,6 +63,19 @@ export default function ServicePage() {
 
   const upcoming = appointments.filter(a => ['pending', 'confirmed', 'in_progress'].includes(a.status));
   const past = appointments.filter(a => ['completed', 'cancelled'].includes(a.status));
+
+  // The service hub only lists unreleased, garage-dependent services, so while
+  // the flag is off it must not be reachable at all — including by typing the
+  // URL directly. Back lands on "עוד", never deeper into the gated area.
+  if (!GARAGES_ENABLED) {
+    return (
+      <ComingSoonGate
+        title="שירות"
+        bannerTitle="שירותי מוסך — בקרוב!"
+        description="אנחנו מחברים מוסכים שותפים לפלטפורמה. בקרוב תוכל להזמין תור, לקבל הצעות מחיר ולנהל את הטיפולים — הכל מהאפליקציה."
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F3F6FA] pb-24">

@@ -61,6 +61,18 @@
 .sortBtn{flex:0 0 auto;background:var(--bg-card);color:var(--blue-700);border:1px solid var(--border);border-radius:var(--r-btn);padding:10px 12px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:var(--shadow-card)}
 .sortBtn.on{background:var(--blue-500);border-color:var(--blue-500);color:#fff}
 
+/* ── lightbox: full-screen view of the business photo ── */
+/* sits above the detail sheet (z 30) and the bottom nav (z 40) */
+.lightbox{position:fixed;inset:0;z-index:70;background:rgba(6,12,22,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;touch-action:none;-webkit-tap-highlight-color:transparent}
+.lightboxImg{max-width:100%;max-height:78vh;object-fit:contain;border-radius:10px;box-shadow:0 18px 50px rgba(0,0,0,.55);transition:transform .1s ease-out;user-select:none;-webkit-user-drag:none}
+.lightboxClose{position:absolute;top:calc(12px + env(safe-area-inset-top, 0px));left:12px;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.45);color:#fff;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.lightboxClose:active{transform:scale(.92)}
+.lightboxCap{margin-top:14px;text-align:center;color:#E3E9F1;font-size:12px;line-height:1.7;max-width:90%;pointer-events:none}
+.lightboxCap .lbName{display:block;font-weight:700;color:#fff;font-size:13.5px}
+.lightboxCap .lbAttr{color:#98A6B8;font-size:11px}
+.lightboxHint{margin-top:6px;color:#7E8CA0;font-size:10.5px}
+.lightboxLoading{color:#98A6B8;font-size:13px}
+
 /* ── detail sheet (the "garage page") ── */
 .detailHead{display:flex;gap:12px;align-items:flex-start}
 .detailThumb{position:relative;flex:0 0 auto;width:84px;height:84px;border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center}

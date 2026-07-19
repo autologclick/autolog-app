@@ -11,7 +11,7 @@ import {
   Star, Gift, Fuel, Shield, Wrench, Tag, Loader2, Copy, CheckCircle2,
   QrCode, Clock, History, ArrowLeft
 } from 'lucide-react';
-import ComingSoonBanner from '@/components/shared/ComingSoonBanner';
+import ComingSoonGate from '@/components/shared/ComingSoonGate';
 import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 
 const categories = ['הכל', 'services', 'insurance', 'tires', 'fuel', 'accessories'];
@@ -200,20 +200,12 @@ export default function BenefitsPage() {
 
   if (!GARAGES_ENABLED) {
     return (
-      <div className="min-h-screen bg-[#F3F6FA] pb-24" dir="rtl">
-        <PageHeader
-          title="🎁 הטבות מועדון"
-          variant="green"
-          subtitle="חבר פרימיום"
-          backUrl="/user/profile"
-        />
-        <div className="px-4 py-6">
-          <ComingSoonBanner
-            title="הטבות מועדון — בקרוב!"
-            description="הטבות בלעדיות, הנחות על טיפולים, דלק, ביטוח ועוד — הכל במקום אחד. בקרוב לחברי AutoLog."
-          />
-        </div>
-      </div>
+      <ComingSoonGate
+        title="🎁 הטבות מועדון"
+        variant="green"
+        bannerTitle="הטבות מועדון — בקרוב!"
+        description="הטבות בלעדיות, הנחות על טיפולים, דלק, ביטוח ועוד — הכל במקום אחד. בקרוב לחברי AutoLog."
+      />
     );
   }
 
