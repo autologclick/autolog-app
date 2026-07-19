@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/db';
+import { assertVehicleRecordAccess } from '@/lib/vehicle-access';
 import { requireAuth, jsonResponse, handleApiError } from '@/lib/api-helpers';
 import { findMaintenanceTemplate, calculateScheduleFromTemplate, ensureTemplatesUpToDate } from '@/lib/maintenance-templates';
 
@@ -70,8 +71,9 @@ export async function GET(
     }
 
     // Ownership check — non-admins can only see their own vehicles
-    if (payload.role !== 'admin' && vehicle.userId !== payload.userId) {
-      return jsonResponse({ error: 'אין הרשאה' }, 403);
+    // Owner or approved-share user (co-managed vehicle); admin keeps access
+    if (payload.role !== 'admin') {
+      await assertVehicleRecordAccess(payload.userId, id);
     }
 
     // If vehicle has no mileage, try to get from latest treatment
@@ -173,8 +175,13 @@ export async function POST(
       },
     });
 
-    if (!vehicle || vehicle.userId !== payload.userId) {
+    if (!vehicle) {
       return jsonResponse({ error: 'רכב לא נמצא או אין הרשאה' }, 404);
+    }
+
+    // Owner or approved-share user (co-managed vehicle); admin keeps access
+    if (payload.role !== 'admin') {
+      await assertVehicleRecordAccess(payload.userId, id);
     }
 
     // If vehicle has no mileage, try to get from latest treatment

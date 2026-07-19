@@ -52,6 +52,19 @@ export default function LoginPage() {
       // brought the user here). Empty string when no code is stored.
       const referralCode = isRegister ? getStoredReferralCode() : '';
 
+      // A vehicle-share invite arrives as signed query params on the e-mailed
+      // signup link. Pass them through so the server can verify the signature
+      // and link the share — without them the pending share stays unlinked.
+      const inviteParams = (() => {
+        if (!isRegister || typeof window === 'undefined') return null;
+        const sp = new URLSearchParams(window.location.search);
+        const token = sp.get('invite');
+        const exp = sp.get('exp');
+        const vid = sp.get('vid');
+        if (!token || !exp || !vid) return null;
+        return { inviteToken: token, inviteExp: Number(exp), inviteVehicleId: vid };
+      })();
+
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -62,6 +75,7 @@ export default function LoginPage() {
             fullName: form.get('fullName'),
             phone: form.get('phone') || undefined,
             ...(referralCode ? { referralCode } : {}),
+            ...(inviteParams || {}),
           }),
         }),
       });

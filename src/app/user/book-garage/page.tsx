@@ -163,6 +163,12 @@ interface GarageListItem {
   specialties?: string[];
   rating?: number;
   isAutoLog?: boolean;
+  reviewCount?: number;
+  services?: string | string[];
+  amenities?: string | string[];
+  // Prisma's relation count — declared explicitly, otherwise it falls through to
+  // the index signature below and `_count.reviews` is typed `unknown`.
+  _count?: { reviews?: number };
   [key: string]: unknown;
 }
 

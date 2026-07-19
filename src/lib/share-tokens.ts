@@ -43,6 +43,42 @@ export function createShareToken(
 }
 
 /**
+ * Vehicle-share invite token.
+ *
+ * Binds the invite to BOTH the vehicle and the invited email address, so signing
+ * up with an invited address only links the share when the person actually
+ * followed the emailed link. Without this, anyone who guessed (or happened to
+ * own) an invited address would inherit the vehicle on signup.
+ *
+ * The email is lower-cased so it matches how invites are stored.
+ */
+export function createShareInviteToken(
+  vehicleId: string,
+  email: string,
+  ttlSeconds: number = 60 * 60 * 24 * 14, // 14 days to accept
+): ShareToken {
+  const expiresAt = Math.floor(Date.now() / 1000) + ttlSeconds;
+  const payload = `vehicle-share-invite:${vehicleId}:${email.trim().toLowerCase()}:${expiresAt}`;
+  return { token: sign(payload), expiresAt };
+}
+
+/** Verify an invite token for a given vehicle + email. */
+export function verifyShareInviteToken(
+  vehicleId: string,
+  email: string,
+  token: string,
+  expiresAt: number,
+): boolean {
+  if (!token || !expiresAt) return false;
+  if (Math.floor(Date.now() / 1000) > expiresAt) return false;
+  const payload = `vehicle-share-invite:${vehicleId}:${email.trim().toLowerCase()}:${expiresAt}`;
+  const a = Buffer.from(sign(payload));
+  const b = Buffer.from(token);
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+}
+
+/**
  * Verify a share token. Returns true only if the signature matches and the token is not expired.
  */
 export function verifyShareToken(

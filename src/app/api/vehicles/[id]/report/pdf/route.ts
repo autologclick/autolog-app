@@ -3,6 +3,7 @@ import { execSync } from 'child_process';
 import path from 'path';
 import prisma from '@/lib/db';
 import { requireAuth, errorResponse, handleApiError } from '@/lib/api-helpers';
+import { assertVehicleRecordAccess } from '@/lib/vehicle-access';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('vehicle-report-pdf');
@@ -60,8 +61,10 @@ export async function GET(
     const payload = requireAuth(req);
     const { id } = params;
 
+    await assertVehicleRecordAccess(payload.userId, id);
+
     const vehicle = await prisma.vehicle.findFirst({
-      where: { id, userId: payload.userId },
+      where: { id },
     });
 
     if (!vehicle) {
