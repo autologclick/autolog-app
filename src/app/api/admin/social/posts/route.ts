@@ -64,6 +64,18 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) return validationErrorResponse(parsed.error);
 
     const d = parsed.data;
+
+    // Auto-select the connected account for the platform when the caller
+    // did not pass one (the AI post generator never does).
+    let socialAccountId = d.socialAccountId ?? null;
+    if (!socialAccountId) {
+      const account = await prisma.socialAccount.findFirst({
+        where: { platform: d.platform },
+        select: { id: true },
+      });
+      socialAccountId = account?.id ?? null;
+    }
+
     const post = await prisma.socialPost.create({
       data: {
         platform: d.platform,
@@ -74,7 +86,7 @@ export async function POST(req: NextRequest) {
         callToAction: d.callToAction ?? null,
         linkUrl: d.linkUrl || null,
         scheduledFor: d.scheduledFor ? new Date(d.scheduledFor) : null,
-        socialAccountId: d.socialAccountId ?? null,
+        socialAccountId,
         aiPrompt: d.aiPrompt ?? null,
         aiModel: d.aiModel ?? null,
         brandVoiceVersion: d.brandVoiceVersion ?? null,

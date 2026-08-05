@@ -133,14 +133,22 @@ export default function Scheduler() {
             <div className="mt-3 divide-y divide-gray-100">
               {list.map((p) => (
                 <div key={p.id} className="py-3 flex gap-3 items-start">
-                  {p.mediaUrls[0] && (
+                  {p.mediaUrls[0] && (/\.(mp4|mov|m4v)$/i.test(p.mediaUrls[0].split('?')[0]) ? (
+                    <video
+                      src={p.mediaUrls[0] + '#t=0.5'}
+                      muted
+                      playsInline
+                      preload="metadata"
+                      className="w-16 h-16 rounded object-cover flex-shrink-0"
+                    />
+                  ) : (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={p.mediaUrls[0]}
                       alt=""
                       className="w-16 h-16 rounded object-cover flex-shrink-0"
                     />
-                  )}
+                  ))}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <Badge variant={STATUS_META[p.status]?.variant ?? 'default'}>
