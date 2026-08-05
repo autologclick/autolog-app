@@ -36,3 +36,4 @@ scripts/.gplaces-geocache.json
 # Diagnostic artifacts produced by the diag cron
 public/diag-*.html
 public/robots-diag.txt
+.next-*/
