@@ -26,6 +26,15 @@ interface Props {
   onSuccess?: (result: { newExpiryDate: string | null; nextDueMileage: number | null }) => void;
 }
 
+const NOTES_PLACEHOLDER: Record<ReminderType, string> = {
+  test: 'למשל: עבר טסט בהצלחה במכון הרישוי...',
+  compulsory_insurance: 'למשל: פוליסת החובה חודשה דרך הסוכן...',
+  comprehensive_insurance: 'למשל: פוליסת המקיף חודשה באותם תנאים...',
+  oil_change: 'למשל: הוחלפו פילטר אוויר ופילטר שמן...',
+  tires: 'למשל: הוחלפו 4 צמיגים ובוצע כיוון פרונט...',
+  brakes: 'למשל: הוחלפו רפידות קדמיות...',
+};
+
 const CONFIG: Record<ReminderType, {
   label: string;
   icon: string;
@@ -369,7 +378,7 @@ export default function MarkReminderDoneModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              placeholder="למשל: הוחלפו פילטר אוויר ופילטר שמן..."
+              placeholder={NOTES_PLACEHOLDER[reminderType]}
               className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none text-sm resize-none"
             />
           </div>

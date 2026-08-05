@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
         expensesGET(subRequest(req, '/api/expenses', { vehicleId, limit: '10' })),
         appointmentsGET(subRequest(req, '/api/appointments', { vehicleId })),
         maintenanceGET(
-          subRequest(req, `/api/vehicles/${vehicleId}/maintenance-schedule`),
+          subRequest(req, `/api/vehicles/${vehicleId}/maintenance-schedule`, { cacheOnly: '1' }),
           { params: { id: vehicleId } },
         ),
       ]);
@@ -109,6 +109,7 @@ export async function GET(req: NextRequest) {
         expenses: e?.expenses ?? [],
         appointments: a?.appointments ?? [],
         maintenanceSchedule: m?.schedule ?? null,
+        maintenancePending: m?.pending === true,
       };
     }
 

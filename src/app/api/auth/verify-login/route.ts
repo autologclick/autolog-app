@@ -144,14 +144,14 @@ export async function POST(req: NextRequest) {
     response.cookies.set('auth-token', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 2 * 60 * 60,
       path: '/',
     });
     response.cookies.set('refresh-token', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 30, // 30 days
       path: '/',
     });
@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
     response.cookies.set(TRUSTED_DEVICE_COOKIE, trustedToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 60 * 60 * 24 * TRUSTED_DEVICE_EXPIRY_DAYS,
       path: '/',
     });

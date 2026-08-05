@@ -57,6 +57,19 @@ export async function GET(req: NextRequest) {
   try {
     requireAuth(req);
 
+    // GPS override: ?lat=..&lng=.. -> nearest directory city for that fix
+    const u = new URL(req.url);
+    const qLat = parseFloat(u.searchParams.get('lat') || '');
+    const qLng = parseFloat(u.searchParams.get('lng') || '');
+    if (Number.isFinite(qLat) && Number.isFinite(qLng) && qLat >= -90 && qLat <= 90 && qLng >= -180 && qLng <= 180) {
+      return jsonResponse({
+        latitude: qLat,
+        longitude: qLng,
+        city: '',
+        nearestCity: await nearestDirectoryCity(qLat, qLng),
+      });
+    }
+
     const ip = clientIp(req);
     if (!isPublicIp(ip)) return errorResponse('לא ניתן לזהות מיקום לפי החיבור', 404);
 

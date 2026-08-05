@@ -376,7 +376,7 @@ export default function Sidebar({ portal, userName = 'משתמש', userRole }: S
         'lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 transition-all duration-300',
         'safe-area-inset-bottom'
       )}>
-        <div className="flex justify-around items-center pb-safe pt-1.5 pb-1.5 px-1">
+        <div className="flex justify-around items-center pt-1.5 pb-1.5 px-1">
           {mobileNavItems.map((item) => {
             const active = isActive(item.href);
             return (

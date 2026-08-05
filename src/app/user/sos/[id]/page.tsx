@@ -226,6 +226,12 @@ p{font-size:12px;line-height:1.5;margin:4px 0}
           {vehicleName && <Row label="רכב" value={vehicleName} />}
           <Row label="מועד" value={occurredAt} />
           <Row label="מיקום" value={ev.location} />
+          {(() => { const evc = ev as unknown as { latitude?: number | null; longitude?: number | null }; return evc.latitude != null && evc.longitude != null ? (
+            <div className="flex items-center gap-4 text-sm mt-1">
+              <a href={`https://waze.com/ul?ll=${evc.latitude},${evc.longitude}&navigate=yes`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">נווט עם Waze</a>
+              <a href={`https://maps.google.com/?q=${evc.latitude},${evc.longitude}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">פתח במפות Google</a>
+            </div>
+          ) : null; })()}
           <Row label="סטטוס" value={STATUS_LABEL[ev.status] || ev.status} />
           {report?.hasInjuries && <Row label="נפגעים" value="כן" />}
           <Row label="פרטי נפגעים" value={report?.injuriesDetails} />

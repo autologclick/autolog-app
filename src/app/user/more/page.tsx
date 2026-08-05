@@ -4,7 +4,9 @@ import Link from 'next/link';
 import {
   Wrench, MapPin, AlertTriangle, Calendar, Hammer,
   Clock, FileText, Repeat, Gift, CreditCard,
-  User, Bell, Shield, Settings, LifeBuoy, HelpCircle, Search, Receipt
+  User, Bell, Shield, Settings, LifeBuoy, HelpCircle, Search, Receipt,
+  Tag,
+  ShieldCheck,
 } from 'lucide-react';
 import { GARAGES_ENABLED } from '@/lib/constants/feature-flags';
 
@@ -25,6 +27,14 @@ const sections: { title: string; items: MoreItem[] }[] = [
       { label: 'SOS חירום', href: '/user/sos', icon: <AlertTriangle size={22} /> },
       { label: 'תורים', href: '/user/appointments', icon: <Calendar size={22} />, soon: !GARAGES_ENABLED },
       { label: 'פחחות', href: '/user/bodywork', icon: <Hammer size={22} />, soon: !GARAGES_ENABLED },
+    ],
+  },
+  {
+    title: 'מכירת רכב',
+    items: [
+      { label: 'דף מכירה לרכב', href: '/user/sell', icon: <Tag size={22} /> },
+      { label: 'העברת בעלות', href: '/user/vehicles/transfer', icon: <Repeat size={22} /> },
+      { label: 'בדיקת רכב לפני קנייה', href: '/car-check', icon: <ShieldCheck size={22} /> },
     ],
   },
   {

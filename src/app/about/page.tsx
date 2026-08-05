@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 
 /**
  * /about — אודות אוטולוג
@@ -189,7 +188,7 @@ export default function AboutPage() {
           </section>
 
           <section>
-            <h2>מי אוטולוג מתאימה לו?</h2>
+            <h2>למי אוטולוג מתאימה?</h2>
             <p>אוטולוג נבנתה לחמישה סוגי משתמשים מרכזיים בישראל:</p>
             <ul>
               <li>

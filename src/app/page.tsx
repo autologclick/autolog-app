@@ -202,6 +202,9 @@ export default function Home() {
             <a href="#faq" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1B4E8A]' : 'text-white/80 hover:text-white'}`}>
               שאלות נפוצות
             </a>
+            <Link href="/car-check" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1B4E8A]' : 'text-white/80 hover:text-white'}`}>
+              בדיקת רכב
+            </Link>
             <Link href="/blog" className={`text-sm font-medium transition ${isScrolled ? 'text-gray-600 hover:text-[#1B4E8A]' : 'text-white/80 hover:text-white'}`}>
               בלוג
             </Link>
@@ -245,6 +248,7 @@ export default function Home() {
               <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#F3F6FA]/50 rounded-lg text-base">איך זה עובד</a>
               <a href="#garages" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#F3F6FA]/50 rounded-lg text-base">למוסכים</a>
               <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#F3F6FA]/50 rounded-lg text-base">שאלות נפוצות</a>
+              <Link href="/car-check" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#F3F6FA]/50 rounded-lg text-base">בדיקת רכב</Link>
               <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#F3F6FA]/50 rounded-lg text-base">בלוג</Link>
               <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3.5 text-gray-700 hover:bg-[#F3F6FA]/50 rounded-lg text-base">אודות אוטולוג</Link>
               <hr className="my-2" />
@@ -261,7 +265,7 @@ export default function Home() {
 
       <main id="main-content">
       {/* ============ HERO ============ */}
-      <section className="relative min-h-[85vh] sm:min-h-[100vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[85vh] sm:min-h-[100vh] flex items-center overflow-hidden pt-24 sm:pt-0">
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0f2b47] via-[#1B4E8A] to-[#0d7377]" />
         <div className="absolute inset-0 opacity-[0.04]" style={{
@@ -300,6 +304,14 @@ export default function Home() {
                   className="px-6 sm:px-8 py-3.5 sm:py-4 bg-white/10 backdrop-blur text-white rounded-xl font-bold text-base sm:text-lg hover:bg-white/20 transition-all border border-white/20 text-center"
                 >
                   כניסה למערכת
+                </Link>
+                <Link
+                  href="/car-check"
+                  className="relative px-6 sm:px-8 py-3.5 sm:py-4 bg-white text-[#1B4E8A] rounded-xl font-bold text-base sm:text-lg hover:bg-[#F3F6FA] transition-all shadow-xl hover:-translate-y-0.5 text-center inline-flex items-center justify-center gap-2"
+                >
+                  <Search size={20} className="shrink-0" />
+                  בדיקת רכב לפני קנייה
+                  <span className="absolute -top-2.5 left-3 bg-[#F97316] text-white text-xs font-bold px-2.5 py-0.5 rounded-full shadow">חדש</span>
                 </Link>
               </div>
 
@@ -417,6 +429,51 @@ export default function Home() {
       </section>
 
       {/* ============ FEATURES ============ */}
+      <section className="py-20 sm:py-28 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="bg-[#1B4E8A] rounded-3xl overflow-hidden shadow-xl">
+            <div className="grid md:grid-cols-2 items-center">
+              <div className="p-8 sm:p-12">
+                <span className="inline-flex items-center gap-2 bg-[#F97316] text-white text-sm font-bold px-4 py-1.5 rounded-full mb-5">
+                  <Sparkles size={16} />
+                  שירות חדש — חינם
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 leading-tight">בדיקת רכב לפני קנייה לפי מספר רישוי</h2>
+                <p className="text-white/80 text-lg mb-6 leading-relaxed">מזינים מספר רכב ומקבלים תוך שניות דוח מבוסס מאגרי משרד התחבורה — עוד לפני שמתחייבים אצל המוכר.</p>
+                <ul className="space-y-2.5 mb-8">
+                  <li className="flex items-center gap-2.5 text-white/90"><CheckCircle2 size={18} className="text-[#4ade80] shrink-0" />היסטוריית בעלויות מלאה — ליסינג, השכרה וסוחרים</li>
+                  <li className="flex items-center gap-2.5 text-white/90"><CheckCircle2 size={18} className="text-[#4ade80] shrink-0" />ריקולים פתוחים שחוסמים העברת בעלות</li>
+                  <li className="flex items-center gap-2.5 text-white/90"><CheckCircle2 size={18} className="text-[#4ade80] shrink-0" />ק"מ בטסט האחרון — זיהוי חשד להרצת מד</li>
+                  <li className="flex items-center gap-2.5 text-white/90"><CheckCircle2 size={18} className="text-[#4ade80] shrink-0" />מפרט יצרן מלא ומערכות בטיחות</li>
+                </ul>
+                <Link href="/car-check" className="inline-flex items-center gap-2 px-8 py-4 bg-[#F97316] text-white font-bold rounded-xl hover:brightness-110 transition shadow-lg text-lg">
+                  בדקו רכב עכשיו — חינם
+                  <ArrowLeft size={20} />
+                </Link>
+              </div>
+              <div className="hidden md:flex items-center justify-center p-12">
+                <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="w-11 h-11 rounded-xl bg-[#1B4E8A]/10 flex items-center justify-center"><Shield size={22} className="text-[#1B4E8A]" /></div>
+                    <div>
+                      <p className="font-bold text-[#1B4E8A]">דוח בדיקת רכב</p>
+                      <p className="text-xs text-gray-400">מבוסס מאגרים ממשלתיים רשמיים</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-2.5 text-sm"><span className="text-gray-600">היסטוריית בעלויות</span><span className="text-green-600 font-bold">יד ראשונה</span></div>
+                    <div className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-2.5 text-sm"><span className="text-gray-600">ריקולים פתוחים</span><span className="text-green-600 font-bold">אין</span></div>
+                    <div className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-2.5 text-sm"><span className="text-gray-600">ק"מ בטסט האחרון</span><span className="text-[#1B4E8A] font-bold">78,400</span></div>
+                    <div className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-2.5 text-sm"><span className="text-gray-600">מערכות בטיחות</span><span className="text-[#1B4E8A] font-bold">17</span></div>
+                  </div>
+                  <div className="mt-5 bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-center text-green-700 font-bold text-sm">לא נמצאו דגלים אדומים</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="features" className="py-20 sm:py-28 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">

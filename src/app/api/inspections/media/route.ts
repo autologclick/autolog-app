@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { put } from '@vercel/blob';
+import { put } from '@/lib/storage';
 import { requireAuth, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB per file (videos can be large)

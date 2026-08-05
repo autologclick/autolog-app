@@ -41,7 +41,7 @@ export interface MaintenanceTemplateData {
 
 // Bump this version whenever ISRAELI_MARKET_TEMPLATES changes.
 // Auto-seed will re-run when the deployed version differs from the DB.
-const TEMPLATE_VERSION = 8;
+const TEMPLATE_VERSION = 10;
 
 // ── Manufacturer name aliases for matching ──
 // Maps various spellings (Hebrew, English, common typos) to the canonical name used in templates.
@@ -148,8 +148,58 @@ const MANUFACTURER_ALIASES: Record<string, string> = {
   'סיאט': 'סיאט',
 };
 
+const MFR_EXTRA_ALIASES: Record<string, string> = {
+  'מזדה': 'מאזדה', 'מרוטי-סוזוקי': 'סוזוקי', 'מרוטי סוזוקי': 'סוזוקי',
+  'bmw': 'ב.מ.וו', 'ford': 'פורד', 'kia': 'קיה', 'mazda': 'מאזדה', 'toyota': 'טויוטה',
+  'honda': 'הונדה', 'hyundai': 'יונדאי', 'skoda': 'סקודה', 'seat': 'סיאט', 'audi': 'אאודי',
+  'volkswagen': 'פולקסווגן', 'vw': 'פולקסווגן', 'renault': 'רנו', 'peugeot': "פיג'ו",
+  'citroen': 'סיטרואן', 'opel': 'אופל', 'nissan': 'ניסאן', 'suzuki': 'סוזוקי',
+  'mitsubishi': 'מיצובישי', 'subaru': 'סובארו', 'lexus': 'לקסוס', 'volvo': 'וולוו',
+  'mercedes': 'מרצדס', 'mercedes-benz': 'מרצדס', 'chevrolet': 'שברולט', 'jeep': "ג'יפ",
+  'dodge': "דודג'", 'fiat': 'פיאט', 'dacia': "דאצ'יה", 'mini': 'מיני', 'porsche': 'פורשה',
+  'tesla': 'טסלה', 'jaguar': 'יגואר', 'land rover': 'לנד רובר', 'isuzu': 'איסוזו',
+  'ssangyong': 'סאנגיונג', 'smart': 'סמארט', 'chery': "צ'רי", 'geely': "ג'ילי",
+  'maxus': 'מקסוס', 'polestar': 'פולסטאר', 'alfa romeo': 'אלפא רומיאו',
+  'xpeng': 'אקספנג', 'chrysler': 'קרייזלר', 'קריזלר': 'קרייזלר',
+};
+
+function canonMfr(s: string): string {
+  return (s || '').toLowerCase().replace(/[\s.,\-_'"\/\\()׳״]/g, '');
+}
+
+let mfrIndexCache: Map<string, string> | null = null;
+function getMfrIndex(): Map<string, string> {
+  if (!mfrIndexCache) {
+    const m = new Map<string, string>();
+    for (const tpl of ISRAELI_MARKET_TEMPLATES) {
+      const c = canonMfr(tpl.manufacturer);
+      if (c && !m.has(c)) m.set(c, tpl.manufacturer);
+    }
+    for (const k of Object.keys(MFR_EXTRA_ALIASES)) {
+      const real = m.get(canonMfr(MFR_EXTRA_ALIASES[k]));
+      const ck = canonMfr(k);
+      if (real && ck && !m.has(ck)) m.set(ck, real);
+    }
+    mfrIndexCache = m;
+  }
+  return mfrIndexCache;
+}
+
 function normalizeManufacturer(name: string): string {
-  const trimmed = name.trim();
+  const trimmed = (name || '').trim();
+  if (!trimmed) return trimmed;
+  const idx = getMfrIndex();
+  const words = trimmed.split(/\s+/);
+  for (let k = words.length; k >= 1; k--) {
+    const cand = words.slice(0, k).join(' ');
+    const aliased = MANUFACTURER_ALIASES[cand];
+    if (aliased) {
+      const viaAlias = idx.get(canonMfr(aliased));
+      if (viaAlias) return viaAlias;
+    }
+    const hit = idx.get(canonMfr(cand));
+    if (hit) return hit;
+  }
   return MANUFACTURER_ALIASES[trimmed] || trimmed;
 }
 
@@ -221,6 +271,12 @@ export async function ensureTemplatesUpToDate(): Promise<boolean> {
     if (needsSeed) {
       console.log(`[maintenance-templates] Auto-seeding templates (v${TEMPLATE_VERSION})...`);
       await seedAllTemplates();
+      try {
+        await prisma.$executeRawUnsafe(
+          `DELETE FROM "MaintenanceTemplate" WHERE "source" NOT LIKE $1`,
+          `%_v${TEMPLATE_VERSION}`
+        );
+      } catch { /* stale rows */ }
       // Clear ALL cached vehicle maintenance data so they recalculate
       try {
         await prisma.$executeRawUnsafe(
@@ -382,8 +438,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'סקודה',
     model: '*', // Applies to all Skoda models (VW Group standard intervals)
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -409,8 +465,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'יונדאי',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -435,8 +491,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'טויוטה',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -461,8 +517,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'קיה',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -486,8 +542,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'מאזדה',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -510,8 +566,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'סיאט',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -534,8 +590,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'פולקסווגן',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -556,8 +612,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'ניסאן',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -578,8 +634,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'מיצובישי',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -600,8 +656,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'סוזוקי',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -621,8 +677,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'הונדה',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -643,8 +699,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'ב.מ.וו',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -665,8 +721,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'מרצדס',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -687,8 +743,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'רנו',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -709,8 +765,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'פיז\'ו',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -731,8 +787,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'סיטרואן',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -753,8 +809,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'דאצ\'יה',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -774,8 +830,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'MG',
     model: '*',
-    yearFrom: 2020,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -795,8 +851,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'צ\'רי',
     model: '*',
-    yearFrom: 2020,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -816,8 +872,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'סובארו',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -838,8 +894,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'אאודי',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -860,8 +916,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'פורד',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -882,8 +938,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'אופל',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -904,8 +960,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'פיאט',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -926,8 +982,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'ג\'ילי',
     model: '*',
-    yearFrom: 2020,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -947,8 +1003,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'לקסוס',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -969,8 +1025,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'וולוו',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -991,8 +1047,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'ג\'יפ',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1013,8 +1069,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'שברולט',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1034,8 +1090,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'טסלה',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: 'electric',
     source: 'manual',
     items: [
@@ -1053,8 +1109,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'BYD',
     model: '*',
-    yearFrom: 2020,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1072,8 +1128,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'מיני',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1093,8 +1149,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'אלפא רומיאו',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1115,8 +1171,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'לנד רובר',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1137,8 +1193,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'יגואר',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1158,8 +1214,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'פורשה',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1179,8 +1235,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'סאנגיונג',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1200,8 +1256,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'איסוזו',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1222,8 +1278,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'GWM',
     model: '*',
-    yearFrom: 2020,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1243,8 +1299,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'JAC',
     model: '*',
-    yearFrom: 2020,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1264,8 +1320,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'פולסטאר',
     model: '*',
-    yearFrom: 2020,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: 'electric',
     source: 'manual',
     items: [
@@ -1282,8 +1338,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'סמארט',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1300,8 +1356,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'DS',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1321,8 +1377,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'דודג\'',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1342,8 +1398,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'אינפיניטי',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1363,8 +1419,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'BAIC',
     model: '*',
-    yearFrom: 2020,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1384,8 +1440,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'מקסוס',
     model: '*',
-    yearFrom: 2020,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1405,8 +1461,8 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
   {
     manufacturer: 'לנצ\'יה',
     model: '*',
-    yearFrom: 2015,
-    yearTo: 2030,
+    yearFrom: 2000,
+    yearTo: 2040,
     fuelType: null,
     source: 'manual',
     items: [
@@ -1420,6 +1476,48 @@ export const ISRAELI_MARKET_TEMPLATES: MaintenanceTemplateData[] = [
       { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 45000, intervalMonths: 36, description: 'מצתים' },
       { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומט', intervalKm: 60000, intervalMonths: 48, description: 'שמן ייעודי' },
       { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מצבר, בולמים, רפידות, מתלים, רצועות ואבחון מחשב' },
+    ]
+  },
+
+  // ---- XPENG (Chinese EV) ----
+  {
+    manufacturer: 'אקספנג',
+    model: '*',
+    yearFrom: 2000,
+    yearTo: 2040,
+    fuelType: 'electric',
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן תא נוסעים — חיוני לאיכות אוויר נקי בקבינה' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 20000, intervalMonths: 12, description: 'בלאי נמוך בזכות בלימה רגנרטיבית — בדיקה תקופתית' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור סוללה ומנוע חשמלי', intervalKm: 80000, intervalMonths: 48, description: 'נוזל קירור למערכת הסוללה, המנוע החשמלי והממיר' },
+      { category: 'צמיגים', item: 'סיבוב/החלפת צמיגים', intervalKm: 10000, intervalMonths: 12, description: 'בלאי צמיגים מהיר יותר בשל מומנט מיידי — רכב חשמלי' },
+      { category: 'תיבת הילוכים', item: 'בדיקת שמן ממסרת (Reduction Gear)', intervalKm: 80000, intervalMonths: 48, description: 'בדיקת שמן הממסרת של המנוע החשמלי' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת לחץ צמיגים, תאורה, מגבים, מתלים ועדכוני תוכנה' },
+    ]
+  },
+
+  // ---- CHRYSLER ----
+  {
+    manufacturer: 'קרייזלר',
+    model: '*',
+    yearFrom: 2000,
+    yearTo: 2040,
+    fuelType: null,
+    source: 'manual',
+    items: [
+      { category: 'שמן ומסננים', item: 'החלפת שמן מנוע ומסנן שמן', intervalKm: 10000, intervalMonths: 12, description: 'שמן 0W-20/5W-20 לפי מפרט Mopar — הטיפול הבסיסי' },
+      { category: 'שמן ומסננים', item: 'החלפת מסנן אוויר', intervalKm: 30000, intervalMonths: 24, description: 'מסנן אוויר נקי חיוני לביצועי מנוע מיטביים' },
+      { category: 'שמן ומסננים', item: 'החלפת פילטר מזגן', intervalKm: 15000, intervalMonths: 12, description: 'מסנן קבינה לאוויר נקי בתוך הרכב' },
+      { category: 'מנוע', item: 'החלפת מצתים', intervalKm: 60000, intervalMonths: 48, description: 'מצתים חדשים משפרים ביצועים וצריכת דלק' },
+      { category: 'בלמים', item: 'בדיקת מערכת בלמים', intervalKm: 20000, intervalMonths: 12, description: 'בדיקת רפידות, דיסקים וצנרת בלמים — רכב כבד יחסית' },
+      { category: 'בלמים', item: 'החלפת נוזל בלמים', intervalKm: 40000, intervalMonths: 24, description: 'החלפה כל שנתיים' },
+      { category: 'נוזלים', item: 'החלפת נוזל קירור מנוע', intervalKm: 100000, intervalMonths: 60, description: 'נוזל קירור OAT — מונע התחממות יתר והקפאה' },
+      { category: 'תיבת הילוכים', item: 'החלפת שמן גיר אוטומטי', intervalKm: 80000, intervalMonths: 60, description: 'שמן ATF+4 לתיבות האוטומטיות של קרייזלר' },
+      { category: 'רצועות', item: 'בדיקת רצועת אביזרים', intervalKm: 60000, intervalMonths: 48, description: 'קריעת רצועה עלולה לגרום לנזק חמור למנוע' },
+      { category: 'מתלים', item: 'בדיקת מתלים ובולמי זעזועים', intervalKm: 30000, intervalMonths: 24, description: 'מתלים תקינים חיוניים לבטיחות וליציבות הרכב' },
+      { category: 'כללי', item: 'אבחון כללי', intervalKm: 15000, intervalMonths: 12, description: 'בדיקת נוזלים, לחץ צמיגים, תאורה, מגבים ואבחון מחשב' },
     ]
   },
 ];

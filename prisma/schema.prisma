@@ -1049,3 +1049,26 @@ model SavedGarage {
   @@unique([userId, garageDirectoryId])
   @@index([userId])
 }
+
+model SalePage {
+  id          String   @id @default(cuid())
+  token       String   @unique
+  vehicleId   String
+  userId      String
+  sections    String   @default("{}")
+  sellerPhone String?
+  expiresAt   DateTime
+  revoked     Boolean  @default(false)
+  viewCount   Int      @default(0)
+  infocarData String?
+  infocarName String?
+  createdAt   DateTime @default(now())
+
+  @@index([vehicleId])
+}
+
+model OAuthState {
+  state     String   @id
+  data      String
+  expiresAt DateTime
+}

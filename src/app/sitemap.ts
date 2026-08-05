@@ -15,6 +15,9 @@ const BASE_URL = "https://autolog.click";
 // Update this list when you publish new articles, OR switch to the dynamic
 // Prisma version at the bottom of this file.
 const BLOG_SLUGS: { slug: string; lastModified: string; priority?: number }[] = [
+  { slug: "mazgan-rechev-lo-mekarer", lastModified: "2026-07-28" },
+  { slug: "matzber-rechev-simanim", lastModified: "2026-07-28" },
+  { slug: "kniyat-rechev-mi-leasing", lastModified: "2026-07-28" },
   { slug: "madrich-male-baal-rechev-chadash-2026", lastModified: "2026-05-16", priority: 0.95 },
   { slug: "bdika-lifnei-kniyat-rechev-haifa", lastModified: "2026-05-16" },
   { slug: "bdika-lifnei-kniyat-rechev-petach-tikva", lastModified: "2026-05-16" },
@@ -68,6 +71,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.9
     },
+    {
+      url: `${BASE_URL}/car-check`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.95,
+    },
+  {
+    url: `${BASE_URL}/car-sale-docs`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.85,
+  },
     {
       url: `${BASE_URL}/blog`,
       lastModified: now,

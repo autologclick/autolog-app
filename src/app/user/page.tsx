@@ -210,6 +210,50 @@ export default function UserHomePage() {
 
   // State
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  // Quick vehicle-image upload straight from the dashboard (skips the vehicles screen)
+  const quickImageInputRef = useRef<HTMLInputElement>(null);
+  const quickImageVehicleIdRef = useRef<string | null>(null);
+  const [quickImageUploading, setQuickImageUploading] = useState(false);
+
+  const openQuickImagePicker = (vehicleId: string | undefined) => {
+    if (!vehicleId) { router.push('/user/vehicles'); return; }
+    quickImageVehicleIdRef.current = vehicleId;
+    if (quickImageInputRef.current) {
+      quickImageInputRef.current.value = '';
+      quickImageInputRef.current.click();
+    }
+  };
+
+  const handleQuickImageSelected = async (e: { target: HTMLInputElement }) => {
+    const file = e.target.files?.[0];
+    const vehicleId = quickImageVehicleIdRef.current;
+    if (!file || !vehicleId) return;
+    setQuickImageUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 60000);
+      const conv = await fetch('/api/vehicles/convert-image', { method: 'POST', body: fd, signal: ctrl.signal });
+      clearTimeout(timer);
+      const cj = conv.ok ? await conv.json() : null;
+      if (!cj?.dataUrl) throw new Error('conversion failed');
+      const res = await fetch(`/api/vehicles/${vehicleId}/image`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: cj.dataUrl }),
+      });
+      const rj = res.ok ? await res.json() : null;
+      if (!rj?.imageUrl) throw new Error('save failed');
+      setVehicles(prev => prev.map(vh => (vh.id === vehicleId ? { ...vh, imageUrl: rj.imageUrl } : vh)));
+    } catch {
+      // Fall back to the full flow on the vehicles screen
+      router.push('/user/vehicles');
+    } finally {
+      setQuickImageUploading(false);
+    }
+  };
+
   const [selectedIdx, setSelectedIdxRaw] = useState(0);
 
   // Persist selected vehicle across refreshes
@@ -476,6 +520,10 @@ export default function UserHomePage() {
           setAppointments(data.vehicleData.appointments || []);
           if (data.vehicleData.maintenanceSchedule) {
             setMaintenanceSchedule(data.vehicleData.maintenanceSchedule);
+          } else if (data.vehicleData.maintenancePending) {
+            // AUTOLOG-PERF 2026-07-26 - the dashboard no longer waits for the AI
+            // to build the service schedule, so fetch it once the page is up.
+            setTimeout(() => { void fetchMaintenanceSchedule(data.vehicleData.vehicleId); }, 0);
           } else {
             setMaintenanceError(true);
           }
@@ -510,6 +558,10 @@ export default function UserHomePage() {
         setAppointments(vd.appointments || []);
         if (vd.maintenanceSchedule) {
           setMaintenanceSchedule(vd.maintenanceSchedule);
+        } else if (vd.maintenancePending) {
+          // AUTOLOG-PERF 2026-07-26 - the dashboard no longer waits for the AI
+          // to build the service schedule, so fetch it once the page is up.
+          setTimeout(() => { void fetchMaintenanceSchedule(id); }, 0);
         } else {
           setMaintenanceError(true);
         }
@@ -1272,11 +1324,12 @@ export default function UserHomePage() {
           </div>
         ) : (
           <div className="flex justify-center mb-2">
+            <input ref={quickImageInputRef} type="file" accept="image/*" className="hidden" onChange={handleQuickImageSelected} />
             <button
-              onClick={() => router.push('/user/vehicles')}
+              onClick={() => openQuickImagePicker(vehicle.id)}
               className="flex items-center gap-1.5 text-xs text-white/60 hover:text-white/90 transition-colors"
             >
-              <Camera size={14} /> הוספת תמונת רכב
+              {quickImageUploading ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />} {quickImageUploading ? 'מעלה תמונה...' : 'הוספת תמונת רכב'}
             </button>
           </div>
         )}
@@ -1347,7 +1400,7 @@ export default function UserHomePage() {
               done: vehicles.some(v => !!v.imageUrl),
               label: 'העלאת תמונת רכב',
               icon: <Camera size={16} />,
-              action: () => router.push('/user/vehicles'),
+              action: () => openQuickImagePicker((vehicles.find(v => !v.imageUrl) || vehicles[0])?.id),
             },
             {
               done: notifPermission === 'granted',

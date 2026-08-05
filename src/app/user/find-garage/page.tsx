@@ -264,21 +264,48 @@ function FindGarageInner() {
     if (userPos) { setUserPos(null); setGeoMsg(''); setShowGeoHelp(false); return; } // toggle off
     setGeoLoading(true);
     if (typeof navigator === 'undefined' || !navigator.geolocation) { ipFallback(); return; }
+    const geoDebug = (e: GeolocationPositionError, stage: string) => {
+      fetch('/api/geo/debug', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stage, code: e.code, message: e.message, ua: navigator.userAgent }),
+      }).catch(() => {});
+    };
+    const onFix = (pos: GeolocationPosition) => {
+      setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude, approx: false });
+      // Snap the city picker to the nearest directory city for this GPS fix
+      fetch(`/api/geo/ip?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { if (d?.nearestCity) setCity(d.nearestCity); })
+        .catch(() => {});
+      setGeoMsg('');
+      setShowGeoHelp(false);
+      setGeoLoading(false);
+    };
+    // 1) fresh precise GPS fix -> 2) quick network fix -> 3) coarse IP city
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude, approx: false });
-        setGeoMsg('');
-        setShowGeoHelp(false);
-        setGeoLoading(false);
+      onFix,
+      (err) => {
+        geoDebug(err, 'primary');
+        if (err.code === err.PERMISSION_DENIED) { setGeoMsg('המיקום חסום לאפליקציית Chrome בטלפון: הגדרות ← אפליקציות ← Chrome ← הרשאות ← מיקום ← אפשר, ואז נסו שוב'); setShowGeoHelp(true); ipFallback(); return; }
+        navigator.geolocation.getCurrentPosition(
+          onFix,
+          (err2) => { geoDebug(err2, 'retry'); setShowGeoHelp(true); ipFallback(); },
+          { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
+        );
       },
-      () => {
-        // denied / blocked / timeout — fall back to coarse IP location + offer how-to
-        setShowGeoHelp(true);
-        ipFallback();
-      },
-      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 },
     );
   };
+
+  // Open the list around the user automatically (GPS -> coarse IP -> manual city)
+  const autoLocRef = useRef(false);
+  useEffect(() => {
+    if (autoLocRef.current) return;
+    autoLocRef.current = true;
+    requestNearMe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── free-text filter (partial, Hebrew) + optional distance sort ──
   const filtered = useMemo(() => {
@@ -395,7 +422,7 @@ function FindGarageInner() {
         <details className={styles.geoHelp}>
           <summary>❓ איך להפעיל מיקום מדויק?</summary>
           <div className={styles.geoHelpBody}>
-            <p><b>אנדרואיד (Chrome):</b> הגדרות המכשיר ← מיקום ← הפעל. בדפדפן: ⋮ ← הגדרות אתר ← מיקום ← אפשר, ואז לרענן את הדף.</p>
+            <p><b>אנדרואיד (Chrome):</b> 1) הגדרות הטלפון ← אפליקציות ← Chrome ← הרשאות ← מיקום ← לאפשר, ולהדליק &quot;שימוש במיקום מדויק&quot;. 2) הגדרות המכשיר ← מיקום ← פעיל. 3) בדפדפן: ⋮ ← הגדרות אתר ← מיקום ← אפשר, ואז לרענן את הדף.</p>
             <p><b>אייפון (Safari):</b> הגדרות ← פרטיות ואבטחה ← שירותי מיקום ← הפעל (וגם עבור הדפדפן ← &quot;בעת השימוש&quot;). בדף: אייקון aA בשורת הכתובת ← הגדרות אתר ← מיקום ← אפשר.</p>
           </div>
         </details>

@@ -362,7 +362,7 @@ export default function SosPage() {
           location.trim() ? `מיקום: ${location.trim()}` : '',
           'מצרף את המיקום המדויק שלי:',
         ].filter(Boolean);
-        const waUrl = `https://wa.me/972533131310?text=${encodeURIComponent(waLines.join('\n'))}`;
+        const waUrl = `https://wa.me/972535266741?text=${encodeURIComponent(waLines.join('\n'))}`;
         setTimeout(() => { window.location.href = waUrl; }, 600);
         setDocumentOfferEventId(data.event?.id || null);
         setShowReportModal(false);
@@ -543,7 +543,7 @@ export default function SosPage() {
             {/* Quick actions strip */}
             <div className="border-t border-gray-100">
               <a
-                href="tel:0533131310"
+                href="tel:1230"
                 className="flex items-center justify-center gap-2 py-4 text-sm font-semibold text-[#1B4E8A] hover:bg-gray-50 transition-colors active:bg-gray-100"
               >
                 <PhoneCall size={18} className="text-red-500" />

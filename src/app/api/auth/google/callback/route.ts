@@ -187,21 +187,21 @@ export async function GET(req: NextRequest) {
   response.cookies.set('auth-token', accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: 'lax',
     maxAge: 2 * 60 * 60,
     path: '/',
   });
   response.cookies.set('refresh-token', refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 30,
     path: '/',
   });
   response.cookies.set(TRUSTED_DEVICE_COOKIE, trustedDeviceToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: 'lax',
     maxAge: 60 * 60 * 24 * TRUSTED_DEVICE_EXPIRY_DAYS,
     path: '/',
   });

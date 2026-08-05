@@ -134,6 +134,16 @@ export async function GET(
       }
     }
 
+    // AUTOLOG-PERF 2026-07-26 - never block the dashboard on AI generation.
+    // WHY: /api/dashboard invokes this handler inline. On a cache miss it
+    // awaited an OpenAI/Anthropic completion (10-15s, and with no timeout at
+    // all), so the first load of a newly added vehicle sat on a blank screen.
+    // The dashboard now passes cacheOnly=1: answer instantly with pending:true
+    // and let the client fetch the schedule itself, behind its own spinner.
+    if (new URL(req.url).searchParams.get('cacheOnly') === '1') {
+      return jsonResponse({ schedule: null, cached: false, pending: true });
+    }
+
     // Generate with AI
     const schedule = await generateMaintenanceSchedule(vehicle);
 
@@ -335,6 +345,7 @@ All text fields should be in Hebrew.`;
 
 async function generateWithOpenAI(apiKey: string, prompt: string, mileage: number): Promise<MaintenanceSchedule | null> {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    signal: AbortSignal.timeout(20000),
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -376,6 +387,7 @@ async function generateWithOpenAI(apiKey: string, prompt: string, mileage: numbe
 
 async function generateWithAnthropic(apiKey: string, prompt: string, mileage: number): Promise<MaintenanceSchedule | null> {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
+    signal: AbortSignal.timeout(20000),
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { notifyTelegramCritical } from '@/lib/telegram';
 
 /**
  * POST /api/vehicles/scan-license
@@ -260,6 +261,7 @@ async function extractWithOpenAI(apiKey: string, imageDataUrl: string): Promise<
     return parsed;
   } catch (error) {
     console.error('OpenAI Vision extraction failed:', error);
+    notifyTelegramCritical('License scan: OpenAI vision failed', error instanceof Error ? error.message : String(error));
     return {};
   }
 }
@@ -282,7 +284,7 @@ async function extractWithAnthropic(apiKey: string, imageDataUrl: string): Promi
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 400,
         messages: [
           {
@@ -311,6 +313,7 @@ async function extractWithAnthropic(apiKey: string, imageDataUrl: string): Promi
     return parsed;
   } catch (error) {
     console.error('Anthropic Vision extraction failed:', error);
+    notifyTelegramCritical('License scan: Anthropic vision failed', error instanceof Error ? error.message : String(error));
     return {};
   }
 }

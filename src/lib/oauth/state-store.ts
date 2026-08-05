@@ -1,37 +1,16 @@
-import { randomUUID } from 'crypto';
-
 /**
- * In-memory OAuth state store.
+ * OAuth state store - DB-backed (shared across all PM2 workers).
  *
- * Trade-off: only works inside a single Node.js process. The state is held in
- * process memory and survives the OAuth dance (which takes seconds). If you
- * scale to multiple PM2 workers (cluster mode) or multiple servers behind a
- * load balancer, swap this for Redis — the initiate request and the callback
- * may land on different workers, and the Map wouldn't be shared.
- *
- * Risk: if the Node process restarts mid-OAuth-dance, pending states are
- * lost and the affected user sees a 'state_expired' error and retries.
- * Acceptable for current single-instance PM2.
+ * Previously an in-memory Map, which broke Google sign-in ~50% of the
+ * time in cluster mode: the state was stored on one worker and the
+ * callback landed on the other ("works only on the second attempt").
+ * Postgres makes it consistent across workers and restart-safe.
  */
 
+import { randomUUID } from 'crypto';
+import prisma from '@/lib/db';
+
 const STATE_TTL_MS = 600_000; // 10 minutes
-
-interface StoreEntry {
-  data: OAuthStateData;
-  expiresAt: number;
-}
-
-const store = new Map<string, StoreEntry>();
-
-// Background sweep so the Map doesn't grow unbounded.
-const sweepHandle = setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of store) {
-    if (entry.expiresAt < now) store.delete(key);
-  }
-}, 60_000);
-// Don't keep the event loop alive just for the sweep.
-if (typeof sweepHandle.unref === 'function') sweepHandle.unref();
 
 export interface OAuthStateData {
   codeVerifier: string;
@@ -42,15 +21,26 @@ export interface OAuthStateData {
 
 export async function storeOAuthState(data: OAuthStateData): Promise<string> {
   const state = randomUUID().replace(/-/g, '');
-  store.set(state, { data, expiresAt: Date.now() + STATE_TTL_MS });
+  await prisma.oAuthState.create({
+    data: {
+      state,
+      data: JSON.stringify(data),
+      expiresAt: new Date(Date.now() + STATE_TTL_MS),
+    },
+  });
+  // Opportunistic cleanup of expired rows - fire and forget.
+  prisma.oAuthState.deleteMany({ where: { expiresAt: { lt: new Date() } } }).catch(() => {});
   return state;
 }
 
 export async function consumeOAuthState(state: string): Promise<OAuthStateData | null> {
   if (!state || typeof state !== 'string') return null;
-  const entry = store.get(state);
-  if (!entry) return null;
-  store.delete(state); // single-use
-  if (entry.expiresAt < Date.now()) return null;
-  return entry.data;
+  try {
+    // delete() is atomic - guarantees single-use even across workers.
+    const row = await prisma.oAuthState.delete({ where: { state } });
+    if (row.expiresAt.getTime() < Date.now()) return null;
+    return JSON.parse(row.data) as OAuthStateData;
+  } catch {
+    return null;
+  }
 }

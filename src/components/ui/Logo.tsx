@@ -12,10 +12,10 @@ interface LogoProps {
   linkToHome?: boolean;
 }
 
-function LogoImage({ shieldSize }: { shieldSize: number }) {
+function LogoImage({ shieldSize, light = false }: { shieldSize: number; light?: boolean }) {
   return (
     <Image
-      src="/logo.png"
+      src={light ? "/logo-light.png" : "/logo.png"}
       alt="AutoLog"
       width={shieldSize}
       height={shieldSize}
@@ -25,7 +25,7 @@ function LogoImage({ shieldSize }: { shieldSize: number }) {
   );
 }
 
-export default function Logo({ size = 'md', className = '', linkToHome = false }: LogoProps) {
+export default function Logo({ size = 'md', className = '', linkToHome = false, dark = false }: LogoProps) {
   const sizes = {
     sm: { shield: 28 },
     md: { shield: 40 },
@@ -37,7 +37,7 @@ export default function Logo({ size = 'md', className = '', linkToHome = false }
 
   const content = (
     <div className={`flex items-center ${className}`} dir="ltr">
-      <LogoImage shieldSize={s.shield} />
+      <LogoImage shieldSize={s.shield} light={dark} />
     </div>
   );
 

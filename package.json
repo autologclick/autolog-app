@@ -26,7 +26,6 @@
     "date-fns-tz": "^3.1.0",
     "geoip-lite": "^1.4.10",
     "google-auth-library": "^10.7.0",
-    "heic2any": "^0.0.4",
     "html2canvas": "^1.4.1",
     "jsonwebtoken": "^9.0.2",
     "jspdf": "^2.5.1",

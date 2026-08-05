@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
     const where: Prisma.GarageDirectoryWhereInput = { active: true, city };
     if (category) where.categories = { has: category };
 
-    const [rows, total] = await Promise.all([
+    const [rowsRaw, total] = await Promise.all([
       prisma.garageDirectory.findMany({
         where,
         select: {
@@ -68,11 +68,29 @@ export async function GET(req: NextRequest) {
         orderBy: sort === 'rating'
           ? [{ rating: { sort: 'desc', nulls: 'last' } }, { userRatingCount: 'desc' }]
           : [{ name: 'asc' }],
-        skip: offset,
-        take: limit,
+        ...(sort === 'rating' ? {} : { skip: offset }),
+        ...(sort === 'rating' ? {} : { take: limit }),
       }),
       prisma.garageDirectory.count({ where }),
     ]);
+
+    // IMDb-style Bayesian weighted rating: a 4.6 with 400 reviews should
+    // outrank a 5.0 with only 10 reviews. Sorted here (not in SQL) on the
+    // full city-scoped list, then paginated, so the order is globally correct.
+    let rows = rowsRaw;
+    if (sort === 'rating') {
+      const rated = rowsRaw.filter((r) => r.rating != null && (r.userRatingCount ?? 0) > 0);
+      const mean = rated.length > 0 ? rated.reduce((acc, r) => acc + (r.rating ?? 0), 0) / rated.length : 0;
+      const M = 60; // reviews needed for a score to stand on its own
+      const score = (r: (typeof rowsRaw)[number]) => {
+        const v = r.userRatingCount ?? 0;
+        if (r.rating == null || v <= 0) return -1;
+        return (v / (v + M)) * (r.rating ?? 0) + (M / (v + M)) * mean;
+      };
+      rows = [...rowsRaw]
+        .sort((a, b) => score(b) - score(a) || (b.userRatingCount ?? 0) - (a.userRatingCount ?? 0))
+        .slice(offset, offset + limit);
+    }
 
     // photoUrl points at our proxy only when a photo has been enriched (phase B).
     // professions → flat Hebrew name list, so the client can free-text search by profession.

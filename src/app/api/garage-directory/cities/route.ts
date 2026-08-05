@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
 
     const cities = grouped
       .map((g) => ({ city: g.city, count: g._count._all }))
-      .sort((a, b) => b.count - a.count);
+      .sort((a, b) => a.city.localeCompare(b.city, 'he'));
 
     return NextResponse.json({ cities, total: cities.length });
   } catch (error) {

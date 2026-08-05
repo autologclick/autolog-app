@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { put, del, list } from '@vercel/blob';
+import { put, del, list } from '@/lib/storage';
 import { requireGarageOwner, jsonResponse, errorResponse, handleApiError } from '@/lib/api-helpers';
 import prisma from '@/lib/db';
 import { NOT_FOUND } from '@/lib/messages';

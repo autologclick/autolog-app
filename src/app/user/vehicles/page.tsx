@@ -102,7 +102,7 @@ function ImageUploadSection({ imagePreview, imageProcessing, onImageSelect, onIm
       <label className="block text-sm font-medium text-gray-700">תמונת הרכב</label>
       {imageProcessing ? (
         <div className="flex items-center justify-center gap-2 w-full h-40 rounded-xl border border-gray-200 bg-[#F3F6FA] text-gray-500 text-sm">
-          <Loader2 size={18} className="animate-spin" /> מעבד את התמונה...
+          <Loader2 size={18} className="animate-spin" /> מעבד את התמונה... עוד כמה שניות
         </div>
       ) : imagePreview ? (
         <div className="relative w-full h-40 rounded-xl overflow-hidden border border-gray-200">
@@ -425,26 +425,35 @@ export default function VehiclesPage() {
       // HEIC/HEIF (iPhone/Samsung gallery) — convert to JPEG first,
       // browsers can't render it in <img> and canvas can't decode it
       if (isHeic) {
-        const heic2any = (await import('heic2any')).default;
-        const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
-        source = Array.isArray(converted) ? converted[0] : converted;
+        try {
+          // Safari decodes HEIC natively - try the fast path first
+          const native = await withTimeout(compressImage(file, 1600, 0.85), 3500);
+          setImageData(native);
+          setImagePreview(native);
+          return;
+        } catch { /* fall through to heic2any wasm conversion */ }
+        // heic2any is unreliable in mobile WebViews - the server converts HEIC instead
+        throw new Error('server-convert');
       }
-      const compressed = await compressImage(source, 1600, 0.85);
+      const compressed = await withTimeout(compressImage(source, 1600, 0.85), 15000);
       setImageData(compressed);
       // Preview shows EXACTLY what will be uploaded — no more broken previews
       setImagePreview(compressed);
     } catch {
-      // Fallback: raw data URL, but only for formats browsers can actually display
-      if (!isHeic) {
-        try {
-          const raw = await fileToDataUrl(file);
-          setImageData(raw);
-          setImagePreview(raw);
-        } catch {
-          setError('לא ניתן לטעון את התמונה. נסו תמונה אחרת או צלמו עם המצלמה.');
-        }
-      } else {
-        setError('לא ניתן להמיר את התמונה. נסו תמונה אחרת או צלמו עם המצלמה.');
+      // Client-side processing failed (HEIC in a WebView, OOM, etc.) - convert on the server instead
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 60000);
+        const res = await fetch('/api/vehicles/convert-image', { method: 'POST', body: fd, signal: ctrl.signal });
+        clearTimeout(timer);
+        const j = res.ok ? await res.json() : null;
+        if (!j?.dataUrl) throw new Error('server conversion failed');
+        setImageData(j.dataUrl);
+        setImagePreview(j.dataUrl);
+      } catch {
+        setError('לא ניתן לעבד את התמונה. נסו שוב, בחרו תמונה אחרת או צלמו עם המצלמה.');
       }
     } finally {
       setImageProcessing(false);
@@ -452,6 +461,13 @@ export default function VehiclesPage() {
       e.target.value = '';
     }
   };
+
+  // Reject after ms so image processing can never hang the UI forever
+  const withTimeout = <T,>(p: Promise<T> | PromiseLike<T>, ms: number): Promise<T> =>
+    Promise.race([
+      Promise.resolve(p),
+      new Promise<T>((_, reject) => setTimeout(() => reject(new Error('processing timeout')), ms)),
+    ]);
 
   const fileToDataUrl = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {

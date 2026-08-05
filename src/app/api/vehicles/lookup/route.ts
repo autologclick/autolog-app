@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { jsonResponse, errorResponse } from '@/lib/api-helpers';
+import { checkCustomerLookupRateLimit } from '@/lib/rate-limit';
 import { getResourceId, getApiUrl } from '@/lib/mot-config';
 import { createRequestLogger } from '@/lib/logger';
 import { VEHICLE_LOOKUP_ERRORS, VALIDATION_ERRORS } from '@/lib/messages';
@@ -35,7 +36,7 @@ interface GovVehicleData {
   kinpiof_cd: string;           // קוד כינוף - Body type code
 }
 
-export async function GET(req: NextRequest) {
+async function GET_inner(req: NextRequest) {
   const logger = createRequestLogger('api', req);
 
   try {
@@ -56,8 +57,8 @@ export async function GET(req: NextRequest) {
 
     const response = await fetch(apiUrl, {
       headers: { 'Accept': 'application/json' },
-      // 10 second timeout
-      signal: AbortSignal.timeout(10000),
+      // 4.5 second timeout
+      signal: AbortSignal.timeout(4500),
     });
 
     if (!response.ok) {
@@ -146,4 +147,95 @@ export async function GET(req: NextRequest) {
     });
     return errorResponse(VEHICLE_LOOKUP_ERRORS.SEARCH_ERROR, 500);
   }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// AUTOLOG-HARDEN 2026-07-26 — plate lookup cache + single-flight de-duplication
+//
+// WHY: every plate lookup hit data.gov.il directly, with no cache. A cold lookup
+// costs 2.5-10s. With one Node process, a handful of simultaneous new users each
+// waiting on the government API made the whole app feel frozen ("טוען את הרכב שלך…").
+//
+// WHAT: identical plates now share a single upstream request (single-flight), and
+// successful answers are reused for 7 days. Vehicle registry data barely changes,
+// so this is safe and makes repeat lookups instant.
+// ─────────────────────────────────────────────────────────────────────────────
+const __TTL_OK = 7 * 24 * 60 * 60 * 1000; // 7 days for a vehicle we found
+const __TTL_BAD = 10 * 60 * 1000; // 10 minutes for "not found"
+const __MAX_ENTRIES = 5000;
+
+type __Entry = { at: number; ttl: number; status: number; body: string; ct: string };
+const __cache = new Map<string, __Entry>();
+const __inflight = new Map<string, Promise<{ status: number; body: string; ct: string }>>();
+
+function __plateKey(req: NextRequest): string {
+  try {
+    return (new URL(req.url).searchParams.get('plate') || '').replace(/[-\s]/g, '');
+  } catch {
+    return '';
+  }
+}
+
+function __send(e: { status: number; body: string; ct: string }, cache: string): Response {
+  return new Response(e.body, {
+    status: e.status,
+    headers: {
+      'Content-Type': e.ct || 'application/json; charset=utf-8',
+      'X-Plate-Cache': cache,
+      'Cache-Control': 'private, max-age=300',
+    },
+  });
+}
+
+export async function GET(req: NextRequest) {
+  const rateLimit = await checkCustomerLookupRateLimit(req);
+  if (!rateLimit.allowed) {
+    const secondsRemaining = Math.ceil((rateLimit.resetTime - Date.now()) / 1000);
+    return errorResponse(`יותר מדי חיפושי רכב. אנא נסה שוב בעוד ${secondsRemaining} שניות.`, 429);
+  }
+  const key = __plateKey(req);
+  if (!key) return GET_inner(req);
+
+  const hit = __cache.get(key);
+  if (hit && Date.now() - hit.at < hit.ttl) {
+    __cache.delete(key);
+    __cache.set(key, hit); // keep recently-used entries at the tail
+    return __send(hit, 'HIT');
+  }
+
+  let p = __inflight.get(key);
+  if (!p) {
+    p = (async () => {
+      const r = await GET_inner(req);
+      const body = await r.text();
+      return { status: r.status, body, ct: r.headers.get('content-type') || '' };
+    })();
+    __inflight.set(key, p);
+    p.catch(() => undefined).then(() => {
+      __inflight.delete(key);
+    });
+  }
+
+  let out: { status: number; body: string; ct: string };
+  try {
+    out = await p;
+  } catch {
+    return GET_inner(req);
+  }
+
+  if (out.status === 200 || out.status === 404) {
+    if (__cache.size >= __MAX_ENTRIES) {
+      const oldest = __cache.keys().next().value;
+      if (oldest !== undefined) __cache.delete(oldest);
+    }
+    __cache.set(key, {
+      at: Date.now(),
+      ttl: out.status === 200 ? __TTL_OK : __TTL_BAD,
+      status: out.status,
+      body: out.body,
+      ct: out.ct,
+    });
+  }
+
+  return __send(out, 'MISS');
 }

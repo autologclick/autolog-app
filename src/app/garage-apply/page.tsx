@@ -580,7 +580,7 @@ export default function GarageApplyPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href="https://wa.me/972299999999"
+              href="https://wa.me/972535266741"
               className="px-6 py-2.5 bg-[#2E77D0] text-white font-bold rounded-lg hover:bg-[#2563B0] transition"
             >
               צור קשר דרך WhatsApp

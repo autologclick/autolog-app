@@ -35,3 +35,8 @@ export async function GET() {
     }, { status: 503 });
   }
 }
+
+// AUTOLOG-HARDEN 2026-07-26: health must never come from the Next.js route cache.
+// A cached 200 would hide a real database outage from uptime monitoring.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;

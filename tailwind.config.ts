@@ -26,13 +26,13 @@ const config: Config = {
   },
   safelist: [
     // Dynamic color classes used in components (StatCard, Sidebar, gradients)
-    { pattern: /bg-(navy|teal|cream|blue|green|red|orange|pink|yellow|indigo)-(50|100|200|300|400|500|600|700)/ },
-    { pattern: /text-(navy|teal|cream|blue|green|red|orange|pink|yellow|indigo)-(50|100|200|300|400|500|600|700)/ },
-    { pattern: /border-(navy|teal|cream|blue|green|red|orange|pink|yellow|indigo)-(50|100|200|300|400|500|600|700)/ },
-    { pattern: /from-(navy|teal|blue|green|red|orange|pink|yellow|indigo)-(50|100|200|300|400|500|600|700)/ },
-    { pattern: /to-(navy|teal|blue|green|red|orange|pink|yellow|indigo)-(50|100|200|300|400|500|600|700)/ },
-    { pattern: /via-(navy|teal|blue|green|red|orange|pink|yellow|indigo)-(50|100|200|300|400|500|600|700)/ },
-    { pattern: /hover:bg-(navy|teal|blue|green|red|orange|pink|yellow|indigo)-(400|500|600|700)/ },
+    { pattern: /bg-(navy|teal|cream|blue|green|red|orange|pink|yellow|indigo|emerald|purple)-(50|100|200|300|400|500|600|700)/ },
+    { pattern: /text-(navy|teal|cream|blue|green|red|orange|pink|yellow|indigo|emerald|purple)-(50|100|200|300|400|500|600|700)/ },
+    { pattern: /border-(navy|teal|cream|blue|green|red|orange|pink|yellow|indigo|emerald|purple)-(50|100|200|300|400|500|600|700)/ },
+    { pattern: /from-(navy|teal|blue|green|red|orange|pink|yellow|indigo|emerald|purple)-(50|100|200|300|400|500|600|700)/ },
+    { pattern: /to-(navy|teal|blue|green|red|orange|pink|yellow|indigo|emerald|purple)-(50|100|200|300|400|500|600|700)/ },
+    { pattern: /via-(navy|teal|blue|green|red|orange|pink|yellow|indigo|emerald|purple)-(50|100|200|300|400|500|600|700)/ },
+    { pattern: /hover:bg-(navy|teal|blue|green|red|orange|pink|yellow|indigo|emerald|purple)-(400|500|600|700)/ },
   ],
   plugins: [],
 };

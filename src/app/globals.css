@@ -608,3 +608,243 @@ body {
 .animate-modal-up {
   animation: modalSlideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }
+
+/* ============================================================
+   /about  -  standalone public content page.
+   The page is authored with semantic class names only, and
+   Tailwind preflight strips all default typography, so every
+   element needs explicit rules here. Everything is scoped under
+   .about-page, so no other page can be affected.
+   Mobile-first + RTL aware (the page sets dir="rtl").
+   ============================================================ */
+
+.about-page {
+  --ap-primary: #2E77D0;
+  --ap-primary-dark: #1B4E8A;
+  --ap-ink: #1e293b;
+  --ap-body: #334155;
+  --ap-muted: #64748b;
+  --ap-line: #e2e8f0;
+  --ap-surface: #f8fafc;
+  display: block;
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 1.25rem 1.125rem 3.5rem;
+  color: var(--ap-body);
+  font-size: 1.0625rem;
+  line-height: 1.85;
+  text-align: right;
+  overflow-wrap: break-word;
+}
+
+.about-page *,
+.about-page *::before,
+.about-page *::after {
+  box-sizing: border-box;
+}
+
+.about-page .breadcrumb {
+  margin: 0 0 1.5rem;
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid var(--ap-line);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--ap-muted);
+}
+
+.about-page .breadcrumb a {
+  color: var(--ap-primary);
+  text-decoration: none;
+}
+
+.about-page .breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.about-page header {
+  margin: 0 0 2rem;
+}
+
+.about-page h1 {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ap-ink);
+}
+
+.about-page h2 {
+  margin: 2.25rem 0 0.875rem;
+  padding-inline-start: 0.625rem;
+  border-inline-start: 4px solid var(--ap-primary);
+  font-size: 1.3125rem;
+  line-height: 1.45;
+  font-weight: 700;
+  color: var(--ap-ink);
+  scroll-margin-top: 5rem;
+}
+
+.about-page h3 {
+  margin: 1.75rem 0 0.625rem;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  font-weight: 700;
+  color: var(--ap-ink);
+}
+
+.about-page section {
+  margin: 0 0 1.75rem;
+}
+
+.about-page p {
+  margin: 0 0 1.0625rem;
+}
+
+.about-page .lead {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  font-weight: 500;
+  color: var(--ap-ink);
+}
+
+.about-page strong {
+  font-weight: 700;
+  color: var(--ap-ink);
+}
+
+.about-page a {
+  color: var(--ap-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.about-page a:hover {
+  color: var(--ap-primary-dark);
+}
+
+.about-page ul,
+.about-page ol {
+  margin: 0 0 1.25rem;
+  padding-inline-start: 1.5rem;
+}
+
+.about-page ul {
+  list-style: disc outside;
+}
+
+.about-page ol {
+  list-style: decimal outside;
+}
+
+.about-page li {
+  margin-bottom: 0.5rem;
+  padding-inline-start: 0.25rem;
+}
+
+.about-page li::marker {
+  color: var(--ap-primary);
+}
+
+.about-page .cta-inline,
+.about-page .final-cta {
+  text-align: center;
+}
+
+.about-page .cta-inline {
+  margin: 1.75rem 0;
+}
+
+.about-page .final-cta {
+  margin: 2.5rem 0 0;
+  padding: 1.75rem 1.25rem;
+  background: var(--ap-surface);
+  border: 1px solid var(--ap-line);
+  border-radius: 1rem;
+}
+
+.about-page .final-cta h2 {
+  margin-top: 0;
+  padding-inline-start: 0;
+  border-inline-start: 0;
+}
+
+.about-page .cta-button,
+.about-page .cta-button-large {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  background: var(--ap-primary);
+  color: #ffffff;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(46, 119, 208, 0.28);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.about-page .cta-button-large {
+  width: 100%;
+  max-width: 22rem;
+  min-height: 54px;
+  padding: 0.9375rem 1.75rem;
+  font-size: 1.0625rem;
+}
+
+.about-page .cta-button:hover,
+.about-page .cta-button-large:hover {
+  background: var(--ap-primary-dark);
+  color: #ffffff;
+}
+
+.about-page .cta-button:active,
+.about-page .cta-button-large:active {
+  transform: translateY(1px);
+}
+
+.about-page .cta-button:focus-visible,
+.about-page .cta-button-large:focus-visible {
+  outline: 3px solid rgba(46, 119, 208, 0.45);
+  outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+  .about-page {
+    padding: 2rem 1.5rem 4.5rem;
+  }
+  .about-page h1 {
+    font-size: 2.25rem;
+  }
+  .about-page h2 {
+    font-size: 1.5rem;
+    margin-top: 2.75rem;
+  }
+  .about-page .lead {
+    font-size: 1.1875rem;
+  }
+  .about-page .final-cta {
+    padding: 2.25rem 2rem;
+  }
+  .about-page .cta-button-large {
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-page .cta-button,
+  .about-page .cta-button-large {
+    transition: none;
+  }
+}
+
+
+/* Mobile bottom nav: iPhone home-indicator clearance. */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

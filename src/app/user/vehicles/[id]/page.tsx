@@ -8,6 +8,7 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
+import SalePageCard from '@/components/SalePageCard';
 import {
   Edit, Trash2, Shield, Calendar, Fuel, Gauge, Clock, Bell, Plus, X,
   Loader2, ChevronRight, AlertCircle, MapPin, Settings, Car, FileText,
@@ -787,6 +788,8 @@ export default function VehicleDetailPage({ params }: { params: { id: string } }
             </div>
           )}
         </div>
+
+        <SalePageCard vehicleId={id} />
 
         {/* Inspections Section */}
         {vehicle.inspections && vehicle.inspections.length > 0 && (
