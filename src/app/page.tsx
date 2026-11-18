@@ -556,57 +556,40 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============ TESTIMONIALS ============ */}
+      {/* ============ SCENARIOS ("דמיינו ש...") ============ */}
       <section ref={testimonials.ref} className="py-20 sm:py-28 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <span className="text-teal-600 font-semibold text-sm mb-2 block">מה אומרים עלינו</span>
+            <span className="text-teal-600 font-semibold text-sm mb-2 block">דמיינו ש...</span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1B4E8A]">
-              הלקוחות שלנו מדברים
+              ככה זה נראה ביום-יום
             </h2>
           </div>
 
           <div className={`grid md:grid-cols-3 gap-6 transition-all duration-1000 ${testimonials.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             {[
               {
-                name: 'דני כהן',
-                role: 'בעל 3 רכבים',
-                text: 'מאז שאני משתמש באוטולוג אני לא מפספס שום תאריך. הטסט, הביטוח — הכל מסודר. פשוט שקט נפשי.',
-                stars: 5,
+                icon: Bell,
+                text: 'דמיינו שהטסט שלכם עומד לפוג בעוד שבועיים, ו-AutoLog מזכיר לכם מראש.',
               },
               {
-                name: 'מיכל לוי',
-                role: 'מנהלת צי רכבים',
-                text: 'אנחנו מנהלים 20 רכבים דרך אוטולוג. ההיסטוריה המלאה לכל רכב חוסכת לנו שעות של עבודה ידנית בכל חודש.',
-                stars: 5,
+                icon: FileText,
+                text: 'דמיינו שכל הקבלות והפוליסות של הרכב סרוקות ומסודרות במקום אחד.',
               },
               {
-                name: 'יוסי אברהם',
-                role: 'בעל מוסך',
-                text: 'הדוחות הדיגיטליים של אוטולוג שינו לנו את העסק. הלקוחות מקבלים דוח מקצועי ישר לנייד והמוניטין שלנו עלה.',
-                stars: 5,
+                icon: Wrench,
+                text: 'דמיינו שאתם בדרך לחופשה בצפון ונדלקת נורה, ותוך דקה אתם מוצאים מוסך שותף באזור.',
               },
-            ].map((t, i) => (
+            ].map(({ icon: Icon, text }, i) => (
               <div
-                key={t.name}
+                key={text}
                 className="bg-white rounded-2xl p-7 shadow-sm border border-gray-100 hover:shadow-md transition"
                 style={{ transitionDelay: `${i * 150}ms` }}
               >
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: t.stars }).map((_, j) => (
-                    <Star key={j} size={16} className="text-amber-400 fill-amber-400" />
-                  ))}
+                <div className="w-12 h-12 bg-gradient-to-br from-[#1B4E8A] to-[#2E77D0] rounded-xl flex items-center justify-center mb-5">
+                  <Icon size={22} className="text-white" />
                 </div>
-                <p className="text-gray-600 text-sm leading-relaxed mb-5">&quot;{t.text}&quot;</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#1B4E8A] to-[#2E77D0] rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    {t.name[0]}
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-gray-800">{t.name}</p>
-                    <p className="text-xs text-gray-400">{t.role}</p>
-                  </div>
-                </div>
+                <p className="text-gray-700 text-base leading-relaxed">{text}</p>
               </div>
             ))}
           </div>
